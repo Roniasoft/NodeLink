@@ -1,2 +1,2 @@
 # Nodelink
-A node editor library for QML
+QML Node Editor. Dataflow programming library for QML
