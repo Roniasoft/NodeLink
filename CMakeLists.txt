@@ -69,7 +69,6 @@ qt_add_qml_module(NodeLink
 
     QML_FILES
 	
-	
     SOURCES
 	
     RESOURCES
