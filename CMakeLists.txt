@@ -68,10 +68,25 @@ qt_add_qml_module(NodeLink
     VERSION 1.0
 
     QML_FILES
-	
+        resources/Core/NLSpec.qml
+        resources/Core/Node.qml
+        resources/Core/Action.qml
+        resources/Core/Port.qml
+        resources/Core/ActionItem.qml
+        resources/Core/GeneralNode.qml
+        resources/Core/RootNode.qml
+        resources/Core/Connection.qml
+        resources/Core/SceneManager.qml
+        resources/View/SceneView.qml
+        resources/View/PortView.qml
+        resources/View/NodeView.qml
+        resources/View/ConnectionView.qml
+
+
     SOURCES
 	
     RESOURCES
+
 )
 	
 	
