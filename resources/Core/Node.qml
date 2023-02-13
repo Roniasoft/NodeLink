@@ -5,6 +5,8 @@ QtObject {
      * ****************************************************************************************/
     property string name:   "<unknown>"
 
+    property string title: "<Unknown>"
+
     property int x:         0
 
     property int y:         0

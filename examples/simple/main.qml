@@ -1,18 +1,21 @@
 import QtQuick
 import NodeLink
+import QtQuick.Controls 2.12
+import QtQuick.Controls.Material 2.12
 
 Window {
+    id: window
     width: 640
     height: 480
     visible: true
     title: qsTr("Simple NodeLink Example")
-    color: "#5ad5ed"
+    color: "#1e1e1e"
+    Material.theme: Material.Dark
+    Material.accent: Material.Purple
+    property SceneManager sceneManager: SceneManager {}
 
-    PortView {
-        id: portview
-
-        width: 50
-        height: 50
-        anchors.centerIn: parent
+    SceneView {
+        scene: window.sceneManager
+        anchors.fill: parent
     }
 }
