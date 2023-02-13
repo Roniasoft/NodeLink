@@ -83,8 +83,8 @@ qt_add_qml_module(NodeLink
         resources/View/SceneView.qml
         resources/View/PortView.qml
         resources/View/NodeView.qml
-        resources/View/ConnectionView.qml
-
+        resources/View/ConnectionView.qml    
+        resources/View/SceneViewBackground.qml
 
     SOURCES
 	
