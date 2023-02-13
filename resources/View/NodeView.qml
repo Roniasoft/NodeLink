@@ -3,12 +3,20 @@ import NodeLink
 import QtQuick.Controls
 
 /*! ***********************************************************************************************
- *
+ * This class show node ui.
  * ************************************************************************************************/
 Rectangle {
     /* Property Declarations
      * ****************************************************************************************/
     property Node node
+
+    /* Private Property Declarations
+     * ****************************************************************************************/
+    QtObject {
+        id: privateVariables
+        property bool nodeSelected: false
+    }
+
 
     /* Object Properties
      * ****************************************************************************************/
@@ -17,14 +25,15 @@ Rectangle {
     x: node.x
     y: node.y
     color: Qt.darker(node.color, 10)
-    border.color: node.color
+    border.color: privateVariables.nodeSelected ? Qt.lighter(node.color, 1.5) : node.color
     border.width: 3
     radius: 12
     smooth: true
     antialiasing: true
     layer.enabled: false
 
-
+    /* Children
+    * ****************************************************************************************/
     ScrollView {
         id: view
         anchors.fill: parent
@@ -43,4 +52,48 @@ Rectangle {
             }
         }
     }
+
+    //! Manage node selection and position change.
+    MouseArea {
+        id: nodeMouseArea
+
+        property int prevX: node.x
+        property int prevY: node.y
+
+        anchors.fill: parent
+        propagateComposedEvents: true
+        preventStealing: true
+
+
+        onContainsMouseChanged: mouse => {
+                                    if(containsMouse)
+                                    nodeMouseArea.cursorShape = Qt.OpenHandCursor
+                                    else
+                                    nodeMouseArea.cursorShape = Qt.ArrowCursor;
+                                }
+
+        onPressed: mouse => {
+                       prevX = mouse.x
+                       prevY = mouse.y
+                       privateVariables.nodeSelected = !privateVariables.nodeSelected;
+                       nodeMouseArea.cursorShape = Qt.ClosedHandCursor
+
+                   }
+
+        onReleased: mouse => {
+                        nodeMouseArea.cursorShape = Qt.OpenHandCursor
+                    }
+
+        onPositionChanged: mouse => {
+                               privateVariables.nodeSelected = true
+                               var deltaX = mouse.x - prevX
+                               node.x += deltaX
+                               prevX = mouse.x - deltaX
+
+                               var deltaY = mouse.y - prevY
+                               node.y += deltaY
+                               prevY = mouse.y - deltaY
+                           }
+    }
+
 }
