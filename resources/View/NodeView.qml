@@ -53,6 +53,13 @@ Rectangle {
         }
     }
 
+    Repeater {
+        model: node.ports
+        delegate: PortView {
+            port: modelData
+        }
+    }
+
     //! Manage node selection and position change.
     MouseArea {
         id: nodeMouseArea
