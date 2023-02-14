@@ -16,13 +16,6 @@ Flickable {
         property bool ctrlPressedAndHold: false
     }
 
-    Rectangle {
-        anchors.fill: parent
-        color: "transparent"
-        border.color: "red"
-        border.width: 10
-    }
-
     /* Object Properties
      * ****************************************************************************************/
     contentWidth: 2000

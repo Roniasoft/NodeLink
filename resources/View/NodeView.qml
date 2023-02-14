@@ -6,9 +6,11 @@ import QtQuick.Controls
  * This class show node ui.
  * ************************************************************************************************/
 Rectangle {
+    id: root
     /* Property Declarations
      * ****************************************************************************************/
     property Node node
+    property SceneManager sceneManager
 
     /* Private Property Declarations
      * ****************************************************************************************/
@@ -57,6 +59,7 @@ Rectangle {
         model: node.ports
         delegate: PortView {
             port: modelData
+            sceneManager: root.sceneManager
         }
     }
 
