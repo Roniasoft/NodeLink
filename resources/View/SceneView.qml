@@ -45,17 +45,6 @@ Flickable {
         viewHeigth: contentHeight
     }
 
-    //Draw nodes
-    Repeater {
-        model: scene.nodes
-        delegate: NodeView {
-            node: modelData
-            sceneManager: scene
-            isSelected: modelData === sceneManager.selection.selectedNode
-            onClicked: sceneManager.selection.select(modelData)
-        }
-    }
-
     //Draw connecions
     Repeater {
         model: scene.connections
@@ -88,7 +77,21 @@ Flickable {
         }
 
         onClicked: {
+            sceneManager.selection.select(null)
             sceneView.forceActiveFocus()
+        }
+    }
+
+
+
+    //Draw nodes
+    Repeater {
+        model: scene.nodes
+        delegate: NodeView {
+            node: modelData
+            sceneManager: scene
+            isSelected: modelData === sceneManager.selection.selectedNode
+            onClicked: sceneManager.selection.select(modelData)
         }
     }
 }

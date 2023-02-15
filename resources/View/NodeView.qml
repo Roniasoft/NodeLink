@@ -56,6 +56,9 @@ Rectangle {
             color: "white"
             selectByMouse: true
             text: node.title
+            smooth: true
+            antialiasing: true
+            font.bold: true
             background: Rectangle {
                 color: "transparent";
             }
@@ -78,8 +81,10 @@ Rectangle {
             delegate: PortView {
                 port: modelData
                 sceneManager: root.sceneManager
+                opacity: topPortsMouseArea.containsMouse ? 0.9 : 0
             }
         }
+
     }
 
 
@@ -95,6 +100,7 @@ Rectangle {
             delegate: PortView {
                 port: modelData
                 sceneManager: root.sceneManager
+                opacity: leftPortsMouseArea.containsMouse ? 0.9 : 0
             }
         }
     }
@@ -111,6 +117,7 @@ Rectangle {
             delegate: PortView {
                 port: modelData
                 sceneManager: root.sceneManager
+                opacity: rightPortsMouseArea.containsMouse ? 0.9 : 0
             }
         }
     }
@@ -127,6 +134,7 @@ Rectangle {
             delegate: PortView {
                 port: modelData
                 sceneManager: root.sceneManager
+                opacity: bottomPortsMouseArea.containsMouse ? 0.9 : 0
             }
         }
     }
@@ -141,7 +149,7 @@ Rectangle {
         property bool   isDraging:  false
 
         anchors.fill: parent
-        propagateComposedEvents: true
+//        propagateComposedEvents: true
         hoverEnabled: true
         preventStealing: true
         enabled: !root.edit
@@ -176,5 +184,43 @@ Rectangle {
                 prevY = mouse.y - deltaY;
             }
         }
+    }
+
+
+    MouseArea {
+        id: topPortsMouseArea
+        width: parent.width
+        hoverEnabled: true
+        height: 10
+        anchors.top: parent.top
+        anchors.topMargin: -5
+        anchors.horizontalCenter: parent.horizontalCenter
+    }
+    MouseArea {
+        id: bottomPortsMouseArea
+        width: parent.width
+        hoverEnabled: true
+        height: 10
+        anchors.bottom: parent.bottom
+        anchors.topMargin: -5
+        anchors.horizontalCenter: parent.horizontalCenter
+    }
+    MouseArea {
+        id: leftPortsMouseArea
+        width: 10
+        hoverEnabled: true
+        height: parent.height
+        anchors.left: parent.left
+        anchors.leftMargin: -5
+        anchors.verticalCenter: parent.verticalCenter
+    }
+    MouseArea {
+        id: rightPortsMouseArea
+        width: 10
+        hoverEnabled: true
+        height: parent.height
+        anchors.right: parent.right
+        anchors.rightMargin: -5
+        anchors.verticalCenter: parent.verticalCenter
     }
 }

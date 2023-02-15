@@ -11,16 +11,20 @@ Rectangle {
     /* Property Declarations
     * ****************************************************************************************/
     property Port port
+
     property SceneManager sceneManager
 
     property Port virtualPort: Port {}
+
+
     /* Object Properties
      * ****************************************************************************************/
-
     width: 10
     height: width
     radius: width
     color: port.color
+
+    Behavior on opacity {NumberAnimation{duration: 100}}
 
     MouseArea {
         anchors.fill: parent
