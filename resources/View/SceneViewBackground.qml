@@ -26,11 +26,11 @@ Item {
         privateVariable.points = [];
         var point;
         var icounter = 0;
-        while(icounter * 10 <= viewWidth) {
+        while(icounter * 20 <= viewWidth) {
             var jcounter = 0;
-            while(jcounter * 10 <= viewHeigth) {
-                privateVariable.points.push(Qt.point(icounter * 10,
-                                     jcounter * 10));
+            while(jcounter * 20 <= viewHeigth) {
+                privateVariable.points.push(Qt.point(icounter * 20,
+                                     jcounter * 20));
                 jcounter++;
             }
             icounter++;
@@ -46,6 +46,7 @@ Item {
             height: 2
             width: 2
             color: "#333333"
+            opacity: 0.5
             x: modelData.x
             y: modelData.y
         }

@@ -80,6 +80,7 @@ qt_add_qml_module(NodeLink
         resources/Core/RootNode.qml
         resources/Core/Connection.qml
         resources/Core/SceneManager.qml
+        resources/Core/SceneSelection.qml
         resources/View/SceneView.qml
         resources/View/PortView.qml
         resources/View/NodeView.qml

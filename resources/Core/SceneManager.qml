@@ -11,7 +11,10 @@ QtObject {
     /* Property Properties
      * ****************************************************************************************/
 
+    //! An array of nodes
     property var nodes: []
+
+    //! An array of connections
     property var connections: []
 
     property QtObject privateProperty: QtObject {
@@ -21,23 +24,25 @@ QtObject {
     property Node _node1: Node {
         x: 0
         y: 0
-        color: "#3b8a89"
+        color: "#8667e5"
     }
     property Node _node2: Node {
         x: 0
         y: 200
-        color: "#3a9d57"
+        color: "#53dfdd"
     }
     property Node _node3: Node {
         x: 150
         y: 25
-        color: "#6e57b8"
+        color: "#44cf6e"
     }
     property Node _node4: Node {
         x: 350
         y: 200
-        color: "#fb464c"
+        color: "#e9973f"
     }
+
+    property SceneSelection selection: SceneSelection {}
 
     Component.onCompleted: {
         nodes = nodes.concat(_node1, _node2, _node3, _node4);

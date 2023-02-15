@@ -8,22 +8,24 @@ import NodeLink
 
 Flickable {
     id: sceneView
+
     /* Property Declarations
     * ****************************************************************************************/
     property SceneManager scene
+
+    property Node selectedNode
 
     property QtObject privateProperty: QtObject {
         property bool ctrlPressedAndHold: false
     }
 
+
     /* Object Properties
      * ****************************************************************************************/
     contentWidth: 2000
     contentHeight: 2000
-
     focus:  true
 
-    onContentXChanged: console.log("ContentX", contentX)
 //    ScrollBar.vertical: ScrollBar {
 //        width: 5
 //        policy: ScrollBar.AsNeeded
@@ -49,6 +51,8 @@ Flickable {
         delegate: NodeView {
             node: modelData
             sceneManager: scene
+            isSelected: modelData === sceneManager.selection.selectedNode
+            onClicked: sceneManager.selection.select(modelData)
         }
     }
 
@@ -81,6 +85,10 @@ Flickable {
                      }
 
                      console.log(sceneView.scale)
+        }
+
+        onClicked: {
+            sceneView.forceActiveFocus()
         }
     }
 }

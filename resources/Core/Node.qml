@@ -5,26 +5,27 @@ import QtQuick 2.15
  * ************************************************************************************************/
 QtObject {
     id: root
+
     /* Property Declarations
      * ****************************************************************************************/
-    property string name:   "<unknown>"
+    property string name:       "<unknown>"
 
-    property string title: "<Unknown>"
+    property string title:      "<Unknown>"
 
-    property int x:         0
+    property int    x:          0
 
-    property int y:         0
+    property int    y:          0
 
-    property int width:     200
+    property int    width:      200
 
-    property int height:    120
+    property int    height:     120
 
-    property string color: "pink"
+    property string color:      "pink"
 
-    property int type:      NLSpec.NodeType.General
+    property int    type:       NLSpec.NodeType.General
 
     //! Port list
-    property var ports:     [_port1, _port2, _port3, _port4, _port5]
+    property var    ports:      [_port1, _port2, _port3, _port4, _port5]
 
     property QtObject privateProperty: QtObject {
         // isLoadingPorts block the onPortsChanged during position calculation process.

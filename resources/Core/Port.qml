@@ -7,9 +7,6 @@ QtObject {
     // Port ID
     property string portID: "<unknown>"
 
-    // Related node id
-//    property Node parentNode
-
     // Color of node
     property color color:   "white"
 

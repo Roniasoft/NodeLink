@@ -11,14 +11,8 @@ Rectangle {
      * ****************************************************************************************/
     property Node node
     property SceneManager sceneManager
-
-    /* Private Property Declarations
-     * ****************************************************************************************/
-    QtObject {
-        id: privateVariables
-        property bool nodeSelected: false
-    }
-
+    property bool edit: textArea.activeFocus
+    property bool isSelected: false
 
     /* Object Properties
      * ****************************************************************************************/
@@ -27,12 +21,24 @@ Rectangle {
     x: node.x
     y: node.y
     color: Qt.darker(node.color, 10)
-    border.color: privateVariables.nodeSelected ? Qt.lighter(node.color, 1.5) : node.color
-    border.width: 3
+    border.color: Qt.lighter(node.color, root.isSelected ? 1.2 : 1)
+    border.width: root.isSelected ? 4 : 3
     radius: 12
     smooth: true
     antialiasing: true
     layer.enabled: false
+
+
+    /* Signals
+     * ****************************************************************************************/
+    signal clicked();
+
+
+    onEditChanged: {
+        if (root.edit) {
+            textArea.forceActiveFocus();
+        }
+    }
 
     /* Children
     * ****************************************************************************************/
@@ -42,6 +48,7 @@ Rectangle {
         anchors.margins: 5
         ScrollBar.vertical.width: 5
         ScrollBar.horizontal.height: 5
+
         TextArea {
             id: textArea
             focus: true
@@ -52,6 +59,10 @@ Rectangle {
             background: Rectangle {
                 color: "transparent";
             }
+
+            onActiveFocusChanged:
+                if (!activeFocus)
+                    root.edit = false
         }
     }
 
@@ -109,7 +120,7 @@ Rectangle {
         anchors.bottom: parent.bottom
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.margins: -3 // we should use the size/2 of port from global style file
-        spacing: 5         // this can also be defined in the style file
+        spacing: 5          // this can also be defined in the style file
 
         Repeater {
             model: node.ports.filter(port => port.portSide === NLSpec.PortPositionSide.Bottom);
@@ -125,43 +136,45 @@ Rectangle {
     MouseArea {
         id: nodeMouseArea
 
-        property int prevX: node.x
-        property int prevY: node.y
+        property int    prevX:      node.x
+        property int    prevY:      node.y
+        property bool   isDraging:  false
 
         anchors.fill: parent
         propagateComposedEvents: true
+        hoverEnabled: true
         preventStealing: true
+        enabled: !root.edit
 
+        onDoubleClicked: {
+            root.edit = true;
+        }
 
-        onContainsMouseChanged: mouse => {
-                                    if(containsMouse)
-                                    nodeMouseArea.cursorShape = Qt.OpenHandCursor
-                                    else
-                                    nodeMouseArea.cursorShape = Qt.ArrowCursor;
-                                }
+        cursorShape: (nodeMouseArea.containsMouse && !root.edit)
+                     ? (isDraging ? Qt.ClosedHandCursor : Qt.OpenHandCursor)
+                     : Qt.ArrowCursor
 
-        onPressed: mouse => {
-                       prevX = mouse.x
-                       prevY = mouse.y
-                       privateVariables.nodeSelected = !privateVariables.nodeSelected;
-                       nodeMouseArea.cursorShape = Qt.ClosedHandCursor
+        onPressed: (mouse) => {
+            isDraging = true;
+            prevX = mouse.x;
+            prevY = mouse.y;
+            root.clicked();
+        }
 
-                   }
+        onReleased: (mouse) => {
+            isDraging = false;
+        }
 
-        onReleased: mouse => {
-                        nodeMouseArea.cursorShape = Qt.OpenHandCursor
-                    }
+        onPositionChanged: (mouse) => {
+            if (isDraging) {
+                var deltaX = mouse.x - prevX;
+                node.x += deltaX;
+                prevX = mouse.x - deltaX;
 
-        onPositionChanged: mouse => {
-                               privateVariables.nodeSelected = true
-                               var deltaX = mouse.x - prevX
-                               node.x += deltaX
-                               prevX = mouse.x - deltaX
-
-                               var deltaY = mouse.y - prevY
-                               node.y += deltaY
-                               prevY = mouse.y - deltaY
-                           }
+                var deltaY = mouse.y - prevY;
+                node.y += deltaY;
+                prevY = mouse.y - deltaY;
+            }
+        }
     }
-
 }
