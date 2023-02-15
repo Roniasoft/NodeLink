@@ -12,7 +12,7 @@ QtObject {
     //! Location of port on the node sides
     enum PortPositionSide {
         Top     = 0,
-        Botton  = 1,
+        Bottom  = 1,
         Left    = 2,
         Right   = 3
     }

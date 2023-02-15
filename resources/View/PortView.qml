@@ -16,8 +16,6 @@ Rectangle {
     property Port virtualPort: Port {}
     /* Object Properties
      * ****************************************************************************************/
-    x: port.x
-    y: port.y
 
     width: 10
     height: width

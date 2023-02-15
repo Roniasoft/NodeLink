@@ -55,13 +55,71 @@ Rectangle {
         }
     }
 
-    Repeater {
-        model: node.ports
-        delegate: PortView {
-            port: modelData
-            sceneManager: root.sceneManager
+    //! Top Ports
+    Row {
+        anchors.top: parent.top
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.margins: -3 // we should use the size/2 of port from global style file
+        spacing: 5         // this can also be defined in the style file
+
+        Repeater {
+            model: node.ports.filter(port => port.portSide === NLSpec.PortPositionSide.Top);
+            delegate: PortView {
+                port: modelData
+                sceneManager: root.sceneManager
+            }
         }
     }
+
+
+    //! Left Ports
+    Column {
+        anchors.left: parent.left
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.margins: -3 // we should use the size/2 of port from global style file
+        spacing: 5         // this can also be defined in the style file
+
+        Repeater {
+            model: node.ports.filter(port => port.portSide === NLSpec.PortPositionSide.Left);
+            delegate: PortView {
+                port: modelData
+                sceneManager: root.sceneManager
+            }
+        }
+    }
+
+    //! Right Ports
+    Column {
+        anchors.right: parent.right
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.margins: -3 // we should use the size/2 of port from global style file
+        spacing: 5         // this can also be defined in the style file
+
+        Repeater {
+            model: node.ports.filter(port => port.portSide === NLSpec.PortPositionSide.Right);
+            delegate: PortView {
+                port: modelData
+                sceneManager: root.sceneManager
+            }
+        }
+    }
+
+    //! Bottom Ports
+    Row {
+        anchors.bottom: parent.bottom
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.margins: -3 // we should use the size/2 of port from global style file
+        spacing: 5         // this can also be defined in the style file
+
+        Repeater {
+            model: node.ports.filter(port => port.portSide === NLSpec.PortPositionSide.Bottom);
+            delegate: PortView {
+                port: modelData
+                sceneManager: root.sceneManager
+            }
+        }
+    }
+
 
     //! Manage node selection and position change.
     MouseArea {
