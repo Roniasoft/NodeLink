@@ -12,7 +12,7 @@ Rectangle {
     * ****************************************************************************************/
     property Port port
 
-    property SceneManager sceneManager
+    property Scene scene
 
     property Port virtualPort: Port {}
 
@@ -41,14 +41,14 @@ Rectangle {
 ;
                                 root.port.gx = gPoint.x;
                                 root.port.gy = gPoint.y;
-                                sceneManager.createConnection(root.port, root.port);
+                                scene.createConnection(root.port, root.port);
                                 connectionCreated = true;
                             }
                             if(connectionCreated) {
                                 var gPoint2 =  mapToItem(parent.parent.parent, Qt.point(mouse.x, mouse.y));
                                 virtualPort.gx = gPoint2.x;
                                 virtualPort.gy = gPoint2.y;
-                                sceneManager.updateConnection(root.port, virtualPort)
+                                scene.updateConnection(root.port, virtualPort)
                             }
                         }
 
@@ -57,7 +57,7 @@ Rectangle {
                                    var gPoint =  mapToItem(parent.parent.parent, Qt.point(mouse.x, mouse.y));
                                    virtualPort.gx = gPoint.x;
                                    virtualPort.gy = gPoint.y;
-                                   sceneManager.updateConnection(root.port, virtualPort)
+                                   scene.updateConnection(root.port, virtualPort)
                                }
                            }
 

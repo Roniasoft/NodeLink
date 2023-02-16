@@ -10,18 +10,19 @@ Rectangle {
     /* Property Declarations
      * ****************************************************************************************/
     property Node node
-    property SceneManager sceneManager
+    property Scene scene
+    property var downstreamNodes: []
     property bool edit: textArea.activeFocus
     property bool isSelected: false
 
     /* Object Properties
      * ****************************************************************************************/
-    width: node.width
-    height: node.height
-    x: node.x
-    y: node.y
-    color: Qt.darker(node.color, 10)
-    border.color: Qt.lighter(node.color, root.isSelected ? 1.2 : 1)
+    width: node.guiConfig.width
+    height: node.guiConfig.height
+    x: node.guiConfig.position.x
+    y: node.guiConfig.position.y
+    color: Qt.darker(node.guiConfig.color, 10)
+    border.color: Qt.lighter(node.guiConfig.color, root.isSelected ? 1.2 : 1)
     border.width: root.isSelected ? 4 : 3
     radius: 12
     smooth: true
@@ -77,10 +78,10 @@ Rectangle {
         spacing: 5         // this can also be defined in the style file
 
         Repeater {
-            model: node.ports.filter(port => port.portSide === NLSpec.PortPositionSide.Top);
+            model: Object.values(node.ports).filter(port => port.portSide === NLSpec.PortPositionSide.Top);
             delegate: PortView {
                 port: modelData
-                sceneManager: root.sceneManager
+                scene: root.scene
                 opacity: topPortsMouseArea.containsMouse ? 0.9 : 0
             }
         }
@@ -96,10 +97,10 @@ Rectangle {
         spacing: 5         // this can also be defined in the style file
 
         Repeater {
-            model: node.ports.filter(port => port.portSide === NLSpec.PortPositionSide.Left);
+            model: Object.values(node.ports).filter(port => port.portSide === NLSpec.PortPositionSide.Left);
             delegate: PortView {
                 port: modelData
-                sceneManager: root.sceneManager
+                scene: root.scene
                 opacity: leftPortsMouseArea.containsMouse ? 0.9 : 0
             }
         }
@@ -113,10 +114,10 @@ Rectangle {
         spacing: 5         // this can also be defined in the style file
 
         Repeater {
-            model: node.ports.filter(port => port.portSide === NLSpec.PortPositionSide.Right);
+            model: Object.values(node.ports).filter(port => port.portSide === NLSpec.PortPositionSide.Right);
             delegate: PortView {
                 port: modelData
-                sceneManager: root.sceneManager
+                scene: root.scene
                 opacity: rightPortsMouseArea.containsMouse ? 0.9 : 0
             }
         }
@@ -130,10 +131,10 @@ Rectangle {
         spacing: 5          // this can also be defined in the style file
 
         Repeater {
-            model: node.ports.filter(port => port.portSide === NLSpec.PortPositionSide.Bottom);
+            model: Object.values(node.ports).filter(port => port.portSide === NLSpec.PortPositionSide.Bottom);
             delegate: PortView {
                 port: modelData
-                sceneManager: root.sceneManager
+                scene: root.scene
                 opacity: bottomPortsMouseArea.containsMouse ? 0.9 : 0
             }
         }
@@ -144,8 +145,8 @@ Rectangle {
     MouseArea {
         id: nodeMouseArea
 
-        property int    prevX:      node.x
-        property int    prevY:      node.y
+        property int    prevX:      node.guiConfig.position.x
+        property int    prevY:      node.guiConfig.position.y
         property bool   isDraging:  false
 
         anchors.fill: parent
@@ -176,11 +177,11 @@ Rectangle {
         onPositionChanged: (mouse) => {
             if (isDraging) {
                 var deltaX = mouse.x - prevX;
-                node.x += deltaX;
+                node.guiConfig.position.x += deltaX;
                 prevX = mouse.x - deltaX;
 
                 var deltaY = mouse.y - prevY;
-                node.y += deltaY;
+                node.guiConfig.position.y += deltaY;
                 prevY = mouse.y - deltaY;
             }
         }

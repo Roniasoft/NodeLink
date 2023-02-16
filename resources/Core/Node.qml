@@ -8,58 +8,59 @@ QtObject {
 
     /* Property Declarations
      * ****************************************************************************************/
-    property string name:       "<unknown>"
 
-    property string title:      "<Unknown>"
+    // Unique ID
+    property int            id:         0
 
-    property int    x:          0
+    //! Title
+    property string     title:      "<Unknown>"
 
-    property int    y:          0
+    //! GUI Config
+    property NodeGuiConfig  guiConfig:  NodeGuiConfig {}
 
-    property int    width:      200
-
-    property int    height:     120
-
-    property string color:      "pink"
-
-    property int    type:       NLSpec.NodeType.General
+    //! Node Type
+    property int            type:       NLSpec.NodeType.General
 
     //! Port list
-    property var    ports:      [_port1, _port2, _port3, _port4, _port5]
+    //! map<id, Port>
+    property var            ports:      ({})
 
-    property QtObject privateProperty: QtObject {
-        // isLoadingPorts block the onPortsChanged during position calculation process.
-        property bool isLoadingPorts: false
+    Component.onCompleted: {
+        addPort(_port1);
+        addPort(_port2);
+        addPort(_port3);
+        addPort(_port4);
+        addPort(_port5);
     }
 
 
 
     property Port _port1: Port {
-        portID: "port1"
+        node: root
         portType: NLSpec.PortType.Input
         portSide: NLSpec.PortPositionSide.Top
     }
 
     property Port _port2: Port {
-        portID: "port2"
+        node: root
         portType: NLSpec.PortType.Output
         portSide: NLSpec.PortPositionSide.Bottom
     }
 
     property Port _port3: Port {
-        portID: "port3"
+        node: root
         portType: NLSpec.PortType.Input
         portSide: NLSpec.PortPositionSide.Left
     }
 
     property Port _port4: Port {
-        portID: "port4"
+        node: root
         portType: NLSpec.PortType.Output
         portSide: NLSpec.PortPositionSide.Right
     }
 
     property Port _port5: Port {
-        portID: "port5"
+        node: root
         portType: NLSpec.PortType.Output
         portSide: NLSpec.PortPositionSide.Right
     }
@@ -70,7 +71,25 @@ QtObject {
 
     }
 
-    function deletePort(port: Port) {
 
+    //! Adds a node the to nodes map
+    function addPort(port) {
+        port.id = Object.keys(ports).length;    // todo: this should be fixed
+
+
+        // Add to local administration
+        ports[port.id] = port;
+        portsChanged();
+    }
+
+    function deletePort(port) {
+
+    }
+
+    function findPort(portId: int):int {
+        if (Object.keys(ports).includes(portId))
+            return ports[portId];
+
+        return null;
     }
 }

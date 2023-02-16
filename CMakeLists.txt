@@ -78,9 +78,9 @@ qt_add_qml_module(NodeLink
         resources/Core/ActionItem.qml
         resources/Core/GeneralNode.qml
         resources/Core/RootNode.qml
-        resources/Core/Connection.qml
-        resources/Core/SceneManager.qml
-        resources/Core/SceneSelection.qml
+        resources/Core/Scene.qml
+        resources/Core/SelectionModel.qml
+        resources/Core/NodeGuiConfig.qml
         resources/View/SceneView.qml
         resources/View/PortView.qml
         resources/View/NodeView.qml

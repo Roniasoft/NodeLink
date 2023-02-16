@@ -12,10 +12,10 @@ Window {
     color: "#1e1e1e"
     Material.theme: Material.Dark
     Material.accent: Material.Purple
-    property SceneManager sceneManager: SceneManager {}
+    property Scene scene: Scene {}
 
     SceneView {
-        scene: window.sceneManager
+        scene: window.scene
         anchors.fill: parent
     }
 }

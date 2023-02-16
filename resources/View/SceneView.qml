@@ -11,7 +11,7 @@ Flickable {
 
     /* Property Declarations
     * ****************************************************************************************/
-    property SceneManager scene
+    property Scene scene
 
     property Node selectedNode
 
@@ -45,14 +45,6 @@ Flickable {
         viewHeigth: contentHeight
     }
 
-    //Draw connecions
-    Repeater {
-        model: scene.connections
-        delegate: ConnectionView {
-            connection: modelData
-        }
-    }
-
 
     Keys.onPressed: event => {
             if (event.key === Qt.Key_Control) {
@@ -77,21 +69,27 @@ Flickable {
         }
 
         onClicked: {
-            sceneManager.selection.select(null)
+            scene.selectionModel.select(null)
             sceneView.forceActiveFocus()
         }
     }
 
-
+//    //Draw connecions
+//    Repeater {
+//        model: scene.connections
+//        delegate: ConnectionView {
+//            connection: modelData
+//        }
+//    }
 
     //Draw nodes
     Repeater {
-        model: scene.nodes
+        model: Object.values(scene.nodes)
         delegate: NodeView {
             node: modelData
-            sceneManager: scene
-            isSelected: modelData === sceneManager.selection.selectedNode
-            onClicked: sceneManager.selection.select(modelData)
+            scene: sceneView.scene
+            isSelected: modelData === scene.selectionModel.selectedNode
+            onClicked: scene.selectionModel.select(modelData)
         }
     }
 }
