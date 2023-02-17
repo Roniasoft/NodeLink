@@ -26,50 +26,42 @@ QtObject {
     property var            ports:      ({})
 
     Component.onCompleted: {
+        let _port1 = NLCore.createPort();
+        let _port2 = NLCore.createPort();
+        let _port3 = NLCore.createPort();
+        let _port4 = NLCore.createPort();
+        let _port5 = NLCore.createPort();
+        let _port6 = NLCore.createPort();
+
+        _port1.portType = NLSpec.PortType.Input
+        _port1.portSide = NLSpec.PortPositionSide.Top
+
+        _port2.portType = NLSpec.PortType.Output
+        _port2.portSide = NLSpec.PortPositionSide.Bottom
+
+        _port3.portType = NLSpec.PortType.Input
+        _port3.portSide = NLSpec.PortPositionSide.Left
+
+        _port4.portType = NLSpec.PortType.Output
+        _port4.portSide = NLSpec.PortPositionSide.Right
+
+        _port5.portType = NLSpec.PortType.Output
+        _port5.portSide = NLSpec.PortPositionSide.Right
+
+        _port6.portType = NLSpec.PortType.Output
+        _port6.portSide = NLSpec.PortPositionSide.Right
+
         addPort(_port1);
         addPort(_port2);
         addPort(_port3);
         addPort(_port4);
         addPort(_port5);
-    }
-
-
-
-    property Port _port1: Port {
-        node: root
-        portType: NLSpec.PortType.Input
-        portSide: NLSpec.PortPositionSide.Top
-    }
-
-    property Port _port2: Port {
-        node: root
-        portType: NLSpec.PortType.Output
-        portSide: NLSpec.PortPositionSide.Bottom
-    }
-
-    property Port _port3: Port {
-        node: root
-        portType: NLSpec.PortType.Input
-        portSide: NLSpec.PortPositionSide.Left
-    }
-
-    property Port _port4: Port {
-        node: root
-        portType: NLSpec.PortType.Output
-        portSide: NLSpec.PortPositionSide.Right
-    }
-
-    property Port _port5: Port {
-        node: root
-        portType: NLSpec.PortType.Output
-        portSide: NLSpec.PortPositionSide.Right
+        addPort(_port6);
     }
 
     /* Functions
      * ****************************************************************************************/
-    function createPort() {
 
-    }
 
 
     //! Adds a node the to nodes map

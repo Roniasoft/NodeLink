@@ -12,7 +12,7 @@ Window {
     color: "#1e1e1e"
     Material.theme: Material.Dark
     Material.accent: Material.Purple
-    property Scene scene: Scene {}
+    property Scene scene: NLCore.scene
 
     SceneView {
         scene: window.scene

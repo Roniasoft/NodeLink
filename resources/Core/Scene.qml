@@ -52,7 +52,7 @@ QtObject {
         addNode(_node4);
 
         // example link
-//        linkNodes(_node1._port1, _node2._port3);
+        linkNodes(_node1._port1, _node2._port3);
     }
 
     /* Functions
@@ -81,8 +81,7 @@ QtObject {
     //! Link two nodes (via their ports) - portA is the upstream and portB the downstream one
     function linkNodes(portA : Port, portB : Port) {
         if (!canLinkNodes(portA, portB)) {
-            console.error("[Scene] Cannot link Node " + machineA.guiConfig.name +
-                          " to " + machineB.guiConfig.name + " -- violates line rules!")
+            console.error("[Scene] Cannot link Nodes ");
             return;
         }
 
@@ -105,6 +104,9 @@ QtObject {
     function canLinkNodes(portA : Port, portB : Port): bool {
         var nodeA = findNodeId(portA);
         var nodeB = findNodeId(portB);
+
+        console.log("nodeA: " + nodeA);
+        console.log("nodeB: " + nodeB);
 
         if (nodeA === nodeB || nodeA === -1 || nodeB === -1)
             return false;

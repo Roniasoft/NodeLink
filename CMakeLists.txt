@@ -66,11 +66,20 @@ set(QT_QML_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/qml)
 # Library Definition
 qt_add_library(NodeLink STATIC)
 
+# Extra QML File properties
+set_source_files_properties(
+    resources/Core/NLCore.qml
+    resources/Core/NLSpec.qml
+    PROPERTIES
+        QT_QML_SINGLETON_TYPE True
+)
+
 qt_add_qml_module(NodeLink
     URI "NodeLink"
     VERSION 1.0
 
     QML_FILES
+        resources/Core/NLCore.qml
         resources/Core/NLSpec.qml
         resources/Core/Node.qml
         resources/Core/Action.qml
