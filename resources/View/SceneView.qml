@@ -26,15 +26,15 @@ Flickable {
     contentHeight: 2000
     focus:  true
 
-//    ScrollBar.vertical: ScrollBar {
-//        width: 5
-//        policy: ScrollBar.AsNeeded
-//    }
+    ScrollBar.vertical: ScrollBar {
+        width: 5
+        policy: ScrollBar.AsNeeded
+    }
 
-//    ScrollBar.horizontal: ScrollBar {
-//        height: 5
-////        policy: ScrollBar.AsNeeded
-//    }
+    ScrollBar.horizontal: ScrollBar {
+        height: 5
+        policy: ScrollBar.AsNeeded
+    }
 
     /* Children
     * ****************************************************************************************/
@@ -74,15 +74,7 @@ Flickable {
         }
     }
 
-//    //Draw connecions
-//    Repeater {
-//        model: scene.connections
-//        delegate: ConnectionView {
-//            connection: modelData
-//        }
-//    }
-
-    //Draw nodes
+    // Draw nodes
     Repeater {
         model: Object.values(scene.nodes)
         delegate: NodeView {

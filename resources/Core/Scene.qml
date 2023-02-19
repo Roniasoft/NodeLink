@@ -12,15 +12,15 @@ QtObject {
 
     //! Nodes
     //! map<id, Node>
-    property var nodes: ({})
+    property var nodes:             ({})
 
     //! Container of Node line links A -> { B, C }
     //! map<Current Node port id, Dest port id>
-    property var            nodesUpstream: ({})
+    property var portsUpstream:     ({})
 
     //! Container of Node line links Z -> { X, Y }
     //! map<Current Node port id, Dest port id>
-    property var            nodesDownstream: ({})
+    property var portsDownstream:   ({})
 
     //! Example Nodes
     property Node _node1: Node {
@@ -50,9 +50,16 @@ QtObject {
         addNode(_node2);
         addNode(_node3);
         addNode(_node4);
+    }
 
-        // example link
-        linkNodes(_node1._port1, _node2._port3);
+    property Timer _tier: Timer {
+        interval: 300
+        repeat: false
+        running: true
+        onTriggered: {
+            // example link
+            linkNodes(Object.keys(_node1.ports)[0], Object.keys(_node2.ports)[2]);
+        }
     }
 
     /* Functions
@@ -69,39 +76,44 @@ QtObject {
         nodes[node.id] = node;
         nodesChanged();
 
+        node.onPortAdded.connect(onPortAdded);
+    }
+
+    //! On port added
+    function onPortAdded(portId) {
         // Create upstream links
-        nodesUpstream[node.id] = [];
-        nodesUpstreamChanged();
+        portsUpstream[portId] = [];
+        portsUpstreamChanged();
 
         // Create downstream links
-        nodesDownstream[node.id] = [];
-        nodesDownstreamChanged();
+        portsDownstream[portId] = [];
+        portsDownstreamChanged();
     }
 
     //! Link two nodes (via their ports) - portA is the upstream and portB the downstream one
-    function linkNodes(portA : Port, portB : Port) {
+    function linkNodes(portA : int, portB : int) {
         if (!canLinkNodes(portA, portB)) {
             console.error("[Scene] Cannot link Nodes ");
             return;
         }
 
         // Only add if not already there
-        if (!nodesDownstream[portA.id].includes(portB.id)) {
-            nodesDownstream[portA.id].push(portB.id);
-            nodesDownstreamChanged();
+        if (!portsDownstream[portA]?.includes(portB)) {
+            portsDownstream[portA].push(portB);
+            portsDownstreamChanged();
         }
 
         // Only add if not already there
-        if (!nodesUpstream[portB.id].includes(portA.id)) {
-            nodesUpstream[portB.id].push(portA.id);
-            nodesUpstreamChanged();
+        if (!portsUpstream[portB]?.includes(portA)) {
+            portsUpstream[portB].push(portA);
+            portsUpstreamChanged();
         }
     }
 
     function unlinkNodes(portA : Port, portB : Port) {
     }
 
-    function canLinkNodes(portA : Port, portB : Port): bool {
+    function canLinkNodes(portA : int, portB : int): bool {
         var nodeA = findNodeId(portA);
         var nodeB = findNodeId(portB);
 
@@ -115,10 +127,13 @@ QtObject {
     }
 
     function findNodeId(portId: int): int {
+        let foundNode = -1;
         Object.values(nodes).find(node => {
-            if (node.findPort(portId) !== null)
-                return node.id;
+            if (node.findPort(portId) !== null) {
+                console.log("node index: " + node.id);
+                foundNode = node.id;
+            }
         });
-        return -1;
+        return foundNode;
     }
 }

@@ -29,6 +29,7 @@ QtObject {
         obj.id = core._internal.portCounter;
         return obj;
     }
+
     function createNode() {
         let obj = Qt.createQmlObject("import NodeLink;" + "Node" + "{}", core);
         return obj;

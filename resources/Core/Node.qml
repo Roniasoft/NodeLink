@@ -13,7 +13,7 @@ QtObject {
     property int            id:         0
 
     //! Title
-    property string     title:      "<Unknown>"
+    property string         title:      "<Unknown>"
 
     //! GUI Config
     property NodeGuiConfig  guiConfig:  NodeGuiConfig {}
@@ -24,6 +24,11 @@ QtObject {
     //! Port list
     //! map<id, Port>
     property var            ports:      ({})
+
+
+    /* Signals
+     * ****************************************************************************************/
+    signal portAdded(var portId);
 
     Component.onCompleted: {
         let _port1 = NLCore.createPort();
@@ -66,21 +71,21 @@ QtObject {
 
     //! Adds a node the to nodes map
     function addPort(port) {
-        port.id = Object.keys(ports).length;    // todo: this should be fixed
-
-
         // Add to local administration
         ports[port.id] = port;
         portsChanged();
+
+        portAdded(port.id);
     }
 
     function deletePort(port) {
 
     }
 
-    function findPort(portId: int):int {
-        if (Object.keys(ports).includes(portId))
+    function findPort(portId: int): Port {
+        if (Object.keys(ports).includes(portId)) {
             return ports[portId];
+        }
 
         return null;
     }
