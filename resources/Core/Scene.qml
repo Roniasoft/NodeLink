@@ -22,6 +22,10 @@ QtObject {
     //! map<Current Node port id, Dest port id>
     property var portsDownstream:   ({})
 
+    //! Port positions (global)
+    //! map<port id: int, global pos: point>
+    property var portsPositions:    ({})
+
     //! Example Nodes
     property Node _node1: Node {
         guiConfig.position: Qt.vector2d(0, 0)
@@ -59,6 +63,8 @@ QtObject {
         onTriggered: {
             // example link
             linkNodes(Object.keys(_node1.ports)[0], Object.keys(_node2.ports)[2]);
+            linkNodes(Object.keys(_node1.ports)[1], Object.keys(_node3.ports)[3]);
+            linkNodes(Object.keys(_node1.ports)[2], Object.keys(_node4.ports)[3]);
         }
     }
 
@@ -81,6 +87,7 @@ QtObject {
 
     //! On port added
     function onPortAdded(portId) {
+
         // Create upstream links
         portsUpstream[portId] = [];
         portsUpstreamChanged();
@@ -88,6 +95,10 @@ QtObject {
         // Create downstream links
         portsDownstream[portId] = [];
         portsDownstreamChanged();
+
+        // Add an empty position index
+        portsPositions[portId] = Qt.point(0,0);
+        portsPositionsChanged();
     }
 
     //! Link two nodes (via their ports) - portA is the upstream and portB the downstream one
@@ -117,9 +128,6 @@ QtObject {
         var nodeA = findNodeId(portA);
         var nodeB = findNodeId(portB);
 
-        console.log("nodeA: " + nodeA);
-        console.log("nodeB: " + nodeB);
-
         if (nodeA === nodeB || nodeA === -1 || nodeB === -1)
             return false;
 
@@ -130,7 +138,6 @@ QtObject {
         let foundNode = -1;
         Object.values(nodes).find(node => {
             if (node.findPort(portId) !== null) {
-                console.log("node index: " + node.id);
                 foundNode = node.id;
             }
         });

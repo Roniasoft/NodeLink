@@ -6,14 +6,19 @@ import QtQuick.Controls
  * This class show node ui.
  * ************************************************************************************************/
 Rectangle {
-    id: root
+    id: nodeView
+
     /* Property Declarations
      * ****************************************************************************************/
-    property Node node
-    property Scene scene
-    property var downstreamNodes: []
-    property bool edit: textArea.activeFocus
-    property bool isSelected: false
+    property Node   node
+
+    property Scene  scene
+
+    property var    downstreamNodes: []
+
+    property bool   edit:            textArea.activeFocus
+
+    property bool   isSelected:      false
 
     /* Object Properties
      * ****************************************************************************************/
@@ -22,8 +27,8 @@ Rectangle {
     x: node.guiConfig.position.x
     y: node.guiConfig.position.y
     color: Qt.darker(node.guiConfig.color, 10)
-    border.color: Qt.lighter(node.guiConfig.color, root.isSelected ? 1.2 : 1)
-    border.width: root.isSelected ? 4 : 3
+    border.color: Qt.lighter(node.guiConfig.color, nodeView.isSelected ? 1.2 : 1)
+    border.width: nodeView.isSelected ? 4 : 3
     radius: 12
     smooth: true
     antialiasing: true
@@ -36,7 +41,7 @@ Rectangle {
 
 
     onEditChanged: {
-        if (root.edit) {
+        if (nodeView.edit) {
             textArea.forceActiveFocus();
         }
     }
@@ -66,7 +71,7 @@ Rectangle {
 
             onActiveFocusChanged:
                 if (!activeFocus)
-                    root.edit = false
+                    nodeView.edit = false
         }
     }
 
@@ -81,7 +86,8 @@ Rectangle {
             model: Object.values(node.ports).filter(port => port.portSide === NLSpec.PortPositionSide.Top);
             delegate: PortView {
                 port: modelData
-                scene: root.scene
+                flickable: flickable
+                scene: nodeView.scene
                 opacity: topPortsMouseArea.containsMouse ? 0.9 : 0
             }
         }
@@ -100,7 +106,8 @@ Rectangle {
             model: Object.values(node.ports).filter(port => port.portSide === NLSpec.PortPositionSide.Left);
             delegate: PortView {
                 port: modelData
-                scene: root.scene
+                flickable: flickable
+                scene: nodeView.scene
                 opacity: leftPortsMouseArea.containsMouse ? 0.9 : 0
             }
         }
@@ -117,7 +124,8 @@ Rectangle {
             model: Object.values(node.ports).filter(port => port.portSide === NLSpec.PortPositionSide.Right);
             delegate: PortView {
                 port: modelData
-                scene: root.scene
+                flickable: flickable
+                scene: nodeView.scene
                 opacity: rightPortsMouseArea.containsMouse ? 0.9 : 0
             }
         }
@@ -134,7 +142,8 @@ Rectangle {
             model: Object.values(node.ports).filter(port => port.portSide === NLSpec.PortPositionSide.Bottom);
             delegate: PortView {
                 port: modelData
-                scene: root.scene
+                flickable: flickable
+                scene: nodeView.scene
                 opacity: bottomPortsMouseArea.containsMouse ? 0.9 : 0
             }
         }
@@ -153,13 +162,13 @@ Rectangle {
 //        propagateComposedEvents: true
         hoverEnabled: true
         preventStealing: true
-        enabled: !root.edit
+        enabled: !nodeView.edit
 
         onDoubleClicked: {
-            root.edit = true;
+            nodeView.edit = true;
         }
 
-        cursorShape: (nodeMouseArea.containsMouse && !root.edit)
+        cursorShape: (nodeMouseArea.containsMouse && !nodeView.edit)
                      ? (isDraging ? Qt.ClosedHandCursor : Qt.OpenHandCursor)
                      : Qt.ArrowCursor
 
@@ -167,7 +176,7 @@ Rectangle {
             isDraging = true;
             prevX = mouse.x;
             prevY = mouse.y;
-            root.clicked();
+            nodeView.clicked();
         }
 
         onReleased: (mouse) => {

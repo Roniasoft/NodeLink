@@ -7,7 +7,7 @@ import NodeLink
  * ************************************************************************************************/
 
 Flickable {
-    id: sceneView
+    id: flickable
 
     /* Property Declarations
     * ****************************************************************************************/
@@ -60,17 +60,17 @@ Flickable {
                      if(!privateProperty.ctrlPressedAndHold)
                      return;
                      if(wheel.angleDelta.y > 0)
-                     sceneView.scale += 0.1;
-                     else if (sceneView.scale > 0.5) {
-                        sceneView.scale -= 0.1;
+                     flickable.scale += 0.1;
+                     else if (flickable.scale > 0.5) {
+                        flickable.scale -= 0.1;
                      }
 
-                     console.log(sceneView.scale)
+                     console.log(flickable.scale)
         }
 
         onClicked: {
             scene.selectionModel.select(null)
-            sceneView.forceActiveFocus()
+            flickable.forceActiveFocus()
         }
     }
 
@@ -79,9 +79,18 @@ Flickable {
         model: Object.values(scene.nodes)
         delegate: NodeView {
             node: modelData
-            scene: sceneView.scene
+            scene: flickable.scene
             isSelected: modelData === scene.selectionModel.selectedNode
             onClicked: scene.selectionModel.select(modelData)
         }
     }
+
+    Repeater {
+        model: Object.entries(scene.portsDownstream).filter(([key, value]) => value.length > 0)
+        delegate: ConnectionView {
+            startPos: scene.portsPositions[modelData[0]]
+            endPos: scene.portsPositions[modelData[1]]
+        }
+    }
+
 }

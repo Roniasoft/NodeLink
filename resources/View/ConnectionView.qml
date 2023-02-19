@@ -5,7 +5,9 @@ import QtQuick.Shapes
 Shape {
     /* Property Declarations
     * ****************************************************************************************/
-    property Connection connection
+    property point startPos
+
+    property point endPos
 
     antialiasing: true
     smooth: true
@@ -16,8 +18,8 @@ Shape {
     ShapePath {
         id: path
 
-        startX: connection.inputPort.gx
-        startY: connection.inputPort.gy
+        startX: startPos.x
+        startY: startPos.y
 
         strokeWidth: 2
         strokeColor: "green"
@@ -31,25 +33,23 @@ Shape {
 
         PathCurve {
             id: endPoint
-            x: connection.outputPort.gx
-            y: connection.outputPort.gy
-
-            onXChanged: console.log("connection.outputPort.y", connection.outputPort.y)
+            x: endPos.x
+            y: endPos.y
         }
     }
 
-    MouseArea {
-        anchors.fill: parent
-        propagateComposedEvents: true
-        preventStealing: true
-        onClicked: mouse => {
-                       endPoint.x = mouse.x;
-                       endPoint.y = mouse.y;
-                   }
+//    MouseArea {
+//        anchors.fill: parent
+//        propagateComposedEvents: true
+//        preventStealing: true
+//        onClicked: mouse => {
+//                       endPoint.x = mouse.x;
+//                       endPoint.y = mouse.y;
+//                   }
 
-        onPositionChanged: mouse => {
-                               endPoint.x = mouse.x;
-                               endPoint.y = mouse.y;
-                           }
-    }
+//        onPositionChanged: mouse => {
+//                               endPoint.x = mouse.x;
+//                               endPoint.y = mouse.y;
+//                           }
+//    }
 }
