@@ -197,40 +197,134 @@ Rectangle {
     }
 
 
+    //! todo: encapsulate these mouse areas
     MouseArea {
         id: topPortsMouseArea
         width: parent.width
         hoverEnabled: true
         height: 10
+        cursorShape: Qt.SizeVerCursor
         anchors.top: parent.top
         anchors.topMargin: -5
         anchors.horizontalCenter: parent.horizontalCenter
+        preventStealing: true
+
+        property bool   isDraging:  false
+        property int    prevY:      0
+
+        onPressed: (mouse)=> {
+            isDraging = true;
+            prevY = mouse.y;
+        }
+
+        onReleased: {
+            isDraging = false;
+        }
+
+        onPositionChanged: (mouse)=> {
+            if (isDraging) {
+                var deltaY = mouse.y - prevY;
+                node.guiConfig.position.y += deltaY;
+                node.guiConfig.height -= deltaY
+                prevY = mouse.y - deltaY;
+            }
+        }
     }
+
     MouseArea {
         id: bottomPortsMouseArea
         width: parent.width
         hoverEnabled: true
         height: 10
+        cursorShape: Qt.SizeVerCursor
         anchors.bottom: parent.bottom
         anchors.topMargin: -5
         anchors.horizontalCenter: parent.horizontalCenter
+        preventStealing: true
+
+        property bool   isDraging:  false
+        property int    prevY:      0
+
+        onPressed: (mouse)=> {
+            isDraging = true;
+            prevY = mouse.y;
+        }
+
+        onReleased: {
+            isDraging = false;
+        }
+
+        onPositionChanged: (mouse)=> {
+            if (isDraging) {
+                var deltaY = mouse.y - prevY;
+                node.guiConfig.height += deltaY
+                prevY = mouse.y - deltaY;
+            }
+        }
     }
+
     MouseArea {
         id: leftPortsMouseArea
         width: 10
+        cursorShape: Qt.SizeHorCursor
         hoverEnabled: true
         height: parent.height
         anchors.left: parent.left
         anchors.leftMargin: -5
         anchors.verticalCenter: parent.verticalCenter
+        preventStealing: true
+
+        property bool   isDraging:  false
+        property int    prevX:      0
+
+        onPressed: (mouse)=> {
+            isDraging = true;
+            prevX = mouse.x;
+        }
+
+        onReleased: {
+            isDraging = false;
+        }
+
+        onPositionChanged: (mouse)=> {
+            if (isDraging) {
+                var deltaX = mouse.x - prevX;
+                node.guiConfig.position.x += deltaX;
+                node.guiConfig.width -= deltaX
+                prevX = mouse.x - deltaX;
+            }
+        }
     }
+
     MouseArea {
         id: rightPortsMouseArea
         width: 10
+        cursorShape: Qt.SizeHorCursor
         hoverEnabled: true
         height: parent.height
         anchors.right: parent.right
         anchors.rightMargin: -5
         anchors.verticalCenter: parent.verticalCenter
+        preventStealing: true
+
+        property bool   isDraging:  false
+        property int    prevX:      0
+
+        onPressed: (mouse)=> {
+            isDraging = true;
+            prevX = mouse.x;
+        }
+
+        onReleased: {
+            isDraging = false;
+        }
+
+        onPositionChanged: (mouse)=> {
+            if (isDraging) {
+                var deltaX = mouse.x - prevX;
+                node.guiConfig.width += deltaX
+                prevX = mouse.x - deltaX;
+            }
+        }
     }
 }

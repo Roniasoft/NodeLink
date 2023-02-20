@@ -28,19 +28,19 @@ QtObject {
 
     //! Example Nodes
     property Node _node1: Node {
-        guiConfig.position: Qt.vector2d(0, 0)
+        guiConfig.position: Qt.point(0, 0)
         guiConfig.color: "#8667e5"
     }
     property Node _node2: Node {
-        guiConfig.position: Qt.vector2d(0, 200)
+        guiConfig.position: Qt.point(0, 200)
         guiConfig.color: "#53dfdd"
     }
     property Node _node3: Node {
-        guiConfig.position: Qt.vector2d(150, 25)
+        guiConfig.position: Qt.point(150, 25)
         guiConfig.color: "#44cf6e"
     }
     property Node _node4: Node {
-        guiConfig.position: Qt.vector2d(350, 200)
+        guiConfig.position: Qt.point(350, 200)
         guiConfig.color: "#e9973f"
     }
 
