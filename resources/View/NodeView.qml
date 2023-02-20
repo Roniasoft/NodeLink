@@ -77,6 +77,7 @@ Rectangle {
 
     //! Top Ports
     Row {
+        id: topRow
         anchors.top: parent.top
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.margins: -(NLStyle.portView.size + NLStyle.portView.borderSize - nodeView.border.width) / 2 // we should use the size/2 of port from global style file
@@ -89,14 +90,16 @@ Rectangle {
                 flickable: flickable
                 scene: nodeView.scene
                 opacity: topPortsMouseArea.containsMouse ? 1 : 0
+                globalX: nodeView.x + topRow.x + mapToItem(topRow, Qt.point(x, y)).x
+                globalY: nodeView.y + topRow.y + mapToItem(topRow, Qt.point(x, y)).y
             }
         }
-
     }
 
 
     //! Left Ports
     Column {
+        id: leftColumn
         anchors.left: parent.left
         anchors.verticalCenter: parent.verticalCenter
         anchors.margins: -(NLStyle.portView.size + NLStyle.portView.borderSize - nodeView.border.width) / 2 // we should use the size/2 of port from global style file
@@ -109,12 +112,15 @@ Rectangle {
                 flickable: flickable
                 scene: nodeView.scene
                 opacity: leftPortsMouseArea.containsMouse ? 1 : 0
+                globalX: nodeView.x + leftColumn.x + mapToItem(leftColumn, Qt.point(x, y)).x
+                globalY: nodeView.y + leftColumn.y + mapToItem(leftColumn, Qt.point(x, y)).y
             }
         }
     }
 
     //! Right Ports
     Column {
+        id: rightColumn
         anchors.right: parent.right
         anchors.verticalCenter: parent.verticalCenter
         anchors.margins: -(NLStyle.portView.size + NLStyle.portView.borderSize - nodeView.border.width) / 2 // we should use the size/2 of port from global style file
@@ -127,12 +133,15 @@ Rectangle {
                 flickable: flickable
                 scene: nodeView.scene
                 opacity: rightPortsMouseArea.containsMouse ? 1 : 0
+                globalX: nodeView.x + rightColumn.x + mapToItem(rightColumn, Qt.point(x, y)).x
+                globalY: nodeView.y + rightColumn.y + mapToItem(rightColumn, Qt.point(x, y)).y
             }
         }
     }
 
     //! Bottom Ports
     Row {
+        id: bottomRow
         anchors.bottom: parent.bottom
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.margins: -(NLStyle.portView.size + NLStyle.portView.borderSize - nodeView.border.width) / 2 // we should use the size/2 of port from global style file
@@ -145,6 +154,8 @@ Rectangle {
                 flickable: flickable
                 scene: nodeView.scene
                 opacity: bottomPortsMouseArea.containsMouse ? 1 : 0
+                globalX: nodeView.x + bottomRow.x + mapToItem(bottomRow, Qt.point(x, y)).x
+                globalY: nodeView.y + bottomRow.y + mapToItem(bottomRow, Qt.point(x, y)).y
             }
         }
     }

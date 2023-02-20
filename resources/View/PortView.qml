@@ -18,9 +18,11 @@ Rectangle {
 
     property Port       virtualPort:    Port {}
 
-    property int        globalX:        nodeView.x + mapToItem(nodeView, Qt.point(x, y)).x
+    // nodeViewPositions;nodeViewSizes;itemPosRelativetoNodeView;....
 
-    property int        globalY:        nodeView.y + mapToItem(nodeView, Qt.point(x, y)).y
+    property int        globalX
+
+    property int        globalY
 
     property point      globalPos:      Qt.point(globalX, globalY)
 
