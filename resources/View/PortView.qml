@@ -24,19 +24,19 @@ Rectangle {
 
     property point      globalPos:      Qt.point(globalX, globalY)
 
-
     onGlobalPosChanged: {
         scene.portsPositions[port.id] = globalPos;
         scene.portsPositionsChanged();
     }
 
-
     /* Object Properties
      * ****************************************************************************************/
-    width: 10
+    width: NLStyle.portView.size
+    border.width: NLStyle.portView.borderSize
     height: width
     radius: width
-    color: port.color
+    color: "#8b6cef"
+    border.color: "#363636"
 
     Behavior on opacity {NumberAnimation{duration: 100}}
 

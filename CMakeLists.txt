@@ -70,6 +70,7 @@ qt_add_library(NodeLink STATIC)
 set_source_files_properties(
     resources/Core/NLCore.qml
     resources/Core/NLSpec.qml
+    resources/View/NLStyle.qml
     PROPERTIES
         QT_QML_SINGLETON_TYPE True
 )
@@ -91,6 +92,7 @@ qt_add_qml_module(NodeLink
         resources/Core/SelectionModel.qml
         resources/Core/NodeGuiConfig.qml
         resources/View/SceneView.qml
+        resources/View/NLStyle.qml
         resources/View/PortView.qml
         resources/View/NodeView.qml
         resources/View/ConnectionView.qml    

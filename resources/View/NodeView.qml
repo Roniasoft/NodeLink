@@ -79,7 +79,7 @@ Rectangle {
     Row {
         anchors.top: parent.top
         anchors.horizontalCenter: parent.horizontalCenter
-        anchors.margins: -3 // we should use the size/2 of port from global style file
+        anchors.margins: -(NLStyle.portView.size + NLStyle.portView.borderSize - nodeView.border.width) / 2 // we should use the size/2 of port from global style file
         spacing: 5         // this can also be defined in the style file
 
         Repeater {
@@ -88,7 +88,7 @@ Rectangle {
                 port: modelData
                 flickable: flickable
                 scene: nodeView.scene
-                opacity: topPortsMouseArea.containsMouse ? 0.9 : 0
+                opacity: topPortsMouseArea.containsMouse ? 1 : 0
             }
         }
 
@@ -99,7 +99,7 @@ Rectangle {
     Column {
         anchors.left: parent.left
         anchors.verticalCenter: parent.verticalCenter
-        anchors.margins: -3 // we should use the size/2 of port from global style file
+        anchors.margins: -(NLStyle.portView.size + NLStyle.portView.borderSize - nodeView.border.width) / 2 // we should use the size/2 of port from global style file
         spacing: 5         // this can also be defined in the style file
 
         Repeater {
@@ -108,7 +108,7 @@ Rectangle {
                 port: modelData
                 flickable: flickable
                 scene: nodeView.scene
-                opacity: leftPortsMouseArea.containsMouse ? 0.9 : 0
+                opacity: leftPortsMouseArea.containsMouse ? 1 : 0
             }
         }
     }
@@ -117,7 +117,7 @@ Rectangle {
     Column {
         anchors.right: parent.right
         anchors.verticalCenter: parent.verticalCenter
-        anchors.margins: -3 // we should use the size/2 of port from global style file
+        anchors.margins: -(NLStyle.portView.size + NLStyle.portView.borderSize - nodeView.border.width) / 2 // we should use the size/2 of port from global style file
         spacing: 5         // this can also be defined in the style file
 
         Repeater {
@@ -126,7 +126,7 @@ Rectangle {
                 port: modelData
                 flickable: flickable
                 scene: nodeView.scene
-                opacity: rightPortsMouseArea.containsMouse ? 0.9 : 0
+                opacity: rightPortsMouseArea.containsMouse ? 1 : 0
             }
         }
     }
@@ -135,7 +135,7 @@ Rectangle {
     Row {
         anchors.bottom: parent.bottom
         anchors.horizontalCenter: parent.horizontalCenter
-        anchors.margins: -3 // we should use the size/2 of port from global style file
+        anchors.margins: -(NLStyle.portView.size + NLStyle.portView.borderSize - nodeView.border.width) / 2 // we should use the size/2 of port from global style file
         spacing: 5          // this can also be defined in the style file
 
         Repeater {
@@ -144,7 +144,7 @@ Rectangle {
                 port: modelData
                 flickable: flickable
                 scene: nodeView.scene
-                opacity: bottomPortsMouseArea.containsMouse ? 0.9 : 0
+                opacity: bottomPortsMouseArea.containsMouse ? 1 : 0
             }
         }
     }
@@ -198,14 +198,15 @@ Rectangle {
 
 
     //! todo: encapsulate these mouse areas
+    //! Top Side Mouse Area
     MouseArea {
         id: topPortsMouseArea
         width: parent.width
         hoverEnabled: true
-        height: 10
+        height: 20
         cursorShape: Qt.SizeVerCursor
         anchors.top: parent.top
-        anchors.topMargin: -5
+        anchors.topMargin: -10
         anchors.horizontalCenter: parent.horizontalCenter
         preventStealing: true
 
@@ -231,14 +232,15 @@ Rectangle {
         }
     }
 
+    //! Bottom Side Mouse Area
     MouseArea {
         id: bottomPortsMouseArea
         width: parent.width
         hoverEnabled: true
-        height: 10
+        height: 20
         cursorShape: Qt.SizeVerCursor
         anchors.bottom: parent.bottom
-        anchors.topMargin: -5
+        anchors.topMargin: -10
         anchors.horizontalCenter: parent.horizontalCenter
         preventStealing: true
 
@@ -263,14 +265,15 @@ Rectangle {
         }
     }
 
+    //! Left Side Mouse Area
     MouseArea {
         id: leftPortsMouseArea
-        width: 10
+        width: 20
         cursorShape: Qt.SizeHorCursor
         hoverEnabled: true
         height: parent.height
         anchors.left: parent.left
-        anchors.leftMargin: -5
+        anchors.leftMargin: -10
         anchors.verticalCenter: parent.verticalCenter
         preventStealing: true
 
@@ -296,14 +299,15 @@ Rectangle {
         }
     }
 
+    //! Right Side Mouse Area
     MouseArea {
         id: rightPortsMouseArea
-        width: 10
+        width: 20
         cursorShape: Qt.SizeHorCursor
         hoverEnabled: true
         height: parent.height
         anchors.right: parent.right
-        anchors.rightMargin: -5
+        anchors.rightMargin: -10
         anchors.verticalCenter: parent.verticalCenter
         preventStealing: true
 
