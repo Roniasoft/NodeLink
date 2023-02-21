@@ -24,6 +24,7 @@ QtObject {
     //! Port list
     //! map<id, Port>
     property var            ports:      ({})
+    property bool           justRead:   false
 
 
     /* Signals

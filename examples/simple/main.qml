@@ -10,6 +10,7 @@ Window {
     visible: true
     title: qsTr("Simple NodeLink Example")
     color: "#1e1e1e"
+
     Material.theme: Material.Dark
     Material.accent: Material.Purple
     property Scene scene: NLCore.scene

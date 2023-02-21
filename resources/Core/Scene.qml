@@ -77,27 +77,25 @@ QtObject {
     property int count : 0
     //! Adds a node the to nodes map
     function addNode(node: Node) {
-//        node.id = Object.keys(nodes).length;  // move this to fun createNode
-        node.id = count + 2;
-        count = count + 2;
-        // Sanity check
-//        if (nodes[node.id] === node) { return; }
+        node.id = Object.keys(nodes).length;  // move this to fun createNode
+//        node.id = count + 2;
+//        count = count + 2;
+        //Sanity check
+        if (nodes[node.id] === node) { return; }
 
         // Add to local administration
         nodes[node.id] = node;
         nodesChanged();
 
-        var keys = Object.keys(nodes);
-        for (var i = 0; i < keys.length; i++) {
-            console.log(" index is: "+ i +" id is: "+ keys[i] +" node is: "+nodes[keys[i]]);
-        }
+//        var keys = Object.keys(nodes);
+//        for (var i = 0; i < keys.length; i++) {
+//            console.log(" index is: "+ i +" id is: "+ keys[i] +" node is: "+nodes[keys[i]]);
+//        }
 
         node.onPortAdded.connect(onPortAdded);
 
     }
     function deleteNode(x) {
-
-        console.log(Object.keys(nodes).length)
         var keys = Object.keys(nodes);
         for(var i=0; i<keys.length; i++){
 //            console.log("X is: "+x+" id is: "+keys[i]);
@@ -107,6 +105,23 @@ QtObject {
                 nodesChanged();
             }
         }
+    }
+    //this function is to duplicate chosen card
+    //input arguements are cards' properties. the new card is placed 50 pixels
+    //away from the lower right corner of the copied card
+    function duplicate (title, x, y, zcolor, id, justRead){
+
+        var node = NLCore.createNode();
+        node.guiConfig.position.x = x+50
+        node.guiConfig.position.y = y+50
+        node.guiConfig.color = zcolor
+
+
+        node.title = title
+//        node.isSelected = isSelected
+        node.justRead = justRead
+
+        addNode(node);
     }
     //! On port added
     function onPortAdded(portId) {

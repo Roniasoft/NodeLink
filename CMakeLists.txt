@@ -110,6 +110,7 @@ qt_add_qml_module(NodeLink
     SOURCES
 	
     RESOURCES
+        resources/fonts/Font\ Awesome\ 6\ Pro-Regular-400.otf
 
 )
 	

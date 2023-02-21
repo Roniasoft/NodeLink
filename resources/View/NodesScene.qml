@@ -7,7 +7,9 @@ import NodeLink
  * ************************************************************************************************/
 Flickable {
     id: flickable
-
+    FontLoader {
+        source: "qrc:/NodeLink/resources/fonts/Font Awesome 6 Pro-Regular-400.otf"
+    }
     /* Property Declarations
     * ****************************************************************************************/
     property Scene              scene

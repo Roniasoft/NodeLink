@@ -67,7 +67,7 @@ Rectangle {
             id: duplicateButton
             onClicked: {
                 if(isSelected)
-                    nodeManager.duplicate (node.contentText, node.x, node.y, node.color, node.isSelected, node.id, node.justRead)
+                    scene.duplicate (node.title, node.guiConfig.position.x,  node.guiConfig.position.y,  node.guiConfig.color, node.id, node.justRead)
             }
         }
 
@@ -84,7 +84,7 @@ Rectangle {
                 if(isSelected){
                     if(node){
                         node.justRead = true
-                        textInput1.readOnly = node.justRead
+                        textArea.readOnly = node.justRead
                     }
                 }
             }
@@ -93,7 +93,7 @@ Rectangle {
                 if(isSelected){
                     if(node){
                         node.justRead = false
-                        textInput1.readOnly = node.justRead
+                        textArea.readOnly = node.justRead
                     }
                 }
             }

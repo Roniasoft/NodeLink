@@ -30,7 +30,9 @@ Rectangle {
     y: node.guiConfig.position.y
     color: Qt.darker(node.guiConfig.color, 10)
     border.color: Qt.lighter(node.guiConfig.color, nodeView.isSelected ? 1.2 : 1)
-    border.width: nodeView.isSelected ? 4 : 3
+    border.width: nodeView.isSelected ? 2 : 1
+    opacity: node.View.isSelected ? 1 : 0.4
+
     radius: 12
     smooth: true
     antialiasing: true
@@ -65,6 +67,10 @@ Rectangle {
             color: "white"
             selectByMouse: true
             text: node.title
+            onTextChanged: {
+                if (node && node.title !== text)
+                    node.title = text;
+            }
             smooth: true
             antialiasing: true
             font.bold: true
