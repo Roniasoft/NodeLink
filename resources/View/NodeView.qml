@@ -14,6 +14,8 @@ Rectangle {
 
     property Scene  scene
 
+    property SceneSession sceneSession
+
     property var    downstreamNodes: []
 
     property bool   edit:            textArea.activeFocus
@@ -75,90 +77,6 @@ Rectangle {
         }
     }
 
-    //! Top Ports
-    Row {
-        id: topRow
-        anchors.top: parent.top
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.margins: -(NLStyle.portView.size + NLStyle.portView.borderSize - nodeView.border.width) / 2 // we should use the size/2 of port from global style file
-        spacing: 5         // this can also be defined in the style file
-
-        Repeater {
-            model: Object.values(node.ports).filter(port => port.portSide === NLSpec.PortPositionSide.Top);
-            delegate: PortView {
-                port: modelData
-                flickable: flickable
-                scene: nodeView.scene
-                opacity: topPortsMouseArea.containsMouse ? 1 : 0
-                globalX: nodeView.x + topRow.x + mapToItem(topRow, Qt.point(x, y)).x
-                globalY: nodeView.y + topRow.y + mapToItem(topRow, Qt.point(x, y)).y
-            }
-        }
-    }
-
-
-    //! Left Ports
-    Column {
-        id: leftColumn
-        anchors.left: parent.left
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.margins: -(NLStyle.portView.size + NLStyle.portView.borderSize - nodeView.border.width) / 2 // we should use the size/2 of port from global style file
-        spacing: 5         // this can also be defined in the style file
-
-        Repeater {
-            model: Object.values(node.ports).filter(port => port.portSide === NLSpec.PortPositionSide.Left);
-            delegate: PortView {
-                port: modelData
-                flickable: flickable
-                scene: nodeView.scene
-                opacity: leftPortsMouseArea.containsMouse ? 1 : 0
-                globalX: nodeView.x + leftColumn.x + mapToItem(leftColumn, Qt.point(x, y)).x
-                globalY: nodeView.y + leftColumn.y + mapToItem(leftColumn, Qt.point(x, y)).y
-            }
-        }
-    }
-
-    //! Right Ports
-    Column {
-        id: rightColumn
-        anchors.right: parent.right
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.margins: -(NLStyle.portView.size + NLStyle.portView.borderSize - nodeView.border.width) / 2 // we should use the size/2 of port from global style file
-        spacing: 5         // this can also be defined in the style file
-
-        Repeater {
-            model: Object.values(node.ports).filter(port => port.portSide === NLSpec.PortPositionSide.Right);
-            delegate: PortView {
-                port: modelData
-                flickable: flickable
-                scene: nodeView.scene
-                opacity: rightPortsMouseArea.containsMouse ? 1 : 0
-                globalX: nodeView.x + rightColumn.x + mapToItem(rightColumn, Qt.point(x, y)).x
-                globalY: nodeView.y + rightColumn.y + mapToItem(rightColumn, Qt.point(x, y)).y
-            }
-        }
-    }
-
-    //! Bottom Ports
-    Row {
-        id: bottomRow
-        anchors.bottom: parent.bottom
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.margins: -(NLStyle.portView.size + NLStyle.portView.borderSize - nodeView.border.width) / 2 // we should use the size/2 of port from global style file
-        spacing: 5          // this can also be defined in the style file
-
-        Repeater {
-            model: Object.values(node.ports).filter(port => port.portSide === NLSpec.PortPositionSide.Bottom);
-            delegate: PortView {
-                port: modelData
-                flickable: flickable
-                scene: nodeView.scene
-                opacity: bottomPortsMouseArea.containsMouse ? 1 : 0
-                globalX: nodeView.x + bottomRow.x + mapToItem(bottomRow, Qt.point(x, y)).x
-                globalY: nodeView.y + bottomRow.y + mapToItem(bottomRow, Qt.point(x, y)).y
-            }
-        }
-    }
 
 
     //! Manage node selection and position change.
@@ -268,6 +186,7 @@ Rectangle {
         }
 
         onPositionChanged: (mouse)=> {
+                               console.log("bottom side " + mouseX)
             if (isDraging) {
                 var deltaY = mouse.y - prevY;
                 node.guiConfig.height += deltaY
@@ -326,11 +245,13 @@ Rectangle {
         property int    prevX:      0
 
         onPressed: (mouse)=> {
+                       console.log("node view pressed!");
             isDraging = true;
             prevX = mouse.x;
         }
 
         onReleased: {
+            console.log("node view released!");
             isDraging = false;
         }
 
@@ -339,6 +260,96 @@ Rectangle {
                 var deltaX = mouse.x - prevX;
                 node.guiConfig.width += deltaX
                 prevX = mouse.x - deltaX;
+            }
+        }
+    }
+
+
+    //! Top Ports
+    Row {
+        id: topRow
+        anchors.top: parent.top
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.margins: -(NLStyle.portView.size + NLStyle.portView.borderSize - nodeView.border.width) / 2 // we should use the size/2 of port from global style file
+        spacing: 5         // this can also be defined in the style file
+
+        Repeater {
+            model: Object.values(node.ports).filter(port => port.portSide === NLSpec.PortPositionSide.Top);
+            delegate: PortView {
+                port: modelData
+                flickable: flickable
+                scene: nodeView.scene
+                sceneSession: nodeView.sceneSession
+                opacity: topPortsMouseArea.containsMouse ? 1 : 0
+                globalX: nodeView.x + topRow.x + mapToItem(topRow, Qt.point(x, y)).x
+                globalY: nodeView.y + topRow.y + mapToItem(topRow, Qt.point(x, y)).y
+            }
+        }
+    }
+
+
+    //! Left Ports
+    Column {
+        id: leftColumn
+        anchors.left: parent.left
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.margins: -(NLStyle.portView.size + NLStyle.portView.borderSize - nodeView.border.width) / 2 // we should use the size/2 of port from global style file
+        spacing: 5         // this can also be defined in the style file
+
+        Repeater {
+            model: Object.values(node.ports).filter(port => port.portSide === NLSpec.PortPositionSide.Left);
+            delegate: PortView {
+                port: modelData
+                flickable: flickable
+                scene: nodeView.scene
+                sceneSession: nodeView.sceneSession
+                opacity: leftPortsMouseArea.containsMouse ? 1 : 0
+                globalX: nodeView.x + leftColumn.x + mapToItem(leftColumn, Qt.point(x, y)).x
+                globalY: nodeView.y + leftColumn.y + mapToItem(leftColumn, Qt.point(x, y)).y
+            }
+        }
+    }
+
+    //! Right Ports
+    Column {
+        id: rightColumn
+        anchors.right: parent.right
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.margins: -(NLStyle.portView.size + NLStyle.portView.borderSize - nodeView.border.width) / 2 // we should use the size/2 of port from global style file
+        spacing: 5         // this can also be defined in the style file
+
+        Repeater {
+            model: Object.values(node.ports).filter(port => port.portSide === NLSpec.PortPositionSide.Right);
+            delegate: PortView {
+                port: modelData
+                flickable: flickable
+                scene: nodeView.scene
+                sceneSession: nodeView.sceneSession
+                opacity: rightPortsMouseArea.containsMouse ? 1 : 0
+                globalX: nodeView.x + rightColumn.x + mapToItem(rightColumn, Qt.point(x, y)).x
+                globalY: nodeView.y + rightColumn.y + mapToItem(rightColumn, Qt.point(x, y)).y
+            }
+        }
+    }
+
+    //! Bottom Ports
+    Row {
+        id: bottomRow
+        anchors.bottom: parent.bottom
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.margins: -(NLStyle.portView.size + NLStyle.portView.borderSize - nodeView.border.width) / 2 // we should use the size/2 of port from global style file
+        spacing: 5          // this can also be defined in the style file
+
+        Repeater {
+            model: Object.values(node.ports).filter(port => port.portSide === NLSpec.PortPositionSide.Bottom);
+            delegate: PortView {
+                port: modelData
+                flickable: flickable
+                scene: nodeView.scene
+                sceneSession: nodeView.sceneSession
+                opacity: bottomPortsMouseArea.containsMouse ? 1 : 0
+                globalX: nodeView.x + bottomRow.x + mapToItem(bottomRow, Qt.point(x, y)).x
+                globalY: nodeView.y + bottomRow.y + mapToItem(bottomRow, Qt.point(x, y)).y
             }
         }
     }

@@ -5,8 +5,8 @@ import QtQuick.Controls.Material 2.12
 
 Window {
     id: window
-    width: 640
-    height: 480
+    width: 1280
+    height: 960
     visible: true
     title: qsTr("Simple NodeLink Example")
     color: "#1e1e1e"

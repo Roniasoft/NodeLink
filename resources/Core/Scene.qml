@@ -27,22 +27,22 @@ QtObject {
     property var portsPositions:    ({})
 
     //! Example Nodes
-    property Node _node1: Node {
-        guiConfig.position: Qt.point(0, 0)
-        guiConfig.color: "#8667e5"
-    }
-    property Node _node2: Node {
-        guiConfig.position: Qt.point(0, 200)
-        guiConfig.color: "#53dfdd"
-    }
-    property Node _node3: Node {
-        guiConfig.position: Qt.point(150, 25)
-        guiConfig.color: "#44cf6e"
-    }
-    property Node _node4: Node {
-        guiConfig.position: Qt.point(350, 200)
-        guiConfig.color: "#e9973f"
-    }
+//    property Node _node1: Node {
+//        guiConfig.position: Qt.point(0, 0)
+//        guiConfig.color: "#8667e5"
+//    }
+//    property Node _node2: Node {
+//        guiConfig.position: Qt.point(0, 200)
+//        guiConfig.color: "#53dfdd"
+//    }
+//    property Node _node3: Node {
+//        guiConfig.position: Qt.point(150, 25)
+//        guiConfig.color: "#44cf6e"
+//    }
+//    property Node _node4: Node {
+//        guiConfig.position: Qt.point(350, 200)
+//        guiConfig.color: "#e9973f"
+//    }
 
     //! Scene Selection Model
     property SelectionModel selectionModel: SelectionModel {}
@@ -50,10 +50,13 @@ QtObject {
 
     Component.onCompleted: {
         // adding example nodes
-        addNode(_node1);
-        addNode(_node2);
-        addNode(_node3);
-        addNode(_node4);
+        for (var i = 0; i < 20; i++) {
+            var node = NLCore.createNode();
+            node.guiConfig.position.x = Math.random() * 1000;
+            node.guiConfig.position.y = Math.random() * 1000;
+            node.guiConfig.color = Qt.rgba(Math.random(), Math.random(), Math.random(), 1)
+            addNode(node);
+        }
     }
 
     property Timer _tier: Timer {

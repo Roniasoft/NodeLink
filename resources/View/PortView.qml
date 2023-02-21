@@ -16,9 +16,9 @@ Rectangle {
 
     property Scene      scene
 
-    property Port       virtualPort:    Port {}
+    property SceneSession sceneSession
 
-    // nodeViewPositions;nodeViewSizes;itemPosRelativetoNodeView;....
+    property Port       virtualPort:    Port {}
 
     property int        globalX
 
@@ -39,47 +39,43 @@ Rectangle {
     radius: width
     color: "#8b6cef"
     border.color: "#363636"
+    scale: mouseArea.containsMouse ? 1.1 : 1
 
-    Behavior on opacity {NumberAnimation{duration: 100}}
+//    Behavior on opacity {NumberAnimation{duration: 100}}
+    Behavior on scale {NumberAnimation{}}
 
     MouseArea {
+        id: mouseArea
         anchors.fill: parent
+//        hoverEnabled: true
+//        propagateComposedEvents: true
+//        preventStealing: true
 
-        propagateComposedEvents: true
-        preventStealing: true
+        property bool isDragging: false
 
-        property bool connectionCreated: false
+        onPressed: (mouse) => {
+                       isDragging = true;
+                       sceneSession.creatingConnection = true
+                       sceneSession.tempConnectionStartPos = globalPos;
+                       console.log("port view pressed")
+                       mouse.accepted = false
+                   }
 
-        onPressAndHold: mouse => {
-           if(port.portType === NLSpec.PortType.Output &&
-              !connectionCreated) {
-                                var gPoint = mapToItem(flickable, Qt.point(mouse.x, mouse.y));
-;
-                                root.port.gx = gPoint.x;
-                                root.port.gy = gPoint.y;
-                                scene.createConnection(root.port, root.port);
-                                connectionCreated = true;
-                            }
-                            if(connectionCreated) {
-                                var gPoint2 =  mapToItem(flickable, Qt.point(mouse.x, mouse.y));
-                                virtualPort.gx = gPoint2.x;
-                                virtualPort.gy = gPoint2.y;
-                                scene.updateConnection(root.port, virtualPort)
-                            }
-                        }
+        onPositionChanged: (mouse)=> {
+                               console.log("pos changed!")
+                               if (isDragging) {
+                                   sceneSession.creatingConnection = true
+                                    sceneSession.tempConnectionEndPos = Qt.point(globalPos.x + mouseX, globalPos.y + mouseY);
 
-        onPositionChanged: mouse => {
-                               console.log("pos changed!!!!" + mouseX)
-                               if(connectionCreated) {
-                                   var gPoint =  mapToItem(flickable, Qt.point(mouse.x, mouse.y));
-                                   virtualPort.gx = gPoint.x;
-                                   virtualPort.gy = gPoint.y;
-                                   scene.updateConnection(root.port, virtualPort)
+//                                   mouse.accepted = false
                                }
-                           }
+        }
 
         onReleased: mouse => {
-                        connectionCreated = false
+                        console.log("port view released!")
+                        sceneSession.creatingConnection = false
+                        isDragging = false;
+//                        mouse.accepted = false
                     }
     }
 }

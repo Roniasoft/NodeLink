@@ -5,15 +5,18 @@ import NodeLink
 /*! ***********************************************************************************************
  * SceneView show the Nodes, Connections, ports and etc.
  * ************************************************************************************************/
-
 Flickable {
     id: flickable
 
     /* Property Declarations
     * ****************************************************************************************/
-    property Scene scene
+    property Scene  scene
 
-    property Node selectedNode
+    property Node   selectedNode
+
+    property SceneSession sceneSession: SceneSession {}
+
+    property alias  tempConnection: tempConnection
 
     property QtObject privateProperty: QtObject {
         property bool ctrlPressedAndHold: false
@@ -74,23 +77,34 @@ Flickable {
         }
     }
 
-    // Draw nodes
+    //! Nodes
     Repeater {
         model: Object.values(scene.nodes)
         delegate: NodeView {
             node: modelData
             scene: flickable.scene
+            sceneSession: flickable.sceneSession
             isSelected: modelData === scene.selectionModel.selectedNode
             onClicked: scene.selectionModel.select(modelData)
         }
     }
 
+    //! Connections
     Repeater {
         model: Object.entries(scene.portsDownstream).filter(([key, value]) => value.length > 0)
         delegate: ConnectionView {
             startPos: scene.portsPositions[modelData[0]]
             endPos: scene.portsPositions[modelData[1]]
         }
+    }
+
+    //! Temp Connection
+    ConnectionView {
+        id: tempConnection
+        anchors.fill: parent
+        startPos: sceneSession.tempConnectionStartPos
+        endPos: sceneSession.tempConnectionEndPos
+        visible: sceneSession.creatingConnection
     }
 
 }
