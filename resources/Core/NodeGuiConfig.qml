@@ -14,7 +14,7 @@ QtObject {
     property int        width:      200
 
     //! Height
-    property int        height:     120
+    property int        height:     150
 
     //! Color
     property string     color:      "pink"
