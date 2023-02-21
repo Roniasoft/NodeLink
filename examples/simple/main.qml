@@ -14,7 +14,7 @@ Window {
     Material.accent: Material.Purple
     property Scene scene: NLCore.scene
 
-    SceneView {
+    NLView {
         scene: window.scene
         anchors.fill: parent
     }

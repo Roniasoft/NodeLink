@@ -91,11 +91,15 @@ qt_add_qml_module(NodeLink
         resources/Core/Scene.qml
         resources/Core/SelectionModel.qml
         resources/Core/NodeGuiConfig.qml
-        resources/View/SceneView.qml
+
+        resources/View/NLView.qml
         resources/View/SceneSession.qml
         resources/View/NLStyle.qml
         resources/View/PortView.qml
         resources/View/NodeView.qml
+        resources/View/NodesRect.qml
+        resources/View/NodesScene.qml
+        resources/View/NodesOverview.qml
         resources/View/ConnectionView.qml    
         resources/View/SceneViewBackground.qml
 

@@ -20,4 +20,9 @@ QtObject {
         property int size:          18
         property int borderSize:    2
     }
+
+    readonly property QtObject overview: QtObject {
+        property real scale:          0.15
+        property bool visible:        true
+    }
 }
