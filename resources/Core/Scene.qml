@@ -78,8 +78,6 @@ QtObject {
     //! Adds a node the to nodes map
     function addNode(node: Node) {
         node.id = Object.keys(nodes).length;  // move this to fun createNode
-//        node.id = count + 2;
-//        count = count + 2;
         //Sanity check
         if (nodes[node.id] === node) { return; }
 
@@ -100,15 +98,15 @@ QtObject {
         for(var i=0; i<keys.length; i++){
 //            console.log("X is: "+x+" id is: "+keys[i]);
 //            console.log("type of x "+ typeof x+" type of keys[i] "+ typeof +keys[i])
+
+            //if id is found
             if(+keys[i] === x){
                 delete nodes[keys[i]];
                 nodesChanged();
             }
         }
     }
-    //this function is to duplicate chosen card
-    //input arguements are cards' properties. the new card is placed 50 pixels
-    //away from the lower right corner of the copied card
+    //! duplicator (third button)
     function duplicate (title, x, y, zcolor, id, justRead){
 
         var node = NLCore.createNode();
@@ -118,7 +116,6 @@ QtObject {
 
 
         node.title = title
-//        node.isSelected = isSelected
         node.justRead = justRead
 
         addNode(node);

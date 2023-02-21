@@ -30,9 +30,9 @@ Rectangle {
     y: node.guiConfig.position.y
 //    color: Qt.darker(node.guiConfig.color, 10)
     color: "transparent"
-    border.color: Qt.lighter(node.guiConfig.color, nodeView.isSelected ? 1.2 : 0.5)
+    border.color: Qt.lighter(node.guiConfig.color, nodeView.isSelected ? 1.2 : 1)
     border.width: nodeView.isSelected ? 3 : 2
-    opacity: node.View.isSelected ? 1 : 0.4
+    opacity: nodeView.isSelected ? 1 : 0.4
 
     radius: 10
     smooth: true

@@ -24,6 +24,8 @@ QtObject {
     //! Port list
     //! map<id, Port>
     property var            ports:      ({})
+
+    //! Text editibility
     property bool           justRead:   false
 
 
