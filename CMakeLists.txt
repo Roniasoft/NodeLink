@@ -102,6 +102,10 @@ qt_add_qml_module(NodeLink
         resources/View/NodesOverview.qml
         resources/View/ConnectionView.qml    
         resources/View/SceneViewBackground.qml
+        resources/View/ColorPicker/ColorItem.qml
+        resources/View/ColorPicker/ColorPicker.qml
+        resources/View/MButton.qml
+        resources/View/NodeTools.qml
 
     SOURCES
 	

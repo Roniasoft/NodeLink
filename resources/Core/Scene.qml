@@ -12,6 +12,7 @@ QtObject {
 
     //! Nodes
     //! map<id, Node>
+
     property var nodes:             ({})
 
     //! Container of Node line links A -> { B, C }
@@ -50,7 +51,7 @@ QtObject {
 
     Component.onCompleted: {
         // adding example nodes
-        for (var i = 0; i < 20; i++) {
+        for (var i = 0; i < 5; i++) {
             var node = NLCore.createNode();
             node.guiConfig.position.x = Math.random() * 1000;
             node.guiConfig.position.y = Math.random() * 1000;
@@ -65,29 +66,48 @@ QtObject {
         running: true
         onTriggered: {
             // example link
-            linkNodes(Object.keys(_node1.ports)[0], Object.keys(_node2.ports)[2]);
-            linkNodes(Object.keys(_node1.ports)[1], Object.keys(_node3.ports)[3]);
-            linkNodes(Object.keys(_node1.ports)[2], Object.keys(_node4.ports)[3]);
+//            linkNodes(Object.keys(_node1.ports)[0], Object.keys(_node2.ports)[2]);
+//            linkNodes(Object.keys(_node1.ports)[1], Object.keys(_node3.ports)[3]);
+//            linkNodes(Object.keys(_node1.ports)[2], Object.keys(_node4.ports)[3]);
         }
     }
 
     /* Functions
      * ****************************************************************************************/
-
+    property int count : 0
     //! Adds a node the to nodes map
     function addNode(node: Node) {
-        node.id = Object.keys(nodes).length;  // move this to fun createNode
-
+//        node.id = Object.keys(nodes).length;  // move this to fun createNode
+        node.id = count + 2;
+        count = count + 2;
         // Sanity check
-        if (nodes[node.id] === node) { return; }
+//        if (nodes[node.id] === node) { return; }
 
         // Add to local administration
         nodes[node.id] = node;
         nodesChanged();
 
-        node.onPortAdded.connect(onPortAdded);
-    }
+        var keys = Object.keys(nodes);
+        for (var i = 0; i < keys.length; i++) {
+            console.log(" index is: "+ i +" id is: "+ keys[i] +" node is: "+nodes[keys[i]]);
+        }
 
+        node.onPortAdded.connect(onPortAdded);
+
+    }
+    function deleteNode(x) {
+
+        console.log(Object.keys(nodes).length)
+        var keys = Object.keys(nodes);
+        for(var i=0; i<keys.length; i++){
+//            console.log("X is: "+x+" id is: "+keys[i]);
+//            console.log("type of x "+ typeof x+" type of keys[i] "+ typeof +keys[i])
+            if(+keys[i] === x){
+                delete nodes[keys[i]];
+                nodesChanged();
+            }
+        }
+    }
     //! On port added
     function onPortAdded(portId) {
 
@@ -146,4 +166,7 @@ QtObject {
         });
         return foundNode;
     }
+
+
+
 }

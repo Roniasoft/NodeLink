@@ -37,6 +37,7 @@ Rectangle {
     layer.enabled: false
 
 
+
     /* Signals
      * ****************************************************************************************/
     signal clicked();
@@ -77,6 +78,11 @@ Rectangle {
         }
     }
 
+    Rectangle{
+        anchors.fill: parent
+        color:"transparent"
+        NodeTools{}
+    }
 
 
     //! Manage node selection and position change.
