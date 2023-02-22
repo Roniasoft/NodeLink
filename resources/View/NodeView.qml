@@ -376,6 +376,6 @@ Rectangle {
         anchors.margins: -10
         enabled: locked
         onClicked: nodeView.clicked()
-        z: locked? 10 : -1
+        z: locked? 2 : -1
     }
 }
