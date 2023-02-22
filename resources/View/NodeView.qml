@@ -92,7 +92,6 @@ Rectangle {
         anchors.bottomMargin: 5
         opacity: isSelected ? 1.0 : 0.0
         scene: nodeView.scene
-
     }
 
     //! Manage node selection and position change.
