@@ -19,6 +19,7 @@ Rectangle {
      * ****************************************************************************************/
     required property Scene scene
 
+
     /* Object Properties
      * ****************************************************************************************/
     radius: 5
@@ -71,11 +72,12 @@ Rectangle {
             Layout.preferredWidth: 30
             Layout.topMargin: 2
             Layout.bottomMargin: 2
-            //Enabling read only
 
+            //Enabling read only
             onClicked:{
                 locked = lockButton.checked
             }
+
         }
 
         //Delete button

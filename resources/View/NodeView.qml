@@ -92,8 +92,8 @@ Rectangle {
         anchors.bottomMargin: 5
         opacity: isSelected ? 1.0 : 0.0
         scene: nodeView.scene
-    }
 
+    }
 
     //! Manage node selection and position change.
     MouseArea {
@@ -139,8 +139,8 @@ Rectangle {
                 prevY = mouse.y - deltaY;
             }
         }
-    }
 
+    }
 
     //! todo: encapsulate these mouse areas
     //! Top Side Mouse Area
@@ -370,10 +370,12 @@ Rectangle {
         }
     }
 
+    //!Locks the node
     MouseArea {
         anchors.fill: parent
         anchors.margins: -10
         enabled: locked
         onClicked: nodeView.clicked()
+        z: locked? 10 : -1
     }
 }
