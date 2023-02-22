@@ -12,7 +12,6 @@ Rectangle {
     width: colorPicker.width + 4
     height: 50
     color: "transparent"
-
     signal colorChanged(var colorName)
 
     //A row with 6 colors
@@ -53,7 +52,7 @@ Rectangle {
             }
         }
         ColorItem {
-            cellColor: "black";
+            cellColor: "pink";
             onClicked: {
                 control.colorChanged(cellColor);
             }

@@ -6,20 +6,30 @@ import QtQuick
 
 Item {
     id: container
-    property alias cellColor: rectangle1.color
+    property alias cellColor: innerRect.color
 
     //once the user choses a color, a signal containing that color is sent
     signal clicked(color cellColor)
 
-    width: 25;
-    height: 25
+    width: 30;
+    height: 30;
+
+    Rectangle{
+        id:outerRect
+        anchors.fill: parent
+        radius: width /2
+        visible: mouseArea.containsMouse ? true : false
+        border.color: cellColor
+        border.width: 2
+        color: "black"
+    }
 
     Rectangle {
-        id: rectangle1
-        radius: container.width /2
-        border.color: "white"
-        anchors.fill: parent
-        border.width : mouseArea.containsMouse ? 5 : 1
+        id: innerRect
+        width: container.width - 6;
+        height: container.height - 6;
+        radius: innerRect.width/2
+        anchors.centerIn: outerRect
     }
 
     MouseArea {
