@@ -91,6 +91,7 @@ Rectangle {
         anchors.bottom: parent.top
         anchors.bottomMargin: 5
         opacity: isSelected ? 1.0 : 0.0
+        scene: nodeView.scene
     }
 
 
