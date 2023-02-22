@@ -22,23 +22,23 @@ Rectangle {
 
     property bool   isSelected:      false
 
+    property bool   locked:          false
+
     /* Object Properties
      * ****************************************************************************************/
     width: node.guiConfig.width
     height: node.guiConfig.height
     x: node.guiConfig.position.x
     y: node.guiConfig.position.y
-//    color: Qt.darker(node.guiConfig.color, 10)
-    color: "transparent"
-    border.color: Qt.lighter(node.guiConfig.color, nodeView.isSelected ? 1.2 : 1)
+    color: Qt.darker(node.guiConfig.color, 10)
+    border.color: locked ? "gray" : Qt.lighter(node.guiConfig.color, nodeView.isSelected ? 1.2 : 1)
     border.width: nodeView.isSelected ? 3 : 2
-    opacity: nodeView.isSelected ? 1 : 0.4
-
+    opacity: nodeView.isSelected ? 1 : 0.8
+    z: locked ? 1 : (isSelected ? 3 : 2)
     radius: 10
     smooth: true
     antialiasing: true
     layer.enabled: false
-
 
 
     /* Signals
@@ -85,10 +85,12 @@ Rectangle {
         }
     }
 
-    Rectangle{
-        anchors.fill: parent
-        color:"transparent"
-        NodeTools{}
+    NodeTools {
+        id: nodeTools
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.bottom: parent.top
+        anchors.bottomMargin: 5
+        opacity: isSelected ? 1.0 : 0.0
     }
 
 
@@ -365,5 +367,12 @@ Rectangle {
                 globalY: nodeView.y + bottomRow.y + mapToItem(bottomRow, Qt.point(x, y)).y
             }
         }
+    }
+
+    MouseArea {
+        anchors.fill: parent
+        anchors.margins: -10
+        enabled: locked
+        onClicked: nodeView.clicked()
     }
 }

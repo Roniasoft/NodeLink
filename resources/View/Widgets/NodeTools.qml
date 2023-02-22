@@ -12,20 +12,19 @@ import QtQuick.Dialogs
  * Third is to disable text editting. It is activated with click and deactivated with double click.
  * Fourth is for deleting the card completely.
  * ************************************************************************************************/
-
-
 Rectangle {
     id: toolsItem
-    /* Object Style, anchors and sizing
-         * ****************************************************************************************/
+
+    /* Property Declarations
+     * ****************************************************************************************/
+
+
+    /* Object Properties
+     * ****************************************************************************************/
     radius: 5
     height: 34
     width: layout.implicitWidth + 4
     border.color: "#363636"
-    anchors.horizontalCenter: parent.horizontalCenter
-    anchors.bottom: parent.top
-    anchors.bottomMargin: 5
-    opacity: isSelected ? 1 : 0.0
     color: "#1e1e1e"
 
     //A row of different buttons
@@ -46,14 +45,7 @@ Rectangle {
 
             //color changer appears on one click
             onClicked: {
-                if(isSelected)
-                    tangle.visible = true
-            }
-
-            //color change dissappears with double click
-            onDoubleClicked: {
-                if(isSelected)
-                    tangle.visible = false
+                tangle.visible = !tangle.visible
             }
         }
 
@@ -66,36 +58,23 @@ Rectangle {
             Layout.bottomMargin: 2
             id: duplicateButton
             onClicked: {
-                if(isSelected)
-                    scene.duplicate (node.title, node.guiConfig.position.x,  node.guiConfig.position.y,  node.guiConfig.color, node.id, node.justRead)
+                scene.cloneNode(node.id);
             }
         }
 
         //Locking the card
         MButton {
+            id: lockButton
             text: "\uf30d"
+            checkable: true
             Layout.preferredHeight: 30
             Layout.preferredWidth: 30
             Layout.topMargin: 2
             Layout.bottomMargin: 2
-            id: lockButton
             //Enabling read only
+
             onClicked:{
-                if(isSelected){
-                    if(node){
-                        node.justRead = true
-                        textArea.readOnly = node.justRead
-                    }
-                }
-            }
-            //disabling read only
-            onDoubleClicked:{
-                if(isSelected){
-                    if(node){
-                        node.justRead = false
-                        textArea.readOnly = node.justRead
-                    }
-                }
+                locked = lockButton.checked
             }
         }
 
@@ -109,9 +88,9 @@ Rectangle {
             Layout.bottomMargin: 2
             //popup appears on click
             onClicked: {
-                if(isSelected)
-                    popup1.open()
+                popup1.open()
             }
+
             Popup {
                 id: popup1
                 parent: Overlay.overlay

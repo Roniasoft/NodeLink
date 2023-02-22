@@ -74,7 +74,6 @@ QtObject {
 
     /* Functions
      * ****************************************************************************************/
-    property int count : 0
     //! Adds a node the to nodes map
     function addNode(node: Node) {
         node.id = Object.keys(nodes).length;  // move this to fun createNode
@@ -85,41 +84,28 @@ QtObject {
         nodes[node.id] = node;
         nodesChanged();
 
-//        var keys = Object.keys(nodes);
-//        for (var i = 0; i < keys.length; i++) {
-//            console.log(" index is: "+ i +" id is: "+ keys[i] +" node is: "+nodes[keys[i]]);
-//        }
-
         node.onPortAdded.connect(onPortAdded);
-
     }
-    function deleteNode(x) {
-        var keys = Object.keys(nodes);
-        for(var i=0; i<keys.length; i++){
-//            console.log("X is: "+x+" id is: "+keys[i]);
-//            console.log("type of x "+ typeof x+" type of keys[i] "+ typeof +keys[i])
 
-            //if id is found
-            if(+keys[i] === x){
-                delete nodes[keys[i]];
-                nodesChanged();
-            }
-        }
+    //! Deletes a node from the scene
+    function deleteNode(nodeId: int) {
+        delete nodes[nodeId];
+        nodesChanged();
     }
+
     //! duplicator (third button)
-    function duplicate (title, x, y, zcolor, id, justRead){
+    function cloneNode(nodeId: int) {
 
         var node = NLCore.createNode();
-        node.guiConfig.position.x = x+50
-        node.guiConfig.position.y = y+50
-        node.guiConfig.color = zcolor
-
-
-        node.title = title
-        node.justRead = justRead
+        node.guiConfig.position.x = nodes[nodeId].guiConfig.position.x+50
+        node.guiConfig.position.y = nodes[nodeId].guiConfig.position.y+50
+        node.guiConfig.color = nodes[nodeId].guiConfig.color
+        node.title = nodes[nodeId].title
+        // other properties
 
         addNode(node);
     }
+
     //! On port added
     function onPortAdded(portId) {
 
