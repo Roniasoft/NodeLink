@@ -73,12 +73,11 @@ Rectangle {
             }
         }
     }
-
     //!qml color dialouge, for user to choose the color themeselves
     ColorDialog {
         id: colorDialog
-
         title: "Please Choose a Color"
+
         onAccepted: {
             colorPickerRect.colorChanged(customeColor);
         }

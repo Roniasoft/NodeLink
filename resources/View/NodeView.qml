@@ -134,6 +134,11 @@ Rectangle {
                 var deltaY = mouse.y - prevY;
                 node.guiConfig.position.y += deltaY;
                 prevY = mouse.y - deltaY;
+                if((node.guiConfig.position.x < 0 && deltaX < 0) ||
+                   ((node.guiConfig.position.x + node.guiConfig.width )> 4000) && deltaX > 0||
+                   (node.guiConfig.position.y < 0 && deltaY < 0) ||
+                   ((node.guiConfig.position.y + node.guiConfig.height) > 4000) && deltaY > 0)
+                    isDraging = false;
             }
         }
 
