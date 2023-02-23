@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 import NodeLink
+import QtQuick.Controls
 import QtQuick.Dialogs
 
 /*! ***********************************************************************************************
@@ -9,6 +10,7 @@ import QtQuick.Dialogs
 
 Rectangle {  
     id: control
+    property string customeColor: colorDialog.selectedColor
 
     width: colorPicker.width + 15
     height: 50
@@ -56,22 +58,24 @@ Rectangle {
             }
         }
         ColorItem {
-            cellColor: rainbowColor.finalText
-
+            cellColor: customeColor
             onClicked: {
-                rainbowColor.visible = !rainbowColor.visible
+                colorDialog.open()
             }
         }
     }
 
-    RainbowColorItem {
-        id: rainbowColor
-        visible: false
-        finalText: "#363636"
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.bottom: parent.top
-        anchors.topMargin: -20
-        onFinalTextChanged: control.colorChanged(finalText);
+    ColorDialog {
+        id: colorDialog
+        title: "Please choose a color"
+        onAccepted: {
+            console.log("You chose: " + colorDialog.selectedColor)
+            control.colorChanged(customeColor);
+        }
+        onRejected: {
+            console.log("Canceled")
+            colorDialog.close()
+        }
+//        Component.onCompleted:
     }
-
 }
