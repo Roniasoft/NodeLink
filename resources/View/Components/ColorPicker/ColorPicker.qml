@@ -5,19 +5,27 @@ import QtQuick.Controls
 import QtQuick.Dialogs
 
 /*! ***********************************************************************************************
- * A color picker containing 6 colors
+ * A color picker containing 5 colors and one custome color picker (first cell from right)
  * ************************************************************************************************/
 
 Rectangle {  
     id: colorPickerRect
+
+    /* Property Declarations
+     * ****************************************************************************************/
     property string customeColor: colorDialog.selectedColor
 
+    /* Object Properties
+     * ****************************************************************************************/
     width: colorPicker.width + 15
     height: 50
     color: "transparent"
     radius: 5
     border.width: 1
     border.color: "#363636"
+
+    /* Signals
+     * ****************************************************************************************/
     signal colorChanged(var colorName)
 
     //A row with 6 colors
@@ -66,6 +74,7 @@ Rectangle {
         }
     }
 
+    //!qml color dialouge, for user to choose the color themeselves
     ColorDialog {
         id: colorDialog
         title: "Please choose a color"

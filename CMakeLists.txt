@@ -106,7 +106,7 @@ qt_add_qml_module(NodeLink
         resources/View/Components/ColorPicker/ColorPicker.qml
         resources/View/Components/MButton.qml
         resources/View/Widgets/NodeTools.qml
-        resources/View/Widgets/PopupForDelete.qml
+        resources/View/Components/PopupForDelete.qml
 
 
     SOURCES

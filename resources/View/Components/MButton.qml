@@ -8,11 +8,13 @@ import QtQuick.Controls
 
 ToolButton {
     id: toolButton
+
+    /* Object Properties
+     * ****************************************************************************************/
     width: 30
     height: 30
     text: "\uf2ed"
     font.family: "fa-regular"
-//    color: "white"
     font.pixelSize: 17
 
     contentItem: Text {

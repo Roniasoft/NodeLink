@@ -2,20 +2,26 @@ import QtQuick
 import QtQml
 
 /*! ***********************************************************************************************
- * colot items
+ * colot items or color cells.
  * ************************************************************************************************/
 
 Item {
     id: colorItemContainer
+
+    /* Property Declarations
+     * ****************************************************************************************/
     property alias cellColor: innerRect.color
 
-    //once the user choses a color, a signal containing that color is sent
+    /* Signals
+     * ****************************************************************************************/
     signal clicked(color cellColor)
 
+    /* Object Properties
+     * ****************************************************************************************/
     width: 30;
     height: 30;
 
-
+    //! outer rectangle, only visible when contains mouse (for effect)
     Rectangle{
         id:outerRect
         anchors.fill: parent
@@ -26,6 +32,7 @@ Item {
         color: "black"
     }
 
+    //! inner rectangle, containing the color
     Rectangle {
         id: innerRect
         width: colorItemContainer.width - 6;
@@ -34,6 +41,7 @@ Item {
         anchors.centerIn: outerRect
     }
 
+    //mousearea for handling clicks (sends a signal containing chosen color)
     MouseArea {
         id: mouseArea
         anchors.fill: parent
