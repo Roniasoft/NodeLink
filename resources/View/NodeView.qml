@@ -172,6 +172,9 @@ Rectangle {
                 prevY = mouse.y - deltaY;
                 if(node.guiConfig.height < 70){
                     node.guiConfig.height = 70;
+                    if(deltaY>0){
+                        isDraging = false
+                    }
                 }
             }
         }
@@ -246,6 +249,9 @@ Rectangle {
                 prevX = mouse.x - deltaX;
                 if(node.guiConfig.width < 100){
                     node.guiConfig.width = 100
+                    if(deltaX>0){
+                        isDraging = false
+                    }
                 }
             }
         }
