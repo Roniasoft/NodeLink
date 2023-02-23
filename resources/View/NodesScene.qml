@@ -87,6 +87,8 @@ Flickable {
         id: nodesView
         scene: flickable.scene
         sceneSession: flickable.sceneSession
+        contentWidth: flickable.contentWidth
+        contentHeight: flickable.contentHeight
     }
 
     //! Temp Connection
