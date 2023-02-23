@@ -319,7 +319,6 @@ Rectangle {
         property int    prevY:      0
 
         onPressed: (mouse)=> {
-            console.log("Im topright");
             isDraging = true;
             prevX = mouse.x;
             prevY = mouse.y;
@@ -369,7 +368,6 @@ Rectangle {
         property int    prevY:      0
 
         onPressed: (mouse)=> {
-            console.log("Im rightdown");
             isDraging = true;
             prevX = mouse.x;
             prevY = mouse.y;
@@ -415,7 +413,6 @@ Rectangle {
         property int    prevY:      0
 
         onPressed: (mouse)=> {
-            console.log("Im topright");
             isDraging = true;
             prevX = mouse.x;
             prevY = mouse.y;
@@ -470,7 +467,6 @@ Rectangle {
         property int    prevY:      0
 
         onPressed: (mouse)=> {
-            console.log("Im topright");
             isDraging = true;
             prevX = mouse.x;
             prevY = mouse.y;
