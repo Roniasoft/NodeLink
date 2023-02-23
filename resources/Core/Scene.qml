@@ -10,21 +10,24 @@ QtObject {
     /* Property Properties
      * ****************************************************************************************/
 
+    //! Scene Title
+    property string title:              "<Untitled>"
+
     //! Nodes
     //! map<id, Node>
-    property var nodes:             ({})
+    property var    nodes:             ({})
 
     //! Container of Node line links A -> { B, C }
     //! map<Current Node port id, Dest port id>
-    property var portsUpstream:     ({})
+    property var    portsUpstream:     ({})
 
     //! Container of Node line links Z -> { X, Y }
     //! map<Current Node port id, Dest port id>
-    property var portsDownstream:   ({})
+    property var    portsDownstream:   ({})
 
     //! Port positions (global)
     //! map<port id: int, global pos: point>
-    property var portsPositions:    ({})
+    property var    portsPositions:    ({})
 
     //! Example Nodes
 //    property Node _node1: Node {
@@ -50,7 +53,7 @@ QtObject {
 
     Component.onCompleted: {
         // adding example nodes
-        for (var i = 0; i < 20; i++) {
+        for (var i = 0; i < 5; i++) {
             var node = NLCore.createNode();
             node.guiConfig.position.x = Math.random() * 1000;
             node.guiConfig.position.y = Math.random() * 1000;
@@ -65,9 +68,9 @@ QtObject {
         running: true
         onTriggered: {
             // example link
-            linkNodes(Object.keys(_node1.ports)[0], Object.keys(_node2.ports)[2]);
-            linkNodes(Object.keys(_node1.ports)[1], Object.keys(_node3.ports)[3]);
-            linkNodes(Object.keys(_node1.ports)[2], Object.keys(_node4.ports)[3]);
+            linkNodes(Object.keys(nodes[0].ports)[0], Object.keys(nodes[2].ports)[2]);
+            linkNodes(Object.keys(nodes[1].ports)[1], Object.keys(nodes[3].ports)[3]);
+            linkNodes(Object.keys(nodes[2].ports)[2], Object.keys(nodes[3].ports)[4]);
         }
     }
 

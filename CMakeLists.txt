@@ -12,6 +12,8 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set (QML_IMPORT_PATH ${CMAKE_CURRENT_SOURCE_DIR})
+
+
 #message(${QML_IMPORT_PATH})
 #Turns on default settings for development of NodeLink
 set(DEVELOPER_DEFAULTS ON)
@@ -25,23 +27,15 @@ option(BUILD_DEBUG_POSTFIX_D "Append d suffix to debug libraries" OFF)
 # Dependencies
 # ##################################################################################################
 # Find the Qt libraries
-find_package(Qt6 QUIET
+find_package(Qt6
   COMPONENTS
-   Core
    Quick
-   Core5Compat
-   Gui
-   OpenGL
 )
 
 if (NOT Qt6_FOUND)
   find_package(Qt5 QUIET
     COMPONENTS
-    Core
     Quick
-    Core5Compat
-    Gui
-    OpenGL
   )
 endif()
 
@@ -110,7 +104,7 @@ qt_add_qml_module(NodeLink
 )
 	
 #Add a library to the project using the specified source file
-add_library(NodeLink::NodeLink ALIAS NodeLink)
+#add_library(NodeLink::NodeLink ALIAS NodeLink)
 
 target_include_directories(NodeLink
   PUBLIC
@@ -127,12 +121,8 @@ target_compile_definitions(NodeLink
     PRIVATE $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:QT_QML_DEBUG>)
 
 target_link_libraries(NodeLink
-  PUBLIC
-    ${Qt}::Core
-    ${Qt}::OpenGL
+  PRIVATE
     ${Qt}::Quick
-    ${Qt}::Core5Compat
-    ${Qt}::Gui
 )
 
 set_target_properties(NodeLink PROPERTIES
