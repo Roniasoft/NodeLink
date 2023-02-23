@@ -165,13 +165,17 @@ Rectangle {
         onReleased: {
             isDraging = false;
         }
-
+        //!to do: the node moves once it reaches minimum height
         onPositionChanged: (mouse)=> {
             if (isDraging) {
                 var deltaY = mouse.y - prevY;
                 node.guiConfig.position.y += deltaY;
-                node.guiConfig.height -= deltaY
+                node.guiConfig.height -= deltaY;
                 prevY = mouse.y - deltaY;
+
+                if(node.guiConfig.height < 70){
+                    node.guiConfig.height = 70;
+                }
             }
         }
     }
@@ -201,11 +205,14 @@ Rectangle {
         }
 
         onPositionChanged: (mouse)=> {
-                               console.log("bottom side " + mouseX)
+//            console.log("bottom side " + mouseX)
             if (isDraging) {
                 var deltaY = mouse.y - prevY;
-                node.guiConfig.height += deltaY
+                node.guiConfig.height += deltaY;
                 prevY = mouse.y - deltaY;
+                if(node.guiConfig.height <= 70){
+                    node.guiConfig.height = 70
+                }
             }
         }
     }
@@ -233,13 +240,16 @@ Rectangle {
         onReleased: {
             isDraging = false;
         }
-
+        //!to do: the node moves once it reaches minimum width
         onPositionChanged: (mouse)=> {
             if (isDraging) {
                 var deltaX = mouse.x - prevX;
                 node.guiConfig.position.x += deltaX;
                 node.guiConfig.width -= deltaX
                 prevX = mouse.x - deltaX;
+                if(node.guiConfig.width < 100){
+                    node.guiConfig.width = 100
+                }
             }
         }
     }
@@ -260,13 +270,13 @@ Rectangle {
         property int    prevX:      0
 
         onPressed: (mouse)=> {
-                       console.log("node view pressed!");
+//            console.log("node view pressed!");
             isDraging = true;
             prevX = mouse.x;
         }
 
         onReleased: {
-            console.log("node view released!");
+//            console.log("node view released!");
             isDraging = false;
         }
 
@@ -275,6 +285,9 @@ Rectangle {
                 var deltaX = mouse.x - prevX;
                 node.guiConfig.width += deltaX
                 prevX = mouse.x - deltaX;
+                if(node.guiConfig.width < 100){
+                    node.guiConfig.width = 100
+                }
             }
         }
     }
