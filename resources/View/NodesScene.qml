@@ -3,6 +3,7 @@ import QtQuick.Controls
 import QtQuick.Dialogs
 import QtQuick.Layouts
 import NodeLink
+import Qt5Compat.GraphicalEffects
 
 
 /*! ***********************************************************************************************

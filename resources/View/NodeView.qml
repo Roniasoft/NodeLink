@@ -45,7 +45,6 @@ Rectangle {
      * ****************************************************************************************/
     signal clicked();
 
-
     onEditChanged: {
         if (nodeView.edit) {
             textArea.forceActiveFocus();
@@ -132,7 +131,6 @@ Rectangle {
                 var deltaX = mouse.x - prevX;
                 node.guiConfig.position.x += deltaX;
                 prevX = mouse.x - deltaX;
-
                 var deltaY = mouse.y - prevY;
                 node.guiConfig.position.y += deltaY;
                 prevY = mouse.y - deltaY;
@@ -172,7 +170,6 @@ Rectangle {
                 node.guiConfig.position.y += deltaY;
                 node.guiConfig.height -= deltaY;
                 prevY = mouse.y - deltaY;
-
                 if(node.guiConfig.height < 70){
                     node.guiConfig.height = 70;
                 }

@@ -1,11 +1,12 @@
 import QtQuick
+import QtQml
 
 /*! ***********************************************************************************************
  * colot items
  * ************************************************************************************************/
 
 Item {
-    id: container
+    id: colorItemContainer
     property alias cellColor: innerRect.color
 
     //once the user choses a color, a signal containing that color is sent
@@ -13,6 +14,7 @@ Item {
 
     width: 30;
     height: 30;
+
 
     Rectangle{
         id:outerRect
@@ -26,8 +28,8 @@ Item {
 
     Rectangle {
         id: innerRect
-        width: container.width - 6;
-        height: container.height - 6;
+        width: colorItemContainer.width - 6;
+        height: colorItemContainer.height - 6;
         radius: innerRect.width/2
         anchors.centerIn: outerRect
     }
@@ -39,7 +41,7 @@ Item {
         cursorShape: Qt.PointingHandCursor
 
         onClicked:{
-            container.clicked(container.cellColor);
+            colorItemContainer.clicked(colorItemContainer.cellColor);
         }
     }
 }

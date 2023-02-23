@@ -95,14 +95,12 @@ QtObject {
 
     //! duplicator (third button)
     function cloneNode(nodeId: int) {
-
         var node = NLCore.createNode();
         node.guiConfig.position.x = nodes[nodeId].guiConfig.position.x+50
         node.guiConfig.position.y = nodes[nodeId].guiConfig.position.y+50
         node.guiConfig.color = nodes[nodeId].guiConfig.color
         node.title = nodes[nodeId].title
         // other properties
-
         addNode(node);
     }
 

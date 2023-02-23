@@ -9,7 +9,7 @@ import QtQuick.Dialogs
  * ************************************************************************************************/
 
 Rectangle {  
-    id: control
+    id: colorPickerRect
     property string customeColor: colorDialog.selectedColor
 
     width: colorPicker.width + 15
@@ -30,37 +30,38 @@ Rectangle {
         ColorItem {
             cellColor: "red";
             onClicked: {
-                control.colorChanged(cellColor);
+                colorPickerRect.colorChanged(cellColor);
             }
         }
         ColorItem {
             cellColor: "green";
             onClicked: {
-                control.colorChanged(cellColor);
+                colorPickerRect.colorChanged(cellColor);
             }
         }
         ColorItem {
             cellColor: "purple";
             onClicked: {
-                control.colorChanged(cellColor);
+                colorPickerRect.colorChanged(cellColor);
             }
         }
         ColorItem {
             cellColor: "yellow";
             onClicked: {
-                control.colorChanged(cellColor);
+                colorPickerRect.colorChanged(cellColor);
             }
         }
         ColorItem {
             cellColor: "steelblue";
             onClicked: {
-                control.colorChanged(cellColor);
+                colorPickerRect.colorChanged(cellColor);
             }
         }
         ColorItem {
             cellColor: customeColor
             onClicked: {
                 colorDialog.open()
+
             }
         }
     }
@@ -69,11 +70,9 @@ Rectangle {
         id: colorDialog
         title: "Please choose a color"
         onAccepted: {
-            console.log("You chose: " + colorDialog.selectedColor)
-            control.colorChanged(customeColor);
+            colorPickerRect.colorChanged(customeColor);
         }
         onRejected: {
-            console.log("Canceled")
             colorDialog.close()
         }
 //        Component.onCompleted:

@@ -104,9 +104,10 @@ qt_add_qml_module(NodeLink
         resources/View/SceneViewBackground.qml
         resources/View/Components/ColorPicker/ColorItem.qml
         resources/View/Components/ColorPicker/ColorPicker.qml
-        resources/View/Components/ColorPicker/RainbowColorItem.qml
         resources/View/Components/MButton.qml
         resources/View/Widgets/NodeTools.qml
+        resources/View/Widgets/PopupForDelete.qml
+
 
     SOURCES
 	
