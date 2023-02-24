@@ -38,15 +38,29 @@ I_Scene {
         scene: scene
     }
 
+    Component.onCompleted: {
+        // adding example nodes
+        for (var i = 0; i < 5; i++) {
+            var node = NLCore.createNode();
+            node.guiConfig.position.x = Math.random() * 1000;
+            node.guiConfig.position.y = Math.random() * 1000;
+            node.guiConfig.color = Qt.rgba(Math.random(), Math.random(), Math.random(), 1)
+            addNode(node);
+            node.addPortByHardCode();
+        }
+        _tier.start();
+    }
+
     property Timer _tier: Timer {
-        interval: 300
+        interval: 1000
         repeat: false
-        running: true
+        running: false
         onTriggered: {
             // example link
-//            linkNodes(Object.keys(_node1.ports)[0], Object.keys(_node2.ports)[2]);
-//            linkNodes(Object.keys(_node1.ports)[1], Object.keys(_node3.ports)[3]);
-//            linkNodes(Object.keys(_node1.ports)[2], Object.keys(_node4.ports)[3]);
+//            linkNodes(Object.keys(nodes[0].ports)[0], Object.keys(nodes[1].ports)[2]);
+            linkNodes(Object.keys(nodes[1].ports)[1], Object.keys(nodes[2].ports)[3]);
+            linkNodes(Object.keys(nodes[1].ports)[1], Object.keys(nodes[3].ports)[3]);
+            linkNodes(Object.keys(nodes[2].ports)[0], Object.keys(nodes[0].ports)[2]);
         }
     }
 
@@ -133,7 +147,6 @@ I_Scene {
             console.error("[Scene] Cannot link Nodes ");
             return;
         }
-
         // Only add if not already there
         if (!portsDownstream[portA]?.includes(portB)) {
             portsDownstream[portA].push(portB);
@@ -147,12 +160,24 @@ I_Scene {
         }
     }
 
-    function unlinkNodes(portA : Port, portB : Port) {
+    //! Unlink two ports
+    function unlinkNodes(portA : int, portB : int) {
+        // Only Remove if not already there
+        if (!portsDownstream[portA]?.includes(portB)) {
+            portsDownstream[portA].remove(portB);
+            portsDownstreamChanged();
+        }
     }
 
+    //! Checks if two ports can be linked or not
     function canLinkNodes(portA : int, portB : int): bool {
         var nodeA = findNodeId(portA);
         var nodeB = findNodeId(portB);
+
+        // todo:
+        // For very werid reasons this line of code is required to make this func works!
+        // this might be a qt bug. I should test in different qt versions
+        console.log()
 
         if (nodeA === nodeB || nodeA === -1 || nodeB === -1)
             return false;
@@ -168,5 +193,17 @@ I_Scene {
             }
         });
         return foundNode;
+    }
+
+
+    //! Find port object from port id
+    function findPort(portId: string) : Port {
+        var portObj = null;
+        Object.values(nodes).find(node => {
+            let foundPort = node.findPort(portId);
+            if (foundPort !== null) {
+                portObj = foundPort;
+            }});
+        return portObj;
     }
 }

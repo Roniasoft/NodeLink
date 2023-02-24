@@ -1,16 +1,14 @@
 import QtQuick
+import NodeLink
 
 /*! ***********************************************************************************************
  *
  * ************************************************************************************************/
 QtObject {
 
-    //! Connection View
-//    property ConnectionView tempConnection: ConnectionView {}
+    property Port tempInputPort
 
-    property point tempConnectionStartPos: Qt.point(0,0)
+    property point tempConnectionStartPos: Qt.point(0, 0)
 
-    property point tempConnectionEndPos: Qt.point(100,100)
-
-    property bool   creatingConnection: false
+    property point tempConnectionEndPos: Qt.point(0, 0)
 }

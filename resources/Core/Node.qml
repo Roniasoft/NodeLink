@@ -31,8 +31,10 @@ QSObject  {
      * ****************************************************************************************/
     signal portAdded(var portId);
 
-    Component.onCompleted: {
-
+    /* Functions
+     * ****************************************************************************************/
+    //! Temp function to add port by code.
+    function addPortByHardCode () {
         let _port1 = NLCore.createPort();
         let _port2 = NLCore.createPort();
         let _port3 = NLCore.createPort();
@@ -66,9 +68,6 @@ QSObject  {
         addPort(_port6);
     }
 
-    /* Functions
-     * ****************************************************************************************/
-
     //! Adds a node the to nodes map
     function addPort(port : Port) {
         // Add to local administration
@@ -81,11 +80,23 @@ QSObject  {
     function deletePort(port) {
     }
 
+
     function findPort(portId: string): Port {
         if (Object.keys(ports).includes(portId)) {
             return ports[portId];
         }
-
-        return null;
     }
+
+//    function findPort(portId: int): Port {
+//        var foundedPort = null;
+//            Object.entries(ports).forEach(([key, value]) => {
+//                if(foundedPort === null) {
+//                    if (Math.abs(key - portId) < 0.01) {
+//                        foundedPort = ports[portId];
+//                            }
+//                        }
+//                    });
+
+//        return foundedPort;
+//    }
 }

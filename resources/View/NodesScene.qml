@@ -24,8 +24,6 @@ Flickable {
 
     property SceneSession       sceneSession
 
-    property alias              tempConnection: tempConnection
-
     property QtObject           privateProperty: QtObject {
      property bool ctrlPressedAndHold: false
     }
@@ -80,7 +78,6 @@ Flickable {
                 console.log("right clicked")
                 contextMenu.popup(mouse.x, mouse.y)
             }
-
         }
         ContextMenu {
             id: contextMenu
@@ -101,9 +98,10 @@ Flickable {
     ConnectionView {
         id: tempConnection
         anchors.fill: parent
-        startPos: sceneSession.tempConnectionStartPos
-        endPos: sceneSession.tempConnectionEndPos
-        visible: sceneSession.creatingConnection
+        scene: flickable.scene
+        sceneSession: flickable.sceneSession
+        inputPort: flickable.sceneSession.tempInputPort
+        linkMode: NLSpec.LinkMode.Connecting
     }
 
 }

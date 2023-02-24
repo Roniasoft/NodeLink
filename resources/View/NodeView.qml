@@ -151,6 +151,8 @@ Rectangle {
                      ? (isDraging ? Qt.ClosedHandCursor : Qt.OpenHandCursor)
                      : Qt.ArrowCursor
 
+        onClicked: sceneSession.tempInputPort = null;
+
         onPressed: (mouse) => {
             isDraging = true;
             prevX = mouse.x;
@@ -159,6 +161,7 @@ Rectangle {
         }
 
         onReleased: (mouse) => {
+            sceneSession.tempInputPort = null;
             isDraging = false;
         }
 
@@ -201,12 +204,14 @@ Rectangle {
         property bool   isDraging:  false
         property int    prevY:      0
 
+        onClicked: sceneSession.tempInputPort = null;
         onPressed: (mouse)=> {
             isDraging = true;
             prevY = mouse.y;
         }
 
         onReleased: {
+            sceneSession.tempInputPort = null;
             isDraging = false;
         }
 
@@ -241,12 +246,15 @@ Rectangle {
         property bool   isDraging:  false
         property int    prevY:      0
 
+        onClicked: sceneSession.tempInputPort = null;
+
         onPressed: (mouse)=> {
             isDraging = true;
             prevY = mouse.y;
         }
 
         onReleased: {
+            sceneSession.tempInputPort = null;
             isDraging = false;
         }
 
@@ -277,12 +285,15 @@ Rectangle {
         property bool   isDraging:  false
         property int    prevX:      0
 
+        onClicked: sceneSession.tempInputPort = null;
+
         onPressed: (mouse)=> {
             isDraging = true;
             prevX = mouse.x;
         }
 
         onReleased: {
+            sceneSession.tempInputPort = null;
             isDraging = false;
         }
 
@@ -317,12 +328,15 @@ Rectangle {
         property bool   isDraging:  false
         property int    prevX:      0
 
+        onClicked: sceneSession.tempInputPort = null;
+
         onPressed: (mouse)=> {
             isDraging = true;
             prevX = mouse.x;
         }
 
         onReleased: {
+            sceneSession.tempInputPort = null;
             isDraging = false;
         }
 
@@ -355,6 +369,8 @@ Rectangle {
         property int    prevX:      0
         property int    prevY:      0
 
+        onClicked: sceneSession.tempInputPort = null;
+
         onPressed: (mouse)=> {
             isDraging = true;
             prevX = mouse.x;
@@ -362,6 +378,7 @@ Rectangle {
         }
 
         onReleased: {
+            sceneSession.tempInputPort = null;
             isDraging = false;
         }
 
@@ -404,6 +421,8 @@ Rectangle {
         property int    prevX:      0
         property int    prevY:      0
 
+        onClicked: sceneSession.tempInputPort = null;
+
         onPressed: (mouse)=> {
             isDraging = true;
             prevX = mouse.x;
@@ -411,6 +430,7 @@ Rectangle {
         }
 
         onReleased: {
+            sceneSession.tempInputPort = null;
             isDraging = false;
         }
 
@@ -449,6 +469,8 @@ Rectangle {
         property int    prevX:      0
         property int    prevY:      0
 
+        onClicked: sceneSession.tempInputPort = null;
+
         onPressed: (mouse)=> {
             isDraging = true;
             prevX = mouse.x;
@@ -456,6 +478,7 @@ Rectangle {
         }
 
         onReleased: {
+            sceneSession.tempInputPort = null;
             isDraging = false;
         }
 
@@ -502,6 +525,8 @@ Rectangle {
         property int    prevX:      0
         property int    prevY:      0
 
+        onClicked: sceneSession.tempInputPort = null;
+
         onPressed: (mouse)=> {
             isDraging = true;
             prevX = mouse.x;
@@ -509,6 +534,7 @@ Rectangle {
         }
 
         onReleased: {
+            sceneSession.tempInputPort = null;
             isDraging = false;
         }
 
@@ -550,8 +576,8 @@ Rectangle {
                 scene: nodeView.scene
                 sceneSession: nodeView.sceneSession
                 opacity: topPortsMouseArea.containsMouse ? 1 : 0
-                globalX: nodeView.x + topRow.x + mapToItem(topRow, Qt.point(x, y)).x
-                globalY: nodeView.y + topRow.y + mapToItem(topRow, Qt.point(x, y)).y
+                globalX: nodeView.x + topRow.x + x + NLStyle.portView.size / 2
+                globalY: nodeView.y + topRow.y + mapToItem(topRow, Qt.point(x, y)).y + NLStyle.portView.size / 2
             }
         }
     }
@@ -572,8 +598,8 @@ Rectangle {
                 scene: nodeView.scene
                 sceneSession: nodeView.sceneSession
                 opacity: leftPortsMouseArea.containsMouse ? 1 : 0
-                globalX: nodeView.x + leftColumn.x + mapToItem(leftColumn, Qt.point(x, y)).x
-                globalY: nodeView.y + leftColumn.y + mapToItem(leftColumn, Qt.point(x, y)).y
+                globalX: nodeView.x + leftColumn.x + mapToItem(leftColumn, Qt.point(x, y)).x + NLStyle.portView.size / 2
+                globalY: nodeView.y + leftColumn.y + y + NLStyle.portView.size / 2
             }
         }
     }
@@ -593,8 +619,8 @@ Rectangle {
                 scene: nodeView.scene
                 sceneSession: nodeView.sceneSession
                 opacity: rightPortsMouseArea.containsMouse ? 1 : 0
-                globalX: nodeView.x + rightColumn.x + mapToItem(rightColumn, Qt.point(x, y)).x
-                globalY: nodeView.y + rightColumn.y + mapToItem(rightColumn, Qt.point(x, y)).y
+                globalX: nodeView.x + rightColumn.x + mapToItem(rightColumn, Qt.point(x, y)).x + NLStyle.portView.size / 2
+                globalY: nodeView.y + rightColumn.y + y + NLStyle.portView.size / 2
             }
         }
     }
@@ -614,8 +640,8 @@ Rectangle {
                 scene: nodeView.scene
                 sceneSession: nodeView.sceneSession
                 opacity: bottomPortsMouseArea.containsMouse ? 1 : 0
-                globalX: nodeView.x + bottomRow.x + mapToItem(bottomRow, Qt.point(x, y)).x
-                globalY: nodeView.y + bottomRow.y + mapToItem(bottomRow, Qt.point(x, y)).y
+                globalX: nodeView.x + bottomRow.x + x + NLStyle.portView.size / 2
+                globalY: nodeView.y + bottomRow.y + mapToItem(bottomRow, Qt.point(x, y)).y + NLStyle.portView.size / 2
             }
         }
     }
