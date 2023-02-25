@@ -19,6 +19,10 @@ Rectangle {
      * ****************************************************************************************/
     required property Scene scene
 
+    required property Node  node
+
+    property alias colorPicker: colorPicker
+
 
     /* Object Properties
      * ****************************************************************************************/
@@ -28,6 +32,8 @@ Rectangle {
     border.color: "#363636"
     color: "#1e1e1e"
 
+    /* Children
+     * ****************************************************************************************/
     //A row of different buttons
     RowLayout {
         id: layout
@@ -36,7 +42,7 @@ Rectangle {
         spacing: 3
 
         //color change
-        MButton {
+        NLToolButton {
             id: colorButton1
             Layout.preferredHeight: 30
             Layout.preferredWidth: 30
@@ -46,12 +52,12 @@ Rectangle {
 
             //color changer appears on one click
             onClicked: {
-                colorPicker1.visible = !colorPicker1.visible
+                colorPicker.visible = !colorPicker.visible
             }             
         }
 
         //Duplicating the card
-        MButton {
+        NLToolButton {
             text: "\uf24d"
             Layout.preferredHeight: 30
             Layout.preferredWidth: 30
@@ -64,7 +70,7 @@ Rectangle {
         }
 
         //Locking the card
-        MButton {
+        NLToolButton {
             id: lockButton
             text: "\uf30d"
             checkable: true
@@ -81,7 +87,7 @@ Rectangle {
         }
 
         //Delete button
-        MButton {
+        NLToolButton {
             id: deleteButton
             text: "\uf2ed"
             Layout.preferredHeight: 30
@@ -90,17 +96,23 @@ Rectangle {
             Layout.bottomMargin: 2
             //popup appears on click
             onClicked: {
-                popup1.open()
+                popup.open()
             }
-            PopupForDelete{
-                id: popup1
-                scene:  toolsItem.scene
+
+            ConfirmPopUp {
+                id: popup
+
+                onAccepted: {
+                    // This makes the app to crash.
+                    scene.deleteNode(node.id);
+                }
             }
         }
     }
+
     //defining a color picker element to be used in the first button
     ColorPicker {
-        id: colorPicker1
+        id: colorPicker
         anchors.bottom: toolsItem.top
         anchors.topMargin: 5
         anchors.horizontalCenter: toolsItem.horizontalCenter

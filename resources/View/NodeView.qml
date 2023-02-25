@@ -88,13 +88,23 @@ Rectangle {
         }
     }
 
-    NodeTools {
+    //! Node Tools (Node settings)
+    NodeToolsRect {
         id: nodeTools
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.top
         anchors.bottomMargin: 5
         opacity: isSelected ? 1.0 : 0.0
         scene: nodeView.scene
+        node: nodeView.node
+
+        //! To hide color picker if selected node is changed
+        Connections {
+            target: nodeView
+            function onIsSelectedChanged() {
+                nodeTools.colorPicker.visible = false
+            }
+        }
     }
 
     //! Manage node selection and position change.
@@ -106,7 +116,6 @@ Rectangle {
         property bool   isDraging:  false
 
         anchors.fill: parent
-//        propagateComposedEvents: true
         hoverEnabled: true
         preventStealing: true
         enabled: !nodeView.edit
@@ -510,7 +519,6 @@ Rectangle {
             model: Object.values(node.ports).filter(port => port.portSide === NLSpec.PortPositionSide.Top);
             delegate: PortView {
                 port: modelData
-                flickable: flickable
                 scene: nodeView.scene
                 sceneSession: nodeView.sceneSession
                 opacity: topPortsMouseArea.containsMouse ? 1 : 0
@@ -533,7 +541,6 @@ Rectangle {
             model: Object.values(node.ports).filter(port => port.portSide === NLSpec.PortPositionSide.Left);
             delegate: PortView {
                 port: modelData
-                flickable: flickable
                 scene: nodeView.scene
                 sceneSession: nodeView.sceneSession
                 opacity: leftPortsMouseArea.containsMouse ? 1 : 0
@@ -555,7 +562,6 @@ Rectangle {
             model: Object.values(node.ports).filter(port => port.portSide === NLSpec.PortPositionSide.Right);
             delegate: PortView {
                 port: modelData
-                flickable: flickable
                 scene: nodeView.scene
                 sceneSession: nodeView.sceneSession
                 opacity: rightPortsMouseArea.containsMouse ? 1 : 0
@@ -577,7 +583,6 @@ Rectangle {
             model: Object.values(node.ports).filter(port => port.portSide === NLSpec.PortPositionSide.Bottom);
             delegate: PortView {
                 port: modelData
-                flickable: flickable
                 scene: nodeView.scene
                 sceneSession: nodeView.sceneSession
                 opacity: bottomPortsMouseArea.containsMouse ? 1 : 0
@@ -593,6 +598,6 @@ Rectangle {
         anchors.margins: -10
         enabled: locked
         onClicked: nodeView.clicked()
-        z: locked? 2 : -1
+        visible: locked
     }
 }

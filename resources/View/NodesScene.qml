@@ -72,8 +72,6 @@ Flickable {
                      else if (flickable.scale > 0.5) {
                          flickable.scale -= 0.1;
                      }
-
-                     console.log(flickable.scale)
                  }
 
         onClicked: {

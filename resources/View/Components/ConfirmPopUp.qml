@@ -2,22 +2,23 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick.Controls.Universal
-import NodeLink
 import QtQuick.Dialogs
 
 /*! ***********************************************************************************************
- * Popup component for deleting a node
+ * Confirmation  Popup
  * ************************************************************************************************/
 
 Popup {
-    id: popup1
+    id: popUp
 
     /* Property Declarations
      * ****************************************************************************************/
-    required property Scene scene;
+    //! Confirm Text
+    property string confirmText: "Are you sure you want to delete this item?"
 
     /* Object Properties
      * ****************************************************************************************/
+    closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
     parent: Overlay.overlay
     x: Math.round((parent.width - width) / 2)
     y: Math.round((parent.height - height) / 2)
@@ -27,14 +28,23 @@ Popup {
     modal: true
     focus: true
 
+
+    /* Signals
+     * ****************************************************************************************/
+    signal accepted();
+    signal rejected();
+
+    /* Children
+     * ****************************************************************************************/
     background: Rectangle {
-        color: "black";
+        color: "black"
     }
+
     Rectangle {
         anchors.fill: parent
         color: "transparent"
         Text {
-            text: qsTr("Are you sure you want to delete this item?")
+            text: popUp.confirmText
             font.pointSize: 10
             color: "white"
             anchors.verticalCenter: parent.verticalCenter
@@ -49,13 +59,13 @@ Popup {
             anchors.left: parent.left
             anchors.bottom: parent.bottom
             background: Rectangle {
-                color: "gray";
+                color: "gray"
                 radius:10
             }
             text: qsTr("Yes")
             onClicked: {
-                popup1.close();
-                scene.deleteNode(node.id);
+                popUp.accepted();
+                popUp.close();
             }
         }
 
@@ -66,15 +76,14 @@ Popup {
             anchors.right: parent.right
             anchors.bottom: parent.bottom
             background: Rectangle {
-                color: "gray";
+                color: "gray"
                 radius:10
             }
             text: qsTr("No")
             onClicked: {
-                popup1.close()
+                popUp.rejected();
+                popUp.close()
             }
         }
     }
-    //if clicked outside popup or the esc key pressed, popup closes
-    closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
 }

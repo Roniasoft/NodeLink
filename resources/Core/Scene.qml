@@ -27,24 +27,6 @@ QtObject {
     //! map<port id: int, global pos: point>
     property var portsPositions:    ({})
 
-    //! Example Nodes
-//    property Node _node1: Node {
-//        guiConfig.position: Qt.point(0, 0)
-//        guiConfig.color: "#8667e5"
-//    }
-//    property Node _node2: Node {
-//        guiConfig.position: Qt.point(0, 200)
-//        guiConfig.color: "#53dfdd"
-//    }
-//    property Node _node3: Node {
-//        guiConfig.position: Qt.point(150, 25)
-//        guiConfig.color: "#44cf6e"
-//    }
-//    property Node _node4: Node {
-//        guiConfig.position: Qt.point(350, 200)
-//        guiConfig.color: "#e9973f"
-//    }
-
     //! Scene Selection Model
     property SelectionModel selectionModel: SelectionModel {}
 
@@ -89,6 +71,31 @@ QtObject {
 
     //! Deletes a node from the scene
     function deleteNode(nodeId: int) {
+
+        //! delete the node ports fromt the portsPosition map
+        Object.keys(nodes[nodeId].ports).forEach(portId => {
+            delete portsPositions[portId];
+        });
+
+        Object.keys(portsUpstream).forEach(portId => {
+            delete portsUpstream[portId];
+        });
+
+        Object.values(portsUpstream).forEach(portId => {
+            delete portsUpstream[portId];
+        });
+
+        Object.keys(portsDownstream).forEach(portId => {
+            delete portsDownstream[portId];
+        });
+        Object.values(portsDownstream).forEach(portId => {
+            delete portsDownstream[portId];
+        });
+
+        portsPositionsChanged();
+        portsUpstreamChanged();
+        portsDownstreamChanged();
+
         delete nodes[nodeId];
         nodesChanged();
     }

@@ -22,6 +22,6 @@ NodesRect {
     MouseArea {
         anchors.fill: parent
         hoverEnabled: true
-        z:3
+        z: 3
     }
 }

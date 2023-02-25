@@ -92,6 +92,10 @@ qt_add_qml_module(NodeLink
         resources/Core/SelectionModel.qml
         resources/Core/NodeGuiConfig.qml
 
+        resources/View/Components/ColorPicker/ColorItem.qml
+        resources/View/Components/ColorPicker/ColorPicker.qml
+        resources/View/Components/NLToolButton.qml
+        resources/View/Components/ConfirmPopUp.qml
         resources/View/NLView.qml
         resources/View/SceneSession.qml
         resources/View/NLStyle.qml
@@ -102,11 +106,7 @@ qt_add_qml_module(NodeLink
         resources/View/NodesOverview.qml
         resources/View/ConnectionView.qml    
         resources/View/SceneViewBackground.qml
-        resources/View/Components/ColorPicker/ColorItem.qml
-        resources/View/Components/ColorPicker/ColorPicker.qml
-        resources/View/Components/MButton.qml
-        resources/View/Widgets/NodeTools.qml
-        resources/View/Components/PopupForDelete.qml
+        resources/View/Widgets/NodeToolsRect.qml
 
 
     SOURCES

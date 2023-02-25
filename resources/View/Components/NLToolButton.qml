@@ -4,8 +4,6 @@ import QtQuick.Controls
 /*! ***********************************************************************************************
  * Tool bar buttons
  * ************************************************************************************************/
-
-
 ToolButton {
     id: toolButton
 
@@ -17,6 +15,8 @@ ToolButton {
     font.family: "fa-regular"
     font.pixelSize: 17
 
+    /* Children
+     * ****************************************************************************************/
     contentItem: Text {
         text: toolButton.text
         font: toolButton.font
@@ -27,15 +27,13 @@ ToolButton {
         elide: Text.ElideRight
     }
 
-    background:
-    Rectangle {
+    background: Rectangle {
         id:toolButtonController
         width: toolButton.width
         height: toolButton.height
         radius: 5
         color: toolButton.hovered ? "#2f2f2f" : "transparent"
         opacity: enabled ? 1 : 0.3
-//        visible: control.down || (control.enabled && (control.checked || control.highlighted))
         Behavior on color{ColorAnimation{duration: 75}}
     }
 }
