@@ -20,9 +20,9 @@ Flickable {
 
     property SceneSession       sceneSession
 
-    property alias          tempConnection: tempConnection
+    property alias              tempConnection: tempConnection
 
-    property QtObject       privateProperty: QtObject {
+    property QtObject           privateProperty: QtObject {
         property bool ctrlPressedAndHold: false
     }
 

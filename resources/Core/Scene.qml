@@ -10,22 +10,24 @@ QtObject {
     /* Property Properties
      * ****************************************************************************************/
 
+    //! Scene Title
+    property string title:              "<Untitled>"
+
     //! Nodes
     //! map<id, Node>
-
-    property var nodes:             ({})
+    property var    nodes:             ({})
 
     //! Container of Node line links A -> { B, C }
     //! map<Current Node port id, Dest port id>
-    property var portsUpstream:     ({})
+    property var    portsUpstream:     ({})
 
     //! Container of Node line links Z -> { X, Y }
     //! map<Current Node port id, Dest port id>
-    property var portsDownstream:   ({})
+    property var    portsDownstream:   ({})
 
     //! Port positions (global)
     //! map<port id: int, global pos: point>
-    property var portsPositions:    ({})
+    property var    portsPositions:    ({})
 
     //! Scene Selection Model
     property SelectionModel selectionModel: SelectionModel {}
