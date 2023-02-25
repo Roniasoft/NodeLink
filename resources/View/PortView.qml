@@ -12,8 +12,6 @@ Rectangle {
     * ****************************************************************************************/
     property Port       port
 
-    property Flickable  flickable
-
     property Scene      scene
 
     property SceneSession sceneSession

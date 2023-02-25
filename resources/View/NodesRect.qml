@@ -13,6 +13,10 @@ Rectangle {
 
     property SceneSession       sceneSession
 
+    property int                contentWidth
+
+    property int                contentHeight
+
     /*  Object Properties
     * ****************************************************************************************/
     width: Math.max(...Object.values(scene.nodes).map(node => (node.guiConfig.position.x + node.guiConfig.width)), 1024)
@@ -32,6 +36,8 @@ Rectangle {
             sceneSession: root.sceneSession
             isSelected: modelData === scene.selectionModel.selectedNode
             onClicked: scene.selectionModel.select(modelData)
+            contentWidth: root.contentWidth
+            contentHeight: root.contentHeight
         }
     }
 

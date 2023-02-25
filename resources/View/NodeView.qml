@@ -22,6 +22,12 @@ Rectangle {
 
     property bool   isSelected:      false
 
+    property bool   locked:          false
+
+    property int    contentWidth
+
+    property int    contentHeight
+
     /* Object Properties
      * ****************************************************************************************/
     width: node.guiConfig.width
@@ -29,9 +35,11 @@ Rectangle {
     x: node.guiConfig.position.x
     y: node.guiConfig.position.y
     color: Qt.darker(node.guiConfig.color, 10)
-    border.color: Qt.lighter(node.guiConfig.color, nodeView.isSelected ? 1.2 : 1)
-    border.width: nodeView.isSelected ? 4 : 3
-    radius: 12
+    border.color: locked ? "gray" : Qt.lighter(node.guiConfig.color, nodeView.isSelected ? 1.2 : 1)
+    border.width: nodeView.isSelected ? 3 : 2
+    opacity: nodeView.isSelected ? 1 : 0.8
+    z: locked ? 1 : (isSelected ? 3 : 2)
+    radius: 10
     smooth: true
     antialiasing: true
     layer.enabled: false
@@ -40,7 +48,6 @@ Rectangle {
     /* Signals
      * ****************************************************************************************/
     signal clicked();
-
 
     onEditChanged: {
         if (nodeView.edit) {
@@ -64,6 +71,10 @@ Rectangle {
             color: "white"
             selectByMouse: true
             text: node.title
+            onTextChanged: {
+                if (node && node.title !== text)
+                    node.title = text;
+            }
             smooth: true
             antialiasing: true
             font.bold: true
@@ -77,7 +88,24 @@ Rectangle {
         }
     }
 
+    //! Node Tools (Node settings)
+    NodeToolsRect {
+        id: nodeTools
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.bottom: parent.top
+        anchors.bottomMargin: 5
+        opacity: isSelected ? 1.0 : 0.0
+        scene: nodeView.scene
+        node: nodeView.node
 
+        //! To hide color picker if selected node is changed
+        Connections {
+            target: nodeView
+            function onIsSelectedChanged() {
+                nodeTools.colorPicker.visible = false
+            }
+        }
+    }
 
     //! Manage node selection and position change.
     MouseArea {
@@ -88,7 +116,6 @@ Rectangle {
         property bool   isDraging:  false
 
         anchors.fill: parent
-//        propagateComposedEvents: true
         hoverEnabled: true
         preventStealing: true
         enabled: !nodeView.edit
@@ -117,14 +144,18 @@ Rectangle {
                 var deltaX = mouse.x - prevX;
                 node.guiConfig.position.x += deltaX;
                 prevX = mouse.x - deltaX;
-
                 var deltaY = mouse.y - prevY;
                 node.guiConfig.position.y += deltaY;
                 prevY = mouse.y - deltaY;
+                if(((node.guiConfig.position.x) < 0 && deltaX < 0)   ||
+                   ((node.guiConfig.position.x + node.guiConfig.width ) > contentWidth) && deltaX > 0||
+                   ((node.guiConfig.position.y) < 0 && deltaY < 0)   ||
+                   ((node.guiConfig.position.y + node.guiConfig.height) > contentHeight) && deltaY > 0)
+                    isDraging = false;
             }
         }
-    }
 
+    }
 
     //! todo: encapsulate these mouse areas
     //! Top Side Mouse Area
@@ -155,8 +186,14 @@ Rectangle {
             if (isDraging) {
                 var deltaY = mouse.y - prevY;
                 node.guiConfig.position.y += deltaY;
-                node.guiConfig.height -= deltaY
+                node.guiConfig.height -= deltaY;
                 prevY = mouse.y - deltaY;
+                if(node.guiConfig.height < 70){
+                    node.guiConfig.height = 70;
+                    if(deltaY>0){
+                        isDraging = false
+                    }
+                }
             }
         }
     }
@@ -186,11 +223,13 @@ Rectangle {
         }
 
         onPositionChanged: (mouse)=> {
-                               console.log("bottom side " + mouseX)
             if (isDraging) {
                 var deltaY = mouse.y - prevY;
-                node.guiConfig.height += deltaY
+                node.guiConfig.height += deltaY;
                 prevY = mouse.y - deltaY;
+                if(node.guiConfig.height <= 70){
+                    node.guiConfig.height = 70
+                }
             }
         }
     }
@@ -225,6 +264,12 @@ Rectangle {
                 node.guiConfig.position.x += deltaX;
                 node.guiConfig.width -= deltaX
                 prevX = mouse.x - deltaX;
+                if(node.guiConfig.width < 100){
+                    node.guiConfig.width = 100
+                    if(deltaX>0){
+                        isDraging = false
+                    }
+                }
             }
         }
     }
@@ -245,13 +290,11 @@ Rectangle {
         property int    prevX:      0
 
         onPressed: (mouse)=> {
-                       console.log("node view pressed!");
             isDraging = true;
             prevX = mouse.x;
         }
 
         onReleased: {
-            console.log("node view released!");
             isDraging = false;
         }
 
@@ -260,6 +303,205 @@ Rectangle {
                 var deltaX = mouse.x - prevX;
                 node.guiConfig.width += deltaX
                 prevX = mouse.x - deltaX;
+                if(node.guiConfig.width < 100){
+                    node.guiConfig.width = 100
+                }
+            }
+        }
+    }
+
+    //!upper right sizing area
+    MouseArea {
+        id: rightTopCornerMouseArea
+        width: 20
+        height: 20
+        cursorShape: Qt.SizeBDiagCursor
+        hoverEnabled: true
+        anchors.right: parent.right
+        anchors.top: parent.top
+        anchors.rightMargin: -10
+        anchors.bottomMargin: -10
+        preventStealing: true
+
+        property bool   isDraging:  false
+        property int    prevX:      0
+        property int    prevY:      0
+
+        onPressed: (mouse)=> {
+            isDraging = true;
+            prevX = mouse.x;
+            prevY = mouse.y;
+        }
+
+        onReleased: {
+            isDraging = false;
+        }
+
+        onPositionChanged: (mouse)=> {
+            if (isDraging) {
+                var deltaX = mouse.x - prevX;
+                node.guiConfig.width += deltaX
+                prevX = mouse.x - deltaX;
+                if(node.guiConfig.width < 100){
+                    node.guiConfig.width = 100
+                }
+                var deltaY = mouse.y - prevY
+                node.guiConfig.position.y += deltaY;
+                node.guiConfig.height -= deltaY;
+                prevY = mouse.y - deltaY;
+                if(node.guiConfig.height <= 70){
+                    node.guiConfig.height = 70
+                    if(deltaY>0){
+                        isDraging = false
+                    }
+                }
+            }
+        }
+    }
+
+    //!lower right sizing area
+    MouseArea {
+        id: rightDownCornerMouseArea
+        width: 20
+        height: 20
+        cursorShape: Qt.SizeFDiagCursor
+        hoverEnabled: true
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        anchors.rightMargin: -10
+        anchors.bottomMargin: -10
+        preventStealing: true
+
+        property bool   isDraging:  false
+        property int    prevX:      0
+        property int    prevY:      0
+
+        onPressed: (mouse)=> {
+            isDraging = true;
+            prevX = mouse.x;
+            prevY = mouse.y;
+        }
+
+        onReleased: {
+            isDraging = false;
+        }
+
+        onPositionChanged: (mouse)=> {
+            if (isDraging) {
+                var deltaX = mouse.x - prevX;
+                node.guiConfig.width += deltaX
+                prevX = mouse.x - deltaX;
+                if(node.guiConfig.width < 100){
+                    node.guiConfig.width = 100
+                }
+                var deltaY = mouse.y - prevY
+                node.guiConfig.height += deltaY;
+                prevY = mouse.y - deltaY;
+                if(node.guiConfig.height <= 70){
+                    node.guiConfig.height = 70
+                }
+            }
+        }
+    }
+
+    //!upper left sizing area
+    MouseArea {
+        id: leftTopCornerMouseArea
+        width: 20
+        height: 20
+        cursorShape: Qt.SizeFDiagCursor
+        hoverEnabled: true
+        anchors.left: parent.left
+        anchors.top: parent.top
+        anchors.rightMargin: -10
+        anchors.bottomMargin: -10
+        preventStealing: true
+
+        property bool   isDraging:  false
+        property int    prevX:      0
+        property int    prevY:      0
+
+        onPressed: (mouse)=> {
+            isDraging = true;
+            prevX = mouse.x;
+            prevY = mouse.y;
+        }
+
+        onReleased: {
+            isDraging = false;
+        }
+
+        onPositionChanged: (mouse)=> {
+            if (isDraging) {
+                var deltaX = mouse.x - prevX;
+                node.guiConfig.width -= deltaX
+                node.guiConfig.position.x += deltaX;
+                prevX = mouse.x - deltaX;
+                if(node.guiConfig.width < 100){
+                    node.guiConfig.width = 100
+                    if(deltaX>0){
+                        isDraging = false
+                    }
+                }
+                var deltaY = mouse.y - prevY
+                node.guiConfig.position.y += deltaY;
+                node.guiConfig.height -= deltaY;
+                prevY = mouse.y - deltaY;
+                if(node.guiConfig.height <= 70){
+                    node.guiConfig.height = 70
+                    if(deltaY>0){
+                        isDraging = false
+                    }
+                }
+            }
+        }
+    }
+
+    //!lower left sizing area
+    MouseArea {
+        id: leftDownCornerMouseArea
+        width: 20
+        height: 20
+        cursorShape: Qt.SizeBDiagCursor
+        hoverEnabled: true
+        anchors.left: parent.left
+        anchors.bottom: parent.bottom
+        anchors.rightMargin: -10
+        anchors.bottomMargin: -10
+        preventStealing: true
+
+        property bool   isDraging:  false
+        property int    prevX:      0
+        property int    prevY:      0
+
+        onPressed: (mouse)=> {
+            isDraging = true;
+            prevX = mouse.x;
+            prevY = mouse.y;
+        }
+
+        onReleased: {
+            isDraging = false;
+        }
+
+        onPositionChanged: (mouse)=> {
+            if (isDraging) {
+                var deltaX = mouse.x - prevX;
+                node.guiConfig.width -= deltaX
+                node.guiConfig.position.x += deltaX;
+                prevX = mouse.x - deltaX;
+                if(node.guiConfig.width < 100){
+                    node.guiConfig.width = 100
+                    if(deltaX>0){
+                        isDraging = false
+                    }
+                }
+                var deltaY = mouse.y - prevY
+                node.guiConfig.height += deltaY;
+                prevY = mouse.y - deltaY;
+                if(node.guiConfig.height <= 70){
+                    node.guiConfig.height = 70
+                }
             }
         }
     }
@@ -277,7 +519,6 @@ Rectangle {
             model: Object.values(node.ports).filter(port => port.portSide === NLSpec.PortPositionSide.Top);
             delegate: PortView {
                 port: modelData
-                flickable: flickable
                 scene: nodeView.scene
                 sceneSession: nodeView.sceneSession
                 opacity: topPortsMouseArea.containsMouse ? 1 : 0
@@ -300,7 +541,6 @@ Rectangle {
             model: Object.values(node.ports).filter(port => port.portSide === NLSpec.PortPositionSide.Left);
             delegate: PortView {
                 port: modelData
-                flickable: flickable
                 scene: nodeView.scene
                 sceneSession: nodeView.sceneSession
                 opacity: leftPortsMouseArea.containsMouse ? 1 : 0
@@ -322,7 +562,6 @@ Rectangle {
             model: Object.values(node.ports).filter(port => port.portSide === NLSpec.PortPositionSide.Right);
             delegate: PortView {
                 port: modelData
-                flickable: flickable
                 scene: nodeView.scene
                 sceneSession: nodeView.sceneSession
                 opacity: rightPortsMouseArea.containsMouse ? 1 : 0
@@ -344,7 +583,6 @@ Rectangle {
             model: Object.values(node.ports).filter(port => port.portSide === NLSpec.PortPositionSide.Bottom);
             delegate: PortView {
                 port: modelData
-                flickable: flickable
                 scene: nodeView.scene
                 sceneSession: nodeView.sceneSession
                 opacity: bottomPortsMouseArea.containsMouse ? 1 : 0
@@ -352,5 +590,14 @@ Rectangle {
                 globalY: nodeView.y + bottomRow.y + mapToItem(bottomRow, Qt.point(x, y)).y
             }
         }
+    }
+
+    //!Locks the node
+    MouseArea {
+        anchors.fill: parent
+        anchors.margins: -10
+        enabled: locked
+        onClicked: nodeView.clicked()
+        visible: locked
     }
 }

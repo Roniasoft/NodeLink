@@ -29,24 +29,6 @@ QtObject {
     //! map<port id: int, global pos: point>
     property var    portsPositions:    ({})
 
-    //! Example Nodes
-//    property Node _node1: Node {
-//        guiConfig.position: Qt.point(0, 0)
-//        guiConfig.color: "#8667e5"
-//    }
-//    property Node _node2: Node {
-//        guiConfig.position: Qt.point(0, 200)
-//        guiConfig.color: "#53dfdd"
-//    }
-//    property Node _node3: Node {
-//        guiConfig.position: Qt.point(150, 25)
-//        guiConfig.color: "#44cf6e"
-//    }
-//    property Node _node4: Node {
-//        guiConfig.position: Qt.point(350, 200)
-//        guiConfig.color: "#e9973f"
-//    }
-
     //! Scene Selection Model
     property SelectionModel selectionModel: SelectionModel {}
 
@@ -68,20 +50,18 @@ QtObject {
         running: true
         onTriggered: {
             // example link
-            linkNodes(Object.keys(nodes[0].ports)[0], Object.keys(nodes[2].ports)[2]);
-            linkNodes(Object.keys(nodes[1].ports)[1], Object.keys(nodes[3].ports)[3]);
-            linkNodes(Object.keys(nodes[2].ports)[2], Object.keys(nodes[3].ports)[4]);
+//            linkNodes(Object.keys(_node1.ports)[0], Object.keys(_node2.ports)[2]);
+//            linkNodes(Object.keys(_node1.ports)[1], Object.keys(_node3.ports)[3]);
+//            linkNodes(Object.keys(_node1.ports)[2], Object.keys(_node4.ports)[3]);
         }
     }
 
     /* Functions
      * ****************************************************************************************/
-
     //! Adds a node the to nodes map
     function addNode(node: Node) {
         node.id = Object.keys(nodes).length;  // move this to fun createNode
-
-        // Sanity check
+        //Sanity check
         if (nodes[node.id] === node) { return; }
 
         // Add to local administration
@@ -89,6 +69,49 @@ QtObject {
         nodesChanged();
 
         node.onPortAdded.connect(onPortAdded);
+    }
+
+    //! Deletes a node from the scene
+    function deleteNode(nodeId: int) {
+
+        //! delete the node ports fromt the portsPosition map
+        Object.keys(nodes[nodeId].ports).forEach(portId => {
+            delete portsPositions[portId];
+        });
+
+        Object.keys(portsUpstream).forEach(portId => {
+            delete portsUpstream[portId];
+        });
+
+        Object.values(portsUpstream).forEach(portId => {
+            delete portsUpstream[portId];
+        });
+
+        Object.keys(portsDownstream).forEach(portId => {
+            delete portsDownstream[portId];
+        });
+        Object.values(portsDownstream).forEach(portId => {
+            delete portsDownstream[portId];
+        });
+
+        portsPositionsChanged();
+        portsUpstreamChanged();
+        portsDownstreamChanged();
+
+        delete nodes[nodeId];
+        nodesChanged();
+    }
+
+    //! duplicator (third button)
+    function cloneNode(nodeId: int) {
+        var node = NLCore.createNode();
+        node.guiConfig.position.x = nodes[nodeId].guiConfig.position.x+50
+        node.guiConfig.position.y = nodes[nodeId].guiConfig.position.y+50
+        node.guiConfig.color = nodes[nodeId].guiConfig.color
+        node.guiConfig.height = nodes[nodeId].guiConfig.height
+        node.guiConfig.width = nodes[nodeId].guiConfig.width
+        node.title = nodes[nodeId].title
+        addNode(node);
     }
 
     //! On port added
@@ -149,4 +172,7 @@ QtObject {
         });
         return foundNode;
     }
+
+
+
 }

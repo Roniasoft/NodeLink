@@ -1,13 +1,19 @@
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Dialogs
+import QtQuick.Layouts
 import NodeLink
+import Qt5Compat.GraphicalEffects
+
 
 /*! ***********************************************************************************************
  * NodesScene show the Nodes, Connections, ports and etc.
  * ************************************************************************************************/
 Flickable {
     id: flickable
-
+    FontLoader {
+        source: "qrc:/NodeLink/resources/fonts/Font Awesome 6 Pro-Regular-400.otf"
+    }
     /* Property Declarations
     * ****************************************************************************************/
     property Scene              scene
@@ -66,8 +72,6 @@ Flickable {
                      else if (flickable.scale > 0.5) {
                          flickable.scale -= 0.1;
                      }
-
-                     console.log(flickable.scale)
                  }
 
         onClicked: {
@@ -81,6 +85,8 @@ Flickable {
         id: nodesView
         scene: flickable.scene
         sceneSession: flickable.sceneSession
+        contentWidth: flickable.contentWidth
+        contentHeight: flickable.contentHeight
     }
 
     //! Temp Connection
@@ -91,4 +97,5 @@ Flickable {
         endPos: sceneSession.tempConnectionEndPos
         visible: sceneSession.creatingConnection
     }
+
 }
