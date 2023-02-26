@@ -69,21 +69,22 @@ Rectangle {
             cellColor: customeColor
             onClicked: {
                 colorDialog.open()
-
             }
         }
     }
+
     //!qml color dialouge, for user to choose the color themeselves
     ColorDialog {
         id: colorDialog
         title: "Please Choose a Color"
-
+        onSelectedColorChanged: {
+            colorPickerRect.colorChanged(colorDialog.selectedColor);
+        }
         onAccepted: {
             colorPickerRect.colorChanged(customeColor);
         }
         onRejected: {
             colorDialog.close()
         }
-//        Component.onCompleted:
     }
 }
