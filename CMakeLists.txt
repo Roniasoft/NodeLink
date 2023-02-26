@@ -101,12 +101,21 @@ qt_add_qml_module(NodeLink
         resources/View/ConnectionView.qml    
         resources/View/SceneViewBackground.qml
         resources/View/Widgets/NodeToolsRect.qml
-
+        resources/View/Components/Buttons/NLBaseButton.qml
+        resources/View/Components/Buttons/NLButton.qml
+        resources/View/Components/Buttons/NLIconButton.qml
+        resources/View/Components/Buttons/NLIconButtonRound.qml
+        resources/View/Components/Buttons/NLIconTextButton.qml
+        resources/View/Widgets/SideMenu.qml
+        resources/View/Components/SideMenuButtonGroup.qml
+        resources/View/Components/SideMenuButton.qml
 
     SOURCES
 	
+
     RESOURCES
         resources/fonts/Font\ Awesome\ 6\ Pro-Regular-400.otf
+        resources/fonts/Font\ Awesome\ 6\ Pro-Solid-900.otf
 
 )
 	
