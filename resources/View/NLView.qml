@@ -33,7 +33,7 @@ Item {
         y: view.height - overView.height * scale - 20
     }
 
-    //! Side Menu Item
+    //! Side Menu Items
     Item{
         anchors.right: parent.right
         anchors.rightMargin: 45
