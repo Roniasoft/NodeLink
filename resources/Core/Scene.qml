@@ -73,34 +73,35 @@ QtObject {
 
     //! Deletes a node from the scene
     function deleteNode(nodeId: int) {
+//        //! delete the node ports fromt the portsPosition map
+//        Object.keys(nodes[nodeId].ports).forEach(portId => {
+//            delete portsPositions[portId];
+//        });
 
-        //! delete the node ports fromt the portsPosition map
-        Object.keys(nodes[nodeId].ports).forEach(portId => {
-            delete portsPositions[portId];
-        });
+//        Object.keys(portsUpstream).forEach(portId => {
+//            delete portsUpstream[portId];
+//        });
 
-        Object.keys(portsUpstream).forEach(portId => {
-            delete portsUpstream[portId];
-        });
+//        Object.values(portsUpstream).forEach(portId => {
+//            delete portsUpstream[portId];
+//        });
 
-        Object.values(portsUpstream).forEach(portId => {
-            delete portsUpstream[portId];
-        });
+//        Object.keys(portsDownstream).forEach(portId => {
+//            delete portsDownstream[portId];
+//        });
+//        Object.values(portsDownstream).forEach(portId => {
+//            delete portsDownstream[portId];
+//        });
 
-        Object.keys(portsDownstream).forEach(portId => {
-            delete portsDownstream[portId];
-        });
-        Object.values(portsDownstream).forEach(portId => {
-            delete portsDownstream[portId];
-        });
+//        portsPositionsChanged();
+//        portsUpstreamChanged();
+//        portsDownstreamChanged();
 
-        portsPositionsChanged();
-        portsUpstreamChanged();
-        portsDownstreamChanged();
-
-        delete nodes[nodeId];
+        console.log(typeof(nodes[nodeId]));
+//        delete nodes[nodeId];
         nodesChanged();
     }
+
 
     //! duplicator (third button)
     function cloneNode(nodeId: int) {
