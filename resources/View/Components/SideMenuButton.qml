@@ -9,7 +9,7 @@ ToolButton {
 
     /* Property Declarations
      * ****************************************************************************************/
-    property string position;
+    property string position
 
     /* Object Properties
      * ****************************************************************************************/
@@ -45,6 +45,5 @@ ToolButton {
             anchors.right : (position!=="only") ?  sideMenuToolButtonController.right : undefined
             anchors.top: (position==="middle" || position==="bottom") ? sideMenuToolButtonController.top : undefined
         }
-//        Behavior on color{ColorAnimation{duration: 75}}
     }
 }

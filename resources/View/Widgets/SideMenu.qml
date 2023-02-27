@@ -1,15 +1,16 @@
 import QtQuick
 import NodeLink
 import QtQuick.Layouts
-import "../Components"
 
 /*! ***********************************************************************************************
  * Side Menu
  * ************************************************************************************************/
-
 Item {
 
-    //!Each group consists of one or more buttons
+    /* Children
+     * ****************************************************************************************/
+
+    //! Zoom Buttons
     SideMenuButtonGroup {
         id: buttonGroup1
         //!Each button has a specific icon and position
@@ -19,18 +20,21 @@ Item {
             Layout.preferredHeight: 34
             Layout.preferredWidth: 34
         }
+
         SideMenuButton {
             text: "\uf2f9"
             position: "middle"
             Layout.preferredHeight: 34
             Layout.preferredWidth: 34
         }
+
         SideMenuButton {
             text: "\uf00e"
             position: "middle"
             Layout.preferredHeight: 34
             Layout.preferredWidth: 34
         }
+
         SideMenuButton {
             text: "\ue404"
             position: "bottom"
@@ -38,6 +42,8 @@ Item {
             Layout.preferredWidth: 34
         }
     }
+
+    //! Undo/Redo
     SideMenuButtonGroup {
         id: buttonGroup2
         anchors.top: buttonGroup1.bottom
@@ -55,6 +61,8 @@ Item {
             Layout.preferredWidth: 34
         }
     }
+
+    //! Snap/Grid Settings
     SideMenuButtonGroup {
         id: buttonGroup3
         anchors.top: buttonGroup2.bottom
@@ -78,6 +86,8 @@ Item {
             Layout.preferredWidth: 34
         }
     }
+
+    //! Help
     SideMenuButtonGroup {
         id: buttonGroup4
         anchors.top: buttonGroup3.bottom

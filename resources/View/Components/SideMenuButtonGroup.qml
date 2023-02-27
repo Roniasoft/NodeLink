@@ -13,7 +13,9 @@ Rectangle {
 
     /* Property Declarations
      * ****************************************************************************************/
-    default property alias contents:  layout.data
+    default property alias  contents:   layout.data
+
+    property alias          layout:     layout
 
     /* Object Properties
      * ****************************************************************************************/
@@ -25,7 +27,6 @@ Rectangle {
 
     /* Children
      * ****************************************************************************************/
-
     //A column of different buttons
     ColumnLayout {
         id: layout
