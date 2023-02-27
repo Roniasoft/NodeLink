@@ -14,6 +14,9 @@ Flickable {
     FontLoader {
         source: "qrc:/NodeLink/resources/fonts/Font Awesome 6 Pro-Regular-400.otf"
     }
+    FontLoader {
+        source: "qrc:/NodeLink/resources/fonts/Font Awesome 6 Pro-Solid-900.otf"
+    }
     /* Property Declarations
     * ****************************************************************************************/
     property Scene              scene

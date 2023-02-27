@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Layouts
 import NodeLink
 
 Item {
@@ -30,4 +31,13 @@ Item {
         x: view.width - overView.width * scale - 20
         y: view.height - overView.height * scale - 20
     }
+
+    //! Side Menu
+    SideMenu {
+        anchors.right: parent.right
+        anchors.rightMargin: 45
+        anchors.top: parent.top
+        anchors.topMargin: 50
+    }
+
 }
