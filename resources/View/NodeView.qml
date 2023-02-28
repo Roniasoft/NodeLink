@@ -154,7 +154,11 @@ Rectangle {
                    ((node.guiConfig.position.x + node.guiConfig.width ) > contentWidth) && deltaX > 0||
                    ((node.guiConfig.position.y) < 0 && deltaY < 0)   ||
                    ((node.guiConfig.position.y + node.guiConfig.height) > contentHeight) && deltaY > 0)
-                    isDraging = false;
+                    {
+                        isDraging = false;
+                        console.log("width is: ",contentWidth)
+                        console.log("height is: ",contentHeight)
+                    }
             }
         }
 
