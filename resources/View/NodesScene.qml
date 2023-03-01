@@ -38,13 +38,22 @@ Flickable {
     focus: true
 
     ScrollBar.vertical: ScrollBar {
-        width: 5
-        policy: ScrollBar.AsNeeded
+        width: 4
+        opacity: 0.3
+        background: Rectangle {
+            color: "black"
+            width: 4
+            opacity: 0.8
+        }
     }
-
     ScrollBar.horizontal: ScrollBar {
-        height: 5
-        policy: ScrollBar.AsNeeded
+        height: 4
+        opacity: 0.3
+        background: Rectangle {
+            color: "black"
+            height: 4
+            opacity: 0.8
+        }
     }
 
     /* Children
