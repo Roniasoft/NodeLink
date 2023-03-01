@@ -15,8 +15,7 @@ Menu {
     /* Object Properties
      * ****************************************************************************************/
     width: 180
-    height: 250
-
+    padding: 5
     //background is overrided
     background: Rectangle{
         anchors.fill: parent
@@ -35,4 +34,5 @@ Menu {
             contextMenu.close()
         }
     }
+
 }

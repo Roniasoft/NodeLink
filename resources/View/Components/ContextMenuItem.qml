@@ -18,14 +18,14 @@ MenuItem {
     background: Rectangle{
         anchors.fill: parent
         radius: 5
-        anchors.rightMargin: 7
-        anchors.leftMargin: 7
+//        anchors.rightMargin: 2
+//        anchors.leftMargin: 2
         color: (menuItem.hoverTracker) ? "#363636" : "transparent"
         Text {
             id: contextMenuIcon
             width: 20
             height: 20
-            anchors { left: parent.left; leftMargin : 7; top: parent.top;
+            anchors { left: parent.left; leftMargin : 5; top: parent.top;
                     topMargin: 4}
             color: "#ababab"
             text: "\ue494"
