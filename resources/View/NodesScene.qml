@@ -4,6 +4,7 @@ import QtQuick.Dialogs
 import QtQuick.Layouts
 import NodeLink
 import Qt5Compat.GraphicalEffects
+import "./Components"
 
 
 /*! ***********************************************************************************************
@@ -26,7 +27,7 @@ Flickable {
     property alias              tempConnection: tempConnection
 
     property QtObject           privateProperty: QtObject {
-        property bool ctrlPressedAndHold: false
+     property bool ctrlPressedAndHold: false
     }
 
 
@@ -75,6 +76,7 @@ Flickable {
 
     MouseArea {
         anchors.fill: parent
+        acceptedButtons: Qt.LeftButton | Qt.RightButton
         z: -10
         onWheel: wheel => {
                      if(!flickable.privateProperty.ctrlPressedAndHold)
@@ -87,8 +89,20 @@ Flickable {
                  }
 
         onClicked: {
-            scene.selectionModel.select(null)
-            flickable.forceActiveFocus()
+            if(mouse.button === Qt.LeftButton){
+                scene.selectionModel.select(null)
+                flickable.forceActiveFocus()
+            }
+            else if (mouse.button === Qt.RightButton){
+                console.log("right clicked")
+                contextMenu.popup(mouseX,mouseY)
+                //scene.addNode(mouseX,mouseY)
+            }
+
+        }
+        ContextMenu {
+            id: contextMenu
+            scene: flickable.scene
         }
     }
 

@@ -36,11 +36,9 @@ QtObject {
     Component.onCompleted: {
         // adding example nodes
         for (var i = 0; i < 5; i++) {
-            var node = NLCore.createNode();
-            node.guiConfig.position.x = Math.random() * 1000;
-            node.guiConfig.position.y = Math.random() * 1000;
-            node.guiConfig.color = Qt.rgba(Math.random(), Math.random(), Math.random(), 1)
-            addNode(node);
+            var x = Math.random() * 1000;
+            var y = Math.random() * 1000;
+            addNode(x, y);
         }
     }
 
@@ -59,8 +57,14 @@ QtObject {
     /* Functions
      * ****************************************************************************************/
     //! Adds a node the to nodes map
-    function addNode(node: Node) {
-        node.id = Object.keys(nodes).length;  // move this to fun createNode
+    function addNode(x: real, y: real) {
+
+        var node = NLCore.createNode();
+        node.guiConfig.position.x = x;
+        node.guiConfig.position.y = y;
+        node.guiConfig.color = Qt.rgba(Math.random(), Math.random(), Math.random(), 1)
+        node.id = Object.keys(nodes).length;
+
         //Sanity check
         if (nodes[node.id] === node) { return; }
 
