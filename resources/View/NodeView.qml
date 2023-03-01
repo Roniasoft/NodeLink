@@ -146,9 +146,11 @@ Rectangle {
             if (isDraging) {
                 var deltaX = mouse.x - prevX;
                 node.guiConfig.position.x += deltaX;
+                node.guiConfig.position.x =  Math.ceil(node.guiConfig.position.x / 20) * 20;
                 prevX = mouse.x - deltaX;
                 var deltaY = mouse.y - prevY;
                 node.guiConfig.position.y += deltaY;
+                node.guiConfig.position.y =  Math.ceil(node.guiConfig.position.y / 20) * 20;
                 prevY = mouse.y - deltaY;
                 if(((node.guiConfig.position.x) < 0 && deltaX < 0)   ||
                    ((node.guiConfig.position.x + node.guiConfig.width ) > contentWidth) && deltaX > 0||
