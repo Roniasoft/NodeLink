@@ -31,7 +31,7 @@ Menu {
     ContextMenuItem{
         id: addCard
         onClicked: {
-            scene.addNode(contextMenu.x+50,contextMenu.y+50)
+            scene.addNode(contextMenu.x,contextMenu.y)
             contextMenu.close()
         }
     }
