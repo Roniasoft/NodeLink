@@ -6,6 +6,7 @@ import QtQuick.Layouts
  * Side Menu
  * ************************************************************************************************/
 Item {
+    id: sideMenu1
 
     /* Children
      * ****************************************************************************************/
@@ -64,14 +65,21 @@ Item {
 
     //! Snap/Grid Settings
     SideMenuButtonGroup {
+
         id: buttonGroup3
         anchors.top: buttonGroup2.bottom
         anchors.topMargin: 8
         SideMenuButton {
+            id: snapGrid
             text: "\uf850"
             position: "top"
             Layout.preferredHeight: 34
             Layout.preferredWidth: 34
+            checkable: true
+            onClicked: {
+                snapGrid.isChecked = !snapGrid.isChecked
+                NLStyle.snapEnabled = snapGrid.isChecked
+            }
         }
         SideMenuButton {
             text: "\uf773"

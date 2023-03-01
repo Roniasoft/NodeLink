@@ -10,6 +10,7 @@ ToolButton {
     /* Property Declarations
      * ****************************************************************************************/
     property string position
+    property bool   isChecked: false
 
     /* Object Properties
      * ****************************************************************************************/
@@ -24,7 +25,7 @@ ToolButton {
     contentItem: Text {
         text: sideMenuToolButtons.text
         font: sideMenuToolButtons.font
-        color: "#a6a6a6"
+        color: (isChecked) ? "dodgerblue" : "#a6a6a6"
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         elide: Text.ElideRight

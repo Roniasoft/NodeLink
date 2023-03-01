@@ -34,10 +34,12 @@ Item {
 
     //! Side Menu
     SideMenu {
+        scene: view.scene
         anchors.right: parent.right
         anchors.rightMargin: 45
         anchors.top: parent.top
         anchors.topMargin: 50
     }
+
 
 }

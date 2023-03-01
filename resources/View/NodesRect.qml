@@ -32,7 +32,7 @@ Rectangle {
         delegate: NodeView {
             id: nodeView
             node: modelData
-            scene: root.scene
+            scene: root.scene 
             sceneSession: root.sceneSession
             isSelected: modelData === scene.selectionModel.selectedNode
             onClicked: scene.selectionModel.select(modelData)
