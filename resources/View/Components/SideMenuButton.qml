@@ -24,7 +24,7 @@ ToolButton {
     contentItem: Text {
         text: sideMenuToolButtons.text
         font: sideMenuToolButtons.font
-        color: "#a6a6a6"
+        color: (checked) ? "dodgerblue" : "#a6a6a6"
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         elide: Text.ElideRight

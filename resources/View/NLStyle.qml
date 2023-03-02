@@ -25,4 +25,6 @@ QtObject {
         property real scale:          0.15
         property bool visible:        true
     }
+
+    property bool snapEnabled: false
 }
