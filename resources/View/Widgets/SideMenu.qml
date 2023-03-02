@@ -76,10 +76,7 @@ Item {
             Layout.preferredHeight: 34
             Layout.preferredWidth: 34
             checkable: true
-            onClicked: {
-                snapGrid.isChecked = !snapGrid.isChecked
-                NLStyle.snapEnabled = snapGrid.isChecked
-            }
+            onCheckedChanged: NLStyle.snapEnabled = snapGrid.checked
         }
         SideMenuButton {
             text: "\uf773"
