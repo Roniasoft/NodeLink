@@ -20,7 +20,10 @@ Flickable {
     property SceneSession       sceneSession
     property alias              tempConnection: tempConnection
     property QtObject           privateProperty: QtObject {
-    property bool ctrlPressedAndHold: false}
+        property real zoomFactor: 1
+        property point zoomPoint;
+        property bool ctrlPressedAndHold: false
+    }
 
     /* Object Properties
     * ****************************************************************************************/
@@ -75,11 +78,13 @@ Flickable {
                     if(!flickable.privateProperty.ctrlPressedAndHold)
                     return;
 
-                    if(rect1.scale < 3 && wheel.angleDelta.y > 0)
-                        rect1.scale += 0.05
+                    if(flickable.privateProperty.zoomFactor < 3 && wheel.angleDelta.y > 0)
+                        flickable.privateProperty.zoomFactor += 0.05
 
-                     else if (rect1.scale > 0.5)
-                        rect1.scale -= 0.05
+                     else if (flickable.privateProperty.zoomFactor > 0.5)
+                        flickable.privateProperty.zoomFactor -= 0.05
+
+                     flickable.privateProperty.zoomPoint = Qt.point(wheel.x, wheel.y);
                 }
         onClicked: mouse => {
             if(mouse.button === Qt.LeftButton){
@@ -104,10 +109,16 @@ Flickable {
     Rectangle{
         id: rect1
         anchors.centerIn: parent
-        width: flickable.contentWidth / rect1.scale
-        height: flickable.contentHeight / rect1.scale
+        width: flickable.contentWidth
+        height: flickable.contentHeight 
         color: "transparent"
-        transformOrigin: Item.Center
+
+        transform: Scale {
+            origin.x : flickable.privateProperty.zoomPoint.x
+            origin.y : flickable.privateProperty.zoomPoint.y
+            xScale   : flickable.privateProperty.zoomFactor
+            yScale   : flickable.privateProperty.zoomFactor
+        }
 
         //! Background of scene view.
         SceneViewBackground {
