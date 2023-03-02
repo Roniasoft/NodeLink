@@ -74,14 +74,14 @@ Flickable {
         onWheel: wheel => {
                     if(!flickable.privateProperty.ctrlPressedAndHold)
                     return;
-                    if(!(rect1.scale >= 3) && wheel.angleDelta.y > 0){
+
+                    if(rect1.scale < 3 && wheel.angleDelta.y > 0)
                         rect1.scale += 0.05
-                    }
-                     else if (!(rect1.scale <= 0.5)){
+
+                     else if (rect1.scale > 0.5)
                         rect1.scale -= 0.05
-                    }
                 }
-        onClicked: {
+        onClicked: mouse => {
             if(mouse.button === Qt.LeftButton){
                 scene.selectionModel.select(null)
                 flickable.forceActiveFocus()
@@ -99,14 +99,24 @@ Flickable {
         }
     }
 
+
     //!Anything contained in this rectangle can be zoomed
     Rectangle{
         id: rect1
         anchors.centerIn: parent
-        width: flickable.contentWidth/rect1.scale
-        height: flickable.contentHeight/rect1.scale
+        width: flickable.contentWidth / rect1.scale
+        height: flickable.contentHeight / rect1.scale
         color: "transparent"
         transformOrigin: Item.Center
+
+        //! Background of scene view.
+        SceneViewBackground {
+            id: background
+
+            anchors.fill: parent
+            viewWidth: flickable.contentWidth
+            viewHeigth: flickable.contentHeight
+        }
 
         //! Nodes/Connections (pay attention to contentWidth and contentHeight)
         NodesRect {
@@ -127,11 +137,5 @@ Flickable {
         }
     }
 }
-//        SceneViewBackground {
-//            id: background
-//            anchors.fill: parent
-//            viewWidth: flickable.contentWidth
-//            viewHeigth: flickable.contentHeight
-//        }
 
 
