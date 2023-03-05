@@ -46,4 +46,5 @@ ToolButton {
             anchors.top: (position==="middle" || position==="bottom") ? sideMenuToolButtonController.top : undefined
         }
     }
+
 }

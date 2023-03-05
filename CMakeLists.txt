@@ -106,6 +106,7 @@ qt_add_qml_module(NodeLink
         resources/View/Components/SideMenuButton.qml
         resources/View/Components/ContextMenu.qml
         resources/View/Components/ContextMenuItem.qml
+        resources/View/Components/NLToolTip.qml
 
     SOURCES
 	
