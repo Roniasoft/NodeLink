@@ -64,9 +64,29 @@ Rectangle {
         id: view
         anchors.fill: parent
         anchors.margins: 5
-        ScrollBar.vertical.width: 5
-        ScrollBar.horizontal.height: 5
+        focus: true
+        clip : true
+        hoverEnabled: true
 
+        ScrollBar.vertical: ScrollBar {
+            id: scrollerV
+            policy: ScrollBar.AsNeeded
+            x: view.mirrored ? 0 : view.width - width
+            y: view.topPadding - 15
+            minimumSize: 0.1
+            contentItem: Rectangle {
+                implicitHeight: view.height // doesn't change anything.
+                implicitWidth: 4
+                radius: 5
+                color: scrollerV.hovered ? "#7f7f7f" : "#4b4b4b"
+            }
+            background: Rectangle {
+                implicitWidth: 4
+                color: "black"
+                opacity: 0.8
+            }
+        }
+        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
         TextArea {
             id: textArea
             focus: true
@@ -284,7 +304,7 @@ Rectangle {
     //! Right Side Mouse Area
     MouseArea {
         id: rightPortsMouseArea
-        width: 20
+        width: 12
         cursorShape: Qt.SizeHorCursor
         hoverEnabled: true
         height: parent.height

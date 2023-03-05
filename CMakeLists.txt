@@ -106,6 +106,10 @@ qt_add_qml_module(NodeLink
         resources/View/Components/SideMenuButton.qml
         resources/View/Components/ContextMenu.qml
         resources/View/Components/ContextMenuItem.qml
+        resources/View/Components/VerticalScrollBar.qml
+        resources/View/Components/HorizontalScrollBar.qml
+
+
 
     SOURCES
 	
