@@ -73,6 +73,8 @@ QtObject {
         nodesChanged();
 
         node.onPortAdded.connect(onPortAdded);
+
+        return node;
     }
 
     //! Deletes a node from the scene
@@ -109,14 +111,13 @@ QtObject {
 
     //! duplicator (third button)
     function cloneNode(nodeId: int) {
-        var node = NLCore.createNode();
+        var node = addNode(100,100);
         node.guiConfig.position.x = nodes[nodeId].guiConfig.position.x+50
         node.guiConfig.position.y = nodes[nodeId].guiConfig.position.y+50
         node.guiConfig.color = nodes[nodeId].guiConfig.color
         node.guiConfig.height = nodes[nodeId].guiConfig.height
         node.guiConfig.width = nodes[nodeId].guiConfig.width
         node.title = nodes[nodeId].title
-        addNode(node);
     }
 
     //! On port added
