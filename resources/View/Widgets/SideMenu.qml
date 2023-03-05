@@ -1,6 +1,8 @@
 import QtQuick
 import NodeLink
 import QtQuick.Layouts
+import QtQuick.Controls
+import "../Components"
 
 /*! ***********************************************************************************************
  * Side Menu
@@ -20,13 +22,20 @@ Item {
             position: "top"
             Layout.preferredHeight: 34
             Layout.preferredWidth: 34
+            NLToolTip{
+                visible: parent.hovered
+                text: "Zoom in"
+            }
         }
-
         SideMenuButton {
             text: "\uf2f9"
             position: "middle"
             Layout.preferredHeight: 34
             Layout.preferredWidth: 34
+            NLToolTip{
+                visible: parent.hovered
+                text: "Reset zoom"
+            }
         }
 
         SideMenuButton {
@@ -34,6 +43,10 @@ Item {
             position: "middle"
             Layout.preferredHeight: 34
             Layout.preferredWidth: 34
+            NLToolTip{
+                visible: parent.hovered
+                text: "Zoom to fit"
+            }
         }
 
         SideMenuButton {
@@ -41,6 +54,10 @@ Item {
             position: "bottom"
             Layout.preferredHeight: 34
             Layout.preferredWidth: 34
+            NLToolTip{
+                visible: parent.hovered
+                text: "Zoom out"
+            }
         }
     }
 
@@ -54,12 +71,20 @@ Item {
             position: "top"
             Layout.preferredHeight: 34
             Layout.preferredWidth: 34
+            NLToolTip{
+                visible: parent.hovered
+                text: "Undo"
+            }
         }
         SideMenuButton {
             text: "\ue331"
             position: "bottom"
             Layout.preferredHeight: 34
             Layout.preferredWidth: 34
+            NLToolTip{
+                visible: parent.hovered
+                text: "Redo"
+            }
         }
     }
 
@@ -77,18 +102,28 @@ Item {
             Layout.preferredWidth: 34
             checkable: true
             onCheckedChanged: NLStyle.snapEnabled = snapGrid.checked
+            NLToolTip{
+                visible: parent.hovered
+                text: "Snap tp grid"
+            }
         }
         SideMenuButton {
             text: "\uf773"
             position: "middle"
             Layout.preferredHeight: 34
             Layout.preferredWidth: 34
+            NLToolTip{
+                visible: parent.hovered
+            }
         }
         SideMenuButton {
             text: "\uf518"
             position: "bottom"
             Layout.preferredHeight: 34
             Layout.preferredWidth: 34
+            NLToolTip{
+                visible: parent.hovered
+            }
         }
     }
 
@@ -102,6 +137,10 @@ Item {
             position: "only"
             Layout.preferredHeight: 34
             Layout.preferredWidth: 34
+            NLToolTip{
+                visible: parent.hovered
+                text: "Help"
+            }
         }
     }
 }
