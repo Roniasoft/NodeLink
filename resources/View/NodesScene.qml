@@ -20,8 +20,6 @@ Flickable {
     property SceneSession       sceneSession
     property alias              tempConnection: tempConnection
     property QtObject           privateProperty: QtObject {
-        property real zoomFactor: 1
-        property point zoomPoint;
         property bool ctrlPressedAndHold: false
     }
 
@@ -45,6 +43,10 @@ Flickable {
     * ****************************************************************************************/
     //!Scroll Bars
     ScrollBar.vertical: ScrollBar {
+        id: hScrollBar
+
+        property real preLastPosition
+
         width: 4
         opacity: 0.3
         background: Rectangle {
@@ -52,14 +54,32 @@ Flickable {
             width: 4
             opacity: 0.8
         }
+
+        NumberAnimation on position {
+            id: animatedVPos
+            from: hScrollBar.preLastPosition
+            to: hScrollBar.position
+            duration: 1000
+        }
     }
     ScrollBar.horizontal: ScrollBar {
+        id: vScrollBar
+
+        property real preLastPosition
+
         height: 4
         opacity: 0.3
         background: Rectangle {
             color: "black"
             height: 4
             opacity: 0.8
+        }
+
+        NumberAnimation on position {
+            id: animatedHPos
+            from: vScrollBar.preLastPosition
+            to: hScrollBar.position
+            duration: 1000
         }
     }
 
@@ -78,23 +98,35 @@ Flickable {
                     if(!flickable.privateProperty.ctrlPressedAndHold)
                     return;
 
-                    if(flickable.privateProperty.zoomFactor < 3 && wheel.angleDelta.y > 0)
-                        flickable.privateProperty.zoomFactor += 0.05
+                     if(flickable.visibleArea.heightRatio >= 1 ||
+                        flickable.visibleArea.widthRatio  >= 1) {
+                         flickable.contentWidth  = flickable.width;
+                         flickable.contentHeight = flickable.height;
+                         flickable.returnToBounds();
+                     return;
+                     }
 
-                     else if (flickable.privateProperty.zoomFactor > 0.5)
-                        flickable.privateProperty.zoomFactor -= 0.05
+                    if(scene.zoomFactor < 3 && wheel.angleDelta.y > 0)
+                        scene.zoomFactor += 0.05
 
-                     flickable.privateProperty.zoomPoint = Qt.point(wheel.x, wheel.y);
-                }
+                     else if (scene.zoomFactor > 0.5)
+                        scene.zoomFactor -= 0.05
+
+                     scene.zoomPoint = Qt.point(wheel.x, wheel.y);
+
+//                     flickable.resizeContent(flickable.contentWidth * scene.zoomFactor,
+//                                             flickable.contentHeight * scene.zoomFactor,
+//                                             scene.zoomPoint)
+//                     flickable.returnToBounds();
+                 }
+
         onClicked: mouse => {
             if(mouse.button === Qt.LeftButton){
                 scene.selectionModel.select(null)
                 flickable.forceActiveFocus()
             }
             else if (mouse.button === Qt.RightButton){
-                console.log("right clicked")
                 contextMenu.popup(mouseX,mouseY)
-                //scene.addNode(mouseX,mouseY)
             }
 
         }
@@ -114,10 +146,11 @@ Flickable {
         color: "transparent"
 
         transform: Scale {
-            origin.x : flickable.privateProperty.zoomPoint.x
-            origin.y : flickable.privateProperty.zoomPoint.y
-            xScale   : flickable.privateProperty.zoomFactor
-            yScale   : flickable.privateProperty.zoomFactor
+            id: scaleTransform
+            origin.x : scene.zoomPoint.x
+            origin.y : scene.zoomPoint.y
+            xScale   : scene.zoomFactor
+            yScale   : scene.zoomFactor
         }
 
         //! Background of scene view.
@@ -145,6 +178,35 @@ Flickable {
             startPos: sceneSession.tempConnectionStartPos
             endPos: sceneSession.tempConnectionEndPos
             visible: sceneSession.creatingConnection
+        }
+    }
+
+    Connections {
+        target: scene
+
+        //! Auto zoom in flicable and fit nodes view to it.
+        function onFittingTypeChanged() {
+            if(scene.fittingType === NLSpec.FittingType.AutoFit) {
+
+                // Move flicable to the nodesView position with animation on position
+                hScrollBar.preLastPosition = hScrollBar.position;
+                vScrollBar.preLastPosition = vScrollBar.position;
+
+                hScrollBar.position = nodesView.x / flickable.contentWidth;
+                vScrollBar.position = nodesView.y / flickable.contentHeight;
+
+                animatedHPos.start();
+                animatedVPos.start();
+
+                scene.zoomPoint = Qt.point(nodesView.x, nodesView.y)
+
+                var scaleX = flickable.width  / nodesView.width;
+                var scaleY = flickable.height / nodesView.height;
+
+                scene.zoomFactor = Math.min(scaleX, scaleY)
+
+                scene.fittingType = NLSpec.FittingType.NoAutoFit
+            }
         }
     }
 }

@@ -24,4 +24,10 @@ QtObject {
         Input   = 0,
         Output  = 1
     }
+
+    //! Fiting type in scene
+    enum FittingType {
+        NoAutoFit = 0,
+        AutoFit   = 1
+    }
 }

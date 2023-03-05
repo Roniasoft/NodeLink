@@ -7,18 +7,33 @@ import QtQuick.Layouts
  * ************************************************************************************************/
 Item {
 
+    /* Property Declarations
+    * ****************************************************************************************/
+    property Scene  scene
+
     /* Children
      * ****************************************************************************************/
 
     //! Zoom Buttons
     SideMenuButtonGroup {
         id: buttonGroup1
+
+        property real tempZoomFactor: 1.0
         //!Each button has a specific icon and position
         SideMenuButton {
             text: "\ue59e"
             position: "top"
             Layout.preferredHeight: 34
             Layout.preferredWidth: 34
+
+            onClicked: {
+                if(scene.zoomFactor >= 3)
+                    return;
+
+                buttonGroup1.tempZoomFactor = scene.zoomFactor;
+                scene.zoomFactor            += 0.05;
+                scene.zoomPoint             = Qt.point(0, 0);
+            }
         }
 
         SideMenuButton {
@@ -26,6 +41,10 @@ Item {
             position: "middle"
             Layout.preferredHeight: 34
             Layout.preferredWidth: 34
+
+            onClicked: {
+                scene.zoomFactor    = buttonGroup1.tempZoomFactor;
+            }
         }
 
         SideMenuButton {
@@ -33,6 +52,10 @@ Item {
             position: "middle"
             Layout.preferredHeight: 34
             Layout.preferredWidth: 34
+
+            onClicked: {
+                scene.fittingType = NLSpec.FittingType.AutoFit;
+            }
         }
 
         SideMenuButton {
@@ -40,6 +63,15 @@ Item {
             position: "bottom"
             Layout.preferredHeight: 34
             Layout.preferredWidth: 34
+
+            onClicked: {
+                if(scene.zoomFactor <= 0.5)
+                    return;
+
+                buttonGroup1.tempZoomFactor = scene.zoomFactor;
+                scene.zoomFactor            -= 0.05;
+                scene.zoomPoint             = Qt.point(0, 0);
+            }
         }
     }
 

@@ -29,6 +29,15 @@ QtObject {
     //! map<port id: int, global pos: point>
     property var    portsPositions:    ({})
 
+    //! fitting type of scene
+    property int    fittingType:        NLSpec.FittingType.NoAutoFit
+
+    //! zoomFactor keep zoom factor of scene
+    property real   zoomFactor:         1.0
+
+    //!  Zoom scene relative to zoomPoint
+    property point zoomPoint: Qt.point(0, 0)
+
     //! Scene Selection Model
     property SelectionModel selectionModel: SelectionModel {}
 
