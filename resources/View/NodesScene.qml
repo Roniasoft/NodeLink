@@ -4,7 +4,7 @@ import QtQuick.Dialogs
 import QtQuick.Layouts
 import NodeLink
 import Qt5Compat.GraphicalEffects
-import "./Components"
+import QtQuickStream
 
 
 /*! ***********************************************************************************************
@@ -23,6 +23,8 @@ Flickable {
     property Scene              scene
 
     property SceneSession       sceneSession
+
+    property QSCore coreStreamer
 
     property alias              tempConnection: tempConnection
 
@@ -85,6 +87,7 @@ Flickable {
         }
         ContextMenu {
             id: contextMenu
+            coreStreamer: flickable.coreStreamer
             scene: flickable.scene
         }
     }

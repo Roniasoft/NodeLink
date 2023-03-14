@@ -1,10 +1,12 @@
 import QtQuick 2.15
 
+import QtQuickStream
+
 /*! ***********************************************************************************************
  * The Scene is responsible for managing nodes and connections between them.
  *
  * ************************************************************************************************/
-QtObject {
+QSObject {
     id: scene
 
     /* Property Properties
@@ -32,16 +34,6 @@ QtObject {
     //! Scene Selection Model
     property SelectionModel selectionModel: SelectionModel {}
 
-
-    Component.onCompleted: {
-        // adding example nodes
-        for (var i = 0; i < 5; i++) {
-            var x = Math.random() * 1000;
-            var y = Math.random() * 1000;
-            addNode(x, y);
-        }
-    }
-
     property Timer _tier: Timer {
         interval: 300
         repeat: false
@@ -57,9 +49,9 @@ QtObject {
     /* Functions
      * ****************************************************************************************/
     //! Adds a node the to nodes map
-    function addNode(x: real, y: real) {
+    function addNode(parentRepo: QSRepository, x: real, y: real) {
 
-        var node = NLCore.createNode();
+        var node = NLCore.createNode(parentRepo);
         node.guiConfig.position.x = x;
         node.guiConfig.position.y = y;
         node.guiConfig.color = Qt.rgba(Math.random(), Math.random(), Math.random(), 1)
@@ -111,7 +103,7 @@ QtObject {
 
     //! duplicator (third button)
     function cloneNode(nodeId: int) {
-        var node = addNode(100,100);
+        var node = addNode(nodes[nodeId]._qsRepo, 100,100);
         node.guiConfig.position.x = nodes[nodeId].guiConfig.position.x+50
         node.guiConfig.position.y = nodes[nodeId].guiConfig.position.y+50
         node.guiConfig.color = nodes[nodeId].guiConfig.color

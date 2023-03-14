@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import NodeLink
+import QtQuickStream
 
 Item {
     id: view
@@ -12,6 +13,8 @@ Item {
 
     property SceneSession   sceneSession:   SceneSession {}
 
+    property QSCore coreStreamer
+
     /* Children
     * ****************************************************************************************/
 
@@ -19,6 +22,7 @@ Item {
     NodesScene {
         id: nodesScene
         scene: view.scene
+        coreStreamer: view.coreStreamer
         sceneSession: view.sceneSession
     }
 

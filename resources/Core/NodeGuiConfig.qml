@@ -1,6 +1,8 @@
 import QtQuick 2.15
 
-QtObject {
+import QtQuickStream
+
+QSObject {
     //! Display image
     property string     name:       "<node name>"
 

@@ -38,6 +38,7 @@ target_link_libraries(simpleNodeLink PRIVATE
     Qt${QT_VERSION_MAJOR}::Gui
     Qt${QT_VERSION_MAJOR}::QuickControls2
     NodeLinkplugin
+    QtQuickStreamplugin
 )
 
 

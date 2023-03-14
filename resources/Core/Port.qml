@@ -1,7 +1,8 @@
 import QtQuick
 import NodeLink
+import QtQuickStream
 
-QtObject {
+QSObject {
 
     /* Property Declarations
      * ****************************************************************************************/
@@ -12,7 +13,7 @@ QtObject {
     property var   node
 
     // Color of node
-    property color  color:      "white"
+    property string  color:      "white"
 
     // port side in node
     property int    portSide:   NLSpec.PortPositionSide.Top
