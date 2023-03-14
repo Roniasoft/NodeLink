@@ -1,0 +1,3 @@
+[submodule "QtQuickStream"]
+	path = QtQuickStream
+	url = https://github.com/Roniasoft/QtQuickStream.git
