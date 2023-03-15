@@ -10,7 +10,7 @@ QSObject {
     property string     logoUrl:    ""
 
     //! Position in the world
-    property point      position:   Qt.point(0,50)
+    property vector2d   position: Qt.vector2d(0, 0);
 
     //! Width
     property int        width:      200

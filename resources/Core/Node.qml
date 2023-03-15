@@ -34,40 +34,6 @@ QSObject  {
      * ****************************************************************************************/
     signal portAdded(var portId);
 
-//    Component.onCompleted: {
-//        let _port1 = NLCore.createPort(_qsRepo);
-//        let _port2 = NLCore.createPort(_qsRepo);
-//        let _port3 = NLCore.createPort(_qsRepo);
-//        let _port4 = NLCore.createPort(_qsRepo);
-//        let _port5 = NLCore.createPort(_qsRepo);
-//        let _port6 = NLCore.createPort(_qsRepo);
-
-//        _port1.portType = NLSpec.PortType.Input
-//        _port1.portSide = NLSpec.PortPositionSide.Top
-
-//        _port2.portType = NLSpec.PortType.Output
-//        _port2.portSide = NLSpec.PortPositionSide.Bottom
-
-//        _port3.portType = NLSpec.PortType.Input
-//        _port3.portSide = NLSpec.PortPositionSide.Left
-
-//        _port4.portType = NLSpec.PortType.Output
-//        _port4.portSide = NLSpec.PortPositionSide.Right
-
-//        _port5.portType = NLSpec.PortType.Output
-//        _port5.portSide = NLSpec.PortPositionSide.Right
-
-//        _port6.portType = NLSpec.PortType.Output
-//        _port6.portSide = NLSpec.PortPositionSide.Right
-
-//        addPort(_port1);
-//        addPort(_port2);
-//        addPort(_port3);
-//        addPort(_port4);
-//        addPort(_port5);
-//        addPort(_port6);
-//    }
-
     /* Functions
      * ****************************************************************************************/
 

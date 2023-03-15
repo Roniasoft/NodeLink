@@ -28,7 +28,7 @@ QSObject {
     property var    portsDownstream:   ({})
 
     //! Port positions (global)
-    //! map<port id: int, global pos: point>
+    //! map<port id: int, global pos: vector2d>
     property var    portsPositions:    ({})
 
     //! Scene Selection Model
@@ -124,7 +124,7 @@ QSObject {
         portsDownstreamChanged();
 
         // Add an empty position index
-        portsPositions[portId] = Qt.point(0,0);
+        portsPositions[portId] = Qt.vector2d(0, 0);;
         portsPositionsChanged();
     }
 
