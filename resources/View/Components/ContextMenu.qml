@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import NodeLink
+import QtQuickStream
 
 /*! ***********************************************************************************************
  * Context Menu
@@ -10,7 +11,7 @@ Menu {
 
     /* Property Declarations
      * ****************************************************************************************/
-    required property Scene scene;
+    required property Scene  scene;
 
     /* Object Properties
      * ****************************************************************************************/

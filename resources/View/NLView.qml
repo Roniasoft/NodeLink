@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import NodeLink
+import QtQuickStream
 
 Item {
     id: view

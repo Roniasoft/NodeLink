@@ -27,6 +27,10 @@ option(BUILD_DEBUG_POSTFIX_D "Append d suffix to debug libraries" OFF)
 # Dependencies
 # ##################################################################################################
 # Find the Qt libraries
+
+# QtQuickStream to save and load project.
+add_subdirectory(QtQuickStream)
+
 find_package(Qt6
   COMPONENTS
    Quick
@@ -139,6 +143,7 @@ target_compile_definitions(NodeLink
 target_link_libraries(NodeLink
   PRIVATE
     ${Qt}::Quick
+    QtQuickStreamplugin
 )
 
 set_target_properties(NodeLink PROPERTIES

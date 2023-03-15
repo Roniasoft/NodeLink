@@ -4,7 +4,7 @@ import QtQuick.Dialogs
 import QtQuick.Layouts
 import NodeLink
 import Qt5Compat.GraphicalEffects
-import "./Components"
+import QtQuickStream
 
 
 /*! ***********************************************************************************************
@@ -79,7 +79,6 @@ Flickable {
             else if (mouse.button === Qt.RightButton){
                 console.log("right clicked")
                 contextMenu.popup(mouseX,mouseY)
-                //scene.addNode(mouseX,mouseY)
             }
 
         }

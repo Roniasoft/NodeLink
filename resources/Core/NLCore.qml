@@ -1,40 +1,42 @@
 pragma Singleton
 
 import QtQuick
+import QtQuickStream
 
 /*! ***********************************************************************************************
- * The NLCore is responsible for creating the Scene, and handling the top level functionalities,
+ * The NLCore is responsible for creating the default repo Scene, and handling the top level functionalities,
  * such as de/serialization and network connectivity.
  * ************************************************************************************************/
-QtObject {
+QSCore {
     id: core
 
     /* Property Declarations
      * ****************************************************************************************/
-    property Scene scene: Scene {}
-
 
     property QtObject _internal: QtObject {
-        property int portCounter: 0
+        readonly property var imports: [ "QtQuickStream" ]
     }
 
     /* Object Properties
      * ****************************************************************************************/
+    defaultRepo: createDefaultRepo(_internal.imports);
 
 
     /* Functions
      * ****************************************************************************************/
-    function createPort() {
-        let obj = Qt.createQmlObject("import NodeLink;" + "Port" + "{}", core);
-        core._internal.portCounter++;
-        obj.id = core._internal.portCounter;
-        return obj;
+
+    //! Create scene
+    function createScene() {
+        return QSSerializer.createQSObject("Scene", ["NodeLink"], core);
     }
 
+    //! Create Node
     function createNode() {
-        let obj = Qt.createQmlObject("import NodeLink;" + "Node" + "{}", core);
-        return obj;
+        return QSSerializer.createQSObject("Node", ["NodeLink"], core);
     }
 
-
+    //! Create port
+    function createPort() {
+        return QSSerializer.createQSObject("Port", ["NodeLink"], core);
+    }
 }
