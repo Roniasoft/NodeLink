@@ -24,23 +24,19 @@ QSCore {
 
     /* Functions
      * ****************************************************************************************/
+
+    //! Create scene
     function createScene() {
-        let obj = Qt.createQmlObject("import NodeLink;" + "Scene" + "{}", core);
-        obj._qsRepo = defaultRepo;
-        return obj;
+        return QSSerializer.createQSObject("Scene", ["NodeLink"], core);
     }
 
-    function createPort() {
-        let obj = Qt.createQmlObject("import NodeLink;" + "Port" + "{}", core);
-        obj._qsRepo = defaultRepo;
-        return obj;
-    }
-
+    //! Create Node
     function createNode() {
-        let obj = Qt.createQmlObject("import NodeLink;" + "Node" + "{}", core);
-        obj._qsRepo = defaultRepo;
-        return obj;
+        return QSSerializer.createQSObject("Node", ["NodeLink"], core);
     }
 
-
+    //! Create port
+    function createPort() {
+        return QSSerializer.createQSObject("Port", ["NodeLink"], core);
+    }
 }

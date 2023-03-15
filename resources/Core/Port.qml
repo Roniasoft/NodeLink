@@ -2,6 +2,9 @@ import QtQuick
 import NodeLink
 import QtQuickStream
 
+/*! ***********************************************************************************************
+ * Port is a QSObject model that manage port properties..
+ * ************************************************************************************************/
 QSObject {
 
     /* Property Declarations
