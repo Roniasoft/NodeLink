@@ -6,9 +6,6 @@ QSObject {
 
     /* Property Declarations
      * ****************************************************************************************/
-    // Port ID
-    property int    id:         0
-
     //! Node (parent) of the port
     property var   node
 

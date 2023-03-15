@@ -15,7 +15,6 @@ QSCore {
 
     property QtObject _internal: QtObject {
         readonly property var imports: [ "QtQuickStream" ]
-        property int portCounter: 0
     }
 
     /* Object Properties
@@ -33,9 +32,7 @@ QSCore {
 
     function createPort() {
         let obj = Qt.createQmlObject("import NodeLink;" + "Port" + "{}", core);
-        core._internal.portCounter++;
         obj._qsRepo = defaultRepo;
-        obj.id = core._internal.portCounter;
         return obj;
     }
 

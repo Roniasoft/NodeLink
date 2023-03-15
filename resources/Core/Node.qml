@@ -11,9 +11,6 @@ QSObject  {
     /* Property Declarations
      * ****************************************************************************************/
 
-    // Unique ID
-    property int            id:         0
-
     //! Title
     property string         title:      "<Unknown>"
 
@@ -26,7 +23,7 @@ QSObject  {
     property int            type:       NLSpec.NodeType.General
 
     //! Port list
-    //! map<id, Port>
+    //! map<uuid, Port>
     property var            ports:      ({})
 
 
@@ -73,19 +70,19 @@ QSObject  {
 
 
     //! Adds a node the to nodes map
-    function addPort(port) {
+    function addPort(port : Port) {
         // Add to local administration
-        ports[port.id] = port;
+        ports[port._qsUuid] = port;
         portsChanged();
 
-        portAdded(port.id);
+        portAdded(port._qsUuid);
     }
 
     function deletePort(port) {
 
     }
 
-    function findPort(portId: int): Port {
+    function findPort(portId: string): Port {
         if (Object.keys(ports).includes(portId)) {
             return ports[portId];
         }
