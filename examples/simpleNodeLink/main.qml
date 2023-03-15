@@ -12,17 +12,11 @@ Window {
     title: qsTr("Simple NodeLink Example")
     color: "#1e1e1e"
 
-    //! init one QSCore with several Repos (Add repos);
-    property QSCore coreStreamer: QSCore {
-        defaultRepo: createDefaultRepo([ "QtQuickStream" ]);
-    }
-
-    property Scene scene: NLCore.createScene(coreStreamer.defaultRepo)
+    property Scene scene: NLCore.createScene()
 
 
     NLView {
         scene: window.scene
-        coreStreamer: window.coreStreamer
         anchors.fill: parent
     }
 
@@ -51,7 +45,7 @@ Window {
             }
 
             onClicked: {
-                coreStreamer.defaultRepo.initRootObject("QSObject");
+                NLCore.defaultRepo.initRootObject("QSObject");
                 saveDialog.visible = true
             }
         }
@@ -79,7 +73,7 @@ Window {
         fileMode: FileDialog.SaveFile
         nameFilters: [ "QtQuickStream Files (*.QQS.json)" ]
         onAccepted: {
-            coreStreamer.defaultRepo.saveToFile(saveDialog.currentFile);
+            NLCore.defaultRepo.saveToFile(saveDialog.currentFile);
         }
     }
 
@@ -90,14 +84,14 @@ Window {
         fileMode: FileDialog.OpenFile
         nameFilters: [ "QtQuickStream Files (*.QQS.json)" ]
         onAccepted: {
-            coreStreamer.defaultRepo._localImports =  [ "QtQuickStream", "NodeLink"]
+            NLCore.defaultRepo._localImports =  [ "QtQuickStream", "NodeLink"]
 
-            coreStreamer.defaultRepo.loadFromFile(loadDialog.currentFile);
+            NLCore.defaultRepo.loadFromFile(loadDialog.currentFile);
 
             //One scene exist.
-            for (var prop in coreStreamer.defaultRepo._qsObjects) {
-                if(coreStreamer.defaultRepo._qsObjects[prop].qsType === "Scene") {
-                    window.scene = coreStreamer.defaultRepo._qsObjects[prop];
+            for (var prop in NLCore.defaultRepo._qsObjects) {
+                if(NLCore.defaultRepo._qsObjects[prop].qsType === "Scene") {
+                    window.scene = NLCore.defaultRepo._qsObjects[prop];
                 }
             }
 

@@ -4,47 +4,44 @@ import QtQuick
 import QtQuickStream
 
 /*! ***********************************************************************************************
- * The NLCore is responsible for creating the Scene, and handling the top level functionalities,
+ * The NLCore is responsible for creating the default repo Scene, and handling the top level functionalities,
  * such as de/serialization and network connectivity.
  * ************************************************************************************************/
-QtObject {
+QSCore {
     id: core
 
     /* Property Declarations
      * ****************************************************************************************/
-//    required property  QSRepository qsRepo
-    property Scene scene: Scene {
-//        _qsRepo: core.qsRepo
-    }
-
 
     property QtObject _internal: QtObject {
+        readonly property var imports: [ "QtQuickStream" ]
         property int portCounter: 0
     }
 
     /* Object Properties
      * ****************************************************************************************/
+    defaultRepo: createDefaultRepo(_internal.imports);
 
 
     /* Functions
      * ****************************************************************************************/
-    function createScene(parentRepo: QSRepository) {
+    function createScene() {
         let obj = Qt.createQmlObject("import NodeLink;" + "Scene" + "{}", core);
-        obj._qsRepo = parentRepo;
+        obj._qsRepo = defaultRepo;
         return obj;
     }
 
-    function createPort(parentRepo: QSRepository) {
+    function createPort() {
         let obj = Qt.createQmlObject("import NodeLink;" + "Port" + "{}", core);
         core._internal.portCounter++;
-        obj._qsRepo = parentRepo;
+        obj._qsRepo = defaultRepo;
         obj.id = core._internal.portCounter;
         return obj;
     }
 
-    function createNode(parentRepo: QSRepository) {
+    function createNode() {
         let obj = Qt.createQmlObject("import NodeLink;" + "Node" + "{}", core);
-        obj._qsRepo = parentRepo;
+        obj._qsRepo = defaultRepo;
         return obj;
     }
 

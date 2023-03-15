@@ -12,7 +12,6 @@ Menu {
     /* Property Declarations
      * ****************************************************************************************/
     required property Scene  scene;
-    required property QSCore coreStreamer;
 
     /* Object Properties
      * ****************************************************************************************/
@@ -32,7 +31,7 @@ Menu {
     ContextMenuItem{
         id: addCard
         onClicked: {
-            scene.addNode(coreStreamer.defaultRepo, contextMenu.x,contextMenu.y)
+            scene.addNode(contextMenu.x,contextMenu.y)
             contextMenu.close()
         }
     }

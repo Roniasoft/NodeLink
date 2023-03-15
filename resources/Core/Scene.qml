@@ -49,9 +49,9 @@ QSObject {
     /* Functions
      * ****************************************************************************************/
     //! Adds a node the to nodes map
-    function addNode(parentRepo: QSRepository, x: real, y: real) {
+    function addNode(x: real, y: real) {
 
-        var node = NLCore.createNode(parentRepo);
+        var node = NLCore.createNode();
         node.guiConfig.position.x = x;
         node.guiConfig.position.y = y;
         node.guiConfig.color = Qt.rgba(Math.random(), Math.random(), Math.random(), 1)
@@ -103,7 +103,7 @@ QSObject {
 
     //! duplicator (third button)
     function cloneNode(nodeId: int) {
-        var node = addNode(nodes[nodeId]._qsRepo, 100,100);
+        var node = addNode(100,100);
         node.guiConfig.position.x = nodes[nodeId].guiConfig.position.x+50
         node.guiConfig.position.y = nodes[nodeId].guiConfig.position.y+50
         node.guiConfig.color = nodes[nodeId].guiConfig.color

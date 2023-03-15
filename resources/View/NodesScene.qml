@@ -24,8 +24,6 @@ Flickable {
 
     property SceneSession       sceneSession
 
-    property QSCore coreStreamer
-
     property alias              tempConnection: tempConnection
 
     property QtObject           privateProperty: QtObject {
@@ -81,13 +79,11 @@ Flickable {
             else if (mouse.button === Qt.RightButton){
                 console.log("right clicked")
                 contextMenu.popup(mouseX,mouseY)
-                //scene.addNode(mouseX,mouseY)
             }
 
         }
         ContextMenu {
             id: contextMenu
-            coreStreamer: flickable.coreStreamer
             scene: flickable.scene
         }
     }
