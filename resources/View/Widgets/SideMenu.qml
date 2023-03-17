@@ -71,20 +71,26 @@ Item {
             position: "top"
             Layout.preferredHeight: 34
             Layout.preferredWidth: 34
+            enabled: NLStackFlow.isValidUndo
             NLToolTip{
                 visible: parent.hovered
                 text: "Undo"
             }
+
+            onClicked: NLStackFlow.undo();
         }
         SideMenuButton {
             text: "\ue331"
             position: "bottom"
             Layout.preferredHeight: 34
             Layout.preferredWidth: 34
+            enabled: NLStackFlow.isValidRedo
             NLToolTip{
                 visible: parent.hovered
                 text: "Redo"
             }
+
+            onClicked: NLStackFlow.redo();
         }
     }
 
