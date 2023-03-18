@@ -71,14 +71,14 @@ Flickable {
                      }
                  }
 
-        onClicked: {
+        onClicked: mouse => {
             if(mouse.button === Qt.LeftButton){
                 scene.selectionModel.select(null)
                 flickable.forceActiveFocus()
             }
             else if (mouse.button === Qt.RightButton){
                 console.log("right clicked")
-                contextMenu.popup(mouseX,mouseY)
+                contextMenu.popup(mouse.x, mouse.y)
             }
 
         }
