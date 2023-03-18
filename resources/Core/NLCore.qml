@@ -27,16 +27,22 @@ QSCore {
 
     //! Create scene
     function createScene() {
-        return QSSerializer.createQSObject("Scene", ["NodeLink"], core);
+        let obj = QSSerializer.createQSObject("Scene", ["NodeLink"], core);
+        obj._qsRepo = defaultRepo;
+        return obj;
     }
 
     //! Create Node
     function createNode() {
-        return QSSerializer.createQSObject("Node", ["NodeLink"], core);
+        let obj = QSSerializer.createQSObject("Node", ["NodeLink"], core);
+        obj._qsRepo = defaultRepo;
+        return obj;
     }
 
     //! Create port
     function createPort() {
-        return QSSerializer.createQSObject("Port", ["NodeLink"], core);
+        let obj = QSSerializer.createQSObject("Port", ["NodeLink"], core);
+        obj._qsRepo = defaultRepo;
+        return obj;
     }
 }

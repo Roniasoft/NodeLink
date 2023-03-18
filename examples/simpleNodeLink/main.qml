@@ -14,6 +14,7 @@ Window {
 
     property Scene scene: NLCore.createScene()
 
+    Component.onCompleted: NLCore.defaultRepo.initRootObject("QSObject");
 
     NLView {
         scene: window.scene
@@ -45,7 +46,6 @@ Window {
             }
 
             onClicked: {
-                NLCore.defaultRepo.initRootObject("QSObject");
                 saveDialog.visible = true
             }
         }
