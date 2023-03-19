@@ -19,7 +19,7 @@ QtObject {
     property bool isValidRedo: redoStack.length > 0
 
     //! Validation of Undo operation
-    property bool isValidUndo: undoStack.length > 0
+    property bool isValidUndo: undoStack.length > 1
 
     //! Undo stack
     property var undoStack: []
@@ -32,13 +32,17 @@ QtObject {
 
     //! Update stackFlow Model
     function updateStackFlow() {
+        let targetObj = createStackObject(scene);
+        let undoFirstObj = undoStack.find(obj => obj !== undefined);
+
+        if(NLHashCompareString.compareStringModels(undoFirstObj, targetObj))
+            return;
+
         redoStack = [];
         redoStackChanged();
 
-        let obj = createStackObject(scene);
-
         //insert object in first of stack
-        undoStack.unshift(obj);
+        undoStack.unshift(targetObj);
         undoStackChanged();
     }
 
@@ -59,8 +63,10 @@ QtObject {
         if(!isValidUndo)
             return;
 
-        var sceneModel = undoStack.shift();
-        redoStack.unshift(sceneModel);
+        // Delete first element of redo stack and move it to redoStack.
+        redoStack.unshift(undoStack.shift());
+        // Find the first element of redoStack and load it
+        var sceneModel = undoStack.find(obj => obj !== undefined);;
         redoStackChanged();
         undoStackChanged();
         setSceneObject(sceneModel);
