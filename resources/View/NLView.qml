@@ -13,8 +13,8 @@ Item {
 
     property SceneSession   sceneSession:   SceneSession {}
 
-    //! Logger stack flow
-    property LoggerStackFlow loggerStackFlow: LoggerStackFlow {
+    //! Scene undo observer
+    property SceneUndoObserver loggerStackFlow: SceneUndoObserver {
 
         scene: view.scene
     }

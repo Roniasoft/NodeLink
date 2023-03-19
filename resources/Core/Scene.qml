@@ -39,7 +39,6 @@ QSObject {
         repeat: false
         running: true
         onTriggered: {
-            NLCore.blockStackFlowConnection = false;
             // example link
 //            linkNodes(Object.keys(_node1.ports)[0], Object.keys(_node2.ports)[2]);
 //            linkNodes(Object.keys(_node1.ports)[1], Object.keys(_node3.ports)[3]);
@@ -47,12 +46,11 @@ QSObject {
         }
     }
 
-    signal updateStackFlowModel();
+//    signal updateStackFlowModel();
     /* Functions
      * ****************************************************************************************/
     //! Adds a node the to nodes map
     function addNode(x: real, y: real) {
-        NLCore.blockStackFlowConnection = true;
         var node = NLCore.createNode();
         node.guiConfig.position.x = x;
         node.guiConfig.position.y = y;
@@ -66,9 +64,7 @@ QSObject {
         nodesChanged();
 
         node.onPortAdded.connect(onPortAdded);
-        NLCore.blockStackFlowConnection = false;
 
-        updateStackFlowModel();
         return node;
     }
 

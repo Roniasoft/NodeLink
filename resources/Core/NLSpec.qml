@@ -1,9 +1,13 @@
 pragma Singleton
 
-import QtQuick 2.15
+import QtQuick
+import QtQuick.Controls
 
 QtObject {
 
+    property QtObject undoProperty: QtObject {
+        property bool blockUndoStackConnection: false
+    }
 
     //! Type of node.
     enum NodeType {

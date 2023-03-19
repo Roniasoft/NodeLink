@@ -15,10 +15,8 @@ QSCore {
      * ****************************************************************************************/
 
     property QtObject _internal: QtObject {
-        readonly property var imports: [ "QtQuickStream" ]
+        readonly property var imports: [ "QtQuickStream", "NodeLink"]
     }
-
-    property bool blockStackFlowConnection: true //Temp, Must be redesign
 
     /* Object Properties
      * ****************************************************************************************/

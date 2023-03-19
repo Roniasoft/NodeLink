@@ -10,7 +10,7 @@ import "../Components"
 Item {
     id: sideMenu1
 
-     property LoggerStackFlow loggerSF
+    property SceneUndoObserver loggerSF
 
     /* Children
      * ****************************************************************************************/
@@ -79,7 +79,10 @@ Item {
                 text: "Undo"
             }
 
-            onClicked: loggerSF.stackFlow.undo();
+            onClicked: {
+                console.log("Undo click")
+                loggerSF.stackFlow.undo();
+            }
         }
         SideMenuButton {
             text: "\ue331"
@@ -92,7 +95,9 @@ Item {
                 text: "Redo"
             }
 
-            onClicked: loggerSF.stackFlow.redo();
+            onClicked: {
+                console.log("redo click")
+                loggerSF.stackFlow.redo();}
         }
     }
 

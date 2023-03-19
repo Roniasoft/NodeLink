@@ -4,57 +4,63 @@ import QtQml
 import NodeLink
 
 /*! ***********************************************************************************************
- * The LoggerStackFlow keep connection between Scene Model properties and StackFlowCore
+ * The SceneUndoObserver keep connection between Scene Model properties and StackFlowCore
  * ************************************************************************************************/
 
 Item {
 
     id: root
     property Scene         scene
-    property StackFlowCore stackFlow : StackFlowCore {
+    property UndoStack stackFlow : UndoStack {
         scene : root.scene
     }
 
+    property Timer _timer : Timer {
+        repeat: false
+        interval: 250
+        onTriggered: {
+            stackFlow.updateStackFlow();
+        }
+    }
+
+    Component.onCompleted: _timer.start();
     /* Childeren
      * ****************************************************************************************/
 
     Connections {
         id: sceneConnection
         target:  scene
-        enabled: !NLCore.blockStackFlowConnection
-
-        function onUpdateStackFlowModel() {
-             console.log("onUpdateStackFlowModel")
-            stackFlow.updateStackFlow();
-        }
+        enabled: !NLSpec.undoProperty.blockUndoStackConnection
 
         function onTitleChanged() {
-             console.log("onTitleChanged")
-            stackFlow.updateStackFlow();
+            _timer.start();
         }
 
         function onNodesChanged() {
-             console.log("onNodesChanged")
-            stackFlow.updateStackFlow();
+             _timer.start();
         }
 
         function onPortsUpstreamChanged() {
-            stackFlow.updateStackFlow();
+            _timer.start();
         }
 
         function onPortsDownstreamChanged() {
-            stackFlow.updateStackFlow();
+            _timer.start();
         }
 
         function onPortsPositionsChanged() {
-//            stackFlow.updateStackFlow();
+            _timer.start();
         }
 
     }
-
     //! Node Loggers
-    NodeDataLogger {
-        nodes: scene.nodes
-        stackFlow: root.stackFlow
+    Repeater {
+        model: scene.nodes
+
+        delegate: NodeUndoObserver{
+            node: modelData
+            stackFlow: root.stackFlow
+        }
+
     }
 }
