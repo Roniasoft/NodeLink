@@ -13,6 +13,12 @@ Item {
 
     property SceneSession   sceneSession:   SceneSession {}
 
+    //! Logger stack flow
+    property LoggerStackFlow loggerStackFlow: LoggerStackFlow {
+
+        scene: view.scene
+    }
+
     /* Children
     * ****************************************************************************************/
 
@@ -35,6 +41,8 @@ Item {
 
     //! Side Menu
     SideMenu {
+        loggerSF: view.loggerStackFlow
+
         anchors.right: parent.right
         anchors.rightMargin: 45
         anchors.top: parent.top

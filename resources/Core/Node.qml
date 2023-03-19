@@ -32,6 +32,8 @@ QSObject  {
     signal portAdded(var portId);
 
     Component.onCompleted: {
+        NLCore.blockStackFlowConnection = true;
+
         let _port1 = NLCore.createPort();
         let _port2 = NLCore.createPort();
         let _port3 = NLCore.createPort();

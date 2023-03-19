@@ -68,7 +68,6 @@ qt_add_library(NodeLink STATIC)
 set_source_files_properties(
     resources/Core/NLCore.qml
     resources/Core/NLSpec.qml
-    resources/Core/NLStackFlow.qml
     resources/View/NLStyle.qml
     PROPERTIES
         QT_QML_SINGLETON_TYPE True
@@ -90,8 +89,10 @@ qt_add_qml_module(NodeLink
         resources/Core/Scene.qml
         resources/Core/SelectionModel.qml
         resources/Core/NodeGuiConfig.qml
-        resources/Core/NLStackFlow.qml
+        resources/Core/StackFlowCore.qml
         resources/Core/StackObject.qml
+        resources/Core/LoggerStackFlow.qml
+        resources/Core/NodeDataLogger.qml
 
         resources/View/Components/ColorPicker/ColorItem.qml
         resources/View/Components/ColorPicker/ColorPicker.qml

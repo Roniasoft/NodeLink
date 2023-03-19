@@ -16,8 +16,6 @@ Rectangle {
 
     property SceneSession sceneSession
 
-    property Port       virtualPort:    Port {}
-
     property int        globalX
 
     property int        globalY

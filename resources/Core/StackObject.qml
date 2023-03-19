@@ -10,9 +10,7 @@ QtObject {
     property int stackIndex: 0
 
     //! Scene model
-    property Scene sceneModel
+    property string sceneModel
 
-    //! Scene Uuid, for search in StackObjects
-    property string sceneUuid: sceneModel._qsUuid
 
 }

@@ -1,6 +1,7 @@
 pragma Singleton
 
 import QtQuick
+import QtQuick.Controls
 import QtQuickStream
 
 /*! ***********************************************************************************************
@@ -17,6 +18,8 @@ QSCore {
         readonly property var imports: [ "QtQuickStream" ]
     }
 
+    property bool blockStackFlowConnection: true //Temp, Must be redesign
+
     /* Object Properties
      * ****************************************************************************************/
     defaultRepo: createDefaultRepo(_internal.imports);
@@ -27,21 +30,21 @@ QSCore {
 
     //! Create scene
     function createScene() {
-        let obj = QSSerializer.createQSObject("Scene", ["NodeLink"], core);
+        let obj = QSSerializer.createQSObject("Scene", ["NodeLink"], defaultRepo);
         obj._qsRepo = defaultRepo;
         return obj;
     }
 
     //! Create Node
     function createNode() {
-        let obj = QSSerializer.createQSObject("Node", ["NodeLink"], core);
+        let obj = QSSerializer.createQSObject("Node", ["NodeLink"], defaultRepo);
         obj._qsRepo = defaultRepo;
         return obj;
     }
 
     //! Create port
     function createPort() {
-        let obj = QSSerializer.createQSObject("Port", ["NodeLink"], core);
+        let obj = QSSerializer.createQSObject("Port", ["NodeLink"], defaultRepo);
         obj._qsRepo = defaultRepo;
         return obj;
     }

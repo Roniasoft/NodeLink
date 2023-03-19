@@ -10,6 +10,8 @@ import "../Components"
 Item {
     id: sideMenu1
 
+     property LoggerStackFlow loggerSF
+
     /* Children
      * ****************************************************************************************/
 
@@ -71,26 +73,26 @@ Item {
             position: "top"
             Layout.preferredHeight: 34
             Layout.preferredWidth: 34
-            enabled: NLStackFlow.isValidUndo
+            enabled: loggerSF.stackFlow.isValidUndo
             NLToolTip{
                 visible: parent.hovered
                 text: "Undo"
             }
 
-            onClicked: NLStackFlow.undo();
+            onClicked: loggerSF.stackFlow.undo();
         }
         SideMenuButton {
             text: "\ue331"
             position: "bottom"
             Layout.preferredHeight: 34
             Layout.preferredWidth: 34
-            enabled: NLStackFlow.isValidRedo
+            enabled: loggerSF.stackFlow.isValidRedo
             NLToolTip{
                 visible: parent.hovered
                 text: "Redo"
             }
 
-            onClicked: NLStackFlow.redo();
+            onClicked: loggerSF.stackFlow.redo();
         }
     }
 
