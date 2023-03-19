@@ -33,12 +33,13 @@ QtObject {
     //! Update stackFlow Model
     function updateStackFlow() {
         redoStack = [];
+        redoStackChanged();
+
         let obj = createStackObject(scene);
 
         //insert object in first of stack
         undoStack.unshift(obj);
         undoStackChanged();
-        console.log("updateStackFlow ", undoStack.length)
     }
 
     //! Redo operation
@@ -50,7 +51,6 @@ QtObject {
         undoStack.unshift(sceneModel);
         redoStackChanged();
         undoStackChanged();
-        console.log("Redo ", undoStack.length, redoStack.length)
         setSceneObject(sceneModel);
     }
 
@@ -63,7 +63,6 @@ QtObject {
         redoStack.unshift(sceneModel);
         redoStackChanged();
         undoStackChanged();
-        console.log("Undo ", undoStack.length, redoStack.length)
         setSceneObject(sceneModel);
     }
 

@@ -14,7 +14,7 @@ Item {
     property SceneSession   sceneSession:   SceneSession {}
 
     //! Scene undo observer
-    property SceneUndoObserver loggerStackFlow: SceneUndoObserver {
+    property SceneUndoObserver undoObserver: SceneUndoObserver {
 
         scene: view.scene
     }
@@ -41,7 +41,7 @@ Item {
 
     //! Side Menu
     SideMenu {
-        loggerSF: view.loggerStackFlow
+        undoObserver: view.undoObserver
 
         anchors.right: parent.right
         anchors.rightMargin: 45

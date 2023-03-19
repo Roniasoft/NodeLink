@@ -1,8 +1,7 @@
 import QtQuick
-import NodeLink
 import QtQuick.Layouts
 import QtQuick.Controls
-import "../Components"
+import NodeLink
 
 /*! ***********************************************************************************************
  * Side Menu
@@ -10,7 +9,7 @@ import "../Components"
 Item {
     id: sideMenu1
 
-    property SceneUndoObserver loggerSF
+    property SceneUndoObserver undoObserver
 
     /* Children
      * ****************************************************************************************/
@@ -73,7 +72,7 @@ Item {
             position: "top"
             Layout.preferredHeight: 34
             Layout.preferredWidth: 34
-            enabled: loggerSF.stackFlow.isValidUndo
+            enabled: undoObserver.stackFlow.isValidUndo
             NLToolTip{
                 visible: parent.hovered
                 text: "Undo"
@@ -81,7 +80,7 @@ Item {
 
             onClicked: {
                 console.log("Undo click")
-                loggerSF.stackFlow.undo();
+                undoObserver.stackFlow.undo();
             }
         }
         SideMenuButton {
@@ -89,7 +88,7 @@ Item {
             position: "bottom"
             Layout.preferredHeight: 34
             Layout.preferredWidth: 34
-            enabled: loggerSF.stackFlow.isValidRedo
+            enabled: undoObserver.stackFlow.isValidRedo
             NLToolTip{
                 visible: parent.hovered
                 text: "Redo"
@@ -97,7 +96,8 @@ Item {
 
             onClicked: {
                 console.log("redo click")
-                loggerSF.stackFlow.redo();}
+                undoObserver.stackFlow.redo();
+            }
         }
     }
 

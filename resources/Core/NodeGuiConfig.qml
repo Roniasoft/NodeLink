@@ -1,8 +1,16 @@
-import QtQuick 2.15
+import QtQuick
 
 import QtQuickStream
 
+/*! ***********************************************************************************************
+ * The NodeGuiConfig is a QSObject that keep the Ui Node properties.
+ * ************************************************************************************************/
+
 QSObject {
+
+    /* Property Properties
+     * ****************************************************************************************/
+
     //! Display image
     property string     name:       "<node name>"
 
@@ -20,4 +28,5 @@ QSObject {
 
     //! Color
     property string     color:      "pink"
+
 }

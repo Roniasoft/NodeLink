@@ -17,7 +17,7 @@ Item {
 
     property Timer _timer : Timer {
         repeat: false
-        interval: 250
+        interval: 50
         onTriggered: {
             stackFlow.updateStackFlow();
         }
@@ -28,36 +28,36 @@ Item {
      * ****************************************************************************************/
 
     Connections {
-        id: sceneConnection
         target:  scene
         enabled: !NLSpec.undoProperty.blockUndoStackConnection
 
         function onTitleChanged() {
-            _timer.start();
+            root._timer.start();
         }
 
         function onNodesChanged() {
-             _timer.start();
+             root._timer.start();
         }
 
         function onPortsUpstreamChanged() {
-            _timer.start();
+            root._timer.start();
         }
 
         function onPortsDownstreamChanged() {
-            _timer.start();
+            root._timer.start();
         }
 
         function onPortsPositionsChanged() {
-            _timer.start();
+//            root._timer.start();
         }
 
     }
+
     //! Node Loggers
     Repeater {
-        model: scene.nodes
+        model: Object.values(root.scene.nodes)
 
-        delegate: NodeUndoObserver{
+        delegate: NodeUndoObserver {
             node: modelData
             stackFlow: root.stackFlow
         }

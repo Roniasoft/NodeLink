@@ -46,7 +46,6 @@ QSObject {
         }
     }
 
-//    signal updateStackFlowModel();
     /* Functions
      * ****************************************************************************************/
     //! Adds a node the to nodes map
@@ -105,6 +104,7 @@ QSObject {
         var node = addNode(100,100);
         node.guiConfig.position.x = nodes[nodeUUId].guiConfig.position.x+50
         node.guiConfig.position.y = nodes[nodeUUId].guiConfig.position.y+50
+        console.log("x ", node.guiConfig.position.y)
         node.guiConfig.color = nodes[nodeUUId].guiConfig.color
         node.guiConfig.height = nodes[nodeUUId].guiConfig.height
         node.guiConfig.width = nodes[nodeUUId].guiConfig.width

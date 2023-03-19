@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import NodeLink
+ import QtQml
 
 /*! ***********************************************************************************************
  * The NodeUndoObserver update UndoStack when Nodes properties changed.
@@ -8,12 +9,12 @@ import NodeLink
 
 Item {
     id: root
-    property Node           node: null
+    property Node           node
     property UndoStack      stackFlow
 
     property Timer _timer : Timer {
         repeat: false
-        interval: 250
+        interval: 50
         onTriggered: {
             stackFlow.updateStackFlow();
         }
@@ -28,19 +29,20 @@ Item {
         enabled: !NLSpec.undoProperty.blockUndoStackConnection
 
         function onTitleChanged() {
-            _timer.start();
+            root._timer.start();
         }
 
         function onTypeChanged() {
-            _timer.start();
+            root._timer.start();
         }
 
         function onPortsChanged() {
-            _timer.start();
+            root._timer.start();
         }
+    }
 
-        function onGuiConfigChanged() {
-            _timer.start();
-        }
+    GuiConfigUndoObserver {
+      guiConfig: root.node.guiConfig
+      stackFlow: root.stackFlow
     }
 }

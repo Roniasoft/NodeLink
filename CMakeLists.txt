@@ -90,9 +90,9 @@ qt_add_qml_module(NodeLink
         resources/Core/SelectionModel.qml
         resources/Core/NodeGuiConfig.qml
         resources/Core/UndoStack.qml
-        resources/Core/StackObject.qml
         resources/Core/SceneUndoObserver.qml
         resources/Core/NodeUndoObserver.qml
+        resources/Core/GuiConfigUndoObserver.qml
 
         resources/View/Components/ColorPicker/ColorItem.qml
         resources/View/Components/ColorPicker/ColorPicker.qml

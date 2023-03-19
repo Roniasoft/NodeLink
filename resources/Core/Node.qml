@@ -32,6 +32,7 @@ QSObject  {
     signal portAdded(var portId);
 
     Component.onCompleted: {
+
         let _port1 = NLCore.createPort();
         let _port2 = NLCore.createPort();
         let _port3 = NLCore.createPort();

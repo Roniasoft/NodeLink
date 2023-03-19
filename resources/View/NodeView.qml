@@ -173,6 +173,7 @@ Rectangle {
                     node.guiConfig.position.y =  Math.ceil(node.guiConfig.position.y / 20) * 20;
                     node.guiConfig.position.x =  Math.ceil(node.guiConfig.position.x / 20) * 20;
                 }
+                node.guiConfig.positionChanged();
                 prevY = mouse.y - deltaY;
                 if(((node.guiConfig.position.x) < 0 && deltaX < 0)   ||
                    ((node.guiConfig.position.x + node.guiConfig.width ) > contentWidth) && deltaX > 0||

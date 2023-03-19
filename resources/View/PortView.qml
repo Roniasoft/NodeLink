@@ -23,7 +23,7 @@ Rectangle {
     property point      globalPos:      Qt.point(globalX, globalY)
 
     onGlobalPosChanged: {
-        scene.portsPositions[port.id] = globalPos;
+        scene.portsPositions[port._qsUuid] = globalPos;
         scene.portsPositionsChanged();
     }
 
