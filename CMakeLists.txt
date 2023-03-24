@@ -90,11 +90,13 @@ qt_add_qml_module(NodeLink
         resources/Core/Scene.qml
         resources/Core/SelectionModel.qml
         resources/Core/NodeGuiConfig.qml
-        resources/Core/UndoStack.qml
-        resources/Core/SceneUndoObserver.qml
-        resources/Core/NodeUndoObserver.qml
-        resources/Core/GuiConfigUndoObserver.qml
-        resources/Core/NLHashCompareString.qml
+
+        resources/Core/Undo/UndoCore.qml
+        resources/Core/Undo/UndoStack.qml
+        resources/Core/Undo/UndoSceneObserver.qml
+        resources/Core/Undo/UndoNodeObserver.qml
+        resources/Core/Undo/UndoNodeGuiObserver.qml
+        resources/Core/Undo/HashCompareString.qml
 
         resources/View/Components/ColorPicker/ColorItem.qml
         resources/View/Components/ColorPicker/ColorPicker.qml

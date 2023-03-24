@@ -3,46 +3,45 @@ import QtQuick.Controls
 import NodeLink
 
 /*! ***********************************************************************************************
- * The UndoStack representing the ability to undo and redo actions while maintaining
- * two "stacks" of changes made.
+ * The UndoStack is responsible of undo/redo actions and keeping
+ * two "stacks" for them.
  * ************************************************************************************************/
-
 QtObject {
     id: root
 
     /* Property Properties
      * ****************************************************************************************/
-
-    property Scene scene
+    //! Target scene
+    required property Scene    scene
 
     //! Validation of Redo operation
-    property bool isValidRedo: redoStack.length > 0
+    property bool   isValidRedo:    redoStack.length > 0
 
     //! Validation of Undo operation
-    property bool isValidUndo: undoStack.length > 1
+    property bool   isValidUndo:    undoStack.length > 1
 
     //! Undo stack
-    property var undoStack: []
+    property var    undoStack:      []
 
     //! Redo stack
-    property var redoStack: []
+    property var    redoStack:      []
 
     /* Functions
      * ****************************************************************************************/
 
     //! Update stackFlow Model
-    function updateStackFlow() {
-        let targetObj = createStackObject(scene);
+    function updateStacks() {
+        let dumpedRepo = dumpRepo(scene);
         let undoFirstObj = undoStack.find(obj => obj !== undefined);
 
-        if(NLHashCompareString.compareStringModels(undoFirstObj, targetObj))
+        if(NLHashCompareString.compareStringModels(undoFirstObj, dumpedRepo))
             return;
 
         redoStack = [];
         redoStackChanged();
 
         //insert object in first of stack
-        undoStack.unshift(targetObj);
+        undoStack.unshift(dumpedRepo);
         undoStackChanged();
     }
 
@@ -72,15 +71,17 @@ QtObject {
         setSceneObject(sceneModel);
     }
 
-    //! Create stack object
-    function createStackObject(scene : Scene) : string {
+    //! Dump repo for stack
+    function dumpRepo(scene : Scene) : string {
         let repoDump = NLCore.defaultRepo.dumpRepo()
         return JSON.stringify(repoDump, null, 4);
     }
 
     //! Load from SceneModel string and set to scene
     function setSceneObject(sceneString : string) {
-        NLSpec.undoProperty.blockUndoStackConnection = true;
+
+        // Block observers while loading new scene instance
+        NLSpec.undo.blockObservers = true;
 
         var fileObjects = JSON.parse(sceneString);
 
@@ -94,6 +95,7 @@ QtObject {
             }
         }
 
-        NLSpec.undoProperty.blockUndoStackConnection = false;
+        // Unblock Observers
+        NLSpec.undo.blockObservers = false;
     }
 }

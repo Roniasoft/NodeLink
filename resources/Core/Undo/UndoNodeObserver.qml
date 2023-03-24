@@ -1,32 +1,34 @@
 import QtQuick
 import QtQuick.Controls
+import QtQml
 import NodeLink
- import QtQml
 
 /*! ***********************************************************************************************
  * The NodeUndoObserver update UndoStack when Nodes properties changed.
  * ************************************************************************************************/
-
 Item {
     id: root
-    property Node           node
-    property UndoStack      stackFlow
+
+    /* Property Properties
+     * ****************************************************************************************/
+    property Node       node
+
+    property UndoStack  undoStack
 
     property Timer _timer : Timer {
         repeat: false
         interval: 50
         onTriggered: {
-            stackFlow.updateStackFlow();
+            undoStack.updateStacks();
         }
     }
 
     /* Childeren
      * ****************************************************************************************/
-
     Connections {
         target: node
 
-        enabled: !NLSpec.undoProperty.blockUndoStackConnection
+        enabled: !NLSpec.undo.blockObservers
 
         function onTitleChanged() {
             root._timer.start();
@@ -41,8 +43,8 @@ Item {
         }
     }
 
-    GuiConfigUndoObserver {
+    UndoNodeGuiObserver {
       guiConfig: root.node.guiConfig
-      stackFlow: root.stackFlow
+      undoStack: root.undoStack
     }
 }

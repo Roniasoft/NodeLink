@@ -5,8 +5,9 @@ import QtQuick.Controls
 
 QtObject {
 
-    property QtObject undoProperty: QtObject {
-        property bool blockUndoStackConnection: false
+    //! Flag for blocking observers while undo operations are under progress
+    property QtObject undo: QtObject {
+        property bool blockObservers: false
     }
 
     //! Type of node.

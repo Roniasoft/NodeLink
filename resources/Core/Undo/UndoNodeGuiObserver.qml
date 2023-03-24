@@ -1,26 +1,25 @@
 import QtQuick
 import QtQuick.Controls
- import QtQml
+import QtQml
 import NodeLink
 
 /*! ***********************************************************************************************
  * The GuiConfigUndoObserver observe NodeGuiConfig properties changes.
  * ************************************************************************************************/
-
 Item {
     id: root
-
 
     /* Property Properties
      * ****************************************************************************************/
     property NodeGuiConfig  guiConfig
-    property UndoStack      stackFlow
+
+    property UndoStack      undoStack
 
     property Timer _timer : Timer {
         repeat: false
         interval: 300
         onTriggered: {
-            stackFlow.updateStackFlow();
+            undoStack.updateStacks();
         }
     }
 
@@ -30,7 +29,7 @@ Item {
     Connections {
         target: guiConfig
 
-        enabled: !NLSpec.undoProperty.blockUndoStackConnection
+        enabled: !NLSpec.undo.blockObservers
 
         function onNameChanged() {
             _timer.start();

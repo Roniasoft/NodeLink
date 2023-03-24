@@ -69,7 +69,6 @@ QSObject  {
     /* Functions
      * ****************************************************************************************/
 
-
     //! Adds a node the to nodes map
     function addPort(port : Port) {
         // Add to local administration
@@ -80,7 +79,6 @@ QSObject  {
     }
 
     function deletePort(port) {
-
     }
 
     function findPort(portId: string): Port {

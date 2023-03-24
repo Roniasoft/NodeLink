@@ -9,7 +9,7 @@ import NodeLink
 Item {
     id: sideMenu1
 
-    property SceneUndoObserver undoObserver
+    property Scene scene
 
     /* Children
      * ****************************************************************************************/
@@ -72,15 +72,14 @@ Item {
             position: "top"
             Layout.preferredHeight: 34
             Layout.preferredWidth: 34
-            enabled: undoObserver.stackFlow.isValidUndo
+            enabled: scene.undoCore.undoStack.isValidUndo
             NLToolTip{
                 visible: parent.hovered
                 text: "Undo"
             }
 
             onClicked: {
-                console.log("Undo click")
-                undoObserver.stackFlow.undo();
+                scene.undoCore.undoStack.undo();
             }
         }
         SideMenuButton {
@@ -88,15 +87,14 @@ Item {
             position: "bottom"
             Layout.preferredHeight: 34
             Layout.preferredWidth: 34
-            enabled: undoObserver.stackFlow.isValidRedo
+            enabled: scene.undoCore.undoStack.isValidRedo
             NLToolTip{
                 visible: parent.hovered
                 text: "Redo"
             }
 
             onClicked: {
-                console.log("redo click")
-                undoObserver.stackFlow.redo();
+                scene.undoCore.undoStack.redo();
             }
         }
     }

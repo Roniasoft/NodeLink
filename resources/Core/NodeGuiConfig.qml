@@ -5,7 +5,6 @@ import QtQuickStream
 /*! ***********************************************************************************************
  * The NodeGuiConfig is a QSObject that keep the Ui Node properties.
  * ************************************************************************************************/
-
 QSObject {
 
     /* Property Properties

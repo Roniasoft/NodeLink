@@ -1,5 +1,5 @@
 import QtQuick 2.15
-
+import NodeLink
 import QtQuickStream
 
 /*! ***********************************************************************************************
@@ -13,26 +13,32 @@ QSObject {
      * ****************************************************************************************/
 
     //! Scene Title
-    property string title:              "<Untitled>"
+    property string         title:          "<Untitled>"
 
     //! Nodes
     //! map<UUID, Node>
-    property var    nodes:             ({})
+    property var            nodes:          ({})
 
     //! Container of Node line links A -> { B, C }
     //! map<Current Node port uuid: string, Dest port uuid: string>
-    property var    portsUpstream:     ({})
+    property var            portsUpstream:  ({})
 
     //! Container of Node line links Z -> { X, Y }
     //! map<Current Node port id, Dest port id>
-    property var    portsDownstream:   ({})
+    property var            portsDownstream:({})
 
     //! Port positions (global)
     //! map<port uuid: string, global pos: vector2d>
-    property var    portsPositions:    ({})
+    property var            portsPositions: ({})
 
     //! Scene Selection Model
-    property SelectionModel selectionModel: SelectionModel {}
+    property SelectionModel selectionModel: SelectionModel {
+    }
+
+    //! Undo Core
+    property UndoCore       undoCore:       UndoCore {
+        scene: scene
+    }
 
     property Timer _tier: Timer {
         interval: 300

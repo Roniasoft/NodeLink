@@ -4,32 +4,32 @@ import QtQml
 import NodeLink
 
 /*! ***********************************************************************************************
- * The SceneUndoObserver keep connection between Scene Model properties and StackFlowCore
+ * The UndoSceneObserver keep connection between Scene Model properties and StackFlowCore
  * ************************************************************************************************/
-
 Item {
-
     id: root
-    property Scene         scene
-    property UndoStack stackFlow : UndoStack {
-        scene : root.scene
-    }
+
+    /* Property Properties
+     * ****************************************************************************************/
+    required property Scene       scene
+
+    required property UndoStack undoStack
 
     property Timer _timer : Timer {
         repeat: false
         interval: 50
         onTriggered: {
-            stackFlow.updateStackFlow();
+            undoStack.updateStacks();
         }
     }
 
     Component.onCompleted: _timer.start();
+
     /* Childeren
      * ****************************************************************************************/
-
     Connections {
         target:  scene
-        enabled: !NLSpec.undoProperty.blockUndoStackConnection
+        enabled: !NLSpec.undo.blockObservers
 
         function onTitleChanged() {
             root._timer.start();
@@ -57,9 +57,9 @@ Item {
     Repeater {
         model: Object.values(root.scene.nodes)
 
-        delegate: NodeUndoObserver {
+        delegate: UndoNodeObserver {
             node: modelData
-            stackFlow: root.stackFlow
+            undoStack: root.undoStack
         }
 
     }

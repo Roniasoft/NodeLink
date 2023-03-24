@@ -13,12 +13,6 @@ Item {
 
     property SceneSession   sceneSession:   SceneSession {}
 
-    //! Scene undo observer
-    property SceneUndoObserver undoObserver: SceneUndoObserver {
-
-        scene: view.scene
-    }
-
     /* Children
     * ****************************************************************************************/
 
@@ -41,7 +35,7 @@ Item {
 
     //! Side Menu
     SideMenu {
-        undoObserver: view.undoObserver
+        scene: view.scene
 
         anchors.right: parent.right
         anchors.rightMargin: 45
