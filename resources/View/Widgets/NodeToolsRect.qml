@@ -65,7 +65,7 @@ Rectangle {
             Layout.bottomMargin: 2
             id: duplicateButton
             onClicked: {
-                scene.cloneNode(node.id);
+                scene.cloneNode(node._qsUuid);
             }
         }
 
@@ -104,7 +104,7 @@ Rectangle {
 
                 onAccepted: {
                     // This makes the app to crash.
-                    scene.deleteNode(node.id);
+                    scene.deleteNode(node._qsUuid);
                 }
             }
         }

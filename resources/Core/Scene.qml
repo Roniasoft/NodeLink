@@ -49,12 +49,7 @@ QSObject {
     /* Functions
      * ****************************************************************************************/
     //! Adds a node the to nodes map
-    function addNode(x: real, y: real) {
-        var node = NLCore.createNode();
-        node.guiConfig.position.x = x;
-        node.guiConfig.position.y = y;
-        node.guiConfig.color = Qt.rgba(Math.random(), Math.random(), Math.random(), 1)
-
+    function addNode(node: Node) {
         //Sanity check
         if (nodes[node._qsUuid] === node) { return; }
 
@@ -68,47 +63,48 @@ QSObject {
     }
 
     //! Deletes a node from the scene
-    function deleteNode(nodeId: int) {
-//        //! delete the node ports fromt the portsPosition map
-//        Object.keys(nodes[nodeId].ports).forEach(portId => {
-//            delete portsPositions[portId];
-//        });
+    function deleteNode(nodeUUId: string) {
+        //! delete the node ports fromt the portsPosition map
+        Object.keys(nodes[nodeUUId].ports).forEach(portId => {
+            delete portsPositions[portId];
+        });
 
-//        Object.keys(portsUpstream).forEach(portId => {
-//            delete portsUpstream[portId];
-//        });
+        Object.keys(portsUpstream).forEach(portId => {
+            delete portsUpstream[portId];
+        });
 
-//        Object.values(portsUpstream).forEach(portId => {
-//            delete portsUpstream[portId];
-//        });
+        Object.values(portsUpstream).forEach(portId => {
+            delete portsUpstream[portId];
+        });
 
-//        Object.keys(portsDownstream).forEach(portId => {
-//            delete portsDownstream[portId];
-//        });
-//        Object.values(portsDownstream).forEach(portId => {
-//            delete portsDownstream[portId];
-//        });
+        Object.keys(portsDownstream).forEach(portId => {
+            delete portsDownstream[portId];
+        });
+        Object.values(portsDownstream).forEach(portId => {
+            delete portsDownstream[portId];
+        });
 
-//        portsPositionsChanged();
-//        portsUpstreamChanged();
-//        portsDownstreamChanged();
+        portsPositionsChanged();
+        portsUpstreamChanged();
+        portsDownstreamChanged();
 
-        console.log(typeof(nodes[nodeId]));
-//        delete nodes[nodeId];
+        delete nodes[nodeUUId];
         nodesChanged();
     }
 
 
     //! duplicator (third button)
     function cloneNode(nodeUUId: string) {
-        var node = addNode(100,100);
-        node.guiConfig.position.x = nodes[nodeUUId].guiConfig.position.x+50
-        node.guiConfig.position.y = nodes[nodeUUId].guiConfig.position.y+50
-        console.log("x ", node.guiConfig.position.y)
+        var node = NLCore.createNode();
+        addNode(node);
+
+        node.guiConfig.position.x = nodes[nodeUUId].guiConfig.position.x + 50
+        node.guiConfig.position.y = nodes[nodeUUId].guiConfig.position.y + 50
         node.guiConfig.color = nodes[nodeUUId].guiConfig.color
         node.guiConfig.height = nodes[nodeUUId].guiConfig.height
         node.guiConfig.width = nodes[nodeUUId].guiConfig.width
         node.title = nodes[nodeUUId].title
+        selectionModel.select(node);
     }
 
     //! On port added
