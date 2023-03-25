@@ -69,7 +69,7 @@ set_source_files_properties(
     resources/Core/NLCore.qml
     resources/Core/NLSpec.qml
     resources/View/NLStyle.qml
-    resources/Core/NLHashCompareString.qml
+    resources/Core/Undo/HashCompareString.qml
     PROPERTIES
         QT_QML_SINGLETON_TYPE True
 )

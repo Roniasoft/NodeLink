@@ -1,4 +1,5 @@
-import QtQuick 2.15
+import QtQuick
+import QtQuick.Controls
 import NodeLink
 import QtQuickStream
 
@@ -36,7 +37,7 @@ QSObject {
     }
 
     //! Undo Core
-    property UndoCore       undoCore:       UndoCore {
+    property UndoCore       _undoCore:       UndoCore {
         scene: scene
     }
 

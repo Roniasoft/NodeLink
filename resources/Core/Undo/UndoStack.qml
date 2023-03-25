@@ -34,7 +34,7 @@ QtObject {
         let dumpedRepo = dumpRepo(scene);
         let undoFirstObj = undoStack.find(obj => obj !== undefined);
 
-        if(NLHashCompareString.compareStringModels(undoFirstObj, dumpedRepo))
+        if(HashCompareString.compareStringModels(undoFirstObj, dumpedRepo))
             return;
 
         redoStack = [];
