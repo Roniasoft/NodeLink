@@ -24,16 +24,16 @@ Canvas {
         property point      globalPosInputPort: {
 
             if (linkMode === NLSpec.LinkMode.Connected) {
-               return scene.portsPositions[inputPort.id]
+               return scene.portsPositions[inputPort._qsUuid]
             } else {
                 if(sceneSession.tempInputPort !== null)
-                    return scene.portsPositions[sceneSession.tempInputPort.id]
+                    return scene.portsPositions[sceneSession.tempInputPort._qsUuid]
             }
 
             return Qt.point(0, 0);
         }
         property point      globalPosOutputPort:  (linkMode === NLSpec.LinkMode.Connected) ?
-                                                      scene.portsPositions[outputPort.id] :
+                                                      scene.portsPositions[outputPort._qsUuid] :
                                                       sceneSession.tempConnectionEndPos
 
         //! update painted line when change position of input and output ports

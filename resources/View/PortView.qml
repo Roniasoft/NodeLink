@@ -51,11 +51,11 @@ Rectangle {
         preventStealing: true
 
         property bool isDragging: false
-        property int inputPortId : -1
-        property int outputPortId: -1
+        property string inputPortId : ""
+        property string outputPortId: ""
 
         onPressed: mouse => {
-                            inputPortId = root.port.id;
+                            inputPortId = root.port._qsUuid;
                             sceneSession.tempInputPort = root.port;
                             var gMouse = mapToItem(parent.parent.parent.parent, Qt.point(mouse.x, mouse.y));
                             sceneSession.tempConnectionEndPos  = Qt.point(gMouse.x, gMouse.y)
@@ -63,28 +63,28 @@ Rectangle {
 
 
         onPositionChanged: mouse => {
-                               if(inputPortId != -1) {
+                               if(inputPortId.length > 0) {
                                    var gMouse = mapToItem(parent.parent.parent.parent, Qt.point(mouse.x, mouse.y));
                                    sceneSession.tempConnectionEndPos  = Qt.point(gMouse.x, gMouse.y)
                                }
                            }
 
         onReleased: mouse => {
-                        if(inputPortId != -1) {
+                        if(inputPortId.length > 0) {
                             outputPortId = findNearstPort(mouse);
-                            if(outputPortId != -1) {
+                            if(outputPortId.length > 0) {
                                 sceneSession.tempInputPort = null;
                                 scene.linkNodes(inputPortId, outputPortId);
                                 console.log("link created = ", inputPortId, outputPortId);
                             }
                         }
                         console.log("Realeased. ");
-                        inputPortId = -1;
-                        outputPortId = -1;
+                        inputPortId = "";
+                        outputPortId = "";
                     }
 
         //! Find nearest port with mouse position and port position
-        function findNearstPort(mouse : point) : int {
+        function findNearstPort(mouse : point) : string {
             var gMouse = mapToItem(parent.parent.parent.parent, Qt.point(mouse.x, mouse.y));
             let findedKey = -1;
 

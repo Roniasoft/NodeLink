@@ -85,18 +85,6 @@ QSObject  {
         if (Object.keys(ports).includes(portId)) {
             return ports[portId];
         }
+            return null;
     }
-
-//    function findPort(portId: int): Port {
-//        var foundedPort = null;
-//            Object.entries(ports).forEach(([key, value]) => {
-//                if(foundedPort === null) {
-//                    if (Math.abs(key - portId) < 0.01) {
-//                        foundedPort = ports[portId];
-//                            }
-//                        }
-//                    });
-
-//        return foundedPort;
-//    }
 }

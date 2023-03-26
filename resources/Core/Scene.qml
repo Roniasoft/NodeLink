@@ -57,10 +57,9 @@ I_Scene {
         running: false
         onTriggered: {
             // example link
-//            linkNodes(Object.keys(nodes[0].ports)[0], Object.keys(nodes[1].ports)[2]);
-            linkNodes(Object.keys(nodes[1].ports)[1], Object.keys(nodes[2].ports)[3]);
-            linkNodes(Object.keys(nodes[1].ports)[1], Object.keys(nodes[3].ports)[3]);
-            linkNodes(Object.keys(nodes[2].ports)[0], Object.keys(nodes[0].ports)[2]);
+            linkNodes(Object.keys(Object.values(nodes)[1].ports)[1], Object.keys(Object.values(nodes)[2].ports)[3]);
+            linkNodes(Object.keys(Object.values(nodes)[1].ports)[1], Object.keys(Object.values(nodes)[3].ports)[3]);
+            linkNodes(Object.keys(Object.values(nodes)[2].ports)[0], Object.keys(Object.values(nodes)[0].ports)[2]);
         }
     }
 
@@ -170,23 +169,21 @@ I_Scene {
     }
 
     //! Checks if two ports can be linked or not
-    function canLinkNodes(portA : int, portB : int): bool {
+    function canLinkNodes(portA : string, portB : string): bool {
         var nodeA = findNodeId(portA);
         var nodeB = findNodeId(portB);
 
         // todo:
         // For very werid reasons this line of code is required to make this func works!
         // this might be a qt bug. I should test in different qt versions
-        console.log()
-
-        if (nodeA === nodeB || nodeA === -1 || nodeB === -1)
+        if (HashCompareString.compareStringModels(nodeA, nodeB) || nodeA.length === 0 || nodeB.length === 0)
             return false;
 
         return true;
     }
 
-    function findNodeId(portId: string): int {
-        let foundNode = -1;
+    function findNodeId(portId: string) : string {
+        let foundNode = "";
         Object.values(nodes).find(node => {
             if (node.findPort(portId) !== null) {
                 foundNode = node._qsUuid;
