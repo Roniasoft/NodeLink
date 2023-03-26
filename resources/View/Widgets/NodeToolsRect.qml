@@ -86,6 +86,14 @@ Rectangle {
 
         }
 
+        Timer {
+            id: delTimer
+            repeat: false
+            running: false
+            interval: 100
+            onTriggered: scene.deleteNode(node._qsUuid);
+        }
+
         //Delete button
         NLToolButton {
             id: deleteButton
@@ -104,7 +112,7 @@ Rectangle {
 
                 onAccepted: {
                     // This makes the app to crash.
-                    scene.deleteNode(node._qsUuid);
+                    delTimer.start()
                 }
             }
         }
