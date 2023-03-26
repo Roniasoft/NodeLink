@@ -69,6 +69,7 @@ set_source_files_properties(
     resources/Core/NLCore.qml
     resources/Core/NLSpec.qml
     resources/View/NLStyle.qml
+    resources/Core/Undo/HashCompareString.qml
     PROPERTIES
         QT_QML_SINGLETON_TYPE True
 )
@@ -87,8 +88,16 @@ qt_add_qml_module(NodeLink
         resources/Core/GeneralNode.qml
         resources/Core/RootNode.qml
         resources/Core/Scene.qml
+        resources/Core/I_Scene.qml
         resources/Core/SelectionModel.qml
         resources/Core/NodeGuiConfig.qml
+
+        resources/Core/Undo/UndoCore.qml
+        resources/Core/Undo/UndoStack.qml
+        resources/Core/Undo/UndoSceneObserver.qml
+        resources/Core/Undo/UndoNodeObserver.qml
+        resources/Core/Undo/UndoNodeGuiObserver.qml
+        resources/Core/Undo/HashCompareString.qml
 
         resources/View/Components/ColorPicker/ColorItem.qml
         resources/View/Components/ColorPicker/ColorPicker.qml
@@ -115,6 +124,8 @@ qt_add_qml_module(NodeLink
         resources/View/Components/HorizontalScrollBar.qml
 
     SOURCES
+    include/NodeLink/Core/HashCompareStringCPP.h
+    Source/Core/HashCompareStringCPP.cpp
 	
 
     RESOURCES
@@ -123,6 +134,7 @@ qt_add_qml_module(NodeLink
 
 )
 	
+include_directories(include/NodeLink/Core)
 #Add a library to the project using the specified source file
 #add_library(NodeLink::NodeLink ALIAS NodeLink)
 

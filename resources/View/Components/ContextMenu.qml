@@ -30,8 +30,12 @@ Menu {
      * ****************************************************************************************/
     ContextMenuItem{
         id: addCard
-        onClicked: {
-            scene.addNode(contextMenu.x,contextMenu.y)
+        onClicked: {    // \todo: move this implementation out of primitive comp.
+            var node = NLCore.createNode();
+            node.guiConfig.position.x = contextMenu.x;
+            node.guiConfig.position.y = contextMenu.y;
+            node.guiConfig.color = Qt.rgba(Math.random(), Math.random(), Math.random(), 1)
+            scene.addNode(node)
             contextMenu.close()
         }
     }

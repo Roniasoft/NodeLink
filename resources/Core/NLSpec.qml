@@ -1,9 +1,14 @@
 pragma Singleton
 
-import QtQuick 2.15
+import QtQuick
+import QtQuick.Controls
 
 QtObject {
 
+    //! Flag for blocking observers while undo operations are under progress
+    property QtObject undo: QtObject {
+        property bool blockObservers: false
+    }
 
     //! Type of node.
     enum NodeType {

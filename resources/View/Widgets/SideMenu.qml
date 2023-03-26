@@ -1,14 +1,15 @@
 import QtQuick
-import NodeLink
 import QtQuick.Layouts
 import QtQuick.Controls
-import "../Components"
+import NodeLink
 
 /*! ***********************************************************************************************
  * Side Menu
  * ************************************************************************************************/
 Item {
     id: sideMenu1
+
+    property Scene scene
 
     /* Children
      * ****************************************************************************************/
@@ -71,9 +72,14 @@ Item {
             position: "top"
             Layout.preferredHeight: 34
             Layout.preferredWidth: 34
+            enabled: scene._undoCore.undoStack.isValidUndo
             NLToolTip{
                 visible: parent.hovered
                 text: "Undo"
+            }
+
+            onClicked: {
+                scene._undoCore.undoStack.undo();
             }
         }
         SideMenuButton {
@@ -81,9 +87,14 @@ Item {
             position: "bottom"
             Layout.preferredHeight: 34
             Layout.preferredWidth: 34
+            enabled: scene._undoCore.undoStack.isValidRedo
             NLToolTip{
                 visible: parent.hovered
                 text: "Redo"
+            }
+
+            onClicked: {
+                scene._undoCore.undoStack.redo();
             }
         }
     }
