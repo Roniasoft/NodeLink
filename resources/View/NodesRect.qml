@@ -65,4 +65,31 @@ Rectangle {
             }
         }
     }
+
+    MouseArea {
+        anchors.fill: parent
+        hoverEnabled: true
+
+        onPressed: (mouse)=> {
+                       var pressedPortUuid;
+            Object.entries(scene.portsPositions).forEach(([key, value]) => {
+            if((value.x - 5) <= gMouse.x &&  gMouse.x <= (value.x + 5)) {
+                if((value.y - 5) <= gMouse.y && gMouse.y <= (value.y + 5))
+                    pressedPortUuid = key;
+                    }
+                });
+        }
+
+        onPositionChanged: (mouse)=> {
+                               console.log(mouse.x)
+
+
+                               // find port positions that are in area of 20 pixels
+                               var vicinityPorts;
+                           }
+
+
+        onReleased: (mouse)=> {
+        }
+    }
 }
