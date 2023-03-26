@@ -11,7 +11,7 @@ Item {
 
     /* Property Properties
      * ****************************************************************************************/
-    required property Scene       scene
+    required property I_Scene       scene
 
     required property UndoStack undoStack
 

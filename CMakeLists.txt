@@ -88,6 +88,7 @@ qt_add_qml_module(NodeLink
         resources/Core/GeneralNode.qml
         resources/Core/RootNode.qml
         resources/Core/Scene.qml
+        resources/Core/I_Scene.qml
         resources/Core/SelectionModel.qml
         resources/Core/NodeGuiConfig.qml
 

@@ -12,7 +12,7 @@ QtObject {
     /* Property Properties
      * ****************************************************************************************/
     //! Target scene
-    required property Scene    scene
+    required property I_Scene       scene
 
     //! Validation of Redo operation
     property bool   isValidRedo:    redoStack.length > 0
@@ -72,7 +72,7 @@ QtObject {
     }
 
     //! Dump repo for stack
-    function dumpRepo(scene : Scene) : string {
+    function dumpRepo(scene : I_Scene) : string {
         let repoDump = NLCore.defaultRepo.dumpRepo()
         return JSON.stringify(repoDump, null, 4);
     }
