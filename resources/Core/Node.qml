@@ -1,5 +1,6 @@
 import QtQuick 2.15
 
+import NodeLink
 import QtQuickStream
 
 /*! ***********************************************************************************************
@@ -81,10 +82,23 @@ QSObject  {
     }
 
 
+    //! find port with portUuid
     function findPort(portId: string): Port {
         if (Object.keys(ports).includes(portId)) {
             return ports[portId];
         }
             return null;
+    }
+
+    //! find port with specified port side.
+    function findPortByPortSide(portSide : int) : Port {
+                let foundedPort = null;
+                Object.values(ports).find(port => {
+                    if (port.portSide === portSide) {
+                        foundedPort = port;
+                    }
+                });
+
+                return foundedPort;
     }
 }
