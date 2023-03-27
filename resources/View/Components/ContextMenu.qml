@@ -26,6 +26,11 @@ Menu {
         border.color: "#1c1c1c"
     }
 
+    /* Signals
+     * ****************************************************************************************/
+
+    signal nodeAdded(nodeUUid : string);
+
     /* Children
      * ****************************************************************************************/
     ContextMenuItem{
@@ -36,6 +41,9 @@ Menu {
             node.guiConfig.position.y = contextMenu.y;
             node.guiConfig.color = Qt.rgba(Math.random(), Math.random(), Math.random(), 1)
             scene.addNode(node)
+            node.addPortByHardCode();
+
+            nodeAdded(node._qsUuid);
             contextMenu.close()
         }
     }
