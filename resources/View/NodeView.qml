@@ -141,7 +141,7 @@ Rectangle {
         anchors.fill: parent
         hoverEnabled: true
         preventStealing: true
-        enabled: !nodeView.edit
+        enabled: !nodeView.edit && !sceneSession.connectingMode
 
         onDoubleClicked: {
             nodeView.edit = true;
@@ -194,6 +194,7 @@ Rectangle {
         id: topPortsMouseArea
         width: parent.width
         hoverEnabled: true
+        enabled: !sceneSession.connectingMode
         height: 20
         cursorShape: Qt.SizeVerCursor
         anchors.top: parent.top
@@ -237,6 +238,7 @@ Rectangle {
         width: parent.width
         hoverEnabled: true
         height: 20
+        enabled: !sceneSession.connectingMode
         cursorShape: Qt.SizeVerCursor
         anchors.bottom: parent.bottom
         anchors.topMargin: -10
@@ -276,6 +278,7 @@ Rectangle {
         width: 20
         cursorShape: Qt.SizeHorCursor
         hoverEnabled: true
+        enabled: !sceneSession.connectingMode
         height: parent.height
         anchors.left: parent.left
         anchors.leftMargin: -10
@@ -319,6 +322,7 @@ Rectangle {
         width: 12
         cursorShape: Qt.SizeHorCursor
         hoverEnabled: true
+        enabled: !sceneSession.connectingMode
         height: parent.height
         anchors.right: parent.right
         anchors.rightMargin: -10
@@ -357,6 +361,7 @@ Rectangle {
         id: rightTopCornerMouseArea
         width: 20
         height: 20
+        enabled: !sceneSession.connectingMode
         cursorShape: Qt.SizeBDiagCursor
         hoverEnabled: true
         anchors.right: parent.right
@@ -409,6 +414,7 @@ Rectangle {
         id: rightDownCornerMouseArea
         width: 20
         height: 20
+        enabled: !sceneSession.connectingMode
         cursorShape: Qt.SizeFDiagCursor
         hoverEnabled: true
         anchors.right: parent.right
@@ -457,6 +463,7 @@ Rectangle {
         id: leftTopCornerMouseArea
         width: 20
         height: 20
+        enabled: !sceneSession.connectingMode
         cursorShape: Qt.SizeFDiagCursor
         hoverEnabled: true
         anchors.left: parent.left
@@ -513,6 +520,7 @@ Rectangle {
         id: leftDownCornerMouseArea
         width: 20
         height: 20
+        enabled: !sceneSession.connectingMode
         cursorShape: Qt.SizeBDiagCursor
         hoverEnabled: true
         anchors.left: parent.left
@@ -575,7 +583,7 @@ Rectangle {
                 port: modelData
                 scene: nodeView.scene
                 sceneSession: nodeView.sceneSession
-                opacity: topPortsMouseArea.containsMouse ? 1 : 0
+                opacity: (topPortsMouseArea.containsMouse || sceneSession.portsVisibility[modelData._qsUuid])? 1 : 0
                 globalX: nodeView.x + topRow.x + x + NLStyle.portView.size / 2
                 globalY: nodeView.y + topRow.y + mapToItem(topRow, Qt.point(x, y)).y + NLStyle.portView.size / 2
             }
@@ -597,7 +605,7 @@ Rectangle {
                 port: modelData
                 scene: nodeView.scene
                 sceneSession: nodeView.sceneSession
-                opacity: leftPortsMouseArea.containsMouse ? 1 : 0
+                opacity: (leftPortsMouseArea.containsMouse || sceneSession.portsVisibility[modelData._qsUuid])? 1 : 0
                 globalX: nodeView.x + leftColumn.x + mapToItem(leftColumn, Qt.point(x, y)).x + NLStyle.portView.size / 2
                 globalY: nodeView.y + leftColumn.y + y + NLStyle.portView.size / 2
             }
@@ -618,7 +626,7 @@ Rectangle {
                 port: modelData
                 scene: nodeView.scene
                 sceneSession: nodeView.sceneSession
-                opacity: rightPortsMouseArea.containsMouse ? 1 : 0
+                opacity: (rightPortsMouseArea.containsMouse || sceneSession.portsVisibility[modelData._qsUuid]) ? 1 : 0
                 globalX: nodeView.x + rightColumn.x + mapToItem(rightColumn, Qt.point(x, y)).x + NLStyle.portView.size / 2
                 globalY: nodeView.y + rightColumn.y + y + NLStyle.portView.size / 2
             }
@@ -639,7 +647,7 @@ Rectangle {
                 port: modelData
                 scene: nodeView.scene
                 sceneSession: nodeView.sceneSession
-                opacity: bottomPortsMouseArea.containsMouse ? 1 : 0
+                opacity: (bottomPortsMouseArea.containsMouse || sceneSession.portsVisibility[modelData._qsUuid]) ? 1 : 0
                 globalX: nodeView.x + bottomRow.x + x + NLStyle.portView.size / 2
                 globalY: nodeView.y + bottomRow.y + mapToItem(bottomRow, Qt.point(x, y)).y + NLStyle.portView.size / 2
             }

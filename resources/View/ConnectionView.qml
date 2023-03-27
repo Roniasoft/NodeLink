@@ -21,7 +21,7 @@ Canvas {
     property int        linkMode: NLSpec.LinkMode.Connected
 
     property QtObject   privateProperties: QtObject {
-        property point      globalPosInputPort: {
+        property vector2d      globalPosInputPort: {
 
             if (linkMode === NLSpec.LinkMode.Connected) {
                return scene.portsPositions[inputPort._qsUuid]
@@ -30,9 +30,9 @@ Canvas {
                     return scene.portsPositions[sceneSession.tempInputPort._qsUuid]
             }
 
-            return Qt.point(0, 0);
+            return Qt.vector2d(0, 0);
         }
-        property point      globalPosOutputPort:  (linkMode === NLSpec.LinkMode.Connected) ?
+        property vector2d      globalPosOutputPort:  (linkMode === NLSpec.LinkMode.Connected) ?
                                                       scene.portsPositions[outputPort._qsUuid] :
                                                       sceneSession.tempConnectionEndPos
 

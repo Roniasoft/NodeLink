@@ -21,12 +21,15 @@ Rectangle {
 
     property int        globalY
 
-    property point      globalPos:      Qt.point(globalX, globalY)
+    property vector2d      globalPos:      Qt.vector2d(globalX, globalY)
 
 
     onGlobalPosChanged: {
         scene.portsPositions[port._qsUuid] = globalPos;
         scene.portsPositionsChanged();
+
+        sceneSession.portsVisibility[port._qsUuid] = false;
+        sceneSession.portsVisibilityChanged();
     }
 
     /* Object Properties
@@ -46,56 +49,18 @@ Rectangle {
     MouseArea {
         id: mouseArea
         anchors.fill: parent
-//                hoverEnabled: true
+        enabled: !sceneSession.connectingMode
         propagateComposedEvents: true
-        preventStealing: true
-
-        property bool isDragging: false
-        property string inputPortId : ""
-        property string outputPortId: ""
 
         onPressed: mouse => {
-                            inputPortId = root.port._qsUuid;
-                            sceneSession.tempInputPort = root.port;
-                            var gMouse = mapToItem(parent.parent.parent.parent, Qt.point(mouse.x, mouse.y));
-                            sceneSession.tempConnectionEndPos  = Qt.point(gMouse.x, gMouse.y)
-                        }
+                       //Start point of connection.
+                       sceneSession.tempInputPort = root.port;
+                       var gMouse = mapToItem(parent.parent.parent.parent, Qt.point(mouse.x, mouse.y));
+                       sceneSession.tempConnectionEndPos  = Qt.vector2d(gMouse.x, gMouse.y)
+                       sceneSession.connectingMode = true;
 
-
-        onPositionChanged: mouse => {
-                               if(inputPortId.length > 0) {
-                                   var gMouse = mapToItem(parent.parent.parent.parent, Qt.point(mouse.x, mouse.y));
-                                   sceneSession.tempConnectionEndPos  = Qt.point(gMouse.x, gMouse.y)
-                               }
-                           }
-
-        onReleased: mouse => {
-                        if(inputPortId.length > 0) {
-                            outputPortId = findNearstPort(mouse);
-                            if(outputPortId.length > 0) {
-                                sceneSession.tempInputPort = null;
-                                scene.linkNodes(inputPortId, outputPortId);
-                                console.log("link created = ", inputPortId, outputPortId);
-                            }
-                        }
-                        console.log("Realeased. ");
-                        inputPortId = "";
-                        outputPortId = "";
-                    }
-
-        //! Find nearest port with mouse position and port position
-        function findNearstPort(mouse : point) : string {
-            var gMouse = mapToItem(parent.parent.parent.parent, Qt.point(mouse.x, mouse.y));
-            let findedKey = -1;
-
-            Object.entries(scene.portsPositions).forEach(([key, value]) => {
-                if((value.x - 5) <= gMouse.x &&  gMouse.x <= (value.x + 5)) {
-                    if((value.y - 5) <= gMouse.y && gMouse.y <= (value.y + 5))
-                        findedKey = key;
-                        }
-                    });
-
-                    return findedKey;
-        }
+                       //Set mouse.accepeted to false to pass mouse events to last active parent
+                       mouse.accepted = false
+                   }
     }
 }
