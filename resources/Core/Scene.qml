@@ -84,22 +84,18 @@ I_Scene {
         //! delete the node ports fromt the portsPosition map
         Object.keys(nodes[nodeUUId].ports).forEach(portId => {
             delete portsPositions[portId];
-        });
-
-        Object.keys(portsUpstream).forEach(portId => {
             delete portsUpstream[portId];
+            delete portsDownstream[portId];
+
+            Object.entries(portsDownstream).filter(([key, value]) => {
+                                                    var foundedIndex = Object.values(value).indexOf(portId);
+                                                       if(foundedIndex !== -1)
+                                                           portsDownstream[key] = value.filter(portUuid => portId !== portUuid);
+
+                                                   });
+
         });
 
-        Object.values(portsUpstream).forEach(portId => {
-            delete portsUpstream[portId];
-        });
-
-        Object.keys(portsDownstream).forEach(portId => {
-            delete portsDownstream[portId];
-        });
-        Object.values(portsDownstream).forEach(portId => {
-            delete portsDownstream[portId];
-        });
 
         portsPositionsChanged();
         portsUpstreamChanged();
@@ -107,6 +103,7 @@ I_Scene {
 
         delete nodes[nodeUUId];
         nodesChanged();
+        console.log()
     }
 
 
