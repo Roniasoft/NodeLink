@@ -86,7 +86,7 @@ Flickable {
     }
 
     //! Nodes/Connections
-    I_NodesRect {
+    NodesRect {
         id: nodesView
         scene: flickable.scene
         sceneSession: flickable.sceneSession

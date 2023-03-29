@@ -66,12 +66,4 @@ Rectangle {
             }
         }
     }
-
-    //! NodesRect MouseArea to manage I_NodesRect mouse events.
-    NodesRect {
-        anchors.fill: parent
-        scene: root.scene
-        sceneSession: root.sceneSession
-    }
-
 }

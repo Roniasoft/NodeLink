@@ -4,18 +4,14 @@ import NodeLink
 /*! ***********************************************************************************************
  * NoedsRect is an Item that contain a Mousearea to manage I_NodesRect and its events.
  * ************************************************************************************************/
-Item {
+I_NodesRect {
     id: root
 
     /* Property Declarations
     * ****************************************************************************************/
-    property Scene              scene
-
-    property SceneSession       sceneSession
 
     /*  Children
     * ****************************************************************************************/
-
     MouseArea {
         anchors.fill: parent
         enabled: sceneSession.connectingMode
