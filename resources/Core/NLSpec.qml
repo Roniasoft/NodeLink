@@ -21,18 +21,13 @@ QtObject {
         Top     = 0,
         Bottom  = 1,
         Left    = 2,
-        Right   = 3
+        Right   = 3,
+        Unknown = 99
     }
 
     //! Port type data flow.
     enum PortType {
         Input   = 0,
         Output  = 1
-    }
-
-    //! LinkMode determine canvas line status.
-    enum LinkMode {
-        Connecting = 0,
-        Connected  = 1
     }
 }

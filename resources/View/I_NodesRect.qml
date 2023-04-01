@@ -59,7 +59,6 @@ Rectangle {
                 model: outputPort
                 delegate: ConnectionView {
                     scene: root.scene
-                    linkMode: NLSpec.LinkMode.Connected
                     inputPort:  scene.findPort(repeaterItem.inputPort)
                     outputPort: scene.findPort(modelData)
                 }

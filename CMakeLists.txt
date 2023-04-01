@@ -103,6 +103,13 @@ qt_add_qml_module(NodeLink
         resources/View/Components/ColorPicker/ColorPicker.qml
         resources/View/Components/NLToolButton.qml
         resources/View/Components/ConfirmPopUp.qml
+        resources/View/Components/SideMenuButtonGroup.qml
+        resources/View/Components/SideMenuButton.qml
+        resources/View/Components/ContextMenu.qml
+        resources/View/Components/ContextMenuItem.qml
+        resources/View/Components/NLToolTip.qml
+        resources/View/Components/VerticalScrollBar.qml
+        resources/View/Components/HorizontalScrollBar.qml
         resources/View/NLView.qml
         resources/View/SceneSession.qml
         resources/View/NLStyle.qml
@@ -112,17 +119,12 @@ qt_add_qml_module(NodeLink
         resources/View/I_NodesRect.qml
         resources/View/NodesScene.qml
         resources/View/NodesOverview.qml
-        resources/View/ConnectionView.qml    
+        resources/View/ConnectionView.qml
+        resources/View/UserConnectionView.qml
         resources/View/SceneViewBackground.qml
         resources/View/Widgets/NodeToolsRect.qml
         resources/View/Widgets/SideMenu.qml
-        resources/View/Components/SideMenuButtonGroup.qml
-        resources/View/Components/SideMenuButton.qml
-        resources/View/Components/ContextMenu.qml
-        resources/View/Components/ContextMenuItem.qml
-        resources/View/Components/NLToolTip.qml
-        resources/View/Components/VerticalScrollBar.qml
-        resources/View/Components/HorizontalScrollBar.qml
+        resources/View/BezierCurve.js
 
     SOURCES
     include/NodeLink/Core/HashCompareStringCPP.h

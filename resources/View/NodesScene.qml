@@ -12,12 +12,14 @@ import QtQuickStream
  * ************************************************************************************************/
 Flickable {
     id: flickable
+
     FontLoader {
         source: "qrc:/NodeLink/resources/fonts/Font Awesome 6 Pro-Regular-400.otf"
     }
     FontLoader {
         source: "qrc:/NodeLink/resources/fonts/Font Awesome 6 Pro-Solid-900.otf"
     }
+
     /* Property Declarations
     * ****************************************************************************************/
     property Scene              scene
@@ -93,15 +95,4 @@ Flickable {
         contentWidth: flickable.contentWidth
         contentHeight: flickable.contentHeight
     }
-
-    //! Temp Connection
-    ConnectionView {
-        id: tempConnection
-        anchors.fill: parent
-        scene: flickable.scene
-        sceneSession: flickable.sceneSession
-        inputPort: flickable.sceneSession.tempInputPort
-        linkMode: NLSpec.LinkMode.Connecting
-    }
-
 }

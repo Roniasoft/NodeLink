@@ -151,7 +151,6 @@ Rectangle {
                      ? (isDraging ? Qt.ClosedHandCursor : Qt.OpenHandCursor)
                      : Qt.ArrowCursor
 
-        onClicked: sceneSession.tempInputPort = null;
 
         onPressed: (mouse) => {
             isDraging = true;
@@ -161,7 +160,6 @@ Rectangle {
         }
 
         onReleased: (mouse) => {
-            sceneSession.tempInputPort = null;
             isDraging = false;
         }
 
@@ -205,14 +203,12 @@ Rectangle {
         property bool   isDraging:  false
         property int    prevY:      0
 
-        onClicked: sceneSession.tempInputPort = null;
         onPressed: (mouse)=> {
             isDraging = true;
             prevY = mouse.y;
         }
 
         onReleased: {
-            sceneSession.tempInputPort = null;
             isDraging = false;
         }
 
@@ -248,15 +244,12 @@ Rectangle {
         property bool   isDraging:  false
         property int    prevY:      0
 
-        onClicked: sceneSession.tempInputPort = null;
-
         onPressed: (mouse)=> {
             isDraging = true;
             prevY = mouse.y;
         }
 
         onReleased: {
-            sceneSession.tempInputPort = null;
             isDraging = false;
         }
 
@@ -288,15 +281,12 @@ Rectangle {
         property bool   isDraging:  false
         property int    prevX:      0
 
-        onClicked: sceneSession.tempInputPort = null;
-
         onPressed: (mouse)=> {
             isDraging = true;
             prevX = mouse.x;
         }
 
         onReleased: {
-            sceneSession.tempInputPort = null;
             isDraging = false;
         }
 
@@ -332,15 +322,12 @@ Rectangle {
         property bool   isDraging:  false
         property int    prevX:      0
 
-        onClicked: sceneSession.tempInputPort = null;
-
         onPressed: (mouse)=> {
             isDraging = true;
             prevX = mouse.x;
         }
 
         onReleased: {
-            sceneSession.tempInputPort = null;
             isDraging = false;
         }
 
@@ -374,8 +361,6 @@ Rectangle {
         property int    prevX:      0
         property int    prevY:      0
 
-        onClicked: sceneSession.tempInputPort = null;
-
         onPressed: (mouse)=> {
             isDraging = true;
             prevX = mouse.x;
@@ -383,7 +368,6 @@ Rectangle {
         }
 
         onReleased: {
-            sceneSession.tempInputPort = null;
             isDraging = false;
         }
 
@@ -427,8 +411,6 @@ Rectangle {
         property int    prevX:      0
         property int    prevY:      0
 
-        onClicked: sceneSession.tempInputPort = null;
-
         onPressed: (mouse)=> {
             isDraging = true;
             prevX = mouse.x;
@@ -436,7 +418,6 @@ Rectangle {
         }
 
         onReleased: {
-            sceneSession.tempInputPort = null;
             isDraging = false;
         }
 
@@ -476,8 +457,6 @@ Rectangle {
         property int    prevX:      0
         property int    prevY:      0
 
-        onClicked: sceneSession.tempInputPort = null;
-
         onPressed: (mouse)=> {
             isDraging = true;
             prevX = mouse.x;
@@ -485,7 +464,6 @@ Rectangle {
         }
 
         onReleased: {
-            sceneSession.tempInputPort = null;
             isDraging = false;
         }
 
@@ -533,8 +511,6 @@ Rectangle {
         property int    prevX:      0
         property int    prevY:      0
 
-        onClicked: sceneSession.tempInputPort = null;
-
         onPressed: (mouse)=> {
             isDraging = true;
             prevX = mouse.x;
@@ -542,7 +518,6 @@ Rectangle {
         }
 
         onReleased: {
-            sceneSession.tempInputPort = null;
             isDraging = false;
         }
 
