@@ -23,9 +23,11 @@ I_NodesRect {
         property string outputPortId: ""
 
         onPressed: (mouse) => {
+                       var selectedPortId = findNearstPort(mouse, 10);
+                       var selectedPort = scene.findPort(selectedPortId);
+                       sceneSession.tempInputPort = selectedPort;
                        var gMouse = mapToItem(parent, Qt.point(mouse.x, mouse.y));
                        if(sceneSession.tempInputPort !== null) {
-                           sceneSession.connectingMode = true;
                            sceneSession.tempConnectionEndPos = Qt.vector2d(gMouse.x, gMouse.y);
 
                            inputPortId = sceneSession.tempInputPort._qsUuid;
@@ -37,8 +39,9 @@ I_NodesRect {
         onPositionChanged: (mouse) => {
                     var gMouse = mapToItem(parent, Qt.point(mouse.x, mouse.y));
 
-                    if(inputPortId.length > 0)
+                    if(inputPortId.length > 0) {
                         sceneSession.tempConnectionEndPos  = Qt.vector2d(gMouse.x, gMouse.y);
+                    }
 
                     sceneSession.portsVisibility[outputPortId] = false;
                     sceneSession.portsVisibilityChanged();

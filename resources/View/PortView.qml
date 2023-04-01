@@ -11,19 +11,26 @@ Rectangle {
 
     /* Property Declarations
     * ****************************************************************************************/
-    property Port       port
+    //! Port Model
+    property Port           port
 
-    property Scene      scene
+    //! Scene
+    property Scene          scene
 
-    property SceneSession sceneSession
+    //! SceneSession
+    property SceneSession   sceneSession
 
-    property int        globalX
+    //! GlobalX is set after positioning the port in the scene
+    property int            globalX
 
-    property int        globalY
+    //! GlobalY is set after positioning the port in the scene
+    property int            globalY
 
-    property vector2d      globalPos:      Qt.vector2d(globalX, globalY)
+    //! GlobalPos is a 2d vector filled by globalX and globalY
+    readonly property vector2d globalPos:      Qt.vector2d(globalX, globalY)
 
-
+    //! Whenever GlobalPos is changed, we should update the
+    //!  related maps in scene/sceneSession
     onGlobalPosChanged: {
         scene.portsPositions[port._qsUuid] = globalPos;
         scene.portsPositionsChanged();
@@ -46,6 +53,7 @@ Rectangle {
     // Behavior on opacity {NumberAnimation{duration: 100}}
     Behavior on scale {NumberAnimation{}}
 
+    //! Mouse Area
     MouseArea {
         id: mouseArea
         anchors.fill: parent
@@ -53,14 +61,15 @@ Rectangle {
         propagateComposedEvents: true
 
         onPressed: mouse => {
-                       //Start point of connection.
-                       sceneSession.tempInputPort = root.port;
-                       var gMouse = mapToItem(parent.parent.parent.parent, Qt.point(mouse.x, mouse.y));
-                       sceneSession.tempConnectionEndPos  = Qt.vector2d(gMouse.x, gMouse.y)
-                       sceneSession.connectingMode = true;
+            sceneSession.connectingMode = true;
+            //Set mouse.accepeted to false to pass mouse events to last active parent
+            mouse.accepted = false
+        }
 
-                       //Set mouse.accepeted to false to pass mouse events to last active parent
-                       mouse.accepted = false
-                   }
+        onReleased: mouse => {
+            sceneSession.connectingMode = false;
+            //Set mouse.accepeted to false to pass mouse events to last active parent
+            mouse.accepted = false
+        }
     }
 }
