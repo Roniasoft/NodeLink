@@ -17,10 +17,10 @@ QSObject {
     property Port outputPort : Port {}
 
     //! First control point
-//    property vector2d controlPoint1: Qt.vector2d(0, 0)
+    property vector2d controlPoint1: Qt.vector2d(0, 0)
 
     //! Secound control point
-//    property vector2d controlPoint2: Qt.vector2d(0, 0)
+    property vector2d controlPoint2: Qt.vector2d(0, 0)
 
     //! Type of Connection
     property int connectionType: NLSpec.ConnectionType.Bezier

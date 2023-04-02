@@ -2,7 +2,7 @@ import QtQuick
 import NodeLink
 import QtQuick.Controls
 import QtQuick.Shapes
-import "BezierCurve.js" as BezierCurve
+import "Logics/BezierCurve.js" as BezierCurve
 
 /*! ***********************************************************************************************
  * A view for the connections (BezierCurve)
@@ -19,6 +19,8 @@ Canvas {
 
     property Port   outputPort
 
+    property Connection connection: Connection {};
+
     property bool isSelected: false
 
     property vector2d inputPos: scene?.portsPositions[inputPort?._qsUuid] ?? Qt.vector2d(0, 0)
@@ -27,7 +29,8 @@ Canvas {
 
     //! update painted line when change position of input and output ports
     onOutputPosChanged: canvas.requestPaint();
-    onInputPosChanged:  canvas.requestPaint()
+    onInputPosChanged:  canvas.requestPaint();
+    onIsSelectedChanged: canvas.requestPaint();
 
 
     /*  Object Properties
@@ -48,11 +51,11 @@ Canvas {
         }
 
         // calculate the control points
-        var cp1 = inputPos.plus(BezierCurve.connectionMargin(inputPort));
-        var cp2 = outputPos.plus(BezierCurve.connectionMargin(outputPort));
+        connection.controlPoint1 = inputPos.plus(BezierCurve.connectionMargin(inputPort));
+        connection.controlPoint2 = outputPos.plus(BezierCurve.connectionMargin(outputPort));
 
         // draw the curve
-        BezierCurve.bezierCurve(context, inputPos, cp1, cp2, outputPos, isSelected);
+        BezierCurve.bezierCurve(context, inputPos, connection.controlPoint1, connection.controlPoint2, outputPos, isSelected);
     }
 
     /*  Children

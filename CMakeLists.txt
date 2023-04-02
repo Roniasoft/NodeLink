@@ -126,8 +126,8 @@ qt_add_qml_module(NodeLink
         resources/View/Widgets/NodeToolsRect.qml
         resources/View/Widgets/SideMenu.qml
 
-        resources/View/BezierCurve.js
-        resources/View/Culculations.js
+        resources/View/Logics/BezierCurve.js
+        resources/View/Logics/Calculation.js
 
     SOURCES
     include/NodeLink/Core/HashCompareStringCPP.h

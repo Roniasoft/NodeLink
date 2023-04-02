@@ -50,7 +50,7 @@ Rectangle {
             scene: root.scene
             inputPort: modelData.inputPort
             outputPort: modelData.outputPort
-
+            connection: modelData
             isSelected: modelData.isSelected
         }
     }
