@@ -91,6 +91,7 @@ qt_add_qml_module(NodeLink
         resources/Core/I_Scene.qml
         resources/Core/SelectionModel.qml
         resources/Core/NodeGuiConfig.qml
+         resources/Core/Connection.qml
 
         resources/Core/Undo/UndoCore.qml
         resources/Core/Undo/UndoStack.qml
@@ -124,7 +125,9 @@ qt_add_qml_module(NodeLink
         resources/View/SceneViewBackground.qml
         resources/View/Widgets/NodeToolsRect.qml
         resources/View/Widgets/SideMenu.qml
+
         resources/View/BezierCurve.js
+        resources/View/Culculations.js
 
     SOURCES
     include/NodeLink/Core/HashCompareStringCPP.h

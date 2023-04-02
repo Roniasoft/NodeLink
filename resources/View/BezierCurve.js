@@ -2,7 +2,7 @@
 .import QtQuick 2.0 as QtQuick
 
 //! Drawing a bezier curve using give context2D
-function bezierCurve(context, startPos, cp1, cp2, endPos) {
+function bezierCurve(context, startPos, cp1, cp2, endPos, isSelected) {
 
     context.reset();
     context.lineWidth = 2;
@@ -16,8 +16,10 @@ function bezierCurve(context, startPos, cp1, cp2, endPos) {
 
     // glow effect
     context.strokeStyle = 'hsl(' + 10 + ', 50%, 255%)';
-    //        context.shadowColor = 'white';
-    //        context.shadowBlur = 10;
+    if(isSelected) {
+        context.shadowColor = 'white';
+        context.shadowBlur = 10;
+    }
     // stroke the curve
     context.stroke();
     context.restore();

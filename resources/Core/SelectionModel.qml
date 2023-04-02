@@ -10,6 +10,8 @@ QtObject {
      * ****************************************************************************************/
     property Node selectedNode
 
+    property Connection selectedConnection
+
 
 
     /* Signals

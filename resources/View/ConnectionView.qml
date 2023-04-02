@@ -19,6 +19,8 @@ Canvas {
 
     property Port   outputPort
 
+    property bool isSelected: false
+
     property vector2d inputPos: scene?.portsPositions[inputPort?._qsUuid] ?? Qt.vector2d(0, 0)
 
     property vector2d outputPos: scene?.portsPositions[outputPort?._qsUuid] ?? Qt.vector2d(0, 0)
@@ -50,7 +52,7 @@ Canvas {
         var cp2 = outputPos.plus(BezierCurve.connectionMargin(outputPort));
 
         // draw the curve
-        BezierCurve.bezierCurve(context, inputPos, cp1, cp2, outputPos);
+        BezierCurve.bezierCurve(context, inputPos, cp1, cp2, outputPos, isSelected);
     }
 
     /*  Children

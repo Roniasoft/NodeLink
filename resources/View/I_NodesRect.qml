@@ -44,25 +44,14 @@ Rectangle {
 
     //! Connections
     Repeater {
-        id: keyRepeater
+        model: scene.connections
 
-        model: Object.entries(scene.portsDownstream).filter(([key, value]) => value.length > 0)
+        delegate: ConnectionView {
+            scene: root.scene
+            inputPort: modelData.inputPort
+            outputPort: modelData.outputPort
 
-        delegate: Item {
-            id: repeaterItem
-            property var inputPort: modelData[0]
-            property var outputPort: modelData[1]
-
-            anchors.fill: parent
-
-            Repeater {
-                model: outputPort
-                delegate: ConnectionView {
-                    scene: root.scene
-                    inputPort:  scene.findPort(repeaterItem.inputPort)
-                    outputPort: scene.findPort(modelData)
-                }
-            }
+            isSelected: modelData.isSelected
         }
     }
 }

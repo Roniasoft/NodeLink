@@ -30,4 +30,11 @@ QtObject {
         Input   = 0,
         Output  = 1
     }
+
+    //! Type of connection
+    enum ConnectionType {
+        Bezier = 0,
+
+        Unknown = 99
+    }
 }
