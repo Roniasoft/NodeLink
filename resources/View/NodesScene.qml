@@ -110,12 +110,14 @@ Flickable {
                         scene.connections.forEach(conObj => {
                                                     var inputPos  = scene?.portsPositions[conObj.inputPort?._qsUuid] ?? Qt.vector2d(0, 0)
                                                     var outputPos = scene?.portsPositions[conObj.outputPort?._qsUuid] ?? Qt.vector2d(0, 0)
+                                                    var points = [inputPos, conObj.controlPoint1, conObj.controlPoint2, outputPos];
 
-                                                    if(Calculation.isPositionOnCurve(Qt.vector2d(gMouse.x, gMouse.y),
-                                                                                         inputPos,
-                                                                                        conObj.controlPoint1,
-                                                                                        conObj.controlPoint2,
-                                                                                        outputPos)) {
+//                                                    if(Calculation.isPositionOnCurve(Qt.vector2d(gMouse.x, gMouse.y),
+//                                                                                         inputPos,
+//                                                                                        conObj.controlPoint1,
+//                                                                                        conObj.controlPoint2,
+//                                                                                        outputPos)) {
+                                                      if (Calculation.isPointOnCurve(gMouse.x, gMouse.y, 10, points)) {
                                                           conObj.isSelected = true;
                                                           foundedConnection = conObj._qsUuid;
 
