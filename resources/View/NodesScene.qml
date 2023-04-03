@@ -28,10 +28,6 @@ Flickable {
 
     property SceneSession       sceneSession
 
-    property QtObject           privateProperty: QtObject {
-     property bool ctrlPressedAndHold: false
-    }
-
 
     /* Object Properties
  * ****************************************************************************************/
@@ -52,44 +48,27 @@ Flickable {
     }
 
 
-    Keys.onPressed: event => {
-                        if (event.key === Qt.Key_Control) {
-                            privateProperty.ctrlPressedAndHold = true
-                        }
-                    }
-    Keys.onReleased: privateProperty.ctrlPressedAndHold = false
-
     MouseArea {
         anchors.fill: parent
-        hoverEnabled: true
+//        hoverEnabled: true
         acceptedButtons: Qt.LeftButton | Qt.RightButton
-        z: -10
 
         property string selectedConnection: ""
 
-        onPositionChanged: (mouse) => {
-                               //! select link with mouse detection link
-                               var gMouse = mapToItem(nodesView, Qt.point(mouse.x, mouse.y));
+//        onPositionChanged: (mouse) => {
+//                               //! select link with mouse detection link
+//                               var gMouse = mapToItem(nodesView, Qt.point(mouse.x, mouse.y));
 
-                               if(!sceneSession.connectingMode) {
-                                   unselectConnections();
-                                   findSelectedConnection(gMouse)
-                                   selectConnection(selectedConnection);
-                               }
-                           }
+//                               if(!sceneSession.connectingMode) {
+//                                   unselectConnections();
+//                                   findSelectedConnection(gMouse)
+//                                   selectConnection(selectedConnection);
+//                               }
+//                           }
 
-        onWheel: wheel => {
-                     if(!flickable.privateProperty.ctrlPressedAndHold)
-                     return;
-                     if(wheel.angleDelta.y > 0)
-                     flickable.scale += 0.1;
-                     else if (flickable.scale > 0.5) {
-                         flickable.scale -= 0.1;
-                     }
-                 }
 
         onClicked: mouse => {
-            if(mouse.button === Qt.LeftButton){
+            if(mouse.button === Qt.LeftButton) {
                 var gMouse = mapToItem(nodesView, Qt.point(mouse.x, mouse.y));
 
                 scene.selectionModel.select(null)
@@ -106,11 +85,11 @@ Flickable {
                     }
                 }
             }
-            else if (mouse.button === Qt.RightButton){
-                console.log("right clicked")
+            else if (mouse.button === Qt.RightButton) {
                 contextMenu.popup(mouse.x, mouse.y)
             }
         }
+
         ContextMenu {
             id: contextMenu
             scene: flickable.scene
@@ -162,7 +141,6 @@ Flickable {
                 foundedObj.isSelected = false;
             }
         }
-
     }
 
     //! Nodes/Connections
