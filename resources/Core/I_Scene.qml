@@ -1,16 +1,17 @@
 import QtQuick
-import QtQuickStream
+import QtQuick.Controls
 import NodeLink
+import QtQuickStream
 
 /*! ***********************************************************************************************
- * The Scene is responsible for managing nodes and connections between them.
+ * The Scene is responsible for managing nodes and links between them.
  *
  * ************************************************************************************************/
 QSObject {
+    id: scene
 
     /* Property Properties
      * ****************************************************************************************/
-
     //! Scene Title
     property string         title:          "<Untitled>"
 
@@ -18,13 +19,9 @@ QSObject {
     //! map<UUID, Node>
     property var            nodes:          ({})
 
-    //! Container of Node line links A -> { B, C }
-    //! map<Current Node port uuid: string, Dest port uuid: string>
-    property var            portsUpstream:  ({})
-
-    //! Container of Node line links Z -> { X, Y }
-    //! map<Current Node port id, Dest port id>
-    property var            portsDownstream:({})
+    //! Keep Connection models
+    //! map <UUID, Connection>
+    property var            links:          ({})
 
     //! Port positions (global)
     //! map<port uuid: string, global pos: vector2d>
@@ -32,7 +29,6 @@ QSObject {
 
     //! Scene Selection Model
     property SelectionModel selectionModel: SelectionModel {}
-
 
     /* Functions
      * ****************************************************************************************/
@@ -46,38 +42,32 @@ QSObject {
         nodesChanged();
 
         node.onPortAdded.connect(onPortAdded);
-
         return node;
     }
 
     //! Deletes a node from the scene
     function deleteNode(nodeUUId: string) {
-        //! delete the node ports fromt the portsPosition map
+        //! delete the node ports from the portsPosition map
         Object.keys(nodes[nodeUUId].ports).forEach(portId => {
+            // delete from portsPositions
             delete portsPositions[portId];
-        });
 
-        Object.keys(portsUpstream).forEach(portId => {
-            delete portsUpstream[portId];
+            // delete related links
+            Object.entries(links).forEach(([key, value]) => {
+                if (value.inputPort._qsUuid === portId ||
+                        value.outputPort._qsUuid === portId) {
+                    delete links[key];
+                }
+            });
         });
-
-        Object.values(portsUpstream).forEach(portId => {
-            delete portsUpstream[portId];
-        });
-
-        Object.keys(portsDownstream).forEach(portId => {
-            delete portsDownstream[portId];
-        });
-        Object.values(portsDownstream).forEach(portId => {
-            delete portsDownstream[portId];
-        });
-
-        portsPositionsChanged();
-        portsUpstreamChanged();
-        portsDownstreamChanged();
 
         delete nodes[nodeUUId];
+
+        portsPositionsChanged();
+        linksChanged();
         nodesChanged();
+
+//        console.log()
     }
 
 
@@ -98,14 +88,6 @@ QSObject {
     //! On port added
     function onPortAdded(portUUId : string) {
 
-        // Create upstream links
-        portsUpstream[portUUId] = [];
-        portsUpstreamChanged();
-
-        // Create downstream links
-        portsDownstream[portUUId] = [];
-        portsDownstreamChanged();
-
         // Add an empty position index
         portsPositions[portUUId] = Qt.vector2d(0, 0);;
         portsPositionsChanged();
@@ -118,39 +100,65 @@ QSObject {
             return;
         }
 
-        // Only add if not already there
-        if (!portsDownstream[portA]?.includes(portB)) {
-            portsDownstream[portA].push(portB);
-            portsDownstreamChanged();
-        }
+        let link = Object.values(links).find(conObj =>
+                                     conObj.inputPort._qsUuid === portA &&
+                                     conObj.outputPort._qsUuid === portB);
 
-        // Only add if not already there
-        if (!portsUpstream[portB]?.includes(portA)) {
-            portsUpstream[portB].push(portA);
-            portsUpstreamChanged();
+        if (link === undefined) {
+            let obj = NLCore.createLink();
+            obj.inputPort  = findPort(portA);
+            obj.outputPort = findPort(portB);
+            links[obj._qsUuid] = obj;
         }
+        linksChanged();
     }
 
-    function unlinkNodes(portA : Port, portB : Port) {
+    //! Unlink two ports
+    function unlinkNodes(portA : string, portB : string) {
+
+        // delete related links
+        Object.entries(links).forEach(([key, value]) => {
+            if (value.inputPort._qsUuid === portA &&
+                    value.outputPort._qsUuid === portB) {
+                delete links[key];
+            }
+        });
+        linksChanged();
     }
 
-    function canLinkNodes(portA : int, portB : int): bool {
+    //! Checks if two ports can be linked or not
+    function canLinkNodes(portA : string, portB : string): bool {
         var nodeA = findNodeId(portA);
         var nodeB = findNodeId(portB);
 
-        if (nodeA === nodeB || nodeA === -1 || nodeB === -1)
+        // todo:
+        // For very werid reasons this line of code is required to make this func works!
+        // this might be a qt bug. I should test in different qt versions
+        if (HashCompareString.compareStringModels(nodeA, nodeB) || nodeA.length === 0 || nodeB.length === 0)
             return false;
 
         return true;
     }
 
-    function findNodeId(portId: string): int {
-        let foundNode = -1;
+    function findNodeId(portId: string) : string {
+        let foundNode = "";
         Object.values(nodes).find(node => {
             if (node.findPort(portId) !== null) {
                 foundNode = node._qsUuid;
             }
         });
         return foundNode;
+    }
+
+
+    //! Find port object from port id
+    function findPort(portId: string) : Port {
+        var portObj = null;
+        Object.values(nodes).find(node => {
+            let foundPort = node.findPort(portId);
+            if (foundPort !== null) {
+                portObj = foundPort;
+            }});
+        return portObj;
     }
 }

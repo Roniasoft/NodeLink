@@ -1,11 +1,11 @@
-import QtQuick 2.15
-
+import QtQuick
+import NodeLink
 import QtQuickStream
 
 /*! ***********************************************************************************************
  * Node is a model that manage node properties..
  * ************************************************************************************************/
-QSObject  {
+I_Node  {
     id: root
 
     /* Property Declarations
@@ -31,8 +31,10 @@ QSObject  {
      * ****************************************************************************************/
     signal portAdded(var portId);
 
-    Component.onCompleted: {
-
+    /* Functions
+     * ****************************************************************************************/
+    //! Temp function to add port by code.
+    function addPortByHardCode () {
         let _port1 = NLCore.createPort();
         let _port2 = NLCore.createPort();
         let _port3 = NLCore.createPort();
@@ -66,9 +68,6 @@ QSObject  {
         addPort(_port6);
     }
 
-    /* Functions
-     * ****************************************************************************************/
-
     //! Adds a node the to nodes map
     function addPort(port : Port) {
         // Add to local administration
@@ -81,11 +80,24 @@ QSObject  {
     function deletePort(port) {
     }
 
+
+    //! find port with portUuid
     function findPort(portId: string): Port {
         if (Object.keys(ports).includes(portId)) {
             return ports[portId];
         }
+            return null;
+    }
 
-        return null;
+    //! find port with specified port side.
+    function findPortByPortSide(portSide : int) : Port {
+                let foundedPort = null;
+                Object.values(ports).find(port => {
+                    if (port.portSide === portSide) {
+                        foundedPort = port;
+                    }
+                });
+
+                return foundedPort;
     }
 }

@@ -21,12 +21,20 @@ QtObject {
         Top     = 0,
         Bottom  = 1,
         Left    = 2,
-        Right   = 3
+        Right   = 3,
+        Unknown = 99
     }
 
     //! Port type data flow.
     enum PortType {
         Input   = 0,
         Output  = 1
+    }
+
+    //! Type of link
+    enum LinkType {
+        Bezier = 0,
+
+        Unknown = 99
     }
 }

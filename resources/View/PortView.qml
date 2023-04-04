@@ -1,4 +1,5 @@
 import QtQuick
+import QtQuick.Controls
 import NodeLink
 
 /*! ***********************************************************************************************
@@ -10,21 +11,32 @@ Rectangle {
 
     /* Property Declarations
     * ****************************************************************************************/
-    property Port       port
+    //! Port Model
+    property Port           port
 
-    property Scene      scene
+    //! Scene
+    property Scene          scene
 
-    property SceneSession sceneSession
+    //! SceneSession
+    property SceneSession   sceneSession
 
-    property int        globalX
+    //! GlobalX is set after positioning the port in the scene
+    property int            globalX
 
-    property int        globalY
+    //! GlobalY is set after positioning the port in the scene
+    property int            globalY
 
-    property point      globalPos:      Qt.point(globalX, globalY)
+    //! GlobalPos is a 2d vector filled by globalX and globalY
+    readonly property vector2d globalPos:      Qt.vector2d(globalX, globalY)
 
+    //! Whenever GlobalPos is changed, we should update the
+    //!  related maps in scene/sceneSession
     onGlobalPosChanged: {
         scene.portsPositions[port._qsUuid] = globalPos;
         scene.portsPositionsChanged();
+
+        sceneSession.portsVisibility[port._qsUuid] = false;
+        sceneSession.portsVisibilityChanged();
     }
 
     /* Object Properties
@@ -37,41 +49,27 @@ Rectangle {
     border.color: "#363636"
     scale: mouseArea.containsMouse ? 1.1 : 1
 
-//    Behavior on opacity {NumberAnimation{duration: 100}}
+
+    // Behavior on opacity {NumberAnimation{duration: 100}}
     Behavior on scale {NumberAnimation{}}
 
+    //! Mouse Area
     MouseArea {
         id: mouseArea
         anchors.fill: parent
-//        hoverEnabled: true
-//        propagateComposedEvents: true
-//        preventStealing: true
+        enabled: !sceneSession.connectingMode
+        propagateComposedEvents: true
 
-        property bool isDragging: false
-
-        onPressed: (mouse) => {
-                       isDragging = true;
-                       sceneSession.creatingConnection = true
-                       sceneSession.tempConnectionStartPos = globalPos;
-                       console.log("port view pressed")
-                       mouse.accepted = false
-                   }
-
-        onPositionChanged: (mouse)=> {
-                               console.log("pos changed!")
-                               if (isDragging) {
-                                   sceneSession.creatingConnection = true
-                                    sceneSession.tempConnectionEndPos = Qt.point(globalPos.x + mouseX, globalPos.y + mouseY);
-
-//                                   mouse.accepted = false
-                               }
+        onPressed: mouse => {
+            sceneSession.connectingMode = true;
+            //Set mouse.accepeted to false to pass mouse events to last active parent
+            mouse.accepted = false
         }
 
         onReleased: mouse => {
-                        console.log("port view released!")
-                        sceneSession.creatingConnection = false
-                        isDragging = false;
-//                        mouse.accepted = false
-                    }
+            sceneSession.connectingMode = false;
+            //Set mouse.accepeted to false to pass mouse events to last active parent
+            mouse.accepted = false
+        }
     }
 }

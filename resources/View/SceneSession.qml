@@ -1,16 +1,20 @@
 import QtQuick
+import NodeLink
 
 /*! ***********************************************************************************************
  *
  * ************************************************************************************************/
 QtObject {
 
-    //! Connection View
-//    property ConnectionView tempConnection: ConnectionView {}
+    //! map<port uuid: string, isVisible: bool>
+    property var   portsVisibility: ({})
 
-    property point tempConnectionStartPos: Qt.point(0,0)
+    //! connectingMode is true When a connection is in progress.
+    property bool connectingMode: false
 
-    property point tempConnectionEndPos: Qt.point(100,100)
-
-    property bool   creatingConnection: false
+    //! Sets port visibility
+    function setPortVisibility(portId: string, visible: Boolean) {
+        portsVisibility[portId] = visible;
+        portsVisibilityChanged();
+    }
 }

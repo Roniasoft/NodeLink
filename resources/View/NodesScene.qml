@@ -6,33 +6,31 @@ import NodeLink
 import Qt5Compat.GraphicalEffects
 import QtQuickStream
 
+import "Logics/Calculation.js" as Calculation
+
 
 /*! ***********************************************************************************************
- * NodesScene show the Nodes, Connections, ports and etc.
+ * NodesScene show the Nodes, Links, ports and etc.
  * ************************************************************************************************/
 Flickable {
     id: flickable
+
     FontLoader {
         source: "qrc:/NodeLink/resources/fonts/Font Awesome 6 Pro-Regular-400.otf"
     }
     FontLoader {
         source: "qrc:/NodeLink/resources/fonts/Font Awesome 6 Pro-Solid-900.otf"
     }
+
     /* Property Declarations
     * ****************************************************************************************/
     property Scene              scene
 
     property SceneSession       sceneSession
 
-    property alias              tempConnection: tempConnection
-
-    property QtObject           privateProperty: QtObject {
-     property bool ctrlPressedAndHold: false
-    }
-
 
     /* Object Properties
- * ****************************************************************************************/
+    * ****************************************************************************************/
     anchors.fill: parent
     contentWidth: 4000
     contentHeight: 4000
@@ -41,7 +39,7 @@ Flickable {
     ScrollBar.vertical: VerticalScrollBar{}
 
     /* Children
-* ****************************************************************************************/
+    * ****************************************************************************************/
     SceneViewBackground {
         id: background
         anchors.fill: parent
@@ -50,41 +48,43 @@ Flickable {
     }
 
 
-    Keys.onPressed: event => {
-                        if (event.key === Qt.Key_Control) {
-                            privateProperty.ctrlPressedAndHold = true
-                        }
-                    }
-    Keys.onReleased: privateProperty.ctrlPressedAndHold = false
-
+    //! MouseArea for selection of links
     MouseArea {
         anchors.fill: parent
         acceptedButtons: Qt.LeftButton | Qt.RightButton
-        z: -10
-        onWheel: wheel => {
-                     if(!flickable.privateProperty.ctrlPressedAndHold)
-                     return;
-                     if(wheel.angleDelta.y > 0)
-                     flickable.scale += 0.1;
-                     else if (flickable.scale > 0.5) {
-                         flickable.scale -= 0.1;
-                     }
-                 }
+        enabled: !sceneSession.connectingMode
 
+        //! We should toggle line selection with mouse press event
         onClicked: mouse => {
-            if(mouse.button === Qt.LeftButton){
-                scene.selectionModel.select(null)
-                flickable.forceActiveFocus()
-            }
-            else if (mouse.button === Qt.RightButton){
-                console.log("right clicked")
+            if (mouse.button === Qt.LeftButton) {
+                var gMouse = mapToItem(nodesView, Qt.point(mouse.x, mouse.y));
+                var link = findLink(gMouse);
+                scene.selectionModel.toggleLinkSelection(link);
+
+            } else if (mouse.button === Qt.RightButton) {
                 contextMenu.popup(mouse.x, mouse.y)
             }
-
         }
+
+        //! Context Menu for adding a new node (for now)
         ContextMenu {
             id: contextMenu
             scene: flickable.scene
+        }
+
+        //! find the link under or close to the mouse cursor
+        function findLink(gMouse): Link {
+            let foundLink = null;
+            Object.values(scene.links).forEach(obj => {
+                var inputPos  = scene?.portsPositions[obj.inputPort?._qsUuid] ?? Qt.vector2d(0, 0)
+                var outputPos = scene?.portsPositions[obj.outputPort?._qsUuid] ?? Qt.vector2d(0, 0)
+                var points = [inputPos, obj.controlPoint1, obj.controlPoint2, outputPos];
+
+                if (Calculation.isPointOnCurve(gMouse.x, gMouse.y, 15, points)) {
+                    foundLink = obj;
+                }
+            });
+            return foundLink;
         }
     }
 
@@ -96,14 +96,4 @@ Flickable {
         contentWidth: flickable.contentWidth
         contentHeight: flickable.contentHeight
     }
-
-    //! Temp Connection
-    ConnectionView {
-        id: tempConnection
-        anchors.fill: parent
-        startPos: sceneSession.tempConnectionStartPos
-        endPos: sceneSession.tempConnectionEndPos
-        visible: sceneSession.creatingConnection
-    }
-
 }
