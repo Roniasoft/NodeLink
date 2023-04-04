@@ -39,11 +39,7 @@ Item {
              root._timer.start();
         }
 
-        function onPortsUpstreamChanged() {
-            root._timer.start();
-        }
-
-        function onPortsDownstreamChanged() {
+        function onLinksChanged() {
             root._timer.start();
         }
 

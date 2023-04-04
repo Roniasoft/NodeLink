@@ -3,7 +3,7 @@ import QtQuick.Controls
 import NodeLink
 
 /*! ***********************************************************************************************
- * The Scene is responsible for managing nodes and connections between them.
+ * The Scene is responsible for managing nodes and links between them.
  *
  * ************************************************************************************************/
 I_Scene {
@@ -22,8 +22,6 @@ I_Scene {
 
     /* Children
      * ****************************************************************************************/
-
-
     Component.onCompleted: {
         // adding example nodes
         for (var i = 0; i < 5; i++) {

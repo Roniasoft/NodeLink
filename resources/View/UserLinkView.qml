@@ -5,7 +5,7 @@ import NodeLink
  * A view for user connection (creating a new connection by user)
  * Using a js canvas for drawing
  * ************************************************************************************************/
-ConnectionView {
+LinkView {
     id: tempCurve
 
     /* Object Properties

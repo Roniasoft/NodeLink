@@ -1,12 +1,11 @@
-import QtQuick 2.15
-
+import QtQuick
 import NodeLink
 import QtQuickStream
 
 /*! ***********************************************************************************************
  * Node is a model that manage node properties..
  * ************************************************************************************************/
-QSObject  {
+I_Node  {
     id: root
 
     /* Property Declarations

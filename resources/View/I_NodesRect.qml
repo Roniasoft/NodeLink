@@ -42,27 +42,16 @@ Rectangle {
         }
     }
 
-    //! Connections
+    //! Links
     Repeater {
-        id: keyRepeater
+        model: Object.values(scene.links)
 
-        model: Object.entries(scene.portsDownstream).filter(([key, value]) => value.length > 0)
-
-        delegate: Item {
-            id: repeaterItem
-            property var inputPort: modelData[0]
-            property var outputPort: modelData[1]
-
-            anchors.fill: parent
-
-            Repeater {
-                model: outputPort
-                delegate: ConnectionView {
-                    scene: root.scene
-                    inputPort:  scene.findPort(repeaterItem.inputPort)
-                    outputPort: scene.findPort(modelData)
-                }
-            }
+        delegate: LinkView {
+            scene: root.scene
+            isSelected: modelData === scene.selectionModel.selectedLink
+            inputPort: modelData.inputPort
+            outputPort: modelData.outputPort
+            link: modelData
         }
     }
 }

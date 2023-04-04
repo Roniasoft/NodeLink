@@ -81,6 +81,7 @@ qt_add_qml_module(NodeLink
     QML_FILES
         resources/Core/NLCore.qml
         resources/Core/NLSpec.qml
+        resources/Core/I_Node.qml
         resources/Core/Node.qml
         resources/Core/Action.qml
         resources/Core/Port.qml
@@ -91,6 +92,7 @@ qt_add_qml_module(NodeLink
         resources/Core/I_Scene.qml
         resources/Core/SelectionModel.qml
         resources/Core/NodeGuiConfig.qml
+        resources/Core/Link.qml
 
         resources/Core/Undo/UndoCore.qml
         resources/Core/Undo/UndoStack.qml
@@ -119,12 +121,14 @@ qt_add_qml_module(NodeLink
         resources/View/I_NodesRect.qml
         resources/View/NodesScene.qml
         resources/View/NodesOverview.qml
-        resources/View/ConnectionView.qml
-        resources/View/UserConnectionView.qml
+        resources/View/LinkView.qml
+        resources/View/UserLinkView.qml
         resources/View/SceneViewBackground.qml
         resources/View/Widgets/NodeToolsRect.qml
         resources/View/Widgets/SideMenu.qml
-        resources/View/BezierCurve.js
+
+        resources/View/Logics/BezierCurve.js
+        resources/View/Logics/Calculation.js
 
     SOURCES
     include/NodeLink/Core/HashCompareStringCPP.h

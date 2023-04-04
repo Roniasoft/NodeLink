@@ -30,4 +30,11 @@ QtObject {
         Input   = 0,
         Output  = 1
     }
+
+    //! Type of link
+    enum LinkType {
+        Bezier = 0,
+
+        Unknown = 99
+    }
 }

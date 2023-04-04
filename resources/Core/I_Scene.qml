@@ -1,12 +1,14 @@
 import QtQuick
-import QtQuickStream
+import QtQuick.Controls
 import NodeLink
+import QtQuickStream
 
 /*! ***********************************************************************************************
- * The Scene is responsible for managing nodes and connections between them.
+ * The Scene is responsible for managing nodes and links between them.
  *
  * ************************************************************************************************/
 QSObject {
+    id: scene
 
     /* Property Properties
      * ****************************************************************************************/
@@ -17,18 +19,16 @@ QSObject {
     //! map<UUID, Node>
     property var            nodes:          ({})
 
-    //! Container of Node line links A -> { B, C }
-    //! map<Current Node port uuid: string, Dest port uuid: string>
-    property var            portsUpstream:  ({})
-
-    //! Container of Node line links Z -> { X, Y }
-    //! map<Current Node port id, Dest port id>
-    property var            portsDownstream:({})
+    //! Keep Connection models
+    //! map <UUID, Connection>
+    property var            links:          ({})
 
     //! Port positions (global)
     //! map<port uuid: string, global pos: vector2d>
     property var            portsPositions: ({})
 
+    //! Scene Selection Model
+    property SelectionModel selectionModel: SelectionModel {}
 
     /* Functions
      * ****************************************************************************************/
@@ -42,37 +42,32 @@ QSObject {
         nodesChanged();
 
         node.onPortAdded.connect(onPortAdded);
-
         return node;
     }
 
     //! Deletes a node from the scene
     function deleteNode(nodeUUId: string) {
-
         //! delete the node ports from the portsPosition map
         Object.keys(nodes[nodeUUId].ports).forEach(portId => {
+            // delete from portsPositions
             delete portsPositions[portId];
-            delete portsUpstream[portId];
-            delete portsDownstream[portId];
 
-            Object.entries(portsDownstream).filter(([key, value]) => {
-                 var foundedIndex = Object.values(value).indexOf(portId);
-                    if(foundedIndex !== -1)
-                        portsDownstream[key] = value.filter(portUuid => portId !== portUuid);
-            });
-            Object.entries(portsUpstream).filter(([key, value]) => {
-                 var foundedIndex = Object.values(value).indexOf(portId);
-                    if(foundedIndex !== -1)
-                        portsUpstream[key] = value.filter(portUuid => portId !== portUuid);
+            // delete related links
+            Object.entries(links).forEach(([key, value]) => {
+                if (value.inputPort._qsUuid === portId ||
+                        value.outputPort._qsUuid === portId) {
+                    delete links[key];
+                }
             });
         });
 
-        portsPositionsChanged();
-        portsUpstreamChanged();
-        portsDownstreamChanged();
-
         delete nodes[nodeUUId];
+
+        portsPositionsChanged();
+        linksChanged();
         nodesChanged();
+
+//        console.log()
     }
 
 
@@ -93,14 +88,6 @@ QSObject {
     //! On port added
     function onPortAdded(portUUId : string) {
 
-        // Create upstream links
-        portsUpstream[portUUId] = [];
-        portsUpstreamChanged();
-
-        // Create downstream links
-        portsDownstream[portUUId] = [];
-        portsDownstreamChanged();
-
         // Add an empty position index
         portsPositions[portUUId] = Qt.vector2d(0, 0);;
         portsPositionsChanged();
@@ -112,30 +99,31 @@ QSObject {
             console.error("[Scene] Cannot link Nodes ");
             return;
         }
-        // Only add if not already there
-        if (!portsDownstream[portA]?.includes(portB)) {
-            portsDownstream[portA].push(portB);
-            portsDownstreamChanged();
-        }
 
-        // Only add if not already there
-        if (!portsUpstream[portB]?.includes(portA)) {
-            portsUpstream[portB].push(portA);
-            portsUpstreamChanged();
+        let link = Object.values(links).find(conObj =>
+                                     conObj.inputPort._qsUuid === portA &&
+                                     conObj.outputPort._qsUuid === portB);
+
+        if (link === undefined) {
+            let obj = NLCore.createLink();
+            obj.inputPort  = findPort(portA);
+            obj.outputPort = findPort(portB);
+            links[obj._qsUuid] = obj;
         }
+        linksChanged();
     }
 
     //! Unlink two ports
-    function unlinkNodes(portA : int, portB : int) {
-        // Only Remove if not already there
-        if (!portsDownstream[portA]?.includes(portB)) {
-            portsDownstream[portA].remove(portB);
-            portsDownstreamChanged();
-        }
-        if (!portsUpstream[portB]?.includes(portA)) {
-            portsUpstream[portB].remove(portA);
-            portsUpstreamChanged();
-        }
+    function unlinkNodes(portA : string, portB : string) {
+
+        // delete related links
+        Object.entries(links).forEach(([key, value]) => {
+            if (value.inputPort._qsUuid === portA &&
+                    value.outputPort._qsUuid === portB) {
+                delete links[key];
+            }
+        });
+        linksChanged();
     }
 
     //! Checks if two ports can be linked or not
