@@ -46,7 +46,7 @@ Rectangle {
     Repeater {
         model: Object.values(scene.links)
 
-        delegate: ConnectionView {
+        delegate: LinkView {
             scene: root.scene
             isSelected: modelData === scene.selectionModel.selectedLink
             inputPort: modelData.inputPort

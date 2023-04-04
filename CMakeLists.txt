@@ -121,8 +121,8 @@ qt_add_qml_module(NodeLink
         resources/View/I_NodesRect.qml
         resources/View/NodesScene.qml
         resources/View/NodesOverview.qml
-        resources/View/ConnectionView.qml
-        resources/View/UserConnectionView.qml
+        resources/View/LinkView.qml
+        resources/View/UserLinkView.qml
         resources/View/SceneViewBackground.qml
         resources/View/Widgets/NodeToolsRect.qml
         resources/View/Widgets/SideMenu.qml

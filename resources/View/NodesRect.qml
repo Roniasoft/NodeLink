@@ -14,7 +14,7 @@ I_NodesRect {
     * ****************************************************************************************/
 
     //! User Connection Curve
-    UserConnectionView {
+    UserLinkView {
         scene: root.scene
         anchors.fill: parent
     }
