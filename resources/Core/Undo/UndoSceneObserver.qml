@@ -39,7 +39,7 @@ Item {
              root._timer.start();
         }
 
-        function onConnectionsChanged() {
+        function onLinksChanged() {
             root._timer.start();
         }
 

@@ -5,7 +5,7 @@ import QtQuick.Shapes
 import "Logics/BezierCurve.js" as BezierCurve
 
 /*! ***********************************************************************************************
- * A view for the connections (BezierCurve)
+ * A view for the links (BezierCurve)
  * Using a js canvas for drawing
  * ************************************************************************************************/
 Canvas {
@@ -19,9 +19,9 @@ Canvas {
 
     property Port   outputPort
 
-    property Connection connection: Connection {};
+    property Link   link:       Link {}
 
-    property bool isSelected: false
+    property bool   isSelected: link == scene.selectionModel.selectedLink
 
     property vector2d inputPos: scene?.portsPositions[inputPort?._qsUuid] ?? Qt.vector2d(0, 0)
 
@@ -51,11 +51,11 @@ Canvas {
         }
 
         // calculate the control points
-        connection.controlPoint1 = inputPos.plus(BezierCurve.connectionMargin(inputPort));
-        connection.controlPoint2 = outputPos.plus(BezierCurve.connectionMargin(outputPort));
+        link.controlPoint1 = inputPos.plus(BezierCurve.connectionMargin(inputPort));
+        link.controlPoint2 = outputPos.plus(BezierCurve.connectionMargin(outputPort));
 
         // draw the curve
-        BezierCurve.bezierCurve(context, inputPos, connection.controlPoint1, connection.controlPoint2, outputPos, isSelected);
+        BezierCurve.bezierCurve(context, inputPos, link.controlPoint1, link.controlPoint2, outputPos, isSelected);
     }
 
     /*  Children

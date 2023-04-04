@@ -31,8 +31,8 @@ QtObject {
         Output  = 1
     }
 
-    //! Type of connection
-    enum ConnectionType {
+    //! Type of link
+    enum LinkType {
         Bezier = 0,
 
         Unknown = 99

@@ -7,7 +7,7 @@
 // calculates the distance between each point on the curve and the test point,
 // and returns true if any of the distances are less than the tolerance.
 function isPointOnCurve(x, y, tolerance, points) {
-    for (var t = 0; t <= 1; t += 0.01) {
+    for (var t = 0; t <= 1; t += 0.02) {
         var curveX = Math.pow(1-t, 3)*points[0].x + 3*Math.pow(1-t, 2)*t*points[1].x + 3*(1-t)*Math.pow(t, 2)*points[2].x + Math.pow(t, 3)*points[3].x;
         var curveY = Math.pow(1-t, 3)*points[0].y + 3*Math.pow(1-t, 2)*t*points[1].y + 3*(1-t)*Math.pow(t, 2)*points[2].y + Math.pow(t, 3)*points[3].y;
         var distance = Math.sqrt(Math.pow(curveX - x, 2) + Math.pow(curveY - y, 2));

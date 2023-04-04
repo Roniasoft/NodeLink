@@ -42,16 +42,16 @@ Rectangle {
         }
     }
 
-    //! Connections
+    //! Links
     Repeater {
-        model: scene.connections
+        model: Object.values(scene.links)
 
         delegate: ConnectionView {
             scene: root.scene
+            isSelected: modelData === scene.selectionModel.selectedLink
             inputPort: modelData.inputPort
             outputPort: modelData.outputPort
-            connection: modelData
-            isSelected: modelData.isSelected
+            link: modelData
         }
     }
 }

@@ -4,7 +4,7 @@ import NodeLink
 import QtQuickStream
 
 /*! ***********************************************************************************************
- * The Scene is responsible for managing nodes and connections between them.
+ * The Scene is responsible for managing nodes and links between them.
  *
  * ************************************************************************************************/
 QSObject {
@@ -20,8 +20,8 @@ QSObject {
     property var            nodes:          ({})
 
     //! Keep Connection models
-    //! Array <Connection>
-    property var connections: []
+    //! map <UUID, Connection>
+    property var            links:          ({})
 
     //! Port positions (global)
     //! map<port uuid: string, global pos: vector2d>
@@ -42,7 +42,6 @@ QSObject {
         nodesChanged();
 
         node.onPortAdded.connect(onPortAdded);
-
         return node;
     }
 
@@ -50,20 +49,25 @@ QSObject {
     function deleteNode(nodeUUId: string) {
         //! delete the node ports from the portsPosition map
         Object.keys(nodes[nodeUUId].ports).forEach(portId => {
+            // delete from portsPositions
             delete portsPositions[portId];
 
-            connections = connections.filter(linkObj => (linkObj.inputPort._qsUuid !== portId &&
-                                                         linkObj.outputPort._qsUuid !== portId));
-
+            // delete related links
+            Object.entries(links).forEach(([key, value]) => {
+                if (value.inputPort._qsUuid === portId ||
+                        value.outputPort._qsUuid === portId) {
+                    delete links[key];
+                }
+            });
         });
 
         delete nodes[nodeUUId];
 
         portsPositionsChanged();
-        connectionsChanged();
+        linksChanged();
         nodesChanged();
 
-        console.log()
+//        console.log()
     }
 
 
@@ -96,25 +100,30 @@ QSObject {
             return;
         }
 
-        let foundedConnection = connections.find(conObj =>
-                                                 conObj.inputPort._qsUuid === portA &&
-                                                 conObj.outputPort._qsUuid === portB);
+        let link = Object.values(links).find(conObj =>
+                                     conObj.inputPort._qsUuid === portA &&
+                                     conObj.outputPort._qsUuid === portB);
 
-        if (foundedConnection === undefined) {
-            let obj = NLCore.createConnection();
-
-            obj.inputPort = findPort(portA);
-            obj.outputPort   = findPort(portB);
-            connections.push(obj);
+        if (link === undefined) {
+            let obj = NLCore.createLink();
+            obj.inputPort  = findPort(portA);
+            obj.outputPort = findPort(portB);
+            links[obj._qsUuid] = obj;
         }
-        connectionsChanged();
+        linksChanged();
     }
 
     //! Unlink two ports
     function unlinkNodes(portA : string, portB : string) {
-        connections = connections.filter(linkObj => (linkObj.inputPort._qsUuid !== portA &&
-                                                     linkObj.outputPort._qsUuid !== portB));
-        connectionsChanged();
+
+        // delete related links
+        Object.entries(links).forEach(([key, value]) => {
+            if (value.inputPort._qsUuid === portA &&
+                    value.outputPort._qsUuid === portB) {
+                delete links[key];
+            }
+        });
+        linksChanged();
     }
 
     //! Checks if two ports can be linked or not

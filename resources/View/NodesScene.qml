@@ -10,7 +10,7 @@ import "Logics/Calculation.js" as Calculation
 
 
 /*! ***********************************************************************************************
- * NodesScene show the Nodes, Connections, ports and etc.
+ * NodesScene show the Nodes, Links, ports and etc.
  * ************************************************************************************************/
 Flickable {
     id: flickable
@@ -30,7 +30,7 @@ Flickable {
 
 
     /* Object Properties
- * ****************************************************************************************/
+    * ****************************************************************************************/
     anchors.fill: parent
     contentWidth: 4000
     contentHeight: 4000
@@ -39,7 +39,7 @@ Flickable {
     ScrollBar.vertical: VerticalScrollBar{}
 
     /* Children
-* ****************************************************************************************/
+    * ****************************************************************************************/
     SceneViewBackground {
         id: background
         anchors.fill: parent
@@ -48,100 +48,43 @@ Flickable {
     }
 
 
+    //! MouseArea for selection of links
     MouseArea {
         anchors.fill: parent
-//        hoverEnabled: true
         acceptedButtons: Qt.LeftButton | Qt.RightButton
+        enabled: !sceneSession.connectingMode
 
-        property string selectedConnection: ""
-
-//        onPositionChanged: (mouse) => {
-//                               //! select link with mouse detection link
-//                               var gMouse = mapToItem(nodesView, Qt.point(mouse.x, mouse.y));
-
-//                               if(!sceneSession.connectingMode) {
-//                                   unselectConnections();
-//                                   findSelectedConnection(gMouse)
-//                                   selectConnection(selectedConnection);
-//                               }
-//                           }
-
-
+        //! We should toggle line selection with mouse press event
         onClicked: mouse => {
-            if(mouse.button === Qt.LeftButton) {
+            if (mouse.button === Qt.LeftButton) {
                 var gMouse = mapToItem(nodesView, Qt.point(mouse.x, mouse.y));
+                var link = findLink(gMouse);
+                scene.selectionModel.toggleLinkSelection(link);
 
-                scene.selectionModel.select(null)
-                flickable.forceActiveFocus();
-
-                //! select line or deselect it
-                if(!sceneSession.connectingMode) {
-                    unselectConnections();
-                    var foundToSelect = findSelectedConnection(gMouse);
-                    if(foundToSelect === selectedConnection) {
-                        deselectConnection(selectedConnection);
-                    } else {
-                        selectedConnection = foundToSelect;
-                    }
-                }
-            }
-            else if (mouse.button === Qt.RightButton) {
+            } else if (mouse.button === Qt.RightButton) {
                 contextMenu.popup(mouse.x, mouse.y)
             }
         }
 
+        //! Context Menu for adding a new node (for now)
         ContextMenu {
             id: contextMenu
             scene: flickable.scene
         }
 
-        //! Unselect all connections
-        function unselectConnections() {
-            let foundedLink = scene.connections.find(conObj => conObj.isSelected);
-            if(foundedLink !== undefined) {
-                foundedLink.isSelected = false;
-                unselectConnections();
-            }
-        }
+        //! find the link under or close to the mouse cursor
+        function findLink(gMouse): Link {
+            let foundLink = null;
+            Object.values(scene.links).forEach(obj => {
+                var inputPos  = scene?.portsPositions[obj.inputPort?._qsUuid] ?? Qt.vector2d(0, 0)
+                var outputPos = scene?.portsPositions[obj.outputPort?._qsUuid] ?? Qt.vector2d(0, 0)
+                var points = [inputPos, obj.controlPoint1, obj.controlPoint2, outputPos];
 
-        //! find connection to select with mouse position
-        function findSelectedConnection(gMouse) {
-                        let foundedConnection = "";
-                        scene.connections.forEach(conObj => {
-                                                    var inputPos  = scene?.portsPositions[conObj.inputPort?._qsUuid] ?? Qt.vector2d(0, 0)
-                                                    var outputPos = scene?.portsPositions[conObj.outputPort?._qsUuid] ?? Qt.vector2d(0, 0)
-                                                    var points = [inputPos, conObj.controlPoint1, conObj.controlPoint2, outputPos];
-
-//                                                    if(Calculation.isPositionOnCurve(Qt.vector2d(gMouse.x, gMouse.y),
-//                                                                                         inputPos,
-//                                                                                        conObj.controlPoint1,
-//                                                                                        conObj.controlPoint2,
-//                                                                                        outputPos)) {
-                                                      if (Calculation.isPointOnCurve(gMouse.x, gMouse.y, 10, points)) {
-                                                          conObj.isSelected = true;
-                                                          foundedConnection = conObj._qsUuid;
-
-                                                      }
-
-                            });
-
-                            return foundedConnection;
-        }
-
-        //! Select a connection with Uuid
-        function selectConnection(linkUuid : string) {
-            let foundedObj = scene.connections.find(obj => obj._qsUuid === linkUuid);
-            if (foundedObj !== undefined) {
-                foundedObj.isSelected = true;
-            }
-        }
-
-        //! Deselect a connection with Uuid
-        function deselectConnection(linkUuid : string) {
-            let foundedObj = scene.connections.find(obj => obj._qsUuid === linkUuid);
-            if (foundedObj !== undefined) {
-                foundedObj.isSelected = false;
-            }
+                if (Calculation.isPointOnCurve(gMouse.x, gMouse.y, 15, points)) {
+                    foundLink = obj;
+                }
+            });
+            return foundLink;
         }
     }
 

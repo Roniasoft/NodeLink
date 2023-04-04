@@ -81,6 +81,7 @@ qt_add_qml_module(NodeLink
     QML_FILES
         resources/Core/NLCore.qml
         resources/Core/NLSpec.qml
+        resources/Core/I_Node.qml
         resources/Core/Node.qml
         resources/Core/Action.qml
         resources/Core/Port.qml
@@ -91,7 +92,7 @@ qt_add_qml_module(NodeLink
         resources/Core/I_Scene.qml
         resources/Core/SelectionModel.qml
         resources/Core/NodeGuiConfig.qml
-         resources/Core/Connection.qml
+        resources/Core/Link.qml
 
         resources/Core/Undo/UndoCore.qml
         resources/Core/Undo/UndoStack.qml
