@@ -27,4 +27,20 @@ QtObject {
     }
 
     property bool snapEnabled: false
+
+    readonly property var nodeIcons: [
+        "\ue4e2",       // General
+        "\uf04b",       // Root
+        "\uf54b",       // Step
+        "\ue57f",       // Transition
+        "\uf2db"        // Macro
+    ]
+
+    readonly property var nodeColors: [
+        "#444",       // General
+        "#333",       // Root
+        "#3D9798",       // Step
+        "#625192",       // Transition
+        "#9D9E57"        // Macro
+    ]
 }

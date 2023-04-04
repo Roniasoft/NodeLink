@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls
+import NodeLink
 
 /*! ***********************************************************************************************
  * Context Menu Item
@@ -9,7 +10,11 @@ MenuItem {
 
     /* Property Declarations
      * ****************************************************************************************/
-    property real hoverTracker: 0;
+    property real hoverTracker: 0
+
+    property string name: "General Node"
+
+    property var iconStr: NLStyle.nodeIcons[NLSpec.NodeType.General]
 
     /* Object Properties
      * ****************************************************************************************/
@@ -28,7 +33,7 @@ MenuItem {
             anchors { left: parent.left; leftMargin : 5; top: parent.top;
                     topMargin: 4}
             color: "#ababab"
-            text: "\ue494"
+            text: menuItem.iconStr
             font.family: "fa-regular"
             font.pixelSize: 14
         }
@@ -36,7 +41,7 @@ MenuItem {
             id: contextMenuText
             anchors { left: contextMenuIcon.right; leftMargin : 7; top: parent.top;
                     topMargin: 2}
-            text: "Add new card"
+            text: menuItem.name
             color: "#ababab"
             font.pixelSize: 14
         }

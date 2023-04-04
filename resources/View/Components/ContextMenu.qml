@@ -33,19 +33,54 @@ Menu {
 
     /* Children
      * ****************************************************************************************/
-    ContextMenuItem{
-        id: addCard
+    ContextMenuItem {
+        name: "General Node"
+        iconStr: NLStyle.nodeIcons[NLSpec.NodeType.General]
         onClicked: {    // \todo: move this implementation out of primitive comp.
-            var node = NLCore.createNode();
-            node.guiConfig.position.x = contextMenu.x;
-            node.guiConfig.position.y = contextMenu.y;
-            node.guiConfig.color = Qt.rgba(Math.random(), Math.random(), Math.random(), 1)
-            scene.addNode(node)
-            node.addPortByHardCode();
-
-            nodeAdded(node._qsUuid);
-            contextMenu.close()
+            addNode(NLSpec.NodeType.General);
         }
+    }
+    ContextMenuItem {
+        name: "Root Node"
+        iconStr: NLStyle.nodeIcons[NLSpec.NodeType.Root]
+        onClicked: {    // \todo: move this implementation out of primitive comp.
+            addNode(NLSpec.NodeType.Root);
+        }
+    }
+    ContextMenuItem {
+        name: "Step Node"
+        iconStr: NLStyle.nodeIcons[NLSpec.NodeType.Step]
+        onClicked: {    // \todo: move this implementation out of primitive comp.
+            addNode(NLSpec.NodeType.Step);
+        }
+    }
+    ContextMenuItem {
+        name: "Transition Node"
+        iconStr: NLStyle.nodeIcons[NLSpec.NodeType.Transition]
+        onClicked: {    // \todo: move this implementation out of primitive comp.
+            addNode(NLSpec.NodeType.Transition);
+        }
+    }
+    ContextMenuItem {
+        name: "Macro Node"
+        iconStr: NLStyle.nodeIcons[NLSpec.NodeType.Macro]
+        onClicked: {    // \todo: move this implementation out of primitive comp.
+            addNode(NLSpec.NodeType.Macro);
+        }
+    }
+
+
+    function addNode (nodeType) {
+        var node = NLCore.createNode();
+        node.type = nodeType;
+        node.guiConfig.position.x = contextMenu.x;
+        node.guiConfig.position.y = contextMenu.y;
+        node.guiConfig.color = NLStyle.nodeColors[nodeType]//Qt.rgba(Math.random(), Math.random(), Math.random(), 1)
+        scene.addNode(node)
+        node.addPortByHardCode();
+
+        nodeAdded(node._qsUuid);
+        contextMenu.close()
     }
 
 }
