@@ -53,9 +53,13 @@ Rectangle {
     signal clicked();
 
     onEditChanged: {
-        if (nodeView.edit) {
-            textArea.forceActiveFocus();
-        }
+        nodeView.edit ? textArea.forceActiveFocus() :  nodeView.forceActiveFocus()
+    }
+
+    onIsSelectedChanged: {
+        console.log("isSelected", isSelected)
+        if(!nodeView.isSelected)
+            nodeView.edit = false;
     }
 
     /* Children

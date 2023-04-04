@@ -44,6 +44,7 @@ Menu {
             node.addPortByHardCode();
 
             nodeAdded(node._qsUuid);
+            scene.selectionModel.select(node);
             contextMenu.close()
         }
     }
