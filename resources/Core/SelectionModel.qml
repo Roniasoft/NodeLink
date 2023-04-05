@@ -33,6 +33,8 @@ QtObject {
     }
 
     function select(node: Node) {
+        //! clear selection model when selection changed.
+        clear();
         selectedNode = node;
     }
 
@@ -41,6 +43,8 @@ QtObject {
         if (link === null)
             return;
 
+         //! clear selection model when selection changed.
+        clear();
         // toggle selection
         selectedLink = (selectedLink === null || link._qsUuid !== selectedLink._qsUuid)
                 ? link
