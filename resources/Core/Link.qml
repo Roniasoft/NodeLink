@@ -6,6 +6,7 @@ import NodeLink
  * Link keep the Input, outPut ports and line points to detect mouse connection selection.
  * ************************************************************************************************/
 I_Node {
+    id: root
 
     /* Property Declarations
     * ****************************************************************************************/
@@ -24,6 +25,11 @@ I_Node {
 
     //! Type of Connection
     property int        linkType:       NLSpec.LinkType.Bezier
+
+    //! Link Ui properties
+    property LinkGUIConfig guiConfig: LinkGUIConfig {
+        _qsRepo: root._qsRepo
+    }
 
     /* Functions
      * ****************************************************************************************/
