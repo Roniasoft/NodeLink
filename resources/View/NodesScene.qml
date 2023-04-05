@@ -56,6 +56,7 @@ Flickable {
 
         //! We should toggle line selection with mouse press event
         onClicked: mouse => {
+            scene.selectionModel.clear();
             if (mouse.button === Qt.LeftButton) {
                 var gMouse = mapToItem(nodesView, Qt.point(mouse.x, mouse.y));
                 var link = findLink(gMouse);
