@@ -1,66 +1,15 @@
 import QtQuick
 import NodeLink
 import QtQuick.Controls
-import QtQuick.Shapes
-import "Logics/BezierCurve.js" as BezierCurve
+
 import "Logics/Calculation.js" as Calculation
 
 /*! ***********************************************************************************************
- * A view for the links (BezierCurve)
- * Using a js canvas for drawing
+ * LinkView use I_LinkView (BezierCurve) to manages link children.
  * ************************************************************************************************/
-Canvas {
-    id: canvas
+I_LinkView {
+    id: linkView
 
-    /* Property Declarations
-    * ****************************************************************************************/
-    property Scene  scene
-
-    property Port   inputPort
-
-    property Port   outputPort
-
-    property Link   link:       Link {}
-
-    property bool   isSelected: link == scene.selectionModel.selectedLink
-
-    property vector2d inputPos: scene?.portsPositions[inputPort?._qsUuid] ?? Qt.vector2d(0, 0)
-
-    property vector2d outputPos: scene?.portsPositions[outputPort?._qsUuid] ?? Qt.vector2d(0, 0)
-
-    property vector2d linkMidPoint: Qt.vector2d(0, 0)
-
-    //! update painted line when change position of input and output ports
-    onOutputPosChanged: canvas.requestPaint();
-    onInputPosChanged:  canvas.requestPaint();
-    onIsSelectedChanged: canvas.requestPaint();
-
-
-    /*  Object Properties
-    * ****************************************************************************************/
-    anchors.fill: parent
-    antialiasing: true
-
-    //! paint line
-    onPaint: {
-
-        // create the context
-        var context = canvas.getContext("2d");
-
-        // if null ports then return the function
-        if (inputPort === null) {
-            context.reset();
-            return;
-        }
-
-        // calculate the control points
-        link.controlPoint1 = inputPos.plus(BezierCurve.connectionMargin(inputPort));
-        link.controlPoint2 = outputPos.plus(BezierCurve.connectionMargin(outputPort));
-
-        linkMidPoint = Calculation.getPositionByTolerance(0.5, [inputPos, link.controlPoint1, link.controlPoint2, outputPos]);
-        // draw the curve
-        BezierCurve.bezierCurve(context, inputPos, link.controlPoint1, link.controlPoint2, outputPos, isSelected, link.guiConfig.color);
-    }
 
     /*  Children
     * ****************************************************************************************/
@@ -73,8 +22,8 @@ Canvas {
         y: linkMidPoint.y - height * 2
 
         visible: isSelected
-        scene: canvas.scene
-        link: canvas.link
+        scene: linkView.scene
+        link: linkView.link
 
         onEditDescription: (isEditable) => {
                                descriptionText.focus = isEditable
@@ -118,7 +67,7 @@ Canvas {
 
         // Send paint requset when PortsPositionsChanged
         function onPortsPositionsChanged () {
-            canvas.requestPaint();
+            linkView.requestPaint();
         }
     }
 
@@ -127,14 +76,14 @@ Canvas {
 
         // Send paint requset when ColorChanged
         function onColorChanged () {
-            canvas.requestPaint();
+            linkView.requestPaint();
         }
     }
 
     //! To hide color picker if selected node is changed and
     //! remove focus on description TextArea
     Connections {
-        target: canvas
+        target: linkView
         function onIsSelectedChanged() {
             linkToolRect.colorPicker.visible = false;
             descriptionText.focus = false;

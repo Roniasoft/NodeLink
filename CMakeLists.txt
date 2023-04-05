@@ -123,6 +123,7 @@ qt_add_qml_module(NodeLink
         resources/View/NodesScene.qml
         resources/View/NodesOverview.qml
         resources/View/LinkView.qml
+        resources/View/I_LinkView.qml
         resources/View/UserLinkView.qml
         resources/View/SceneViewBackground.qml
         resources/View/Widgets/NodeToolsRect.qml
