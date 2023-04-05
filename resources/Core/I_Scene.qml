@@ -20,7 +20,7 @@ QSObject {
     property var            nodes:          ({})
 
     //! Keep Connection models
-    //! map <UUID, Connection>
+    //! map <UUID, Link>
     property var            links:          ({})
 
     //! Port positions (global)
@@ -124,6 +124,9 @@ QSObject {
             }
         });
         linksChanged();
+
+        //! clear deleted link selection
+        selectionModel.clear();
     }
 
     //! Checks if two ports can be linked or not

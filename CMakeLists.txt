@@ -93,6 +93,7 @@ qt_add_qml_module(NodeLink
         resources/Core/SelectionModel.qml
         resources/Core/NodeGuiConfig.qml
         resources/Core/Link.qml
+        resources/Core/LinkGUIConfig.qml
 
         resources/Core/Undo/UndoCore.qml
         resources/Core/Undo/UndoStack.qml
@@ -125,6 +126,7 @@ qt_add_qml_module(NodeLink
         resources/View/UserLinkView.qml
         resources/View/SceneViewBackground.qml
         resources/View/Widgets/NodeToolsRect.qml
+        resources/View/Widgets/LinkToolsRect.qml
         resources/View/Widgets/SideMenu.qml
 
         resources/View/Logics/BezierCurve.js
