@@ -12,8 +12,11 @@ QtObject {
 
     //! Type of node.
     enum NodeType {
-        General = 0,
-        Root    = 1
+        General     = 0,
+        Root        = 1,
+        Step        = 2,
+        Transition  = 3,
+        Macro       = 4
     }
 
     //! Location of port on the node sides

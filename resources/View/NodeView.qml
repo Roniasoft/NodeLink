@@ -63,10 +63,28 @@ Rectangle {
 
     /* Children
     * ****************************************************************************************/
+
+    //! Icon
+    Text {
+        id: iconText
+        font.family: "fa-regular"
+        font.pixelSize: 20
+        anchors.left: parent.left
+        anchors.top: parent.top
+        anchors.margins: 12
+        text: NLStyle.nodeIcons[node.type]
+        color: node.guiConfig.color
+    }
+
+    //! Text Area
     ScrollView {
         id: view
-        anchors.fill: parent
+        anchors.top: parent.top
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        anchors.left: iconText.right
         anchors.margins: 5
+        anchors.topMargin: 12
         focus: true
         clip : true
         hoverEnabled: true
@@ -90,6 +108,7 @@ Rectangle {
             }
         }
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+
         TextArea {
             id: textArea
             focus: true
