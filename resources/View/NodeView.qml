@@ -139,7 +139,7 @@ Rectangle {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.top
         anchors.bottomMargin: 5
-        opacity: isSelected ? 1.0 : 0.0
+        visible: isSelected
         scene: nodeView.scene
         node: nodeView.node
 
