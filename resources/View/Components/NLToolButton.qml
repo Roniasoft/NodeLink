@@ -32,7 +32,7 @@ ToolButton {
         width: toolButton.width
         height: toolButton.height
         radius: 5
-        color: toolButton.hovered ? "#2f2f2f" : "transparent"
+        color: toolButton.hovered || toolButton.checked? "#2f2f2f" : "transparent"
         opacity: enabled ? 1 : 0.3
         Behavior on color{ColorAnimation{duration: 75}}
     }
