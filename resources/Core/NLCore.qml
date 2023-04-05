@@ -47,7 +47,7 @@ QSCore {
         return obj;
     }
 
-    //! Create Connection
+    //! Create Link
     function createLink() {
         let obj = QSSerializer.createQSObject("Link", ["NodeLink"], defaultRepo);
         obj._qsRepo = defaultRepo;
