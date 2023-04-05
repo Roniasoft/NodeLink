@@ -57,7 +57,6 @@ Rectangle {
     }
 
     onIsSelectedChanged: {
-        console.log("isSelected", isSelected)
         if(!nodeView.isSelected)
             nodeView.edit = false;
     }
