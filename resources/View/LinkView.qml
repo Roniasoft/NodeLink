@@ -20,14 +20,14 @@ I_LinkView {
 
     //! Handle key pressed (Del: delete selected node and link)
     Keys.onDeletePressed: event => {
-                            shortcutManager.deleteSelectedObject();
+                            objectDeletorItem.deleteSelectedObject();
                         }
 
     /* Children
     * ****************************************************************************************/
     //! Shortcut manager
-    ShortcutManager {
-        id: shortcutManager
+    ObjectDeletorItem {
+        id: objectDeletorItem
         scene: root.scene
     }
 

@@ -2,14 +2,14 @@ import QtQuick
 import NodeLink
 
 /*! ***********************************************************************************************
- * ShortcutManager manage the key shortcut.
+ * ObjectDeletorItem manage the deletion process of selected objects (Node and Lin).
  * ************************************************************************************************/
 
 Item {
 
     /* Property Declarations
     * ****************************************************************************************/
-    property Scene              scene
+    property Scene  scene
 
     /* Children
     * ****************************************************************************************/

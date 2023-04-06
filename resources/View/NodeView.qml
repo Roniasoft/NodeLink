@@ -62,13 +62,13 @@ Rectangle {
 
     //! Handle key pressed (Del: delete selected node and link)
     Keys.onDeletePressed: event => {
-                              shortcutManager.deleteSelectedObject();
+                              objectDeletorItem.deleteSelectedObject();
                           }
 
     /* Children
     * ****************************************************************************************/
-    ShortcutManager {
-        id: shortcutManager
+    ObjectDeletorItem {
+        id: objectDeletorItem
         scene: root.scene
     }
 
