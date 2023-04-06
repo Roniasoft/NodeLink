@@ -33,15 +33,15 @@ function connectionMargin (inputPort) {
 
     switch (inputPort.portSide) {
     case 0: // \todo: use NLSpec some how here
-        return Qt.vector2d(0, -30);
+        return Qt.vector2d(0, -100);
 
     case 1:
-        return Qt.vector2d(0, +30);
+        return Qt.vector2d(0, +100);
 
     case 2:
-        return Qt.vector2d(-30, 0);
+        return Qt.vector2d(-100, 0);
 
     case 3:
-        return Qt.vector2d(+30, 0);
+        return Qt.vector2d(+100, 0);
     }
 }
