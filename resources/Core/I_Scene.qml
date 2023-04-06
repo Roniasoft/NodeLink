@@ -61,13 +61,16 @@ QSObject {
             });
         });
 
+
+        if(selectionModel.selectedNode !== null && selectionModel.selectedNode._qsUuid === nodeUUId)
+            selectionModel.clear();
+
         delete nodes[nodeUUId];
 
         portsPositionsChanged();
         linksChanged();
         nodesChanged();
 
-//        console.log()
     }
 
 
@@ -116,6 +119,9 @@ QSObject {
     //! Unlink two ports
     function unlinkNodes(portA : string, portB : string) {
 
+        //! clear deleted link selection
+        selectionModel.clear();
+
         // delete related links
         Object.entries(links).forEach(([key, value]) => {
             if (value.inputPort._qsUuid === portA &&
@@ -124,9 +130,6 @@ QSObject {
             }
         });
         linksChanged();
-
-        //! clear deleted link selection
-        selectionModel.clear();
     }
 
     //! Checks if two ports can be linked or not

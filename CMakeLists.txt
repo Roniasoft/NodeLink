@@ -119,6 +119,7 @@ qt_add_qml_module(NodeLink
         resources/View/PortView.qml
         resources/View/NodeView.qml
         resources/View/NodesRect.qml
+        resources/View/I_NodesScene.qml
         resources/View/I_NodesRect.qml
         resources/View/NodesScene.qml
         resources/View/NodesOverview.qml

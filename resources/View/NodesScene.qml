@@ -12,31 +12,12 @@ import "Logics/Calculation.js" as Calculation
 /*! ***********************************************************************************************
  * NodesScene show the Nodes, Links, ports and etc.
  * ************************************************************************************************/
-Flickable {
+I_NodesScene {
     id: flickable
-
-    FontLoader {
-        source: "qrc:/NodeLink/resources/fonts/Font Awesome 6 Pro-Regular-400.otf"
-    }
-    FontLoader {
-        source: "qrc:/NodeLink/resources/fonts/Font Awesome 6 Pro-Solid-900.otf"
-    }
-
-    /* Property Declarations
-    * ****************************************************************************************/
-    property Scene              scene
-
-    property SceneSession       sceneSession
-
 
     /* Object Properties
     * ****************************************************************************************/
     anchors.fill: parent
-    contentWidth: 4000
-    contentHeight: 4000
-    focus: true
-    ScrollBar.horizontal: HorizontalScrollBar{}
-    ScrollBar.vertical: VerticalScrollBar{}
 
     /* Children
     * ****************************************************************************************/
@@ -46,7 +27,6 @@ Flickable {
         viewWidth: flickable.contentWidth
         viewHeigth: flickable.contentHeight
     }
-
 
     //! MouseArea for selection of links
     MouseArea {
