@@ -6,10 +6,20 @@ import NodeLink
  * ************************************************************************************************/
 
 Item {
+    id: root
+
+    enum DeleteObjectType {
+        Link     = 0,
+        Node     = 1,
+        Selected = 2
+    }
 
     /* Property Declarations
     * ****************************************************************************************/
-    property Scene  scene
+    property int      deleteObjectType: ObjectDeletorItem.DeleteObjectType.Selected
+    property Node     node:             null
+    property Link     link:             null
+    property Scene    scene
 
     /* Children
     * ****************************************************************************************/
@@ -21,14 +31,29 @@ Item {
         running: false
         interval: 100
         onTriggered:  {
-            var selectedode = scene.selectionModel.selectedNode
-            if(selectedode !== undefined && selectedode !== null) {
-                scene.deleteNode(selectedode._qsUuid);
+            switch (deleteObjectType) {
+            case ObjectDeletorItem.DeleteObjectType.Link : {
+                scene.unlinkNodes(link.inputPort._qsUuid, link.outputPort._qsUuid)
+                break;
             }
 
-            var selectedLink = scene.selectionModel.selectedLink;
-            if(selectedLink !== undefined && selectedLink !== null) {
-                scene.unlinkNodes(selectedLink.inputPort._qsUuid, selectedLink.outputPort._qsUuid)
+            case ObjectDeletorItem.DeleteObjectType.Node : {
+                scene.deleteNode(node._qsUuid);
+                break;
+            }
+
+            case ObjectDeletorItem.DeleteObjectType.Selected : {
+                var selectedode = scene.selectionModel.selectedNode
+                if(selectedode !== undefined && selectedode !== null) {
+                    scene.deleteNode(selectedode._qsUuid);
+                }
+
+                var selectedLink = scene.selectionModel.selectedLink;
+                if(selectedLink !== undefined && selectedLink !== null) {
+                    scene.unlinkNodes(selectedLink.inputPort._qsUuid, selectedLink.outputPort._qsUuid)
+                }
+                break;
+            }
             }
         }
     }
@@ -46,7 +71,21 @@ Item {
         var selectedLink = scene.selectionModel.selectedLink;
 
         if((selectedNode !== undefined && selectedNode !== null) ||
-            (selectedLink !== undefined && selectedLink !== null))
+            (selectedLink !== undefined && selectedLink !== null)) {
+            deleteObjectType = ObjectDeletorItem.DeleteObjectType.Selected;
             deletePopup.open();
+        }
+    }
+
+    function unlinkNodes(linkObj : Link) {
+        deleteObjectType = ObjectDeletorItem.DeleteObjectType.Link;
+        link = linkObj;
+        deletePopup.open();
+    }
+
+    function deleteNode(nodeObj : Node) {
+        deleteObjectType = ObjectDeletorItem.DeleteObjectType.Node;
+        node = nodeObj;
+        deletePopup.open();
     }
 }

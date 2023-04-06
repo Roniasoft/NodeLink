@@ -86,14 +86,6 @@ Rectangle {
 
         }
 
-        Timer {
-            id: delTimer
-            repeat: false
-            running: false
-            interval: 100
-            onTriggered: scene.deleteNode(node._qsUuid);
-        }
-
         //Delete button
         NLToolButton {
             id: deleteButton
@@ -103,19 +95,14 @@ Rectangle {
             Layout.topMargin: 2
             Layout.bottomMargin: 2
             //popup appears on click
-            onClicked: {
-                popup.open()
-            }
-
-            ConfirmPopUp {
-                id: popup
-
-                onAccepted: {
-                    // This makes the app to crash.
-                    delTimer.start()
-                }
-            }
+            onClicked: objectDeletorItem.deleteNode(node);
         }
+    }
+
+    // delete node
+    ObjectDeletorItem {
+        id: objectDeletorItem
+        scene: toolsItem.scene
     }
 
     //defining a color picker element to be used in the first button

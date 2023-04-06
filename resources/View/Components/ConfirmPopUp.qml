@@ -63,7 +63,6 @@ Popup {
             }
             text: qsTr("Yes")
             onClicked: {
-                console.log("VJKS")
                 popUp.accepted();
                 popUp.close();
             }
