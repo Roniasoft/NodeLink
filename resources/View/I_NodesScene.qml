@@ -33,11 +33,9 @@ Flickable {
     ScrollBar.vertical: VerticalScrollBar{}
 
     //! Handle key pressed (Del: delete selected node and link)
-    Keys.onPressed: event => {
-                        if (event.key === Qt.Key_Delete) {
-                            shortcutManager.deleteSelectedObject();
-                        }
-                    }
+    Keys.onDeletePressed: event => {
+                              shortcutManager.deleteSelectedObject();
+                          }
 
     /* Children
     * ****************************************************************************************/

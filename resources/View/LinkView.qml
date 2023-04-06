@@ -10,12 +10,18 @@ import "Logics/Calculation.js" as Calculation
 I_LinkView {
     id: linkView
 
+    onIsSelectedChanged: {
+        if(isSelected)
+            forceActiveFocus();
+        else
+            linkToolRect.isEditableDescription = false;
+    }
+
+
     //! Handle key pressed (Del: delete selected node and link)
-    Keys.onPressed: event => {
-                        if (event.key === Qt.Key_Delete) {
+    Keys.onDeletePressed: event => {
                             shortcutManager.deleteSelectedObject();
                         }
-                    }
 
     /* Children
     * ****************************************************************************************/
@@ -36,8 +42,8 @@ I_LinkView {
         scene: linkView.scene
         link: linkView.link
 
-        onEditDescription: (isEditable) => {
-                               descriptionText.focus = isEditable
+        onIsEditableDescriptionChanged: {
+                               descriptionText.focus = linkToolRect.isEditableDescription;
                            }
     }
 
@@ -48,11 +54,12 @@ I_LinkView {
         y: linkMidPoint.y
 
         text: link.guiConfig.description
-        visible: link.guiConfig.description.length > 0 || activeFocus
+        visible: link.guiConfig.description.length > 0 || linkToolRect.isEditableDescription
 
         color: "white"
         font.family: "Roboto"
         font.pointSize: 14
+        focus: linkToolRect.isEditableDescription
 
         onTextChanged: {
             if (link && link.description !== text)
@@ -69,6 +76,9 @@ I_LinkView {
         onFocusChanged: {
             if(focus && !isSelected) {
                 scene.selectionModel.toggleLinkSelection(link);
+                linkToolRect.isEditableDescription = true;
+            } else if (focus) {
+               linkToolRect.isEditableDescription = true;
             }
         }
     }

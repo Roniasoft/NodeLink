@@ -22,7 +22,7 @@ Rectangle {
 
     property alias colorPicker: colorPicker
 
-    signal editDescription(bool isEditable)
+    property bool isEditableDescription: false
 
     /* Object Properties
      * ****************************************************************************************/
@@ -62,6 +62,7 @@ Rectangle {
             id: editLabelButton
             text: "\uf044"
             checkable: true
+            checked: isEditableDescription
             Layout.preferredHeight: 30
             Layout.preferredWidth: 30
             Layout.topMargin: 2
@@ -69,7 +70,7 @@ Rectangle {
 
             //Enabling read only
             onClicked:{
-                editDescription(editLabelButton.checked);
+                isEditableDescription = editLabelButton.checked
             }
 
         }

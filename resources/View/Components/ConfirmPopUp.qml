@@ -54,7 +54,6 @@ Popup {
 
         //if clicked yes, card is deleted
         Button {
-            id: yesbutton
             width: 60
             anchors.left: parent.left
             anchors.bottom: parent.bottom
@@ -64,14 +63,14 @@ Popup {
             }
             text: qsTr("Yes")
             onClicked: {
-                popUp.close();
+                console.log("VJKS")
                 popUp.accepted();
+                popUp.close();
             }
         }
 
         //if clicked no, popup is closed
         Button {
-            id: nobutton
             width: 60
             anchors.right: parent.right
             anchors.bottom: parent.bottom

@@ -11,6 +11,8 @@ Item {
     * ****************************************************************************************/
     property Scene              scene
 
+    /* Children
+    * ****************************************************************************************/
 
     //! Delete objects
     Timer {
@@ -35,11 +37,7 @@ Item {
     ConfirmPopUp {
         id: deletePopup
 
-        onAccepted: {
-            delTimer.start();
-//            parent.parent.forceActiveFocus();
-
-        }
+        onAccepted: delTimer.start();
     }
 
     //! Delete selected Objects (Node or Link)
