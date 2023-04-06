@@ -70,6 +70,7 @@ set_source_files_properties(
     resources/Core/NLSpec.qml
     resources/View/NLStyle.qml
     resources/Core/Undo/HashCompareString.qml
+
     PROPERTIES
         QT_QML_SINGLETON_TYPE True
 )
@@ -113,6 +114,7 @@ qt_add_qml_module(NodeLink
         resources/View/Components/NLToolTip.qml
         resources/View/Components/VerticalScrollBar.qml
         resources/View/Components/HorizontalScrollBar.qml
+        resources/View/Components/ShortcutManager.qml
         resources/View/NLView.qml
         resources/View/SceneSession.qml
         resources/View/NLStyle.qml

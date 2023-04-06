@@ -8,6 +8,7 @@ import QtQuickStream
  * ************************************************************************************************/
 
 Flickable {
+    id: root
 
     FontLoader {
         source: "qrc:/NodeLink/resources/fonts/Font Awesome 6 Pro-Regular-400.otf"
@@ -34,44 +35,14 @@ Flickable {
     //! Handle key pressed (Del: delete selected node and link)
     Keys.onPressed: event => {
                         if (event.key === Qt.Key_Delete) {
-                            var selectedNode = scene.selectionModel.selectedNode;
-                            var selectedLink = scene.selectionModel.selectedLink;
-
-                            if((selectedNode !== undefined && selectedNode !== null) ||
-                               (selectedLink !== undefined && selectedLink !== null))
-                                    popup.open();
+                            shortcutManager.deleteSelectedObject();
                         }
                     }
 
     /* Children
     * ****************************************************************************************/
-
-    //! Delete objects
-    Timer {
-        id: delTimer
-        repeat: false
-        running: false
-        interval: 100
-        onTriggered:  {
-            var selectedode = scene.selectionModel.selectedNode
-            if(selectedode !== undefined && selectedode !== null) {
-                scene.deleteNode(selectedode._qsUuid);
-            }
-
-            var selectedLink = scene.selectionModel.selectedLink;
-            if(selectedLink !== undefined && selectedLink !== null) {
-                scene.unlinkNodes(selectedLink.inputPort._qsUuid, selectedLink.outputPort._qsUuid)
-            }
-        }
-    }
-
-    ConfirmPopUp {
-        id: popup
-
-        onAccepted: {
-            delTimer.start();
-            parent.forceActiveFocus();
-
-        }
+    ShortcutManager {
+        id: shortcutManager
+        scene: root.scene
     }
 }

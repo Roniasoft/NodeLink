@@ -64,8 +64,8 @@ Popup {
             }
             text: qsTr("Yes")
             onClicked: {
-                popUp.accepted();
                 popUp.close();
+                popUp.accepted();
             }
         }
 

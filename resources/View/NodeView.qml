@@ -57,12 +57,22 @@ Rectangle {
     }
 
     onIsSelectedChanged: {
-        if(!nodeView.isSelected)
-            nodeView.edit = false;
+        nodeView.isSelected ? nodeView.forceActiveFocus() : nodeView.edit = false;
     }
+
+    //! Handle key pressed (Del: delete selected node and link)
+    Keys.onPressed: event => {
+                        if (event.key === Qt.Key_Delete) {
+                            shortcutManager.deleteSelectedObject();
+                        }
+                    }
 
     /* Children
     * ****************************************************************************************/
+    ShortcutManager {
+        id: shortcutManager
+        scene: root.scene
+    }
 
     //! Icon
     Text {

@@ -10,9 +10,20 @@ import "Logics/Calculation.js" as Calculation
 I_LinkView {
     id: linkView
 
+    //! Handle key pressed (Del: delete selected node and link)
+    Keys.onPressed: event => {
+                        if (event.key === Qt.Key_Delete) {
+                            shortcutManager.deleteSelectedObject();
+                        }
+                    }
 
-    /*  Children
+    /* Children
     * ****************************************************************************************/
+    //! Shortcut manager
+    ShortcutManager {
+        id: shortcutManager
+        scene: root.scene
+    }
 
     //! Link tools
     LinkToolsRect {
@@ -89,4 +100,11 @@ I_LinkView {
             descriptionText.focus = false;
         }
     }
+
+//    MouseArea {
+//       anchors.fill: parent
+
+//       enabled: isSelected && !descriptionText.activeFocus
+//       onDoubleClicked: descriptionText.forceActiveFocus();
+//    }
 }
