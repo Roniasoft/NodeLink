@@ -37,51 +37,35 @@ Menu {
         name: "General Node"
         iconStr: NLStyle.nodeIcons[NLSpec.NodeType.General]
         onClicked: {    // \todo: move this implementation out of primitive comp.
-            addNode(NLSpec.NodeType.General);
+            scene.createCustomizeNode(NLSpec.NodeType.General, contextMenu.x, contextMenu.y);
         }
     }
     ContextMenuItem {
         name: "Root Node"
         iconStr: NLStyle.nodeIcons[NLSpec.NodeType.Root]
         onClicked: {    // \todo: move this implementation out of primitive comp.
-            addNode(NLSpec.NodeType.Root);
+            scene.createCustomizeNode(NLSpec.NodeType.Root, contextMenu.x, contextMenu.y);
         }
     }
     ContextMenuItem {
         name: "Step Node"
         iconStr: NLStyle.nodeIcons[NLSpec.NodeType.Step]
         onClicked: {    // \todo: move this implementation out of primitive comp.
-            addNode(NLSpec.NodeType.Step);
+            scene.createCustomizeNode(NLSpec.NodeType.Step, contextMenu.x, contextMenu.y);
         }
     }
     ContextMenuItem {
         name: "Transition Node"
         iconStr: NLStyle.nodeIcons[NLSpec.NodeType.Transition]
         onClicked: {    // \todo: move this implementation out of primitive comp.
-            addNode(NLSpec.NodeType.Transition);
+            scene.createCustomizeNode(NLSpec.NodeType.Transition, contextMenu.x, contextMenu.y);
         }
     }
     ContextMenuItem {
         name: "Macro Node"
         iconStr: NLStyle.nodeIcons[NLSpec.NodeType.Macro]
         onClicked: {    // \todo: move this implementation out of primitive comp.
-            addNode(NLSpec.NodeType.Macro);
+            scene.createCustomizeNode(NLSpec.NodeType.Macro, contextMenu.x, contextMenu.y);
         }
     }
-
-
-    function addNode (nodeType) {
-        var node = NLCore.createNode();
-        node.type = nodeType;
-        node.guiConfig.position.x = contextMenu.x;
-        node.guiConfig.position.y = contextMenu.y;
-        node.guiConfig.color = NLStyle.nodeColors[nodeType]//Qt.rgba(Math.random(), Math.random(), Math.random(), 1)
-        scene.addNode(node)
-        node.addPortByHardCode();
-
-        nodeAdded(node._qsUuid);
-        scene.selectionModel.select(node);
-        contextMenu.close()
-    }
-
 }

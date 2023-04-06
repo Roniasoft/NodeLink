@@ -46,6 +46,11 @@ I_NodesScene {
                 contextMenu.popup(mouse.x, mouse.y)
             }
         }
+        onDoubleClicked: (mouse) => {
+                             if (mouse.button === Qt.LeftButton) {
+                                 scene.createCustomizeNode(NLSpec.NodeType.General, mouse.x, mouse.y);
+                             }
+                         }
 
         //! Context Menu for adding a new node (for now)
         ContextMenu {

@@ -45,6 +45,20 @@ QSObject {
         return node;
     }
 
+    //! Create a node with node type and its position
+    function createCustomizeNode(nodeType : int, xPos : real, yPos : real) {
+        var node = NLCore.createNode();
+        node.type = nodeType;
+        node.guiConfig.position.x = xPos;
+        node.guiConfig.position.y = yPos;
+        node.guiConfig.color = NLStyle.nodeColors[nodeType]//Qt.rgba(Math.random(), Math.random(), Math.random(), 1)
+        scene.addNode(node)
+        node.addPortByHardCode();
+
+        scene.selectionModel.select(node);
+    }
+
+
     //! Deletes a node from the scene
     function deleteNode(nodeUUId: string) {
         //! delete the node ports from the portsPosition map
