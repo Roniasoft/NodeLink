@@ -26,6 +26,9 @@ I_Node {
     //! Type of Connection
     property int        linkType:       NLSpec.LinkType.Bezier
 
+    //! Type of Connection
+    property int        direction:      NLSpec.LinkDirection.Nondirectional
+
     //! Link Ui properties
     property LinkGUIConfig guiConfig: LinkGUIConfig {
         _qsRepo: root._qsRepo
