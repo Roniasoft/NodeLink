@@ -75,6 +75,62 @@ Rectangle {
 
         }
 
+        //Direction button
+        NLToolButton {
+            id: directionButton
+            text: NLStyle.linkDirectionIcon[link.direction]
+            Layout.preferredHeight: 30
+            Layout.preferredWidth: 30
+            Layout.topMargin: 2
+            Layout.bottomMargin: 2
+            //popup appears on click
+            onClicked: menu.open()
+
+            // Select link direction
+            Menu {
+                id: menu
+                y: directionButton.height
+
+                // Nondirectional MenuItem
+                NLMenuItem {
+                    text: NLStyle.linkDirectionIcon[NLSpec.LinkDirection.Nondirectional]
+                    description: "Nondirectional"
+                    checked: link.direction === NLSpec.LinkDirection.Nondirectional
+                    onTriggered: link.direction = NLSpec.LinkDirection.Nondirectional
+                }
+
+                // Unidirectional MenuItem
+                NLMenuItem {
+                    text: NLStyle.linkDirectionIcon[NLSpec.LinkDirection.Unidirectional]
+                    description: "Unidirectional"
+                    checked: link.direction === NLSpec.LinkDirection.Unidirectional
+                    onTriggered: link.direction = NLSpec.LinkDirection.Unidirectional
+                }
+
+                // Bidirectional MenuItem
+                NLMenuItem {
+                    text: NLStyle.linkDirectionIcon[NLSpec.LinkDirection.Bidirectional]
+                    description: "Bidirectional"
+                    checked: link.direction === NLSpec.LinkDirection.Bidirectional
+                    onTriggered: link.direction = NLSpec.LinkDirection.Bidirectional
+                }
+
+                background: Item {
+                    implicitWidth: 150
+                    implicitHeight: 100
+
+                    Rectangle {
+                        id: toolButtonController
+
+                        anchors.fill: parent
+                        radius: 5
+                        color: "#1e1e1e"
+                        opacity: enabled ? 1 : 0.3
+                    }
+                }
+            }
+        }
+
         //Delete button
         NLToolButton {
             id: deleteButton
