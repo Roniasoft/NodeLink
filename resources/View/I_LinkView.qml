@@ -4,6 +4,7 @@ import QtQuick.Controls
 import QtQuick.Shapes
 
 import "Logics/BezierCurve.js" as BezierCurve
+import "Logics/Calculation.js" as Calculation
 
 /*! ***********************************************************************************************
  *  I_LinkView is an interface classs that shows Links (BezierCurve).
@@ -59,6 +60,17 @@ Canvas {
 
         linkMidPoint = Calculation.getPositionByTolerance(0.5, [inputPos, link.controlPoint1, link.controlPoint2, outputPos]);
         // draw the curve
-        BezierCurve.bezierCurve(context, inputPos, link.controlPoint1, link.controlPoint2, outputPos, isSelected, link.guiConfig.color);
+        BezierCurve.bezierCurve(context, inputPos, link.controlPoint1,
+                                link.controlPoint2, outputPos, isSelected,
+                                link.guiConfig.color, link.direction);
     }
+
+    // requestPaint when direction of link changed.
+  Connections {
+      target: link
+
+      function onDirectionChanged() {
+          canvas.requestPaint();
+      }
+  }
 }

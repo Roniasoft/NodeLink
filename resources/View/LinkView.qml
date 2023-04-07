@@ -2,8 +2,6 @@ import QtQuick
 import NodeLink
 import QtQuick.Controls
 
-import "Logics/Calculation.js" as Calculation
-
 /*! ***********************************************************************************************
  * LinkView use I_LinkView (BezierCurve) to manages link children.
  * ************************************************************************************************/
