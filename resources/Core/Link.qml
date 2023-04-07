@@ -27,7 +27,7 @@ I_Node {
     property int        linkType:       NLSpec.LinkType.Bezier
 
     //! Type of Connection
-    property int        direction:      NLSpec.LinkDirection.Nondirectional
+    property int        direction:      NLSpec.LinkDirection.Unidirectional
 
     //! Link Ui properties
     property LinkGUIConfig guiConfig: LinkGUIConfig {

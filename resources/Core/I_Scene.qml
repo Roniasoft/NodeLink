@@ -46,7 +46,7 @@ QSObject {
     }
 
     //! Create a node with node type and its position
-    function createCustomizeNode(nodeType : int, xPos : real, yPos : real) {
+    function createCustomizeNode(nodeType : int, xPos : real, yPos : real) : string{
         var node = NLCore.createNode();
         node.type = nodeType;
         node.guiConfig.position.x = xPos;
@@ -56,6 +56,8 @@ QSObject {
         node.addPortByHardCode();
 
         scene.selectionModel.select(node);
+
+        return node._qsUuid;
     }
 
 
@@ -126,8 +128,8 @@ QSObject {
             obj.inputPort  = findPort(portA);
             obj.outputPort = findPort(portB);
             links[obj._qsUuid] = obj;
+            linksChanged();
         }
-        linksChanged();
     }
 
     //! Unlink two ports
