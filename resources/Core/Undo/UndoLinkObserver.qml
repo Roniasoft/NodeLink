@@ -1,17 +1,16 @@
 import QtQuick
-import QtQuick.Controls
-import QtQml
 import NodeLink
 
 /*! ***********************************************************************************************
- * The UndoNodeObserver update UndoStack when Node properties changed.
+ * The UndoLinkObserver update UndoStack when Link properties changed.
  * ************************************************************************************************/
+
 Item {
     id: root
 
     /* Property Properties
      * ****************************************************************************************/
-    property Node       node
+    property Link       link
 
     property UndoStack  undoStack
 
@@ -25,26 +24,28 @@ Item {
 
     /* Childeren
      * ****************************************************************************************/
+
     Connections {
-        target: node
+        target: link
 
-        enabled: !NLSpec.undo.blockObservers
-
-        function onTitleChanged() {
+        function onDirectionChanged() {
             root._timer.start();
         }
 
-        function onTypeChanged() {
-            root._timer.start();
-        }
-
-        function onPortsChanged() {
+        function onLinkTypeChanged() {
             root._timer.start();
         }
     }
 
-    UndoNodeGuiObserver {
-      guiConfig: root.node.guiConfig
-      undoStack: root.undoStack
+    Connections {
+        target: link.guiConfig
+
+        function onDescriptionChanged() {
+            root._timer.start();
+        }
+
+        function onColorChanged() {
+            root._timer.start();
+        }
     }
 }

@@ -59,4 +59,15 @@ Item {
         }
 
     }
+
+    //! Link Loggers
+    Repeater {
+        model: Object.values(root.scene.links)
+
+        delegate: UndoLinkObserver {
+            link: modelData
+            undoStack: root.undoStack
+        }
+
+    }
 }
