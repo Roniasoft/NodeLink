@@ -115,7 +115,6 @@ qt_add_qml_module(NodeLink
         resources/View/Components/NLToolTip.qml
         resources/View/Components/VerticalScrollBar.qml
         resources/View/Components/HorizontalScrollBar.qml
-        resources/View/Components/ObjectDeletorItem.qml
         resources/View/Components/NLMenuItem.qml
         resources/View/NLView.qml
         resources/View/SceneSession.qml

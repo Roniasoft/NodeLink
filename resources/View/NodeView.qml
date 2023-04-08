@@ -61,15 +61,27 @@ Rectangle {
     }
 
     //! Handle key pressed (Del: delete selected node and link)
-    Keys.onDeletePressed: event => {
-                              objectDeletorItem.deleteSelectedObject();
-                          }
+    Keys.onDeletePressed: {
+        if(nodeView.isSelected)
+            deletePopup.open();
+    }
 
     /* Children
     * ****************************************************************************************/
-    ObjectDeletorItem {
-        id: objectDeletorItem
-        scene: root.scene
+    //! Delete node
+    Timer {
+        id: delTimer
+        repeat: false
+        running: false
+        interval: 100
+        onTriggered: scene.deleteNode(node._qsUuid);
+    }
+
+    //! Delete popup to confirm deletion process
+    ConfirmPopUp {
+        id: deletePopup
+
+        onAccepted: delTimer.start();
     }
 
     //! Icon

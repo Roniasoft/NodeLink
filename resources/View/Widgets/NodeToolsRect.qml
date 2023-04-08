@@ -53,7 +53,7 @@ Rectangle {
             //color changer appears on one click
             onClicked: {
                 colorPicker.visible = !colorPicker.visible
-            }             
+            }
         }
 
         //Duplicating the card
@@ -95,14 +95,24 @@ Rectangle {
             Layout.topMargin: 2
             Layout.bottomMargin: 2
             //popup appears on click
-            onClicked: objectDeletorItem.deleteNode(node);
+            onClicked: deletePopup.open()
+
+
+            //! Delete popup to confirm deletion process
+            ConfirmPopUp {
+                id: deletePopup
+                onAccepted: delTimer.start();
+            }
         }
     }
 
-    // delete node
-    ObjectDeletorItem {
-        id: objectDeletorItem
-        scene: toolsItem.scene
+    //! Delete objects
+    Timer {
+        id: delTimer
+        repeat: false
+        running: false
+        interval: 100
+        onTriggered: scene.deleteNode(node._qsUuid);
     }
 
     //defining a color picker element to be used in the first button
@@ -113,7 +123,7 @@ Rectangle {
         anchors.horizontalCenter: toolsItem.horizontalCenter
         visible: false
         onColorChanged: (colorName)=> {
-            node.guiConfig.color = colorName
-        }
-   }
+                            node.guiConfig.color = colorName
+                        }
+    }
 }

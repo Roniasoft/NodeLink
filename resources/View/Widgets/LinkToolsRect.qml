@@ -140,14 +140,25 @@ Rectangle {
             Layout.topMargin: 2
             Layout.bottomMargin: 2
             //popup appears on click
-            onClicked: objectDeletorItem.unlinkNodes(link)
+            onClicked: deletePopup.open()
         }
     }
 
-    // delete link
-    ObjectDeletorItem {
-        id: objectDeletorItem
-        scene: toolsItem.scene
+    //! Delete objects
+    Timer {
+        id: delTimer
+        repeat: false
+        running: false
+        interval: 100
+        onTriggered: scene.unlinkNodes(link.inputPort._qsUuid, link.outputPort._qsUuid)
+
+    }
+
+    //! Delete popup to confirm deletion process
+    ConfirmPopUp {
+        id: deletePopup
+
+        onAccepted: delTimer.start();
     }
 
 

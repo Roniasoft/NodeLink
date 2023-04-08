@@ -33,14 +33,40 @@ Flickable {
     ScrollBar.vertical: VerticalScrollBar{}
 
     //! Handle key pressed (Del: delete selected node and link)
-    Keys.onDeletePressed: event => {
-                              objectDeletorItem.deleteSelectedObject();
-                          }
+    Keys.onDeletePressed: {
+        var selecteNode = scene.selectionModel.selectedNode
+        var selectedLink = scene.selectionModel.selectedLink;
+
+        if((selectedLink !== undefined && selectedLink !== null) ||
+           (selecteNode !== undefined && selecteNode !== null)) {
+            deletePopup.open();
+        }
+    }
 
     /* Children
     * ****************************************************************************************/
-    ObjectDeletorItem {
-        id: objectDeletorItem
-        scene: root.scene
+    //! Delete objects
+    Timer {
+        id: delTimer
+        repeat: false
+        running: false
+        interval: 100
+        onTriggered: {
+            var selectedode = scene.selectionModel.selectedNode
+            if(selectedode !== undefined && selectedode !== null) {
+                scene.deleteNode(selectedode._qsUuid);
+            }
+
+            var selectedLink = scene.selectionModel.selectedLink;
+            if(selectedLink !== undefined && selectedLink !== null) {
+                scene.unlinkNodes(selectedLink.inputPort._qsUuid, selectedLink.outputPort._qsUuid)
+            }
+        }
+    }
+
+    //! Delete popup to confirm deletion process
+    ConfirmPopUp {
+        id: deletePopup
+        onAccepted: delTimer.start();
     }
 }

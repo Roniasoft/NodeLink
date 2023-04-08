@@ -65,6 +65,9 @@ Canvas {
                                 link.guiConfig.color, link.direction);
     }
 
+    /* Children
+    * ****************************************************************************************/
+
     // requestPaint when direction of link changed.
   Connections {
       target: link

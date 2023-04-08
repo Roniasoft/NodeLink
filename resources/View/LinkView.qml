@@ -22,16 +22,28 @@ I_LinkView {
 
 
     //! Handle key pressed (Del: delete selected node and link)
-    Keys.onDeletePressed: event => {
-                            objectDeletorItem.deleteSelectedObject();
-                        }
+    Keys.onDeletePressed: {
+        if(linkView.isSelected)
+            deletePopup.open();
+    }
 
     /* Children
     * ****************************************************************************************/
-    //! Shortcut manager
-    ObjectDeletorItem {
-        id: objectDeletorItem
-        scene: root.scene
+
+    //! Delete link
+    Timer {
+        id: delTimer
+        repeat: false
+        running: false
+        interval: 100
+        onTriggered: scene.unlinkNodes(link.inputPort._qsUuid, link.outputPort._qsUuid)
+    }
+
+    //! Delete popup to confirm deletion process
+    ConfirmPopUp {
+        id: deletePopup
+
+        onAccepted: delTimer.start();
     }
 
     //! Link tools
