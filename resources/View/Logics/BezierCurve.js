@@ -47,7 +47,7 @@ function arrow(context, from, to, color) {
     const dx = to.x - from.x;
     const dy = to.y - from.y;
 
-    const headlen = Math.sqrt(dx * dx + dy * dy) * 0.2; // length of head in pixels
+    const headlen = Math.sqrt(dx * dx + dy * dy) * 0.05; // length of head in pixels
     const angle = Math.atan2(dy, dx);
 
     //Paint arrow
@@ -74,15 +74,15 @@ function connectionMargin (inputPort) {
 
     switch (inputPort.portSide) {
     case 0: // \todo: use NLSpec some how here
-        return Qt.vector2d(0, -50);
+        return Qt.vector2d(0, -200);
 
     case 1:
-        return Qt.vector2d(0, +50);
+        return Qt.vector2d(0, +200);
 
     case 2:
-        return Qt.vector2d(-50, 0);
+        return Qt.vector2d(-200, 0);
 
     case 3:
-        return Qt.vector2d(+50, 0);
+        return Qt.vector2d(+200, 0);
     }
 }
