@@ -61,7 +61,7 @@ function arrow(context, from, to, color) {
     context.fillStyle = color;
     context.fill();
 
-     // stroke the curve
+    // stroke the curve
     context.stroke();
 }
 
