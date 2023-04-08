@@ -101,6 +101,7 @@ QSObject {
         node.guiConfig.height = nodes[nodeUUId].guiConfig.height
         node.guiConfig.width = nodes[nodeUUId].guiConfig.width
         node.title = nodes[nodeUUId].title
+        node.addPortByHardCode();
         selectionModel.select(node);
     }
 

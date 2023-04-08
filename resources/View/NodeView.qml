@@ -16,8 +16,6 @@ Rectangle {
 
     property SceneSession sceneSession
 
-    property var    downstreamNodes: []
-
     property bool   edit:            textArea.activeFocus
 
     property bool   isSelected:      false
