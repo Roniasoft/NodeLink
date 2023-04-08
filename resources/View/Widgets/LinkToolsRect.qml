@@ -41,7 +41,7 @@ Rectangle {
         anchors.verticalCenter: parent.verticalCenter
         spacing: 3
 
-        //color change
+        //! Color change
         NLToolButton {
             id: colorButton1
             Layout.preferredHeight: 30
@@ -57,10 +57,10 @@ Rectangle {
         }
 
 
-        //Edit discription
+        //! Edit discription
         NLToolButton {
             id: editLabelButton
-            text: "\uf044"
+            text: "\uf27a"
             checkable: true
             checked: isEditableDescription
             Layout.preferredHeight: 30
@@ -75,7 +75,7 @@ Rectangle {
 
         }
 
-        //Direction button
+        //! Direction button
         NLToolButton {
             id: directionButton
             text: NLStyle.linkDirectionIcon[link.direction]
@@ -83,7 +83,6 @@ Rectangle {
             Layout.preferredWidth: 30
             Layout.topMargin: 2
             Layout.bottomMargin: 2
-            //popup appears on click
             onClicked: menu.open()
 
             // Select link direction
@@ -116,12 +115,10 @@ Rectangle {
                 }
 
                 background: Item {
-                    implicitWidth: 150
-                    implicitHeight: 100
-
+                    implicitWidth: 135
+                    implicitHeight: 80
                     Rectangle {
                         id: toolButtonController
-
                         anchors.fill: parent
                         radius: 5
                         color: "#1e1e1e"

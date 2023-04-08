@@ -26,7 +26,7 @@ MenuItem {
         text: "\uf00c"
         visible: menuItem.checked
         font.family: "fa-regular"
-        font.pointSize: 17
+        font.pointSize: 12
         color: "white"
     }
 
@@ -39,7 +39,7 @@ MenuItem {
             anchors.margins: 5
             text: menuItem.text
             font.family: "fa-regular"
-            font.pointSize: 17
+            font.pointSize: 12
             color: "white"
 
         }

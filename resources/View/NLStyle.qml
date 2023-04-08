@@ -47,7 +47,7 @@ QtObject {
     //! Direction icon of links
     readonly property var linkDirectionIcon: [
         "\ue404",       // Nondirectional
-        "\uf061",       // Unidirectional
+        "\ue4c1",       // Unidirectional
         "\uf07e"        // Bidirectional
     ]
 }
