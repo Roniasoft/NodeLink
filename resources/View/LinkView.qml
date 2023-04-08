@@ -8,6 +8,11 @@ import QtQuick.Controls
 I_LinkView {
     id: linkView
 
+    /*  Object Properties
+    * ****************************************************************************************/
+
+    z: isSelected ? 10 : 0
+
     onIsSelectedChanged: {
         if(isSelected)
             forceActiveFocus();
@@ -33,8 +38,9 @@ I_LinkView {
     LinkToolsRect {
         id: linkToolRect
 
-        x: linkMidPoint.x
+        x: linkMidPoint.x - width / 2
         y: linkMidPoint.y - height * 2
+        z: 11
 
         visible: isSelected
         scene: linkView.scene
