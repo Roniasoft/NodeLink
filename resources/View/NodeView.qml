@@ -134,6 +134,7 @@ Rectangle {
             color: "white"
             selectByMouse: true
             text: node.title
+            wrapMode:TextEdit.WrapAnywhere
             onTextChanged: {
                 if (node && node.title !== text)
                     node.title = text;
