@@ -21,7 +21,7 @@ Rectangle {
 
     required property Node  node
 
-    property alias colorPicker: colorPicker
+    property alias    colorPicker: colorPicker
 
 
     /* Object Properties
@@ -34,14 +34,14 @@ Rectangle {
 
     /* Children
      * ****************************************************************************************/
-    //A row of different buttons
+    //! A row of different buttons
     RowLayout {
         id: layout
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.verticalCenter: parent.verticalCenter
         spacing: 3
 
-        //color change
+        //! Color change
         NLToolButton {
             id: colorButton1
             Layout.preferredHeight: 30
@@ -50,13 +50,13 @@ Rectangle {
             Layout.bottomMargin: 2
             text: "\uf53f"
 
-            //color changer appears on one click
+            // Color changer appears on one click
             onClicked: {
                 colorPicker.visible = !colorPicker.visible
-            }             
+            }
         }
 
-        //Duplicating the card
+        //! Duplicating the card
         NLToolButton {
             text: "\uf24d"
             Layout.preferredHeight: 30
@@ -69,7 +69,7 @@ Rectangle {
             }
         }
 
-        //Locking the card
+        //! Locking the card
         NLToolButton {
             id: lockButton
             text: "\uf30d"
@@ -79,22 +79,13 @@ Rectangle {
             Layout.topMargin: 2
             Layout.bottomMargin: 2
 
-            //Enabling read only
-            onClicked:{
+            //! Enabling read only
+            onClicked: {
                 locked = lockButton.checked
             }
-
         }
 
-        Timer {
-            id: delTimer
-            repeat: false
-            running: false
-            interval: 100
-            onTriggered: scene.deleteNode(node._qsUuid);
-        }
-
-        //Delete button
+        //! Delete button
         NLToolButton {
             id: deleteButton
             text: "\uf2ed"
@@ -102,23 +93,26 @@ Rectangle {
             Layout.preferredWidth: 30
             Layout.topMargin: 2
             Layout.bottomMargin: 2
-            //popup appears on click
-            onClicked: {
-                popup.open()
-            }
+            onClicked: deletePopup.open()
 
+            //! Delete popup to confirm deletion process
             ConfirmPopUp {
-                id: popup
-
-                onAccepted: {
-                    // This makes the app to crash.
-                    delTimer.start()
-                }
+                id: deletePopup
+                onAccepted: delTimer.start();
             }
         }
     }
 
-    //defining a color picker element to be used in the first button
+    //! Delete objects
+    Timer {
+        id: delTimer
+        repeat: false
+        running: false
+        interval: 100
+        onTriggered: scene.deleteNode(node._qsUuid);
+    }
+
+    //! Defining a color picker element to be used in the first button
     ColorPicker {
         id: colorPicker
         anchors.bottom: toolsItem.top
@@ -128,5 +122,5 @@ Rectangle {
         onColorChanged: (colorName)=> {
             node.guiConfig.color = colorName
         }
-   }
+    }
 }

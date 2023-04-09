@@ -70,6 +70,7 @@ set_source_files_properties(
     resources/Core/NLSpec.qml
     resources/View/NLStyle.qml
     resources/Core/Undo/HashCompareString.qml
+
     PROPERTIES
         QT_QML_SINGLETON_TYPE True
 )
@@ -93,12 +94,14 @@ qt_add_qml_module(NodeLink
         resources/Core/SelectionModel.qml
         resources/Core/NodeGuiConfig.qml
         resources/Core/Link.qml
+        resources/Core/LinkGUIConfig.qml
 
         resources/Core/Undo/UndoCore.qml
         resources/Core/Undo/UndoStack.qml
         resources/Core/Undo/UndoSceneObserver.qml
         resources/Core/Undo/UndoNodeObserver.qml
         resources/Core/Undo/UndoNodeGuiObserver.qml
+        resources/Core/Undo/UndoLinkObserver.qml
         resources/Core/Undo/HashCompareString.qml
 
         resources/View/Components/ColorPicker/ColorItem.qml
@@ -112,19 +115,23 @@ qt_add_qml_module(NodeLink
         resources/View/Components/NLToolTip.qml
         resources/View/Components/VerticalScrollBar.qml
         resources/View/Components/HorizontalScrollBar.qml
+        resources/View/Components/NLMenuItem.qml
         resources/View/NLView.qml
         resources/View/SceneSession.qml
         resources/View/NLStyle.qml
         resources/View/PortView.qml
         resources/View/NodeView.qml
         resources/View/NodesRect.qml
+        resources/View/I_NodesScene.qml
         resources/View/I_NodesRect.qml
         resources/View/NodesScene.qml
         resources/View/NodesOverview.qml
         resources/View/LinkView.qml
+        resources/View/I_LinkView.qml
         resources/View/UserLinkView.qml
         resources/View/SceneViewBackground.qml
         resources/View/Widgets/NodeToolsRect.qml
+        resources/View/Widgets/LinkToolsRect.qml
         resources/View/Widgets/SideMenu.qml
 
         resources/View/Logics/BezierCurve.js

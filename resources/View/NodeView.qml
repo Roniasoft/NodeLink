@@ -16,8 +16,6 @@ Rectangle {
 
     property SceneSession sceneSession
 
-    property var    downstreamNodes: []
-
     property bool   edit:            textArea.activeFocus
 
     property bool   isSelected:      false
@@ -57,12 +55,32 @@ Rectangle {
     }
 
     onIsSelectedChanged: {
-        if(!nodeView.isSelected)
-            nodeView.edit = false;
+        nodeView.isSelected ? nodeView.forceActiveFocus() : nodeView.edit = false;
+    }
+
+    //! Handle key pressed (Del: delete selected node and link)
+    Keys.onDeletePressed: {
+        if(nodeView.isSelected)
+            deletePopup.open();
     }
 
     /* Children
     * ****************************************************************************************/
+    //! Delete node
+    Timer {
+        id: delTimer
+        repeat: false
+        running: false
+        interval: 100
+        onTriggered: scene.deleteNode(node._qsUuid);
+    }
+
+    //! Delete popup to confirm deletion process
+    ConfirmPopUp {
+        id: deletePopup
+
+        onAccepted: delTimer.start();
+    }
 
     //! Icon
     Text {
@@ -139,7 +157,7 @@ Rectangle {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.top
         anchors.bottomMargin: 5
-        opacity: isSelected ? 1.0 : 0.0
+        visible: isSelected
         scene: nodeView.scene
         node: nodeView.node
 

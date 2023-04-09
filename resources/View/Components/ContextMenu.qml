@@ -37,51 +37,40 @@ Menu {
         name: "General Node"
         iconStr: NLStyle.nodeIcons[NLSpec.NodeType.General]
         onClicked: {    // \todo: move this implementation out of primitive comp.
-            addNode(NLSpec.NodeType.General);
+            var nodeUuid = scene.createCustomizeNode(NLSpec.NodeType.General, contextMenu.x, contextMenu.y);
+            nodeAdded(nodeUuid);
         }
     }
     ContextMenuItem {
         name: "Root Node"
         iconStr: NLStyle.nodeIcons[NLSpec.NodeType.Root]
         onClicked: {    // \todo: move this implementation out of primitive comp.
-            addNode(NLSpec.NodeType.Root);
+            var nodeUuid = scene.createCustomizeNode(NLSpec.NodeType.Root, contextMenu.x, contextMenu.y);
+            nodeAdded(nodeUuid);
         }
     }
     ContextMenuItem {
         name: "Step Node"
         iconStr: NLStyle.nodeIcons[NLSpec.NodeType.Step]
         onClicked: {    // \todo: move this implementation out of primitive comp.
-            addNode(NLSpec.NodeType.Step);
+            var nodeUuid = scene.createCustomizeNode(NLSpec.NodeType.Step, contextMenu.x, contextMenu.y);
+            nodeAdded(nodeUuid);
         }
     }
     ContextMenuItem {
         name: "Transition Node"
         iconStr: NLStyle.nodeIcons[NLSpec.NodeType.Transition]
         onClicked: {    // \todo: move this implementation out of primitive comp.
-            addNode(NLSpec.NodeType.Transition);
+            var nodeUuid = scene.createCustomizeNode(NLSpec.NodeType.Transition, contextMenu.x, contextMenu.y);
+            nodeAdded(nodeUuid);
         }
     }
     ContextMenuItem {
         name: "Macro Node"
         iconStr: NLStyle.nodeIcons[NLSpec.NodeType.Macro]
         onClicked: {    // \todo: move this implementation out of primitive comp.
-            addNode(NLSpec.NodeType.Macro);
+            var nodeUuid = scene.createCustomizeNode(NLSpec.NodeType.Macro, contextMenu.x, contextMenu.y);
+            nodeAdded(nodeUuid);
         }
     }
-
-
-    function addNode (nodeType) {
-        var node = NLCore.createNode();
-        node.type = nodeType;
-        node.guiConfig.position.x = contextMenu.x;
-        node.guiConfig.position.y = contextMenu.y;
-        node.guiConfig.color = NLStyle.nodeColors[nodeType]//Qt.rgba(Math.random(), Math.random(), Math.random(), 1)
-        scene.addNode(node)
-        node.addPortByHardCode();
-
-        nodeAdded(node._qsUuid);
-        scene.selectionModel.select(node);
-        contextMenu.close()
-    }
-
 }

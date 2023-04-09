@@ -8,9 +8,8 @@
 // and returns true if any of the distances are less than the tolerance.
 function isPointOnCurve(x, y, tolerance, points) {
     for (var t = 0; t <= 1; t += 0.02) {
-        var curveX = Math.pow(1-t, 3)*points[0].x + 3*Math.pow(1-t, 2)*t*points[1].x + 3*(1-t)*Math.pow(t, 2)*points[2].x + Math.pow(t, 3)*points[3].x;
-        var curveY = Math.pow(1-t, 3)*points[0].y + 3*Math.pow(1-t, 2)*t*points[1].y + 3*(1-t)*Math.pow(t, 2)*points[2].y + Math.pow(t, 3)*points[3].y;
-        var distance = Math.sqrt(Math.pow(curveX - x, 2) + Math.pow(curveY - y, 2));
+        var curvePos = getPositionByTolerance(t, points);
+        var distance = Math.sqrt(Math.pow(curvePos.x - x, 2) + Math.pow(curvePos.y - y, 2));
         if (distance < tolerance) {
             return true;
         }
@@ -27,9 +26,11 @@ function isPositionOnCurve(currentPos, startPos, cp1, cp2, endPos) {
     var c = -3 * startPos.x + 3 * cp1.x;
     var d = startPos.x - currentPos.x;
 
+    // calculate t value
     var result = solveCubic(a, b, c , d);
     var isPointOnCurve = false;
 
+    // validate y value with the value of t obtained
     result.forEach(res => {
                        if(res >= 0.0 && res <= 1.0) {
                            var y = b0_t(res) * startPos.y +
@@ -46,6 +47,8 @@ function isPositionOnCurve(currentPos, startPos, cp1, cp2, endPos) {
 }
 
 //! calculate bezier parameters.
+// 0.0 <= t <= 1.0
+// https://stackoverflow.com/questions/15397596/find-all-the-points-of-a-cubic-bezier-curve-in-javascript/15399173#15399173
 function b0_t(t) { return Math.pow(1 - t, 3) }
 function b1_t(t) { return 3 * t * Math.pow(1 - t, 2)}
 function b2_t(t) { return 3 * Math.pow(t, 2) * (1 - t)}
@@ -56,6 +59,13 @@ function cuberoot(x) {
     return x < 0 ? -y : y;
 }
 
+//! Solve Cubic eqation
+//  at^3+bt^2+ct+d = 0
+//  a: The coeficient of x to the power of three (at^3).
+//  b: the coeficent of x to the power of two (bt^2).
+//  c: the coeficent of x to the power of one (ct).
+//  d: the coeficent of x to the power of zero (d).
+// https://stackoverflow.com/questions/27176423/function-to-solve-cubic-equation-analytically/27176424#27176424
 function solveCubic(a, b, c, d) {
     if (Math.abs(a) < 1e-8) { // Quadratic case, ax^2+bx+c=0
         a = b; b = c; c = d;
@@ -105,3 +115,10 @@ function solveCubic(a, b, c, d) {
     return roots;
 }
 
+//! calcuate position of point with t and control points
+function getPositionByTolerance(t, points) {
+    var curveX = Math.pow(1-t, 3)*points[0].x + 3*Math.pow(1-t, 2)*t*points[1].x + 3*(1-t)*Math.pow(t, 2)*points[2].x + Math.pow(t, 3)*points[3].x;
+    var curveY = Math.pow(1-t, 3)*points[0].y + 3*Math.pow(1-t, 2)*t*points[1].y + 3*(1-t)*Math.pow(t, 2)*points[2].y + Math.pow(t, 3)*points[3].y;
+
+    return Qt.vector2d(curveX, curveY);
+}

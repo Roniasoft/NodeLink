@@ -1,71 +1,136 @@
 import QtQuick
 import NodeLink
 import QtQuick.Controls
-import QtQuick.Shapes
-import "Logics/BezierCurve.js" as BezierCurve
 
 /*! ***********************************************************************************************
- * A view for the links (BezierCurve)
- * Using a js canvas for drawing
+ * LinkView use I_LinkView (BezierCurve) to manages link children.
  * ************************************************************************************************/
-Canvas {
-    id: canvas
-
-    /* Property Declarations
-    * ****************************************************************************************/
-    property Scene  scene
-
-    property Port   inputPort
-
-    property Port   outputPort
-
-    property Link   link:       Link {}
-
-    property bool   isSelected: link == scene.selectionModel.selectedLink
-
-    property vector2d inputPos: scene?.portsPositions[inputPort?._qsUuid] ?? Qt.vector2d(0, 0)
-
-    property vector2d outputPos: scene?.portsPositions[outputPort?._qsUuid] ?? Qt.vector2d(0, 0)
-
-    //! update painted line when change position of input and output ports
-    onOutputPosChanged: canvas.requestPaint();
-    onInputPosChanged:  canvas.requestPaint();
-    onIsSelectedChanged: canvas.requestPaint();
-
+I_LinkView {
+    id: linkView
 
     /*  Object Properties
     * ****************************************************************************************/
-    anchors.fill: parent
-    antialiasing: true
 
-    //! paint line
-    onPaint: {
+    z: isSelected ? 10 : 0
 
-        // create the context
-        var context = canvas.getContext("2d");
-
-        // if null ports then return the function
-        if (inputPort === null) {
-            context.reset();
-            return;
-        }
-
-        // calculate the control points
-        link.controlPoint1 = inputPos.plus(BezierCurve.connectionMargin(inputPort));
-        link.controlPoint2 = outputPos.plus(BezierCurve.connectionMargin(outputPort));
-
-        // draw the curve
-        BezierCurve.bezierCurve(context, inputPos, link.controlPoint1, link.controlPoint2, outputPos, isSelected);
+    onIsSelectedChanged: {
+        if(isSelected)
+            forceActiveFocus();
+        else
+            linkToolRect.isEditableDescription = false;
     }
 
-    /*  Children
+
+    //! Handle key pressed (Del: delete selected node and link)
+    Keys.onDeletePressed: {
+        if(linkView.isSelected)
+            deletePopup.open();
+    }
+
+    /* Children
     * ****************************************************************************************/
+
+    //! Delete link
+    Timer {
+        id: delTimer
+        repeat: false
+        running: false
+        interval: 100
+        onTriggered: scene.unlinkNodes(link.inputPort._qsUuid, link.outputPort._qsUuid)
+    }
+
+    //! Delete popup to confirm deletion process
+    ConfirmPopUp {
+        id: deletePopup
+
+        onAccepted: delTimer.start();
+    }
+
+    //! Link tools
+    LinkToolsRect {
+        id: linkToolRect
+
+        x: linkMidPoint.x - width / 2
+        y: linkMidPoint.y - height * 2
+        z: 11
+
+        visible: isSelected
+        scene: linkView.scene
+        link: linkView.link
+
+        onIsEditableDescriptionChanged: {
+                               descriptionText.focus = linkToolRect.isEditableDescription;
+                           }
+    }
+
+    // Description view
+    TextArea {
+        id: descriptionText
+        x: linkMidPoint.x
+        y: linkMidPoint.y
+
+        text: link.guiConfig.description
+        visible: link.guiConfig.description.length > 0 || linkToolRect.isEditableDescription
+
+        color: "white"
+        font.family: "Roboto"
+        font.pointSize: 14
+        focus: linkToolRect.isEditableDescription
+
+        onTextChanged: {
+            if (link && link.description !== text)
+                link.guiConfig.description = text;
+        }
+
+        background: Rectangle {
+            radius: 5
+            border.width: 3
+            border.color: isSelected ? link.guiConfig.color : "transparent"
+            color: "#1e1e1e"
+        }
+
+        onFocusChanged: {
+            if(focus && !isSelected) {
+                scene.selectionModel.toggleLinkSelection(link);
+                linkToolRect.isEditableDescription = true;
+            } else if (focus) {
+               linkToolRect.isEditableDescription = true;
+            }
+        }
+    }
+
     Connections {
         target: scene
 
         // Send paint requset when PortsPositionsChanged
         function onPortsPositionsChanged () {
-            canvas.requestPaint();
+            linkView.requestPaint();
         }
     }
+
+    Connections {
+        target: link.guiConfig
+
+        // Send paint requset when ColorChanged
+        function onColorChanged () {
+            linkView.requestPaint();
+        }
+    }
+
+    //! To hide color picker if selected node is changed and
+    //! remove focus on description TextArea
+    Connections {
+        target: linkView
+        function onIsSelectedChanged() {
+            linkToolRect.colorPicker.visible = false;
+            descriptionText.focus = false;
+        }
+    }
+
+//    MouseArea {
+//       anchors.fill: parent
+
+//       enabled: isSelected && !descriptionText.activeFocus
+//       onDoubleClicked: descriptionText.forceActiveFocus();
+//    }
 }

@@ -2,7 +2,7 @@
 .import QtQuick 2.0 as QtQuick
 
 //! Drawing a bezier curve using give context2D
-function bezierCurve(context, startPos, cp1, cp2, endPos, isSelected) {
+function bezierCurve(context, startPos, cp1, cp2, endPos, isSelected, color, direction) {
 
     context.reset();
     context.lineWidth = 2;
@@ -15,15 +15,56 @@ function bezierCurve(context, startPos, cp1, cp2, endPos, isSelected) {
     context.bezierCurveTo(cp1.x, cp1.y, cp2.x , cp2.y, endPos.x, endPos.y);
 
     // glow effect
-    context.strokeStyle = 'hsl(' + 10 + ', 50%, 255%)';
+    context.strokeStyle = color;
     if(isSelected) {
-        context.shadowColor = 'white';
+        context.shadowColor = color;
         context.shadowBlur = 10;
     }
     // stroke the curve
     context.stroke();
     context.restore();
+
+    // Paint Link direction
+    switch (direction) {
+    case 1: { // Unidirectional
+        arrow(context, cp2, endPos, color);
+        break;
+    }
+
+    case 2: { // Unidirectional
+        arrow(context, cp2, endPos, color);
+        arrow(context, cp1, startPos, color);
+        break;
+    }
+
+    default: // Nondirectional
+        break;
+    }
 }
+
+// Code to draw a simple arrow on TypeScript canvas got from https://stackoverflow.com/a/64756256/867349
+function arrow(context, from, to, color) {
+    const dx = to.x - from.x;
+    const dy = to.y - from.y;
+
+    const headlen = Math.sqrt(dx * dx + dy * dy) * 0.05; // length of head in pixels
+    const angle = Math.atan2(dy, dx);
+
+    //Paint arrow
+    context.beginPath();
+    context.moveTo(to.x - headlen * Math.cos(angle - Math.PI / 6), to.y - headlen * Math.sin(angle - Math.PI / 6));
+    context.lineTo(to.x, to.y);
+    context.lineTo(to.x - headlen * Math.cos(angle + Math.PI / 6), to.y - headlen * Math.sin(angle + Math.PI / 6));
+    context.lineTo(to.x - headlen * Math.cos(angle - Math.PI / 6), to.y - headlen * Math.sin(angle - Math.PI / 6));
+
+    //Fill arrow shape
+    context.fillStyle = color;
+    context.fill();
+
+    // stroke the curve
+    context.stroke();
+}
+
 
 //! Connection Margin
 function connectionMargin (inputPort) {
@@ -33,15 +74,15 @@ function connectionMargin (inputPort) {
 
     switch (inputPort.portSide) {
     case 0: // \todo: use NLSpec some how here
-        return Qt.vector2d(0, -100);
+        return Qt.vector2d(0, -200);
 
     case 1:
-        return Qt.vector2d(0, +100);
+        return Qt.vector2d(0, +200);
 
     case 2:
-        return Qt.vector2d(-100, 0);
+        return Qt.vector2d(-200, 0);
 
     case 3:
-        return Qt.vector2d(+100, 0);
+        return Qt.vector2d(+200, 0);
     }
 }

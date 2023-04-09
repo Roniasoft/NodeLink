@@ -3,6 +3,7 @@ pragma Singleton
 import QtQuick
 import QtQuick.Controls
 import QtQuickStream
+import NodeLink
 
 /*! ***********************************************************************************************
  * The NLCore is responsible for creating the default repo Scene, and handling the top level functionalities,

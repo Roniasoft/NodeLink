@@ -20,7 +20,7 @@ QSObject {
     property var            nodes:          ({})
 
     //! Keep Connection models
-    //! map <UUID, Connection>
+    //! map <UUID, Link>
     property var            links:          ({})
 
     //! Port positions (global)
@@ -45,6 +45,22 @@ QSObject {
         return node;
     }
 
+    //! Create a node with node type and its position
+    function createCustomizeNode(nodeType : int, xPos : real, yPos : real) : string{
+        var node = NLCore.createNode();
+        node.type = nodeType;
+        node.guiConfig.position.x = xPos;
+        node.guiConfig.position.y = yPos;
+        node.guiConfig.color = NLStyle.nodeColors[nodeType]//Qt.rgba(Math.random(), Math.random(), Math.random(), 1)
+        scene.addNode(node)
+        node.addPortByHardCode();
+
+        scene.selectionModel.select(node);
+
+        return node._qsUuid;
+    }
+
+
     //! Deletes a node from the scene
     function deleteNode(nodeUUId: string) {
         //! delete the node ports from the portsPosition map
@@ -61,13 +77,16 @@ QSObject {
             });
         });
 
+
+        if(selectionModel.selectedNode !== null && selectionModel.selectedNode._qsUuid === nodeUUId)
+            selectionModel.clear();
+
         delete nodes[nodeUUId];
 
         portsPositionsChanged();
         linksChanged();
         nodesChanged();
 
-//        console.log()
     }
 
 
@@ -82,6 +101,7 @@ QSObject {
         node.guiConfig.height = nodes[nodeUUId].guiConfig.height
         node.guiConfig.width = nodes[nodeUUId].guiConfig.width
         node.title = nodes[nodeUUId].title
+        node.addPortByHardCode();
         selectionModel.select(node);
     }
 
@@ -109,12 +129,15 @@ QSObject {
             obj.inputPort  = findPort(portA);
             obj.outputPort = findPort(portB);
             links[obj._qsUuid] = obj;
+            linksChanged();
         }
-        linksChanged();
     }
 
     //! Unlink two ports
     function unlinkNodes(portA : string, portB : string) {
+
+        //! clear deleted link selection
+        selectionModel.clear();
 
         // delete related links
         Object.entries(links).forEach(([key, value]) => {

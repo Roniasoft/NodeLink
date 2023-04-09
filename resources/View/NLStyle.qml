@@ -39,8 +39,15 @@ QtObject {
     readonly property var nodeColors: [
         "#444",       // General
         "#333",       // Root
-        "#3D9798",       // Step
-        "#625192",       // Transition
-        "#9D9E57"        // Macro
+        "#3D9798",    // Step
+        "#625192",    // Transition
+        "#9D9E57"     // Macro
+    ]
+
+    //! Direction icon of links
+    readonly property var linkDirectionIcon: [
+        "\ue404",       // Nondirectional
+        "\ue4c1",       // Unidirectional
+        "\uf07e"        // Bidirectional
     ]
 }
