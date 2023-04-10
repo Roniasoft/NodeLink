@@ -24,8 +24,6 @@ I_NodesScene {
     SceneViewBackground {
         id: background
         anchors.fill: parent
-        viewWidth: flickable.contentWidth
-        viewHeigth: flickable.contentHeight
     }
 
     //! MouseArea for selection of links
