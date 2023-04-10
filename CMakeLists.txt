@@ -33,7 +33,7 @@ add_subdirectory(QtQuickStream)
 
 find_package(Qt6
   COMPONENTS
-   Quick
+   Quick Concurrent Svg
 )
 
 if (NOT Qt6_FOUND)
@@ -138,17 +138,21 @@ qt_add_qml_module(NodeLink
         resources/View/Logics/Calculation.js
 
     SOURCES
-    include/NodeLink/Core/HashCompareStringCPP.h
-    Source/Core/HashCompareStringCPP.cpp
+        include/NodeLink/Core/HashCompareStringCPP.h
+        Source/Core/HashCompareStringCPP.cpp
+        include/NodeLink/View/BackgroundGridsCPP.h
+        Source/View/BackgroundGridsCPP.cpp
 	
 
     RESOURCES
         resources/fonts/Font\ Awesome\ 6\ Pro-Regular-400.otf
         resources/fonts/Font\ Awesome\ 6\ Pro-Solid-900.otf
+        resources/Images/GridPoint.svg
 
 )
 	
 include_directories(include/NodeLink/Core)
+include_directories(include/NodeLink/View)
 #Add a library to the project using the specified source file
 #add_library(NodeLink::NodeLink ALIAS NodeLink)
 
@@ -168,7 +172,7 @@ target_compile_definitions(NodeLink
 
 target_link_libraries(NodeLink
   PRIVATE
-    ${Qt}::Quick
+    ${Qt}::Quick ${Qt}::Concurrent ${Qt}::Svg
     QtQuickStreamplugin
 )
 
