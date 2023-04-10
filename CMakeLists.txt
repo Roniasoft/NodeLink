@@ -33,7 +33,7 @@ add_subdirectory(QtQuickStream)
 
 find_package(Qt6
   COMPONENTS
-   Quick Concurrent
+   Quick Concurrent Svg
 )
 
 if (NOT Qt6_FOUND)
@@ -147,6 +147,7 @@ qt_add_qml_module(NodeLink
     RESOURCES
         resources/fonts/Font\ Awesome\ 6\ Pro-Regular-400.otf
         resources/fonts/Font\ Awesome\ 6\ Pro-Solid-900.otf
+        resources/Images/GridPoint.svg
 
 )
 	
@@ -171,7 +172,7 @@ target_compile_definitions(NodeLink
 
 target_link_libraries(NodeLink
   PRIVATE
-    ${Qt}::Quick ${Qt}::Concurrent
+    ${Qt}::Quick ${Qt}::Concurrent ${Qt}::Svg
     QtQuickStreamplugin
 )
 

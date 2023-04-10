@@ -9,6 +9,7 @@ BackgroundGridsCPP::BackgroundGridsCPP(QQuickItem *parent) :
     QQuickPaintedItem(parent),
     mSpacing(0)
 {
+//    mSvgRenderer = new QSvgRenderer(QStringLiteral(":/NodeLink/resources/Images/GridPoint.svg"));
 
     connect(this, &BackgroundGridsCPP::spacingChanged,          this, &BackgroundGridsCPP::refresh);
     connect(this, &QQuickItem::widthChanged,                    this, &BackgroundGridsCPP::refresh);
@@ -30,7 +31,12 @@ BackgroundGridsCPP::BackgroundGridsCPP(QQuickItem *parent) :
 void BackgroundGridsCPP::paint(QPainter *painter)
 {
     if(!mGraphImage.isNull()) {
-        painter->drawImage(QRectF(0, 0, width(), height()), mGraphImage, mGraphImage.rect());
+        for (int i = 0; i < width(); i += 20*mSpacing) {
+            for (int j = 0; j < height(); j += 20*mSpacing) {
+                painter->drawImage(QRectF(i, j, 20*mSpacing, 20*mSpacing), mGraphImage, mGraphImage.rect());
+            }
+        }
+//        painter->drawImage(QRectF(0, 0, width(), height()), mGraphImage, mGraphImage.rect());
     }
 }
 
@@ -39,7 +45,7 @@ void BackgroundGridsCPP::paint(QPainter *painter)
  * ************************************************************************************************/
 void BackgroundGridsCPP::refresh()
 {
-    if(!mRefreshTimer.isActive()){
+    if(!mRefreshTimer.isActive()) {
         mRefreshTimer.start();
     }
 }
@@ -78,8 +84,8 @@ void BackgroundGridsCPP::updateGraph()
 
             // Creates a concurrent callback that returns an image as result
             mRenderWorker = QtConcurrent::run([w, h, this]() -> QImage {
-                double w2 = w;
-                double h2 = h;
+                double w2 = 20 * mSpacing;
+                double h2 = 20 * mSpacing;
                 auto image = QImage(w2, h2, QImage::Format_ARGB32_Premultiplied);
                 image.fill(Qt::transparent);
 
@@ -90,9 +96,13 @@ void BackgroundGridsCPP::updateGraph()
                 for (int i = 0; i < w2; i += mSpacing) {
                     for (int j = 0; j < h2; j += mSpacing) {
                         painter.fillRect(QRectF(i, j, 2, 2), QBrush(QColor("#333333")));
+//                        mSvgRenderer->render(&painter, QRectF(i, j, 2, 2));
                     }
                 }
 
+                painter.save();
+                painter.restore();
+                painter.end();
                 return image;
             });
 
