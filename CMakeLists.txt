@@ -33,7 +33,7 @@ add_subdirectory(QtQuickStream)
 
 find_package(Qt6
   COMPONENTS
-   Quick Concurrent Svg
+   Quick Concurrent
 )
 
 if (NOT Qt6_FOUND)
@@ -172,7 +172,7 @@ target_compile_definitions(NodeLink
 
 target_link_libraries(NodeLink
   PRIVATE
-    ${Qt}::Quick ${Qt}::Concurrent ${Qt}::Svg
+    ${Qt}::Quick ${Qt}::Concurrent
     QtQuickStreamplugin
 )
 

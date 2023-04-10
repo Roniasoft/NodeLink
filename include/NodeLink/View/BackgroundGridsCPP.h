@@ -9,7 +9,6 @@
 #include <QImage>
 #include <QtConcurrent>
 #include <QList>
-#include <QSvgRenderer>
 
 /*! ***********************************************************************************************
  * BackgroundGridsCPP renders grid lines/points which includes a series
@@ -51,7 +50,6 @@ private:
     QFuture<QImage> mRenderWorker;
     QImage          mGraphImage;
     int             mSpacing;
-    QSvgRenderer   *mSvgRenderer;
 };
 
 #endif // BACKGROUNDGRIDSCPP_H

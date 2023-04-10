@@ -9,8 +9,6 @@ BackgroundGridsCPP::BackgroundGridsCPP(QQuickItem *parent) :
     QQuickPaintedItem(parent),
     mSpacing(0)
 {
-//    mSvgRenderer = new QSvgRenderer(QStringLiteral(":/NodeLink/resources/Images/GridPoint.svg"));
-
     connect(this, &BackgroundGridsCPP::spacingChanged,          this, &BackgroundGridsCPP::refresh);
     connect(this, &QQuickItem::widthChanged,                    this, &BackgroundGridsCPP::refresh);
     connect(this, &QQuickItem::heightChanged,                   this, &BackgroundGridsCPP::refresh);
@@ -96,13 +94,10 @@ void BackgroundGridsCPP::updateGraph()
                 for (int i = 0; i < w2; i += mSpacing) {
                     for (int j = 0; j < h2; j += mSpacing) {
                         painter.fillRect(QRectF(i, j, 2, 2), QBrush(QColor("#333333")));
-//                        mSvgRenderer->render(&painter, QRectF(i, j, 2, 2));
                     }
                 }
 
                 painter.save();
-                painter.restore();
-                painter.end();
                 return image;
             });
 
