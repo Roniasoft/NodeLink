@@ -31,7 +31,7 @@ Item {
 
         enabled: !NLSpec.undo.blockObservers
 
-        function onNameChanged() {
+        function onTitleChanged() {
             _timer.start();
         }
 

@@ -11,13 +11,13 @@ QSObject {
      * ****************************************************************************************/
 
     //! Display image
-    property string     name:       "<node name>"
+    property string     title:      "<No Title>"
 
     //! \todo change to bytearray of image?
     property string     logoUrl:    ""
 
     //! Position in the world
-    property vector2d   position: Qt.vector2d(0, 0);
+    property vector2d   position:   Qt.vector2d(0, 0);
 
     //! Width
     property int        width:      200

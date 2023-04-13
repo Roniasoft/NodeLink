@@ -101,7 +101,7 @@ QSObject {
         node.guiConfig.color = nodes[nodeUUId].guiConfig.color
         node.guiConfig.height = nodes[nodeUUId].guiConfig.height
         node.guiConfig.width = nodes[nodeUUId].guiConfig.width
-        node.title = nodes[nodeUUId].title
+        node.guiConfig.title = nodes[nodeUUId].guiConfig.title
         node.addPortByHardCode();
         selectionModel.select(node);
     }

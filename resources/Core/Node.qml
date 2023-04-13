@@ -11,9 +11,6 @@ I_Node  {
     /* Property Declarations
      * ****************************************************************************************/
 
-    //! Title
-    property string         title:      "<Unknown>"
-
     //! GUI Config
     property NodeGuiConfig  guiConfig:  NodeGuiConfig {
          _qsRepo: root._qsRepo
