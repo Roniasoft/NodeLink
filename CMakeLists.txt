@@ -85,6 +85,7 @@ qt_add_qml_module(NodeLink
         resources/Core/I_Node.qml
         resources/Core/Node.qml
         resources/Core/Port.qml
+        resources/Core/I_EntryCondition.qml
         resources/Core/Node/GeneralNode.qml
         resources/Core/Node/RootNode.qml
         resources/Core/Node/StepNode.qml

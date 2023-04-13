@@ -3,6 +3,8 @@ import QtQuickStream
 import NodeLink
 
 NodeData {
+
+    //! Data is a map of Actions
     data: ({})
 
     /* Functions
