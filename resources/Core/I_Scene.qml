@@ -46,6 +46,7 @@ QSObject {
     }
 
     //! Create a node with node type and its position
+    //! \todo: this method should be removed
     function createCustomizeNode(nodeType : int, xPos : real, yPos : real) : string{
         var node = NLCore.createNode();
         node.type = nodeType;

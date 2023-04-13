@@ -3,21 +3,19 @@ import NodeLink
 import QtQuickStream
 
 /*! ***********************************************************************************************
- * The I_Node is the interface/base class for all objects inside the scene
+ * EntryCondition is a condition that is applied in simulation.
+ * The condition is evaluated while deciding the node can be
+ * entered or not.
  *
  * ************************************************************************************************/
 QSObject {
 
-    //! NodeData
-    property I_NodeData         nodeData:       null
-
-    //! Entry Condition
-    property I_EntryCondition   entryCondition: null
-
+    //! Conditions
+    property var conditions: []
 
     /* Functions
      * ****************************************************************************************/
-    function canEnter() : bool {
-        return entryCondition.evaluate(null);
+    function evaluate(evalData) : bool {
+        return true;
     }
 }

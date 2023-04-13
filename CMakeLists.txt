@@ -84,17 +84,24 @@ qt_add_qml_module(NodeLink
         resources/Core/NLSpec.qml
         resources/Core/I_Node.qml
         resources/Core/Node.qml
-        resources/Core/Action.qml
         resources/Core/Port.qml
-        resources/Core/ActionItem.qml
-        resources/Core/GeneralNode.qml
-        resources/Core/RootNode.qml
+        resources/Core/I_EntryCondition.qml
+        resources/Core/Node/GeneralNode.qml
+        resources/Core/Node/RootNode.qml
+        resources/Core/Node/StepNode.qml
+        resources/Core/Node/MacroNode.qml
+        resources/Core/Node/TransitionNode.qml
+        resources/Core/Node/StepNodeData.qml
+        resources/Core/Node/Action.qml
+        resources/Core/Node/ActionValue.qml
         resources/Core/Scene.qml
         resources/Core/I_Scene.qml
         resources/Core/SelectionModel.qml
         resources/Core/NodeGuiConfig.qml
         resources/Core/Link.qml
         resources/Core/LinkGUIConfig.qml
+        resources/Core/I_NodeData.qml
+        resources/Core/NodeData.qml
 
         resources/Core/Undo/UndoCore.qml
         resources/Core/Undo/UndoStack.qml

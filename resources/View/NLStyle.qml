@@ -50,4 +50,12 @@ QtObject {
         "\ue4c1",       // Unidirectional
         "\uf07e"        // Bidirectional
     ]
+
+    readonly property var nodeNames: [
+        "GeneralNode",          // General
+        "RootNode",             // Root
+        "StepNode",             // Step
+        "TransitionNode",       // Transition
+        "MacroNode"             // Macro
+    ]
 }
