@@ -8,4 +8,5 @@ import QtQuickStream
  * ************************************************************************************************/
 QSObject {
 
+    property I_NodeData nodeData: null
 }

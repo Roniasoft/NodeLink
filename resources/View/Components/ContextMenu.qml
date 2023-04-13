@@ -37,7 +37,7 @@ Menu {
         name: "General Node"
         iconStr: NLStyle.nodeIcons[NLSpec.NodeType.General]
         onClicked: {    // \todo: move this implementation out of primitive comp.
-            var nodeUuid = scene.createCustomizeNode(NLSpec.NodeType.General, contextMenu.x, contextMenu.y);
+            var nodeUuid = contextMenu.createNode(NLSpec.NodeType.General);
             nodeAdded(nodeUuid);
         }
     }
@@ -45,7 +45,7 @@ Menu {
         name: "Root Node"
         iconStr: NLStyle.nodeIcons[NLSpec.NodeType.Root]
         onClicked: {    // \todo: move this implementation out of primitive comp.
-            var nodeUuid = scene.createCustomizeNode(NLSpec.NodeType.Root, contextMenu.x, contextMenu.y);
+            var nodeUuid = contextMenu.createNode(NLSpec.NodeType.Root);
             nodeAdded(nodeUuid);
         }
     }
@@ -53,7 +53,7 @@ Menu {
         name: "Step Node"
         iconStr: NLStyle.nodeIcons[NLSpec.NodeType.Step]
         onClicked: {    // \todo: move this implementation out of primitive comp.
-            var nodeUuid = scene.createCustomizeNode(NLSpec.NodeType.Step, contextMenu.x, contextMenu.y);
+            var nodeUuid = contextMenu.createNode(NLSpec.NodeType.Step);
             nodeAdded(nodeUuid);
         }
     }
@@ -61,7 +61,7 @@ Menu {
         name: "Transition Node"
         iconStr: NLStyle.nodeIcons[NLSpec.NodeType.Transition]
         onClicked: {    // \todo: move this implementation out of primitive comp.
-            var nodeUuid = scene.createCustomizeNode(NLSpec.NodeType.Transition, contextMenu.x, contextMenu.y);
+            var nodeUuid = contextMenu.createNode(NLSpec.NodeType.Transition);
             nodeAdded(nodeUuid);
         }
     }
@@ -69,8 +69,24 @@ Menu {
         name: "Macro Node"
         iconStr: NLStyle.nodeIcons[NLSpec.NodeType.Macro]
         onClicked: {    // \todo: move this implementation out of primitive comp.
-            var nodeUuid = scene.createCustomizeNode(NLSpec.NodeType.Macro, contextMenu.x, contextMenu.y);
+            var nodeUuid = contextMenu.createNode(NLSpec.NodeType.Macro);
             nodeAdded(nodeUuid);
         }
+    }
+
+    //! Create a node with node type and its position
+    function createNode(nodeType : int) : string{
+        var node = QSSerializer.createQSObject(NLStyle.nodeNames[nodeType], ["NodeLink"], NLCore.defaultRepo);
+        node._qsRepo = NLCore.defaultRepo;
+        node.type = nodeType;
+        node.guiConfig.position.x = contextMenu.x;
+        node.guiConfig.position.y = contextMenu.y;
+        node.guiConfig.color = NLStyle.nodeColors[nodeType]//Qt.rgba(Math.random(), Math.random(), Math.random(), 1)
+        scene.addNode(node)
+        node.addPortByHardCode();
+
+        scene.selectionModel.select(node);
+
+        return node._qsUuid;
     }
 }
