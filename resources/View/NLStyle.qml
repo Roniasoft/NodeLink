@@ -58,4 +58,15 @@ QtObject {
         "TransitionNode",       // Transition
         "MacroNode"             // Macro
     ]
+
+    //! Node type string list to show nodeTypes text.
+    readonly property var nodeTypesString: [
+        "General",          // General
+        "Root",             // Root
+        "Step",             // Step
+        "Transition",       // Transition
+        "Macro",            // Macro
+
+        "Unknown"             // Unknown
+    ]
 }
