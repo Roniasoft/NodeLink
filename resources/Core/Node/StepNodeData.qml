@@ -21,4 +21,9 @@ NodeData {
     function addAction(action: Action) {
         addElement(data, action, dataChanged);
     }
+
+    //! Remove action
+    function removeAction(action: Action) {
+        removeElement(data, action, dataChanged);
+    }
 }
