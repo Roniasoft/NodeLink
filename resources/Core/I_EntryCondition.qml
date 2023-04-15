@@ -20,12 +20,12 @@ QSObject {
     }
 
     //! Add entry condition
-    function addEntryCondition(ec) {
+    function addCondition(ec) {
         addElement(conditions, ec, conditionsChanged);
     }
 
     //! Remove entry condition
-    function removeAction(ec) {
+    function removeCondition(ec) {
         removeElement(conditions, ec, conditionsChanged);
     }
 }
