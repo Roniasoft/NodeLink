@@ -11,6 +11,7 @@ import QtQuickStream
 QSObject {
 
     //! Conditions
+    //! map <uuid, data<QSObject>>
     property var conditions: ({})
 
     /* Functions
@@ -29,16 +30,14 @@ QSObject {
         let ec = conditions[ecUuid];
 
         if (ec === undefined) {
-            console.warn("Item not found in container");
+            console.warn("Item not found in container.");
             return;
         }
-
         removeElement(conditions, ec, conditionsChanged);
     }
 
     //! Check existence of condition in conditions list with Uuid
-    function existCondition(ecUuid : string) {
-            console.log(Object.keys(conditions), conditions[ecUuid] === undefined)
+    function existCondition(ecUuid : string) : bool {
         return !(conditions[ecUuid] === undefined || conditions[ecUuid] === null)
     }
 
