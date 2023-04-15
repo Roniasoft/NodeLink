@@ -19,8 +19,8 @@ NodeData {
 
     //! Add transition
     function addTransition(uuid: string) {
-        console.log("df ", uuid)
-        data = uuid;
+        if(uuid !== undefined)
+            data = uuid;
     }
 
     //! Remove transition
