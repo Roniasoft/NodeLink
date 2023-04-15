@@ -11,11 +11,21 @@ import QtQuickStream
 QSObject {
 
     //! Conditions
-    property var conditions: []
+    property var conditions: ({})
 
     /* Functions
      * ****************************************************************************************/
     function evaluate(evalData) : bool {
         return true;
+    }
+
+    //! Add entry condition
+    function addEntryCondition(ec) {
+        addElement(conditions, ec, conditionsChanged);
+    }
+
+    //! Remove entry condition
+    function removeAction(ec) {
+        removeElement(conditions, ec, conditionsChanged);
     }
 }
