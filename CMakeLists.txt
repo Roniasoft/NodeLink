@@ -95,6 +95,7 @@ qt_add_qml_module(NodeLink
         resources/Core/Extra/Action.qml
         resources/Core/Extra/ActionValue.qml
         resources/Core/Extra/NotionNode.qml
+        resources/Core/Extra/TransitionNodeData.qml
         resources/Core/Scene.qml
         resources/Core/I_Scene.qml
         resources/Core/SelectionModel.qml

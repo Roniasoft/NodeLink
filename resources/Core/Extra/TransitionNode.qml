@@ -12,4 +12,5 @@ NotionNode {
     * ****************************************************************************************/
 
     type: NLSpec.NodeType.Transition
+    nodeData: TransitionNodeData {}
 }
