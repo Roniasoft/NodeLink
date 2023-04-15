@@ -31,10 +31,6 @@ Item {
 
         enabled: !NLSpec.undo.blockObservers
 
-        function onTitleChanged() {
-            _timer.start();
-        }
-
         function onLogoUrlChanged() {
             _timer.start();
         }

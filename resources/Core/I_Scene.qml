@@ -47,12 +47,13 @@ QSObject {
 
     //! Create a node with node type and its position
     //! \todo: this method should be removed
-    function createCustomizeNode(nodeType : int, xPos : real, yPos : real) : string{
+    function createCustomizeNode(nodeType : int, xPos : real, yPos : real) : string {
         var node = NLCore.createNode();
         node.type = nodeType;
         node.guiConfig.position.x = xPos;
         node.guiConfig.position.y = yPos;
         node.guiConfig.color = NLStyle.nodeColors[nodeType]//Qt.rgba(Math.random(), Math.random(), Math.random(), 1)
+        node.title = NLStyle.nodeTypesString[nodeType] + "_" + (Object.values(scene.nodes).filter(node => node.type === nodeType).length + 1)
         scene.addNode(node)
         node.addPortByHardCode();
 
@@ -60,7 +61,6 @@ QSObject {
 
         return node._qsUuid;
     }
-
 
     //! Deletes a node from the scene
     function deleteNode(nodeUUId: string) {
@@ -101,7 +101,7 @@ QSObject {
         node.guiConfig.color = nodes[nodeUUId].guiConfig.color
         node.guiConfig.height = nodes[nodeUUId].guiConfig.height
         node.guiConfig.width = nodes[nodeUUId].guiConfig.width
-        node.guiConfig.title = nodes[nodeUUId].guiConfig.title
+        node.title = nodes[nodeUUId].title
         node.addPortByHardCode();
         selectionModel.select(node);
     }

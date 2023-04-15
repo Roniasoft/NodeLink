@@ -16,6 +16,10 @@ I_Node  {
          _qsRepo: root._qsRepo
     }
 
+
+    //! Title
+    property string         title:      "<No Title>"
+
     //! Node Type
     property int            type:       NLSpec.NodeType.General
 

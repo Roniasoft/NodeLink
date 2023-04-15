@@ -10,8 +10,8 @@ QSObject {
     /* Property Properties
      * ****************************************************************************************/
 
-    //! Display image
-    property string     title:      "<No Title>"
+    //! Description
+    property string     description:    "<No Description>"
 
     //! \todo change to bytearray of image?
     property string     logoUrl:    ""

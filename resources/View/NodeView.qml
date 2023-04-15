@@ -133,11 +133,11 @@ Rectangle {
             placeholderText: qsTr("Enter description")
             color: "white"
             selectByMouse: true
-            text: node.guiConfig.title
+            text: node.guiConfig.description
             wrapMode:TextEdit.WrapAnywhere
             onTextChanged: {
-                if (node && node.guiConfig.title !== text)
-                    node.guiConfig.title = text;
+                if (node && node.guiConfig.description !== text)
+                    node.guiConfig.description = text;
             }
             smooth: true
             antialiasing: true
