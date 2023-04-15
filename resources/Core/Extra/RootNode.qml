@@ -1,8 +1,16 @@
-import QtQuick 2.15
+import QtQuick
 import QtQuickStream
 import NodeLink
 
-Node {
+/*! ***********************************************************************************************
+ * Root node class: keep NotionNode proprties for Root node type
+ * ************************************************************************************************/
+
+NotionNode {
+
+    /* Object Properties
+    * ****************************************************************************************/
+
     type: NLSpec.NodeType.Root
 
 }

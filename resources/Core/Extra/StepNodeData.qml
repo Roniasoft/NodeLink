@@ -1,8 +1,11 @@
-import QtQuick 2.15
+import QtQuick
 import QtQuickStream
 import NodeLink
 
 NodeData {
+
+    /* Property Declarations
+    * ****************************************************************************************/
 
     //! Data is a map of Actions
     data: ({})

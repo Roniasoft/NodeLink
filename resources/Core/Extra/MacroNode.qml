@@ -1,7 +1,15 @@
-import QtQuick 2.15
+import QtQuick
 import QtQuickStream
 import NodeLink
 
-Node {
+/*! ***********************************************************************************************
+ * Macro node class: keep NotionNode proprties for Macro node type.
+ * ************************************************************************************************/
+
+NotionNode {
+
+    /* Object Properties
+    * ****************************************************************************************/
+
     type: NLSpec.NodeType.Macro
 }
