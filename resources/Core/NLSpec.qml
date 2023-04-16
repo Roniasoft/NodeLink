@@ -17,8 +17,9 @@ QtObject {
         Step        = 2,
         Transition  = 3,
         Macro       = 4,
+        Link        = 5,
 
-        Unknown     = 5
+        Unknown     = 6
     }
 
     //! Location of port on the node sides

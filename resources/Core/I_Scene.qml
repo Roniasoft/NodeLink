@@ -53,7 +53,7 @@ QSObject {
         node.guiConfig.position.x = xPos;
         node.guiConfig.position.y = yPos;
         node.guiConfig.color = NLStyle.nodeColors[nodeType]//Qt.rgba(Math.random(), Math.random(), Math.random(), 1)
-        node.title = NLStyle.nodeTypesString[nodeType] + "_" + (Object.values(scene.nodes).filter(node => node.type === nodeType).length + 1)
+        node.title = NLStyle.objectTypesString[nodeType] + "_" + (Object.values(scene.nodes).filter(node => node.type === nodeType).length + 1)
         scene.addNode(node)
         node.addPortByHardCode();
 

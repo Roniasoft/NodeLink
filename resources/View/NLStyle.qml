@@ -60,12 +60,13 @@ QtObject {
     ]
 
     //! Node type string list to show nodeTypes text.
-    readonly property var nodeTypesString: [
+    readonly property var objectTypesString: [
         "General",          // General
         "Root",             // Root
         "Step",             // Step
         "Transition",       // Transition
         "Macro",            // Macro
+        "Link",             // Link
 
         "Unknown"             // Unknown
     ]
