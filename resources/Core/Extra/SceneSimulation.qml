@@ -78,6 +78,13 @@ QtObject {
                                         var nodeUuid = scene.findNodeId(link.outputPort._qsUuid);
                                         var simulatioNode_t = scene.nodes[nodeUuid];
 
+                                        // When node is transient, the node data must be used instead original node.
+                                        if(simulatioNode_t?.type === NLSpec.NodeType.Transition) {
+                                            var transientTo = scene.findNodeId(simulatioNode_t?.nodeData?.data)
+
+                                            simulatioNode_t = transientTo;
+                                        }
+
                                         // Data type is Action.
                                         var nodeData = Object.values(simulatioNode_t?.entryCondition?.conditions ?? ({}));
                                         var notActiveData = nodeData.filter(data => !data.isActive)
