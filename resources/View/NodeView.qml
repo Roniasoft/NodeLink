@@ -129,7 +129,7 @@ Rectangle {
 
         TextArea {
             id: textArea
-            focus: true
+            focus: false
             placeholderText: qsTr("Enter description")
             color: "white"
             selectByMouse: true
