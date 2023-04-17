@@ -74,18 +74,6 @@ Menu {
         }
     }
 
-    ContextMenuItem {
-        name: "Simulation"
-        iconStr: ""
-        onClicked: {    // \todo: move this implementation out of primitive comp.
-            var simulation = Qt.createQmlObject("import QtQuick; import NodeLink; import SituationSimulator; " + "SceneSimulation{}", NLCore.defaultRepo);;
-
-            simulation.scene = contextMenu.scene;
-
-            simulation.startSimulation();
-        }
-    }
-
     //! Create a node with node type and its position
     function createNode(nodeType : int) : string{
         var node = QSSerializer.createQSObject(NLStyle.nodeNames[nodeType], ["NodeLink"], NLCore.defaultRepo);

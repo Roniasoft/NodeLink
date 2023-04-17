@@ -10,7 +10,7 @@ QSObject {
      * ****************************************************************************************/
 
     //! Link description
-    property string description : ""
+    property string     description : ""
 
     //! Color
     property string     color:      "white"
