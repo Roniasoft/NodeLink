@@ -12,6 +12,13 @@ Item {
     /* Property Declarations
      * ****************************************************************************************/
 
+    //! Scene model, use to simulation
+    required property Scene  scene
+
+    //! Reference node of the simulation. Next possible nodes will be
+    //! determined based on this reference node.
+    required property Node   node
+
     //! Nodes Simulated
     //! array <node uuid>
     property var    evaluatedNodes:     []
@@ -23,19 +30,12 @@ Item {
     //! array <node uuid>
     property var    nextNodes:          []
 
-    //! Scene model, use to simulation
-    required property Scene  scene
-
-    //! Reference node of the simulation. Next possible nodes will be
-    //! determined based on this reference node.
-    required property Node   node
-
     //! All nodes in selected Scene
     //! use nodes map in Scene model
-    property var    nodes:          Object.values(scene?.nodes)
+    property var    nodes:              Object.values(scene?.nodes)
 
     //! All links in the scene
-    property var    links:          Object.values(scene?.links)
+    property var    links:              Object.values(scene?.links)
 
     // watch for all actions active/inactive for current node
     Repeater {

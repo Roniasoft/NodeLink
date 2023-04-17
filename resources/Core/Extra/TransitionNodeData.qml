@@ -5,7 +5,6 @@ import NodeLink
 /*! ***********************************************************************************************
  * TransitionNodeData keep/manage transition node data types.
  * ************************************************************************************************/
-
 NodeData {
 
     /* Property Declarations
