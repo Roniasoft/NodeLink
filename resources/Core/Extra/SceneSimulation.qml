@@ -3,118 +3,134 @@ import QtQuick.Controls
 import NodeLink
 
 /*! ***********************************************************************************************
- * SceneSimulation simulate nodes in scene.
+ * Simulation
  * ************************************************************************************************/
 
-QtObject {
+Item {
+    id: simulation
 
     /* Property Declarations
      * ****************************************************************************************/
 
-    //! Log of simulation
-    property var simulationLog: []
-
     //! Nodes Simulated
-    property var simulatedNodes: []
+    //! array <node uuid>
+    property var    evaluatedNodes:     []
+
+    //! Active actions are stored while nodes are evaluating
+    property var    activatedActions:   []
+
+    //! Next available nodes for evaluation
+    property var    nextNodes:          []
 
     //! Scene model, use to simulation
-    property Scene scene
+    required property Scene  scene
 
-    //! Start node
-    property Node startNode
+    //! Reference node of the simulation. Next possible nodes will be
+    //! determined based on this reference node.
+    required property Node   node
 
     //! All nodes in selected Scene
     //! use nodes map in Scene model
-    property var nodes: Object.values(scene?.nodes)
+    property var    nodes:          Object.values(scene?.nodes)
 
-    property var links: Object.values(scene?.links)
+    //! All links in the scene
+    property var    links:          Object.values(scene?.links)
+
+    // watch for all actions active/inactive for current node
+    Repeater {
+        model: Object.values(node?.nodeData?.data) ?? []    // Actions
+        enabled: node?.type === NLSpec.NodeType.Step ?? false
+        delegate: Item {
+            property Action action: modelData
+
+            // check if the action is activate/inactivate then re-evaluate
+            Connections {
+                target: action
+                function onActiveChanged() {
+                    simulation.evaluate();
+                }
+            }
+        }
+    }
 
 
     /* Functions
      * ****************************************************************************************/
 
-    //! Start simulation process
-    function startSimulation() {
-        // initialize new simulation in log
-        updateSimulationLog("\nSimulation started ...;\n");
+    //! When the node is changed, the simulation needs to be re-evaluted
+    onNodeChanged: evaluate();
 
-        // Find start node (Use root node as nodeStart)
-        startNode = nodes.find(node => node.type === NLSpec.NodeType.Root);
-        if (!startNode) {
-            updateSimulationLog("Simulation failed !!!");
-            return false;
+    //! Evaluates the next possible nodes
+    function evaluate() {
+
+        // Update evaluated nodes
+        // while re-evaluating, the node shouldn't be added again
+        if (evaluatedNodes.indexOf(node._qsUuid) == -1) {
+            evaluatedNodes = evaluatedNodes.concat(node._qsUuid);
         }
 
-        //! update simulation log with strat node
-        updateSimulationLog("Simulation start from " + startNode.title)
+        // Update activated actions if the node is a Step node
+        if (node?.type === NLSpec.NodeType.Step) {
+            var nodeActions = Object.values(node?.nodeData?.data) ?? [];
 
-        simulation(startNode);
+            nodeActions.forEach(action => {
+                // if the action is active and not included then add it
+                if (action.active && activatedActions.indexOf(action._qsUuid) == -1) {
+                    activatedActions = activatedActions.concat(action._qsUuid)
+                }
 
-        updateSimulationLog("\nSimulation finished. \n")
-    }
+                // else if action is not active but is already included, then it should be deleted
+                else if (!action.active && activatedActions.indexOf(action._qsUuid) >= 0) {
+                    var removeActionIndex = activatedActions.indexOf(action._qsUuid);
+                    activatedActions.splice(removeActionIndex, 1);
+                    activatedActionsChanged();
+                }
+            });
+        }
 
-    //! Simulation method
-    function simulation(node : Node) {
-        var simulationNodes  = nodeSimulation(node);
 
-        simulationNodes.forEach(nodeObj => simulation(nodeObj));
-    }
+        // find links that their inputPort is located in this node
+        // List <Link>
+        var nodeLinks = links.filter(link => scene.findNodeId(link.inputPort._qsUuid) === node._qsUuid);
 
-    //! Node simulation
-    function nodeSimulation(node : Node) {
-        // Update log
-        updateSimulationLog(node.title + " was selected.");
-
-        // Filter links that inputPort is node
-        // List<Link>
-        var simulationNodeLinks = links.filter(link => scene.findNodeId(link.inputPort._qsUuid) === node._qsUuid);
-
-        // Filter all nodes that inputPort is node and connected with simulationNodeLinks
+        // Find all downstream nodes
         // List<Node>
         var downstreamNodes = []
-        simulationNodeLinks.forEach(link => {
+        nodeLinks.forEach(link => {
+            // Find downstream NodeId/Node
+            var downNodeId = scene.findNodeId(link.outputPort._qsUuid);
+            var downNode = scene.nodes[downNodeId];
 
-                                        var nodeUuid = scene.findNodeId(link.outputPort._qsUuid);
-                                        var simulatioNode_t = scene.nodes[nodeUuid];
+            // When node is transient, the node data must be used instead original node.
+            if(downNode?.type === NLSpec.NodeType.Transition) {
+                var transientTo = scene.findNodeId(downNode?.nodeData?.data)
+                downNode = transientTo;
+            }
 
-                                        // When node is transient, the node data must be used instead original node.
-                                        if(simulatioNode_t?.type === NLSpec.NodeType.Transition) {
-                                            var transientTo = scene.findNodeId(simulatioNode_t?.nodeData?.data)
-
-                                            simulatioNode_t = transientTo;
-                                        }
-
-                                        // Data type is Action.
-                                        var nodeData = Object.values(simulatioNode_t?.entryCondition?.conditions ?? ({}));
-                                        var notActiveData = nodeData.filter(data => !data.isActive)
-
-                                        // Indicates the reason why the node was ignored
-                                        if(notActiveData.length > 0) {
-                                            updateSimulationLog(simulatioNode_t.title + " ignored")
-                                            notActiveData.forEach(data => {
-                                                                      updateSimulationLog(data.name + " is not active.");
-                                                                  });
-                                        } else if(simulatioNode_t !== undefined) {
-                                            // Push node for simulations.
-                                            downstreamNodes.push(simulatioNode_t);
-                                        }
-                                    });
-
-        // Update log
-        updateSimulationLog(node.title + " was simulated.");
-
-        return downstreamNodes;
-
+            // Data type is Action.
+            var nodeConditions = downNode?.entryCondition?.conditions ?? [];
+            var entryConditionRes = true;
+            nodeConditions.forEach(nodeCondition => {
+                if (activatedActions.indexOf(nodeCondition) == -1) {
+                    entryConditionRes = false
+                }
+            });
+            if (entryConditionRes == true) {
+                nextNodes.push(downNodeId);
+                nextNodesChanged();
+            }
+        });
     }
 
-    //! reset simulation
-    function resetSimulation() {
+    //! Reset Simulation
+    function reset() {
+        evaluatedNodes = [];
+        evaluatedNodesChanged();
 
-    }
+        activatedActions = [];
+        activatedActionsChanged();
 
-    //! Update simulation log
-    function updateSimulationLog(log : string) {
-        console.log("Simulation :" + log)
-        simulationLog.push(log);
+        nextNodes = [];
+        nextNodesChanged();
     }
 }
