@@ -108,23 +108,33 @@ Rectangle {
         hoverEnabled: true
 
         ScrollBar.vertical: ScrollBar {
-            id: scrollerV
-            policy: ScrollBar.AsNeeded
-            x: view.mirrored ? 0 : view.width - width
-            y: view.topPadding - 15
-            minimumSize: 0.1
-            contentItem: Rectangle {
-                implicitHeight: view.height // doesn't change anything.
-                implicitWidth: 4
-                radius: 5
-                color: scrollerV.hovered ? "#7f7f7f" : "#4b4b4b"
-            }
-            background: Rectangle {
-                implicitWidth: 4
-                color: "black"
-                opacity: 0.8
-            }
+            parent: view.parent
+            anchors.top: view.top
+            anchors.right: view.right
+            anchors.bottom: view.bottom
+            width: 5
+            anchors.rightMargin: 1
         }
+
+//        ScrollBar.vertical: ScrollBar {
+//            id: scrollerV
+//            policy: ScrollBar.AsNeeded
+//            x: view.mirrored ? 0 : view.width - width
+//            y: view.topPadding - 15
+//            minimumSize: 0.1
+//            contentItem: Rectangle {
+//                implicitHeight: view.height // doesn't change anything.
+//                implicitWidth: 4
+//                radius: 5
+//                color: scrollerV.hovered ? "#7f7f7f" : "#4b4b4b"
+//            }
+//            background: Rectangle {
+//                implicitWidth: 4
+//                color: "black"
+//                opacity: 0.8
+//            }
+//        }
+
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
 
         TextArea {
@@ -145,6 +155,7 @@ Rectangle {
             background: Rectangle {
                 color: "transparent";
             }
+            font.pixelSize: 12
 
             onActiveFocusChanged:
                 if (!activeFocus)
