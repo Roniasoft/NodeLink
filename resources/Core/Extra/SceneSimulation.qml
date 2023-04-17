@@ -20,6 +20,7 @@ Item {
     property var    activatedActions:   []
 
     //! Next available nodes for evaluation
+    //! array <node uuid>
     property var    nextNodes:          []
 
     //! Scene model, use to simulation
@@ -62,6 +63,11 @@ Item {
 
     //! Evaluates the next possible nodes
     function evaluate() {
+        if (scene === null || node === null)
+            return;
+
+        nextNodes = [];
+        nextNodesChanged();
 
         // Update evaluated nodes
         // while re-evaluating, the node shouldn't be added again
