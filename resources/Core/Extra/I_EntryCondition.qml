@@ -11,8 +11,8 @@ import QtQuickStream
 QSObject {
 
     //! Conditions
-    //! map <uuid, data<QSObject>>
-    property var conditions: ({})
+    //! array (uuids of actions)
+    property var conditions: []
 
     /* Functions
      * ****************************************************************************************/
@@ -21,24 +21,21 @@ QSObject {
     }
 
     //! Add entry condition
-    function addCondition(ec) {
-        addElement(conditions, ec, conditionsChanged);
+    function addCondition(conditionId: string) {
+        conditions.push(conditionId);
+        conditionsChanged();
     }
 
     //! Remove entry condition with Uuid
-    function removeCondition(ecUuid : string) {
-        let ec = conditions[ecUuid];
-
-        if (ec === undefined) {
-            console.warn("Item not found in container.");
-            return;
-        }
-        removeElement(conditions, ec, conditionsChanged);
+    function removeCondition(conditionId : string) {
+        var indexOfAction = conditions.indexOf(conditionId);
+        conditions.splice(indexOfAction, 1);
+        conditionsChanged();
     }
 
     //! Check existence of condition in conditions list with Uuid
-    function existCondition(ecUuid : string) : bool {
-        return !(conditions[ecUuid] === undefined || conditions[ecUuid] === null)
+    function existCondition(conditionId : string) : bool {
+        return conditions.indexOf(conditionId) >= 0 ? true : false;
     }
 
 }
