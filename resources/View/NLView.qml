@@ -13,6 +13,8 @@ Item {
 
     property SceneSession   sceneSession:   SceneSession {}
 
+    property alias          nodesScene:     nodesScene
+
     /* Children
     * ****************************************************************************************/
 

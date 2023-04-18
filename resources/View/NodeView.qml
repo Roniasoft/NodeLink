@@ -10,21 +10,21 @@ Rectangle {
 
     /* Property Declarations
      * ****************************************************************************************/
-    property Node   node
+    property Node node
 
-    property Scene  scene
+    property Scene          scene
 
-    property SceneSession sceneSession
+    property SceneSession   sceneSession
 
-    property bool   edit:            textArea.activeFocus
+    property bool           edit:            textArea.activeFocus
 
-    property bool   isSelected:      false
+    property bool           isSelected:      false
 
-    property bool   locked:          false
+    property bool           locked:          false
 
-    property int    contentWidth
+    property int            contentWidth
 
-    property int    contentHeight
+    property int            contentHeight
 
     /* Object Properties
      * ****************************************************************************************/

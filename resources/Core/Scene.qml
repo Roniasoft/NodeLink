@@ -22,18 +22,18 @@ I_Scene {
 
     /* Children
      * ****************************************************************************************/
-    Component.onCompleted: {
-        // adding example nodes
-        for (var i = 0; i < 5; i++) {
-            var node = NLCore.createNode();
-            node.guiConfig.position.x = Math.random() * 1000;
-            node.guiConfig.position.y = Math.random() * 1000;
-            node.guiConfig.color = Qt.rgba(Math.random(), Math.random(), Math.random(), 1)
-            addNode(node);
-            node.addPortByHardCode();
-        }
-        _timer.start();
-    }
+//    Component.onCompleted: {
+//        // adding example nodes
+//        for (var i = 0; i < 5; i++) {
+//            var node = NLCore.createNode();
+//            node.guiConfig.position.x = Math.random() * 1000;
+//            node.guiConfig.position.y = Math.random() * 1000;
+//            node.guiConfig.color = Qt.rgba(Math.random(), Math.random(), Math.random(), 1)
+//            addNode(node);
+//            node.addPortByHardCode();
+//        }
+//        _timer.start();
+//    }
 
     // Adding example links
     property Timer _timer: Timer {
