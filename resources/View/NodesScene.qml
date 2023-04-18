@@ -21,9 +21,44 @@ I_NodesScene {
 
     /* Children
     * ****************************************************************************************/
-    SceneViewBackground {
-        id: background
-        anchors.fill: parent
+    background: SceneViewBackground {}
+
+    //! Handle key pressed (Del: delete selected node and link)
+    Keys.onDeletePressed: {
+        var selecteNode = scene.selectionModel.selectedNode
+        var selectedLink = scene.selectionModel.selectedLink;
+
+        if((selectedLink !== undefined && selectedLink !== null) ||
+           (selecteNode !== undefined && selecteNode !== null)) {
+            deletePopup.open();
+        }
+    }
+
+    /* Children
+    * ****************************************************************************************/
+    //! Delete objects
+    Timer {
+        id: delTimer
+        repeat: false
+        running: false
+        interval: 100
+        onTriggered: {
+            var selectedode = scene.selectionModel.selectedNode
+            if(selectedode !== undefined && selectedode !== null) {
+                scene.deleteNode(selectedode._qsUuid);
+            }
+
+            var selectedLink = scene.selectionModel.selectedLink;
+            if(selectedLink !== undefined && selectedLink !== null) {
+                scene.unlinkNodes(selectedLink.inputPort._qsUuid, selectedLink.outputPort._qsUuid)
+            }
+        }
+    }
+
+    //! Delete popup to confirm deletion process
+    ConfirmPopUp {
+        id: deletePopup
+        onAccepted: delTimer.start();
     }
 
     //! MouseArea for selection of links
@@ -63,7 +98,6 @@ I_NodesScene {
                 var inputPos  = scene?.portsPositions[obj.inputPort?._qsUuid] ?? Qt.vector2d(0, 0)
                 var outputPos = scene?.portsPositions[obj.outputPort?._qsUuid] ?? Qt.vector2d(0, 0)
                 var points = [inputPos, obj.controlPoint1, obj.controlPoint2, outputPos];
-
                 if (Calculation.isPointOnCurve(gMouse.x, gMouse.y, 15, points)) {
                     foundLink = obj;
                 }
@@ -73,11 +107,34 @@ I_NodesScene {
     }
 
     //! Nodes/Connections
-    NodesRect {
-        id: nodesView
+    contentItem: NodesRect {
         scene: flickable.scene
         sceneSession: flickable.sceneSession
         contentWidth: flickable.contentWidth
         contentHeight: flickable.contentHeight
+    }
+
+    //! Foreground
+    foreground: null
+
+    //! Background Loader
+    Loader {
+        id: backgroundLoader
+        anchors.fill: parent
+        sourceComponent: background
+    }
+
+    //! Content Loader
+    Loader {
+        id: contentLoader
+        anchors.fill: parent
+        sourceComponent: contentItem
+    }
+
+    //! Foreground Loader
+    Loader {
+        id: foregroundLoader
+        anchors.fill: parent
+        sourceComponent: foreground
     }
 }

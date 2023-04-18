@@ -9,7 +9,7 @@ Item {
 
     /* Property Declarations
     * ****************************************************************************************/
-    property Scene scene
+    property Scene          scene
 
     property SceneSession   sceneSession:   SceneSession {}
 
@@ -36,7 +36,6 @@ Item {
     //! Side Menu
     SideMenu {
         scene: view.scene
-
         anchors.right: parent.right
         anchors.rightMargin: 45
         anchors.top: parent.top

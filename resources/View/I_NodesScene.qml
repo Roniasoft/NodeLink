@@ -6,22 +6,25 @@ import QtQuickStream
 /*! ***********************************************************************************************
  * I_NodesScene show the abstract the NodesScene properties.
  * ************************************************************************************************/
-
 Flickable {
     id: root
 
-    FontLoader {
-        source: "qrc:/NodeLink/resources/fonts/Font Awesome 6 Pro-Regular-400.otf"
-    }
-    FontLoader {
-        source: "qrc:/NodeLink/resources/fonts/Font Awesome 6 Pro-Solid-900.otf"
-    }
-
     /* Property Declarations
     * ****************************************************************************************/
-    property Scene              scene
+    //! Scene is the main model containing information about all nodes/links
+    property Scene          scene:          null
 
-    property SceneSession       sceneSession
+    //! Scene session contains information about scene states (UI related)
+    property SceneSession   sceneSession:   null
+
+    //! Scene Background
+    property Component      background:     null
+
+    //! Scene Contents (Nodes/Links)
+    property Component      contentItem:    null
+
+    //! Scene Foreground
+    property Component      foreground:     null
 
     /* Object Properties
     * ****************************************************************************************/
@@ -32,41 +35,12 @@ Flickable {
     ScrollBar.horizontal: HorizontalScrollBar{}
     ScrollBar.vertical: VerticalScrollBar{}
 
-    //! Handle key pressed (Del: delete selected node and link)
-    Keys.onDeletePressed: {
-        var selecteNode = scene.selectionModel.selectedNode
-        var selectedLink = scene.selectionModel.selectedLink;
-
-        if((selectedLink !== undefined && selectedLink !== null) ||
-           (selecteNode !== undefined && selecteNode !== null)) {
-            deletePopup.open();
-        }
+    FontLoader {
+        source: "qrc:/NodeLink/resources/fonts/Font Awesome 6 Pro-Regular-400.otf"
+    }
+    FontLoader {
+        source: "qrc:/NodeLink/resources/fonts/Font Awesome 6 Pro-Solid-900.otf"
     }
 
-    /* Children
-    * ****************************************************************************************/
-    //! Delete objects
-    Timer {
-        id: delTimer
-        repeat: false
-        running: false
-        interval: 100
-        onTriggered: {
-            var selectedode = scene.selectionModel.selectedNode
-            if(selectedode !== undefined && selectedode !== null) {
-                scene.deleteNode(selectedode._qsUuid);
-            }
 
-            var selectedLink = scene.selectionModel.selectedLink;
-            if(selectedLink !== undefined && selectedLink !== null) {
-                scene.unlinkNodes(selectedLink.inputPort._qsUuid, selectedLink.outputPort._qsUuid)
-            }
-        }
-    }
-
-    //! Delete popup to confirm deletion process
-    ConfirmPopUp {
-        id: deletePopup
-        onAccepted: delTimer.start();
-    }
 }
