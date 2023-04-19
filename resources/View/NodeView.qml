@@ -1,6 +1,7 @@
 import QtQuick
 import NodeLink
 import QtQuick.Controls
+import QtQuick.Layouts
 
 /*! ***********************************************************************************************
  * This class show node ui.
@@ -16,7 +17,7 @@ Rectangle {
 
     property SceneSession   sceneSession
 
-    property bool           edit:            textArea.activeFocus
+    property bool   edit
 
     property bool           isSelected:      false
 
@@ -51,7 +52,7 @@ Rectangle {
     signal clicked();
 
     onEditChanged: {
-        nodeView.edit ? textArea.forceActiveFocus() :  nodeView.forceActiveFocus()
+        nodeView.edit ? titleTextArea.forceActiveFocus() :  nodeView.forceActiveFocus()
     }
 
     onIsSelectedChanged: {
@@ -94,72 +95,122 @@ Rectangle {
         color: node.guiConfig.color
     }
 
-    //! Text Area
-    ScrollView {
+    // Flicable to manage scroll view in two Text Area
+    Flickable {
         id: view
+
         anchors.top: parent.top
         anchors.right: parent.right
         anchors.bottom: parent.bottom
         anchors.left: iconText.right
         anchors.margins: 5
         anchors.topMargin: 12
+
+        interactive: true
+        flickableDirection: Flickable.VerticalFlick
+        clip: true
+
+        contentWidth: width
+        contentHeight: contentItem.height
+
         focus: true
-        clip : true
-        hoverEnabled: true
 
         ScrollBar.vertical: ScrollBar {
-            parent: view.parent
-            anchors.top: view.top
-            anchors.right: view.right
-            anchors.bottom: view.bottom
-            width: 5
-            anchors.rightMargin: 1
+            id: scrollerV
+            policy: ScrollBar.AsNeeded
+            x: view.mirrored ? 0 : view.width - width
+            y: view.topPadding - 15
+            minimumSize: 0.1
+            contentItem: Rectangle {
+                implicitHeight: view.height // doesn't change anything.
+                implicitWidth: 4
+                radius: 5
+                color: scrollerV.hovered ? "#7f7f7f" : "#4b4b4b"
+            }
+            background: Rectangle {
+                implicitWidth: 4
+                color: "black"
+                opacity: 0.8
+            }
         }
 
-//        ScrollBar.vertical: ScrollBar {
-//            id: scrollerV
-//            policy: ScrollBar.AsNeeded
-//            x: view.mirrored ? 0 : view.width - width
-//            y: view.topPadding - 15
-//            minimumSize: 0.1
-//            contentItem: Rectangle {
-//                implicitHeight: view.height // doesn't change anything.
-//                implicitWidth: 4
-//                radius: 5
-//                color: scrollerV.hovered ? "#7f7f7f" : "#4b4b4b"
-//            }
-//            background: Rectangle {
-//                implicitWidth: 4
-//                color: "black"
-//                opacity: 0.8
-//            }
-//        }
+        ScrollBar.horizontal: ScrollBar {
+            policy: ScrollBar.AlwaysOff
+        }
 
-        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+        // Content item (Title + Description)
+        Item  {
+            id: contentItem
 
-        TextArea {
-            id: textArea
-            focus: false
-            placeholderText: qsTr("Enter description")
-            color: "white"
-            selectByMouse: true
-            text: node.guiConfig.description
-            wrapMode:TextEdit.WrapAnywhere
-            onTextChanged: {
-                if (node && node.guiConfig.description !== text)
-                    node.guiConfig.description = text;
+            anchors.top: parent.top
+            anchors.left: parent.left
+            anchors.right: parent.right
+
+            height: titleTextArea.implicitHeight + textArea.implicitHeight
+
+            // Title Text
+            TextArea {
+                id: titleTextArea
+
+                anchors.top: parent.top
+                anchors.left: parent.left
+                anchors.right: parent.right
+
+                focus: false
+                placeholderText: qsTr("Enter title")
+                color: "white"
+                selectByMouse: true
+                text: node.title
+                wrapMode:TextEdit.WrapAnywhere
+                onTextChanged: {
+                    if (node && node.title !== text)
+                        node.title = text;
+                }
+                smooth: true
+                antialiasing: true
+                font.pointSize: 12
+                font.bold: true
+                background: Rectangle {
+                    color: "transparent";
+                }
             }
-            smooth: true
-            antialiasing: true
-            font.bold: true
-            background: Rectangle {
-                color: "transparent";
-            }
-            font.pixelSize: 12
 
-            onActiveFocusChanged:
-                if (!activeFocus)
-                    nodeView.edit = false
+            // horizontal line to separate title and descrption
+            Rectangle {
+                id: seperator
+                width: parent.width
+                anchors.bottom: titleTextArea.bottom
+                height: 1
+                color: "white"
+                opacity: 0.2
+            }
+
+            // Description Text
+            TextArea {
+                id: textArea
+
+                anchors.top: seperator.bottom
+                anchors.left: parent.left
+                anchors.right: parent.right
+
+                focus: false
+                placeholderText: qsTr("Enter description")
+                color: "white"
+                selectByMouse: true
+                text: node.guiConfig.description
+                wrapMode:TextEdit.WrapAnywhere
+                onTextChanged: {
+                    if (node && node.guiConfig.description !== text)
+                        node.guiConfig.description = text;
+                }
+                smooth: true
+                antialiasing: true
+                font.bold: true
+                font.pointSize: 10
+                background: Rectangle {
+                    color: "transparent";
+                }
+            }
         }
     }
 
