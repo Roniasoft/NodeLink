@@ -1,6 +1,7 @@
 import QtQuick
 import NodeLink
 import QtQuick.Controls
+import QtQuick.Layouts
 
 /*! ***********************************************************************************************
  * This class show node ui.
@@ -16,7 +17,7 @@ Rectangle {
 
     property SceneSession   sceneSession
 
-    property bool           edit:            textArea.activeFocus
+    property bool   edit
 
     property bool           isSelected:      false
 
@@ -51,7 +52,7 @@ Rectangle {
     signal clicked();
 
     onEditChanged: {
-        nodeView.edit ? textArea.forceActiveFocus() :  nodeView.forceActiveFocus()
+        nodeView.edit ? titleTextArea.forceActiveFocus() :  nodeView.forceActiveFocus()
     }
 
     onIsSelectedChanged: {
@@ -94,51 +95,79 @@ Rectangle {
         color: node.guiConfig.color
     }
 
-    //! Text Area
-    ScrollView {
-        id: view
+
+    // Title Text
+    TextArea {
+        id: titleTextArea
+
         anchors.top: parent.top
         anchors.right: parent.right
-        anchors.bottom: parent.bottom
         anchors.left: iconText.right
-        anchors.margins: 5
-        anchors.topMargin: 12
-        focus: true
-        clip : true
+        anchors.margins: 12
+        anchors.leftMargin: 5
+
+        rightPadding: 10
+        height: iconText.height
+
+        focus: false
+        placeholderText: qsTr("Enter title")
+        color: "white"
+        selectByMouse: true
+        text: node.title
+        //        wrapMode:TextEdit.WrapAnywhere
+        onTextChanged: {
+            if (node && node.title !== text)
+                node.title = text;
+        }
+        smooth: true
+        antialiasing: true
+        font.pointSize: 10
+        font.bold: true
+        background: Rectangle {
+            color: "transparent";
+        }
+    }
+
+    // ScrollView to manage scroll view in Text Area
+    ScrollView {
+        id: view
+
+        anchors.top: titleTextArea.bottom
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
+        anchors.margins: 12
+        anchors.topMargin: 5
+
         hoverEnabled: true
+        clip: true
+        focus: true
 
         ScrollBar.vertical: ScrollBar {
-            parent: view.parent
-            anchors.top: view.top
-            anchors.right: view.right
-            anchors.bottom: view.bottom
-            width: 5
-            anchors.rightMargin: 1
+            id: scrollerV
+            policy: ScrollBar.AsNeeded
+            x: view.mirrored ? 0 : view.width - width
+            y: view.topPadding - 15
+            minimumSize: 0.1
+            contentItem: Rectangle {
+                implicitHeight: view.height // doesn't change anything.
+                implicitWidth: 4
+                radius: 5
+                color: scrollerV.hovered ? "#7f7f7f" : "#4b4b4b"
+            }
+            background: Rectangle {
+                implicitWidth: 4
+                color: "black"
+                opacity: 0.8
+            }
         }
-
-//        ScrollBar.vertical: ScrollBar {
-//            id: scrollerV
-//            policy: ScrollBar.AsNeeded
-//            x: view.mirrored ? 0 : view.width - width
-//            y: view.topPadding - 15
-//            minimumSize: 0.1
-//            contentItem: Rectangle {
-//                implicitHeight: view.height // doesn't change anything.
-//                implicitWidth: 4
-//                radius: 5
-//                color: scrollerV.hovered ? "#7f7f7f" : "#4b4b4b"
-//            }
-//            background: Rectangle {
-//                implicitWidth: 4
-//                color: "black"
-//                opacity: 0.8
-//            }
-//        }
 
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
 
+        // Description Text
         TextArea {
             id: textArea
+
             focus: false
             placeholderText: qsTr("Enter description")
             color: "white"
@@ -155,11 +184,6 @@ Rectangle {
             background: Rectangle {
                 color: "transparent";
             }
-            font.pixelSize: 12
-
-            onActiveFocusChanged:
-                if (!activeFocus)
-                    nodeView.edit = false
         }
     }
 
