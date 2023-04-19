@@ -95,24 +95,52 @@ Rectangle {
         color: node.guiConfig.color
     }
 
-    // Flicable to manage scroll view in two Text Area
-    Flickable {
-        id: view
+
+    // Title Text
+    TextArea {
+        id: titleTextArea
 
         anchors.top: parent.top
         anchors.right: parent.right
-        anchors.bottom: parent.bottom
         anchors.left: iconText.right
-        anchors.margins: 5
-        anchors.topMargin: 12
+        anchors.margins: 12
+        anchors.leftMargin: 5
 
-        interactive: true
-        flickableDirection: Flickable.VerticalFlick
+        rightPadding: 10
+        height: iconText.height
+
+        focus: false
+        placeholderText: qsTr("Enter title")
+        color: "white"
+        selectByMouse: true
+        text: node.title
+        //        wrapMode:TextEdit.WrapAnywhere
+        onTextChanged: {
+            if (node && node.title !== text)
+                node.title = text;
+        }
+        smooth: true
+        antialiasing: true
+        font.pointSize: 10
+        font.bold: true
+        background: Rectangle {
+            color: "transparent";
+        }
+    }
+
+    // ScrollView to manage scroll view in Text Area
+    ScrollView {
+        id: view
+
+        anchors.top: titleTextArea.bottom
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
+        anchors.margins: 12
+        anchors.topMargin: 5
+
+        hoverEnabled: true
         clip: true
-
-        contentWidth: width
-        contentHeight: contentItem.height
-
         focus: true
 
         ScrollBar.vertical: ScrollBar {
@@ -134,82 +162,27 @@ Rectangle {
             }
         }
 
-        ScrollBar.horizontal: ScrollBar {
-            policy: ScrollBar.AlwaysOff
-        }
+        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
 
-        // Content item (Title + Description)
-        Item  {
-            id: contentItem
+        // Description Text
+        TextArea {
+            id: textArea
 
-            anchors.top: parent.top
-            anchors.left: parent.left
-            anchors.right: parent.right
-
-            height: titleTextArea.implicitHeight + textArea.implicitHeight
-
-            // Title Text
-            TextArea {
-                id: titleTextArea
-
-                anchors.top: parent.top
-                anchors.left: parent.left
-                anchors.right: parent.right
-
-                focus: false
-                placeholderText: qsTr("Enter title")
-                color: "white"
-                selectByMouse: true
-                text: node.title
-                wrapMode:TextEdit.WrapAnywhere
-                onTextChanged: {
-                    if (node && node.title !== text)
-                        node.title = text;
-                }
-                smooth: true
-                antialiasing: true
-                font.pointSize: 12
-                font.bold: true
-                background: Rectangle {
-                    color: "transparent";
-                }
+            focus: false
+            placeholderText: qsTr("Enter description")
+            color: "white"
+            selectByMouse: true
+            text: node.guiConfig.description
+            wrapMode:TextEdit.WrapAnywhere
+            onTextChanged: {
+                if (node && node.guiConfig.description !== text)
+                    node.guiConfig.description = text;
             }
-
-            // horizontal line to separate title and descrption
-            Rectangle {
-                id: seperator
-                width: parent.width
-                anchors.bottom: titleTextArea.bottom
-                height: 1
-                color: "white"
-                opacity: 0.2
-            }
-
-            // Description Text
-            TextArea {
-                id: textArea
-
-                anchors.top: seperator.bottom
-                anchors.left: parent.left
-                anchors.right: parent.right
-
-                focus: false
-                placeholderText: qsTr("Enter description")
-                color: "white"
-                selectByMouse: true
-                text: node.guiConfig.description
-                wrapMode:TextEdit.WrapAnywhere
-                onTextChanged: {
-                    if (node && node.guiConfig.description !== text)
-                        node.guiConfig.description = text;
-                }
-                smooth: true
-                antialiasing: true
-                font.bold: true
-                font.pointSize: 10
-                background: Rectangle {
-                    color: "transparent";
-                }
+            smooth: true
+            antialiasing: true
+            font.bold: true
+            background: Rectangle {
+                color: "transparent";
             }
         }
     }
