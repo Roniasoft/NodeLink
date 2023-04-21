@@ -83,56 +83,60 @@ Rectangle {
         onAccepted: delTimer.start();
     }
 
-    //! Icon
-    Text {
-        id: iconText
-        font.family: "fa-regular"
-        font.pixelSize: 20
+    //! Header Item
+    Item {
+        id: titleItem
         anchors.left: parent.left
-        anchors.top: parent.top
-        anchors.margins: 12
-        text: NLStyle.nodeIcons[node.type]
-        color: node.guiConfig.color
-    }
-
-
-    // Title Text
-    TextArea {
-        id: titleTextArea
-
-        anchors.top: parent.top
         anchors.right: parent.right
-        anchors.left: iconText.right
+        anchors.top: parent.top
         anchors.margins: 12
-        anchors.leftMargin: 5
+        height: 20
 
-        rightPadding: 10
-        height: iconText.height
-
-        focus: false
-        placeholderText: qsTr("Enter title")
-        color: "white"
-        selectByMouse: true
-        text: node.title
-        //        wrapMode:TextEdit.WrapAnywhere
-        onTextChanged: {
-            if (node && node.title !== text)
-                node.title = text;
+        //! Icon
+        Text {
+            id: iconText
+            font.family: "Font Awesome 6 Pro"
+            font.pixelSize: 20
+            anchors.left: parent.left
+            anchors.verticalCenter: parent.verticalCenter
+            text: NLStyle.nodeIcons[node.type]
+            color: node.guiConfig.color
+            font.weight: 400
         }
-        smooth: true
-        antialiasing: true
-        font.pointSize: 10
-        font.bold: true
-        background: Rectangle {
-            color: "transparent";
+
+        //! Title Text
+        TextArea {
+            id: titleTextArea
+
+            anchors.right: parent.right
+            anchors.left: iconText.right
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.leftMargin: 5
+            height: 40
+
+            rightPadding: 10
+
+            focus: false
+            placeholderText: qsTr("Enter title")
+            selectByMouse: true
+            text: node.title
+            verticalAlignment: Text.AlignVCenter
+            onTextChanged: {
+                if (node && node.title !== text)
+                    node.title = text;
+            }
+            smooth: true
+            antialiasing: true
+            font.pointSize: 10
+            font.bold: true
         }
     }
 
-    // ScrollView to manage scroll view in Text Area
+    //! ScrollView to manage scroll view in Text Area
     ScrollView {
         id: view
 
-        anchors.top: titleTextArea.bottom
+        anchors.top: titleItem.bottom
         anchors.right: parent.right
         anchors.bottom: parent.bottom
         anchors.left: parent.left
@@ -145,21 +149,12 @@ Rectangle {
 
         ScrollBar.vertical: ScrollBar {
             id: scrollerV
-            policy: ScrollBar.AsNeeded
-            x: view.mirrored ? 0 : view.width - width
-            y: view.topPadding - 15
-            minimumSize: 0.1
-            contentItem: Rectangle {
-                implicitHeight: view.height // doesn't change anything.
-                implicitWidth: 4
-                radius: 5
-                color: scrollerV.hovered ? "#7f7f7f" : "#4b4b4b"
-            }
-            background: Rectangle {
-                implicitWidth: 4
-                color: "black"
-                opacity: 0.8
-            }
+            parent: view.parent
+            anchors.top: view.top
+            anchors.right: view.right
+            anchors.bottom: view.bottom
+            width: 5
+            anchors.rightMargin: 1
         }
 
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
@@ -180,7 +175,10 @@ Rectangle {
             }
             smooth: true
             antialiasing: true
+
             font.bold: true
+            font.pointSize: 9
+
             background: Rectangle {
                 color: "transparent";
             }
@@ -419,7 +417,7 @@ Rectangle {
         }
     }
 
-    //!upper right sizing area
+    //! Upper right sizing area
     MouseArea {
         id: rightTopCornerMouseArea
         width: 20
@@ -469,7 +467,7 @@ Rectangle {
         }
     }
 
-    //!lower right sizing area
+    //! Lower right sizing area
     MouseArea {
         id: rightDownCornerMouseArea
         width: 20
@@ -515,7 +513,7 @@ Rectangle {
         }
     }
 
-    //!upper left sizing area
+    //! Upper left sizing area
     MouseArea {
         id: leftTopCornerMouseArea
         width: 20
@@ -569,7 +567,7 @@ Rectangle {
         }
     }
 
-    //!lower left sizing area
+    //! Lower left sizing area
     MouseArea {
         id: leftDownCornerMouseArea
         width: 20
