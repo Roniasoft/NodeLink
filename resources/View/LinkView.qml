@@ -82,6 +82,9 @@ I_LinkView {
                 link.guiConfig.description = text;
         }
 
+        leftPadding: 10
+        rightPadding: 10
+
         background: Rectangle {
             radius: 5
             border.width: 3
