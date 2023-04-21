@@ -4,17 +4,34 @@ import QtQuickStream
 import QtQuick.Dialogs
 import QtQuick.Controls 2.12
 
+/*! ***********************************************************************************************
+ * MainWindow of NodeLink example
+ * ************************************************************************************************/
+
 Window {
     id: window
+
+    /* Property Declarations
+     * ****************************************************************************************/
+    property Scene scene: NLCore.createScene()
+
+    /* Object Properties
+     * ****************************************************************************************/
+
     width: 1280
     height: 960
     visible: true
     title: qsTr("Simple NodeLink Example")
     color: "#1e1e1e"
 
-    property Scene scene: NLCore.createScene()
+    Material.theme: Material.Dark
+    Material.accent: "#4890e2"
+
 
     Component.onCompleted: NLCore.defaultRepo.initRootObject("QSObject");
+
+    /* Children
+     * ****************************************************************************************/
 
     NLView {
         scene: window.scene
