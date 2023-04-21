@@ -62,17 +62,27 @@ Canvas {
         // draw the curve
         BezierCurve.bezierCurve(context, inputPos, link.controlPoint1,
                                 link.controlPoint2, outputPos, isSelected,
-                                link.guiConfig.color, link.direction);
+                                link.guiConfig.color, link.direction,
+                                link.guiConfig.style);
     }
 
     /* Children
     * ****************************************************************************************/
 
-    // requestPaint when direction of link changed.
+  // requestPaint when direction of link changed.
   Connections {
       target: link
 
       function onDirectionChanged() {
+          canvas.requestPaint();
+      }
+  }
+
+  // requestPaint when style of link changed.
+  Connections {
+      target: link.guiConfig
+
+      function onStyleChanged() {
           canvas.requestPaint();
       }
   }
