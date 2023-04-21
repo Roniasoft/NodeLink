@@ -32,14 +32,14 @@ Item {
 
     //! All nodes in selected Scene
     //! use nodes map in Scene model
-    property var    nodes:              Object.values(scene?.nodes)
+    property var    nodes:              Object.values(scene?.nodes ?? ({}))
 
     //! All links in the scene
-    property var    links:              Object.values(scene?.links)
+    property var    links:              Object.values(scene?.links ?? ({}))
 
     // watch for all actions active/inactive for current node
     Repeater {
-        model: Object.values(node?.nodeData?.data) ?? []    // Actions
+        model: Object.values(node?.nodeData?.data ?? ({})) ?? []    // Actions
         enabled: node?.type === NLSpec.NodeType.Step ?? false
         delegate: Item {
             property Action action: modelData
