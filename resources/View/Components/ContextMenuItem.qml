@@ -34,8 +34,9 @@ MenuItem {
                     topMargin: 4}
             color: "#ababab"
             text: menuItem.iconStr
-            font.family: "fa-regular"
+            font.family: "Font Awesome 6 Pro"
             font.pixelSize: 14
+            font.weight: 400
         }
         Text {
             id: contextMenuText
