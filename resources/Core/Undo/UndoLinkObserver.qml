@@ -47,5 +47,9 @@ Item {
         function onColorChanged() {
             root._timer.start();
         }
+
+        function onStyleChanged() {
+            root._timer.start();
+        }
     }
 }

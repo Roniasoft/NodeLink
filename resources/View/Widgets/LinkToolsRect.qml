@@ -128,6 +128,58 @@ Rectangle {
             }
         }
 
+        //! Style button
+        NLToolButton {
+            id: styleButton
+            text: NLStyle.linkStyleIcon[link.guiConfig.style]
+            Layout.preferredHeight: 30
+            Layout.preferredWidth: 30
+            Layout.topMargin: 2
+            Layout.bottomMargin: 2
+            onClicked: styleMenu.open()
+
+            // Select link Style
+            Menu {
+                id: styleMenu
+                y: styleButton.height
+
+                // Solid Line MenuItem
+                NLMenuItem {
+                    text: NLStyle.linkStyleIcon[NLSpec.LinkStyle.Solid]
+                    description: "Solid Line"
+                    checked: link.guiConfig.style === NLSpec.LinkStyle.Solid
+                    onTriggered: link.guiConfig.style = NLSpec.LinkStyle.Solid
+                }
+
+                // Dash Line MenuItem
+                NLMenuItem {
+                    text: NLStyle.linkStyleIcon[NLSpec.LinkStyle.Dash]
+                    description: "Dash Line"
+                    checked: link.guiConfig.style === NLSpec.LinkStyle.Dash
+                    onTriggered: link.guiConfig.style = NLSpec.LinkStyle.Dash
+                }
+
+                // Dot Line MenuItem
+                NLMenuItem {
+                    text: NLStyle.linkStyleIcon[NLSpec.LinkStyle.Dot]
+                    description: "Dot Line"
+                    checked: link.guiConfig.style === NLSpec.LinkStyle.Dot
+                    onTriggered: link.guiConfig.style = NLSpec.LinkStyle.Dot
+                }
+
+                background: Item {
+                    implicitWidth: 135
+                    implicitHeight: 80
+                    Rectangle {
+                        anchors.fill: parent
+                        radius: 5
+                        color: "#1e1e1e"
+                        opacity: enabled ? 1 : 0.3
+                    }
+                }
+            }
+        }
+
         //Delete button
         NLToolButton {
             id: deleteButton

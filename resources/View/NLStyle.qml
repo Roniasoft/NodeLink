@@ -51,6 +51,13 @@ QtObject {
         "\uf07e"        // Bidirectional
     ]
 
+    //! Style icon of links
+    readonly property var linkStyleIcon: [
+        "\uf111",       // Solid
+        "\uf1ce",       // Dash
+        "\ue105"        // Dot
+    ]
+
     readonly property var nodeNames: [
         "GeneralNode",          // General
         "RootNode",             // Root

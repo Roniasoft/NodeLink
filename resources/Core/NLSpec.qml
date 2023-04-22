@@ -44,10 +44,17 @@ QtObject {
         Unknown = 99
     }
 
-    //! Port type data flow.
+    //! Link Direction.
     enum LinkDirection {
         Nondirectional  = 0,
         Unidirectional  = 1,
         Bidirectional   = 2
+    }
+
+    //! Link Style.
+    enum LinkStyle {
+        Solid  = 0,
+        Dash   = 1,
+        Dot    = 2
     }
 }

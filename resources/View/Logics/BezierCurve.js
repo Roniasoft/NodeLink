@@ -2,7 +2,8 @@
 .import QtQuick 2.0 as QtQuick
 
 //! Drawing a bezier curve using give context2D
-function bezierCurve(context, startPos, cp1, cp2, endPos, isSelected, color, direction) {
+function bezierCurve(context, startPos, cp1, cp2, endPos,
+                     isSelected, color, direction, style) {
 
     context.reset();
     context.lineWidth = 2;
@@ -20,6 +21,24 @@ function bezierCurve(context, startPos, cp1, cp2, endPos, isSelected, color, dir
         context.shadowColor = color;
         context.shadowBlur = 10;
     }
+
+    // Applying style to the Link
+    var stylePattern = [];
+    switch (style) {
+    case 1: { // ِDash
+        stylePattern = [5, 2];
+        break;
+    }
+    case 2: { // Dot
+        stylePattern = [1, 2];
+        break;
+    }
+    default: // Solid
+        break;
+    }
+    context.setLineDash(stylePattern);
+
+
     // stroke the curve
     context.stroke();
     context.restore();
@@ -56,6 +75,9 @@ function arrow(context, from, to, color) {
     context.lineTo(to.x, to.y);
     context.lineTo(to.x - headlen * Math.cos(angle + Math.PI / 6), to.y - headlen * Math.sin(angle + Math.PI / 6));
     context.lineTo(to.x - headlen * Math.cos(angle - Math.PI / 6), to.y - headlen * Math.sin(angle - Math.PI / 6));
+
+    // Update arrow style
+    context.setLineDash([]);
 
     //Fill arrow shape
     context.fillStyle = color;

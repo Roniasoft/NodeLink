@@ -16,8 +16,9 @@ ToolButton {
     width: 30
     height: 30
     text: "\uf2ed"
-    font.family: "fa-regular"
+    font.family: "Font Awesome 6 Pro"
     font.pixelSize: 15
+    font.weight: 400
 
     /* Children
      * ****************************************************************************************/
