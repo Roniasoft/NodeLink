@@ -88,11 +88,11 @@ BibTeX::
 
     @misc{RONIA AB,
       author = {RONIA AB},
-      title = {RoniaKit. QML Control Library},
+      title = {NodeLink. Qt Quick Library},
       year = {2023},
       publisher = {GitHub},
       journal = {GitHub repository},
-      howpublished = {\url{https://github.com/Roniasoft/RoniaKit}},
+      howpublished = {\url{https://github.com/Roniasoft/NodeLink}},
       commit = {6ba9c66cdbc8e6d00fd4a8c6b3bde05c616cfa6a}
     }
  
