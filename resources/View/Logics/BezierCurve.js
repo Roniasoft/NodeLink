@@ -2,18 +2,29 @@
 .import QtQuick 2.0 as QtQuick
 
 //! Drawing a bezier curve using give context2D
-function bezierCurve(context, startPos, cp1, cp2, endPos,
-                     isSelected, color, direction, style) {
+function createLink(context, startPos, cp1, cp2, endPos,
+                     isSelected, color, direction, style, type,
+                    inputPortSide, outputPortSide) {
 
     context.reset();
     context.lineWidth = 2;
     context.beginPath();
 
-    // our start position
-    context.moveTo(startPos.x, startPos.y);
-
-    // random bezier curve, which ends on last X, last Y
-    context.bezierCurveTo(cp1.x, cp1.y, cp2.x , cp2.y, endPos.x, endPos.y);
+    // create Link
+    switch (type) {
+    case 1: { // L Line
+        paintLLine(context, startPos, endPos, inputPortSide, outputPortSide);
+        break;
+    }
+    case 2: { // Straight Line
+        paintStraightLine(context, startPos, endPos, inputPortSide, outputPortSide, direction);
+        break;
+    }
+    default: { // Bezier Curve
+        paintBezierCurve(context, startPos, cp1, cp2, endPos)
+        break;
+    }
+    }
 
     // glow effect
     context.strokeStyle = color;
@@ -37,7 +48,6 @@ function bezierCurve(context, startPos, cp1, cp2, endPos,
         break;
     }
     context.setLineDash(stylePattern);
-
 
     // stroke the curve
     context.stroke();
@@ -87,14 +97,334 @@ function arrow(context, from, to, color) {
     context.stroke();
 }
 
+//! Paint curve line
+function paintBezierCurve(context, startPos, cp1, cp2, endPos) {
+    //start position
+    context.moveTo(startPos.x, startPos.y);
+    context.bezierCurveTo(cp1.x, cp1.y, cp2.x , cp2.y, endPos.x, endPos.y);
+}
 
-//! Connection Margin
-function connectionMargin (inputPort) {
+// Paint L Line.
+function paintLLine(context, startPos, endPos, inputType, outputType) {
 
-    if(inputPort === null)
-        return Qt.vector2d(0,0);
+    var cps = [];
+    var cpCal1;
+    var cpCal2;
+    var dx =  endPos.x - startPos.x
 
-    switch (inputPort.portSide) {
+    if (dx < 0){
+        var tempEndPos = endPos;
+        var tempInputType = inputType;
+
+        inputType = outputType;
+        outputType = tempInputType;
+
+        endPos = startPos;
+        startPos = tempEndPos;
+
+        dx =  endPos.x - startPos.x
+    }
+
+    // start position
+    context.moveTo(startPos.x, startPos.y);
+
+    var dy =  endPos.y - startPos.y
+    var margin = 20;
+
+    // Paint Line based on dx, dy, and port sides.
+    if(dx >= 0) {
+        var delta = dx === 0 ? margin : dx;
+        if (dy <= 0) {
+            switch (inputType) {
+            case 0: { // Top
+                switch (outputType) {
+                case 0: { // Top
+                    cps.push(Qt.vector2d(startPos.x, endPos.y - margin));
+                    cps.push(Qt.vector2d(endPos.x, endPos.y - margin));
+                    break;
+                }
+
+                case 1: { // Bottom
+                    cps.push(Qt.vector2d(startPos.x, startPos.y - margin));
+                    cps.push(Qt.vector2d(endPos.x, startPos.y - margin));
+                    break;
+                }
+
+                case 2: { // Left
+                    cps.push(Qt.vector2d(startPos.x, endPos.y));
+
+                    break;
+                }
+
+                case 3: { // Right
+                    cps.push(Qt.vector2d(startPos.x, startPos.y - margin));
+                    cps.push(Qt.vector2d(endPos.x + margin, startPos.y - margin));
+                    cps.push(Qt.vector2d(endPos.x + margin, endPos.y));
+                    break;
+                }
+                }
+                break;
+            }
+
+            case 1: { // Bottom
+                switch (outputType) {
+                case 0: { // Top
+                    cps.push(Qt.vector2d(startPos.x, startPos.y + margin));
+                    cps.push(Qt.vector2d(startPos.x + delta / 2, startPos.y + margin));
+                    cps.push(Qt.vector2d(startPos.x + delta / 2, endPos.y - margin));
+                    cps.push(Qt.vector2d(endPos.x, endPos.y - margin));
+                    break;
+                }
+
+                case 1: { // Bottom
+                    cps.push(Qt.vector2d(startPos.x, startPos.y + margin));
+                    cps.push(Qt.vector2d(endPos.x , startPos.y + margin));
+                    break;
+                }
+
+                case 2: { // Left
+                    cps.push(Qt.vector2d(startPos.x, startPos.y + margin));
+                    cps.push(Qt.vector2d(startPos.x + margin, startPos.y + margin));
+                    cps.push(Qt.vector2d(startPos.x + margin, endPos.y));
+                    break;
+                }
+
+                case 3: { // Right
+                    cps.push(Qt.vector2d(startPos.x, startPos.y + margin));
+                    cps.push(Qt.vector2d(endPos.x + margin, startPos.y + margin));
+                    cps.push(Qt.vector2d(endPos.x + margin, endPos.y));
+                    break;
+                }
+                }
+                break;
+            }
+
+            case 2: { // Left
+                switch (outputType) {
+                case 0: { // Top
+                    cps.push(Qt.vector2d(startPos.x - margin, startPos.y));
+                    cps.push(Qt.vector2d(startPos.x - margin, endPos.y - margin));
+                    cps.push(Qt.vector2d(endPos.x, endPos.y - margin));
+                    break;
+                }
+
+                case 1: { // Bottom
+                    cps.push(Qt.vector2d(startPos.x - margin, startPos.y));
+                    cps.push(Qt.vector2d(startPos.x - margin, startPos.y  + margin));
+                    cps.push(Qt.vector2d(endPos.x, startPos.y  + margin));
+                    break;
+                }
+
+                case 2: { // Left
+                    cps.push(Qt.vector2d(startPos.x - margin, startPos.y));
+                    cps.push(Qt.vector2d(startPos.x - margin, endPos.y));
+                    break;
+                }
+
+                case 3: { // Right
+                    cps.push(Qt.vector2d(startPos.x - margin, startPos.y));
+                    cps.push(Qt.vector2d(startPos.x - margin, startPos.y  + margin));
+                    cps.push(Qt.vector2d(endPos.x + margin, startPos.y  + margin));
+                    cps.push(Qt.vector2d(endPos.x + margin, endPos.y));
+                    break;
+                }
+                }
+                break;
+            }
+
+            case 3: { // Right
+                switch (outputType) {
+                case 0: { // Top
+                    cps.push(Qt.vector2d(startPos.x + margin, startPos.y));
+                    cps.push(Qt.vector2d(startPos.x + margin, endPos.y - margin));
+                    cps.push(Qt.vector2d(endPos.x, endPos.y - margin));
+                    break;
+                }
+
+                case 1: {
+                    cps.push(Qt.vector2d(endPos.x ,startPos.y));
+                    break;
+                }
+
+                case 2: { // Left
+                    cps.push(Qt.vector2d(startPos.x + delta / 2, startPos.y));
+                    cps.push(Qt.vector2d(startPos.x + delta / 2, endPos.y));
+                    break;
+                }
+
+                case 3: { // Right
+                    cps.push(Qt.vector2d(endPos.x + margin, startPos.y));
+                    cps.push(Qt.vector2d(endPos.x + margin, endPos.y));
+                    break;
+                }
+                }
+                break;
+            }
+            }
+        } else if (dy > 0) {
+            switch (inputType) {
+            case 0: { // Top
+                switch (outputType) {
+                case 0: { // Top
+                    cps.push(Qt.vector2d(startPos.x, startPos.y - margin));
+                    cps.push(Qt.vector2d(endPos.x, startPos.y - margin));
+                    break;
+                }
+
+                case 1: { // Bottom
+                    cps.push(Qt.vector2d(startPos.x, startPos.y - margin));
+                    cps.push(Qt.vector2d(startPos.x + delta / 2, startPos.y - margin));
+                    cps.push(Qt.vector2d(startPos.x + delta / 2, endPos.y + margin));
+                    cps.push(Qt.vector2d(endPos.x, endPos.y + margin));
+                    break;
+                }
+
+                case 2: { // Left
+                    cps.push(Qt.vector2d(startPos.x, startPos.y - margin));
+                    cps.push(Qt.vector2d(startPos.x + delta / 2, startPos.y - margin));
+                    cps.push(Qt.vector2d(startPos.x + delta / 2, endPos.y));
+
+                    break;
+                }
+
+                case 3: { // Right
+                    cps.push(Qt.vector2d(startPos.x, startPos.y - margin));
+                    cps.push(Qt.vector2d(endPos.x + margin, startPos.y - margin));
+                    cps.push(Qt.vector2d(endPos.x + margin, endPos.y));
+                    break;
+                }
+                }
+                break;
+            }
+
+            case 1: { // Bottom
+                switch (outputType) {
+                case 0: { // Top
+                    cps.push(Qt.vector2d(startPos.x, startPos.y + margin));
+                    cps.push(Qt.vector2d(endPos.x, startPos.y + margin));
+                    break;
+                }
+
+                case 1: { // Bottom
+                    cps.push(Qt.vector2d(startPos.x, endPos.y + margin));
+                    cps.push(Qt.vector2d(endPos.x , endPos.y + margin));
+                    break;
+                }
+
+                case 2: { // Left
+                    cps.push(Qt.vector2d(startPos.x, endPos.y));
+                    break;
+                }
+
+                case 3: { // Right
+                    cps.push(Qt.vector2d(startPos.x, startPos.y + margin));
+                    cps.push(Qt.vector2d(endPos.x + margin, startPos.y + margin));
+                    cps.push(Qt.vector2d(endPos.x + margin, endPos.y));
+                    break;
+                }
+                }
+                break;
+            }
+
+            case 2: { // Left
+                switch (outputType) {
+                case 0: { // Top
+                    cps.push(Qt.vector2d(startPos.x - margin, startPos.y));
+                    cps.push(Qt.vector2d(startPos.x - margin, endPos.y - margin));
+                    cps.push(Qt.vector2d(endPos.x, endPos.y - margin));
+                    break;
+                }
+
+                case 1: { // Bottom
+                    cps.push(Qt.vector2d(startPos.x - margin, startPos.y));
+                    cps.push(Qt.vector2d(startPos.x - margin, endPos.y  + margin));
+                    cps.push(Qt.vector2d(endPos.x, endPos.y  + margin));
+                    break;
+                }
+
+                case 2: { // Left
+                    cps.push(Qt.vector2d(startPos.x - margin, startPos.y));
+                    cps.push(Qt.vector2d(startPos.x - margin, endPos.y));
+                    break;
+                }
+
+                case 3: { // Right
+                    cps.push(Qt.vector2d(startPos.x - margin, startPos.y));
+                    cps.push(Qt.vector2d(startPos.x - margin, startPos.y + dy / 2));
+                    cps.push(Qt.vector2d(endPos.x + margin, startPos.y  + dy / 2));
+                    cps.push(Qt.vector2d(endPos.x + margin, endPos.y));
+                    break;
+                }
+                }
+                break;
+            }
+
+            case 3: { // Right
+                switch (outputType) {
+                case 0: { // Top
+
+                    if(dy < 10) {
+                    cps.push(Qt.vector2d(startPos.x + margin, startPos.y));
+                    cps.push(Qt.vector2d(startPos.x + margin, startPos.y - margin));
+                    cps.push(Qt.vector2d(endPos.x, startPos.y - margin));
+                    } else {
+                        cps.push(Qt.vector2d(endPos.x, startPos.y));
+                    }
+
+                    break;
+                }
+
+                case 1: { // Bottom
+                    cps.push(Qt.vector2d(startPos.x + margin, startPos.y));
+                    cps.push(Qt.vector2d(startPos.x + margin, endPos.y + margin));
+                    cps.push(Qt.vector2d(endPos.x , endPos.y + margin));
+                    break;
+                }
+
+                case 2: { // Left
+                    cps.push(Qt.vector2d(startPos.x + dx / 2, startPos.y));
+                    cps.push(Qt.vector2d(startPos.x + dx / 2, endPos.y));
+                    break;
+                }
+
+                case 3: { // Right
+                    cps.push(Qt.vector2d(endPos.x + margin, startPos.y));
+                    cps.push(Qt.vector2d(endPos.x + margin, endPos.y));
+                    break;
+                }
+                }
+                break;
+            }
+            }
+        }
+    }
+
+    cps.forEach(cp => {
+                    context.lineTo(cp.x, cp.y);
+                });
+
+    context.lineTo(endPos.x, endPos.y);
+}
+
+// Paint Straight Line
+function paintStraightLine(context, startPos, endPos, inputType, outputType, direction) {
+    // Start position
+    context.moveTo(startPos.x, startPos.y);
+
+    // Add margin if necessary
+    var correctedStartPos = startPos.plus(connectionMargin(inputType).times(direction === 2 ? 0.1 : 0));
+    var correctedEndPos = endPos.plus(connectionMargin(outputType).times(direction === 0 ? 0 : 0.1));
+
+    // Paint Line
+    context.lineTo(correctedStartPos.x, correctedStartPos.y);
+    context.lineTo(correctedEndPos.x, correctedEndPos.y);
+    context.lineTo(endPos.x, endPos.y);
+}
+
+//! Connection Margin with port side.
+function connectionMargin (portSide) {
+
+    switch (portSide) {
     case 0: // \todo: use NLSpec some how here
         return Qt.vector2d(0, -100);
 
@@ -106,5 +436,8 @@ function connectionMargin (inputPort) {
 
     case 3:
         return Qt.vector2d(+100, 0);
+
+    default:
+        return Qt.vector2d(0, 0);
     }
 }

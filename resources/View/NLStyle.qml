@@ -58,6 +58,13 @@ QtObject {
         "\ue105"        // Dot
     ]
 
+    //! Style icon of links
+    readonly property var linkTypeIcon: [
+        "\uf899",       // Bezier
+        "L",            // LLine
+        "/"             // Straight
+    ]
+
     readonly property var nodeNames: [
         "GeneralNode",          // General
         "RootNode",             // Root

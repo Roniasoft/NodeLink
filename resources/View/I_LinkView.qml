@@ -55,15 +55,16 @@ Canvas {
         }
 
         // calculate the control points
-        link.controlPoint1 = inputPos.plus(BezierCurve.connectionMargin(inputPort));
-        link.controlPoint2 = outputPos.plus(BezierCurve.connectionMargin(outputPort));
+        link.controlPoint1 = inputPos.plus(BezierCurve.connectionMargin(inputPort?.portSide ?? -1));
+        link.controlPoint2 = outputPos.plus(BezierCurve.connectionMargin(outputPort?.portSide ?? -1));
 
         linkMidPoint = Calculation.getPositionByTolerance(0.5, [inputPos, link.controlPoint1, link.controlPoint2, outputPos]);
         // draw the curve
-        BezierCurve.bezierCurve(context, inputPos, link.controlPoint1,
+        BezierCurve.createLink(context, inputPos, link.controlPoint1,
                                 link.controlPoint2, outputPos, isSelected,
                                 link.guiConfig.color, link.direction,
-                                link.guiConfig.style);
+                                link.guiConfig.style, link.guiConfig.type,
+                               link.inputPort.portSide, link.outputPort.portSide);
     }
 
     /* Children
@@ -78,11 +79,15 @@ Canvas {
       }
   }
 
-  // requestPaint when style of link changed.
+  // requestPaint when style AND/OR type of link changed.
   Connections {
       target: link.guiConfig
 
       function onStyleChanged() {
+          canvas.requestPaint();
+      }
+
+      function onTypeChanged() {
           canvas.requestPaint();
       }
   }

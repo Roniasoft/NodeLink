@@ -39,9 +39,11 @@ QtObject {
 
     //! Type of link
     enum LinkType {
-        Bezier = 0,
+        Bezier   = 0,
+        LLine    = 1,
+        Straight = 2,
 
-        Unknown = 99
+        Unknown  = 99
     }
 
     //! Link Direction.
@@ -57,4 +59,5 @@ QtObject {
         Dash   = 1,
         Dot    = 2
     }
+
 }

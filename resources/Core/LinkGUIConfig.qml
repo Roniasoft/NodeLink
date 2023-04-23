@@ -15,7 +15,10 @@ QSObject {
     //! Color
     property string     color:      "white"
 
-    //! Color
+    //! Style
     property int         style:      NLSpec.LinkStyle.Solid
+
+    //! Type
+    property int         type:       NLSpec.LinkType.Bezier
 
 }

@@ -31,10 +31,6 @@ Item {
         function onDirectionChanged() {
             root._timer.start();
         }
-
-        function onLinkTypeChanged() {
-            root._timer.start();
-        }
     }
 
     Connections {
@@ -49,6 +45,10 @@ Item {
         }
 
         function onStyleChanged() {
+            root._timer.start();
+        }
+
+        function onTypeChanged() {
             root._timer.start();
         }
     }
