@@ -3,7 +3,8 @@ import NodeLink
 import QtQuick.Controls
 import QtQuick.Shapes
 
-import "Logics/BezierCurve.js" as BezierCurve
+import "Logics/BasicLinkCalculator.js" as BasicLinkCalculator
+import "Logics/LinkPainter.js" as LinkPainter
 import "Logics/Calculation.js" as Calculation
 
 /*! ***********************************************************************************************
@@ -54,17 +55,21 @@ Canvas {
             return;
         }
 
-        // calculate the control points
-        link.controlPoint1 = inputPos.plus(BezierCurve.connectionMargin(inputPort?.portSide ?? -1));
-        link.controlPoint2 = outputPos.plus(BezierCurve.connectionMargin(outputPort?.portSide ?? -1));
+        // Calculate the control points with BasicLinkCalculator
+        link.controlPoints = BasicLinkCalculator.calculateControlPoints(inputPos, outputPos, link.direction,
+                                                                        link.guiConfig.type, link.inputPort.portSide,
+                                                                        link.outputPort?.portSide ?? -1)
+        // Calculate position of link setting dialog.
+        var minPoint1 = inputPos.plus(BasicLinkCalculator.connectionMargin(inputPort?.portSide ?? -1));
+        var minPoint2 = outputPos.plus(BasicLinkCalculator.connectionMargin(outputPort?.portSide ?? -1));
 
-        linkMidPoint = Calculation.getPositionByTolerance(0.5, [inputPos, link.controlPoint1, link.controlPoint2, outputPos]);
-        // draw the curve
-        BezierCurve.createLink(context, inputPos, link.controlPoint1,
-                                link.controlPoint2, outputPos, isSelected,
+        linkMidPoint = Calculation.getPositionByTolerance(0.5, [inputPos, minPoint1, minPoint2, outputPos]);
+
+        // Draw the curve with LinkPainter
+        LinkPainter.createLink(context, inputPos, link.controlPoints, isSelected,
                                 link.guiConfig.color, link.direction,
                                 link.guiConfig.style, link.guiConfig.type,
-                               link.inputPort.portSide, link.outputPort.portSide);
+                               link.inputPort.portSide, link.outputPort?.portSide ?? -1);
     }
 
     /* Children

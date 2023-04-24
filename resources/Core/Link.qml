@@ -23,6 +23,8 @@ I_Node {
     //! Secound control point
     property vector2d   controlPoint2:  Qt.vector2d(0, 0)
 
+    property var        controlPoints:  []
+
     //! Direction
     property int        direction:      NLSpec.LinkDirection.Unidirectional
 
