@@ -2,21 +2,43 @@
 .import QtQuick 2.0 as QtQuick
 
 // This function takes the point (x,y) to test, a tolerance value,
-// and an array of four control points that define the Bezier curve.
+// and an array of control points that define the Bezier curve, LLine and straight line.
 // It evaluates the curve at 100 evenly-spaced values of t between 0 and 1,
 // calculates the distance between each point on the curve and the test point,
 // and returns true if any of the distances are less than the tolerance.
-function isPointOnCurve(x, y, tolerance, points) {
-    for (var t = 0; t <= 1; t += 0.02) {
-        var curvePos = getPositionByTolerance(t, points);
-        var distance = Math.sqrt(Math.pow(curvePos.x - x, 2) + Math.pow(curvePos.y - y, 2));
-        if (distance < tolerance) {
-            return true;
+function isPointOnLink(x, y, tolerance, points, type) {
+
+    // Margin to find point on Line
+    var margin = tolerance * 2;
+    switch (type) {
+    case 1: { // L Line
+        for (var t = 1; t < points.length; t++) {
+            if(isPositionOnLine(x, y, points[t-1], points[t], margin))
+                return true;
         }
+
+        break;
     }
+    case 2: { // Straight Line
+            if(isPositionOnStraightLine(x, y, points, tolerance))
+                return true;
+
+        break;
+    }
+    default: { // Bezier Curve
+        for (var t = 0; t <= 1; t += 0.02) {
+            var curvePos = getPositionByTolerance(t, points);
+            var distance = Math.sqrt(Math.pow(curvePos.x - x, 2) + Math.pow(curvePos.y - y, 2));
+            if (distance < tolerance) {
+                return true;
+            }
+        }
+        break;
+    }
+    }
+
     return false;
 }
-
 
 function isPositionOnCurve(currentPos, startPos, cp1, cp2, endPos) {
     // Solve equation for x:
@@ -122,3 +144,56 @@ function getPositionByTolerance(t, points) {
 
     return Qt.vector2d(curveX, curveY);
 }
+
+// Find point on L line.
+function isPositionOnLine(x, y, firstPoint, secondPoint, margin) {
+    if((x >= firstPoint.x - margin && x <= secondPoint.x   + margin ) ||
+            (x <= firstPoint.x + margin &&  x >= secondPoint.x - margin)) {
+        if((y >= firstPoint.y - margin &&  y <= secondPoint.y   + margin) ||
+                (y <= firstPoint.y + margin &&  y >= secondPoint.y - margin)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+
+// Find point on Straight line.
+function isPositionOnStraightLine(x, y, points, margin) {
+    // First vertical or horizontal section
+    if(points[0] !== points[1])
+        if(isPositionOnLine(x, y, points[0], points[1], margin))
+            return true;
+
+    // Second vertical or horizontal section
+    if(points[2] !== points[3])
+        if(isPositionOnLine(x, y, points[2], points[3], margin))
+            return true;
+
+        var firstPoint = points[1];
+        var secondPoint = points[2]
+        var dx = secondPoint.x - firstPoint.x;
+        var dy = secondPoint.y - firstPoint.y
+
+        if(Math.abs(dx) >= 10 && Math.abs(dy) >= 10 && Math.abs(dy / dx) >= 0.05) {
+            var slope = dy / dx;
+            var yInLine = slope * (x - secondPoint.x) + secondPoint.y;
+            var xInLine = (y - secondPoint.y + slope * secondPoint.x) / slope;
+
+            if (Math.abs(x - xInLine) <= margin)
+                if (Math.abs(y - yInLine) <= margin)
+                    return true;
+
+        } else if (dx === 0 || Math.abs(dy / dx) < 0.05 || Math.abs(dy) < 10) { // Horizontal or near horizontal line
+            if(isPositionOnLine(x, y, firstPoint, secondPoint, margin))
+                return true;
+
+        } else { // Vertical or near vertical line
+            if(isPositionOnLine(x, y, firstPoint, secondPoint, margin))
+                return true;
+        }
+
+        return false;
+}
+
