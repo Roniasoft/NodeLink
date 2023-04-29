@@ -30,6 +30,22 @@ Dependencies
 Current State (v1.0.0 alpha)
 ==================
 
+The main features are as follows:
+
+- Use QtQuickStream to save and load NodeLink projects: QtQuickStream is a library for QtObjects that provides automatic serialization and deserialization of objects.    In the context of NodeLink, this means that you can easily save your project to a file and load it later, without having to manually write code to save and load        each individual object.
+-
+- Drawing basic node/link features: NodeLink allows you to create nodes and links between them. Nodes are the basic building blocks of your project, and can represent   anything from data points to complex algorithms. Links are connections between nodes, and can represent relationships or dependencies between them.
+- Drawing links in different types and styles: In addition to basic links, NodeLink allows you to create links of different types and styles. For example, you could     have straight lines, curved lines, or arrows. You can also customize the color, and other visual properties of your links.
+
+- Definition of the interface of all objects: The interface of an object defines its public methods and properties that can be accessed by other objects. In NodeLink,   all objects have a well-defined interface, which makes it easy to interact with them and manipulate them as needed.
+
+- Basic Scene implementation: The scene is the main area where you create and manipulate your nodes and links. NodeLink provides basic scene functionality, such as       snapping to a grid, snapping to nodes, and automatic alignment and layouting of nodes.
+
+ - Basic background: The background is the visual backdrop of your scene. NodeLink provides a basic background that you can customize with your own images or colors.
+ - Basic foreground (currently null): The foreground is the visual layer that appears on top of your nodes and links. While NodeLink doesn't currently provide a foreground layer, this is an area where you could potentially add your own customizations.
+ - Basic overview: The overview is a small window that provides an overview of your entire scene, and allows you to quickly navigate to different parts of it. NodeLink provides a basic overview that you can use to quickly move around your scene.
+
+- Undo/Redo using QtQuickStream library: The undo/redo functionality allows you to undo and redo changes you make to your project. This is especially useful if you make a mistake or want to go back to a previous version of your project. NodeLink uses the QtQuickStream library to implement undo/redo, which makes it easy to save and restore your project state.
 
 Building
 ========
@@ -102,6 +118,8 @@ BibTeX::
 
 NodeLink Simple Example:
 ![image](https://user-images.githubusercontent.com/50166193/233803383-537335a5-d35d-4cfe-945b-6d048ff5950f.png)
+
+![IMG_20230429_081006](https://user-images.githubusercontent.com/50166193/235283815-135c48e6-74d8-4c8e-97a3-71ce90bac8b0.jpg)
 
 ![image](https://user-images.githubusercontent.com/50166193/233803535-45abd705-0ada-4283-ac87-715060bdcd2f.png)
 
