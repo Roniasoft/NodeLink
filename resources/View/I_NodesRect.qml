@@ -26,8 +26,9 @@ Rectangle {
     /*  Children
     * ****************************************************************************************/
     //! Nodes
-    Repeater {
-        model: Object.values(scene.nodes)
+    NLRepeater {
+        id: nodeRepeater
+
         delegate: NodeView {
             id: nodeView
             node: modelData
@@ -50,6 +51,38 @@ Rectangle {
             inputPort: modelData.inputPort
             outputPort: modelData.outputPort
             link: modelData
+        }
+    }
+
+    //! Connection to manage node model changes.
+    Connections {
+        target: scene
+
+        //! nodeRepeater updated when a node added
+        function onNodeAdded(node) {
+            nodeRepeater.addElement(node);
+        }
+
+        //! nodeRepeater updated when a node Removed
+        function onNodeRemoved(node) {
+            nodeRepeater.removeElement(node)
+        }
+    }
+
+    //! Connection to manage undo stack, and save and load of project.
+    Connections {
+        target: scene
+
+        enabled: NLSpec.undo.blockObservers || NLSpec.isLoadingProject
+
+        function onNodesChanged() {
+            if(NLSpec.undo.blockObservers || NLSpec.isLoadingProject) {
+                nodeRepeater.repeaterModel.clear();
+
+                Object.values(scene.nodes).forEach(nodeObj => {
+                                        nodeRepeater.addElement(nodeObj);;
+                                     });
+            }
         }
     }
 }

@@ -30,6 +30,14 @@ QSObject {
     //! Scene Selection Model
     property SelectionModel selectionModel: SelectionModel {}
 
+    /* Signals
+     * ****************************************************************************************/
+
+    //! Node added
+    signal nodeAdded(Node node)
+    //! Node Removed
+    signal nodeRemoved(Node node)
+
     /* Functions
      * ****************************************************************************************/
     //! Adds a node the to nodes map
@@ -40,6 +48,7 @@ QSObject {
         // Add to local administration
         nodes[node._qsUuid] = node;
         nodesChanged();
+        nodeAdded(node);
 
         node.onPortAdded.connect(onPortAdded);
         return node;
@@ -82,6 +91,7 @@ QSObject {
         if(selectionModel.selectedNode !== null && selectionModel.selectedNode._qsUuid === nodeUUId)
             selectionModel.clear();
 
+        nodeRemoved(nodes[nodeUUId]);
         delete nodes[nodeUUId];
 
         portsPositionsChanged();

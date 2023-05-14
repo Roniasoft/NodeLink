@@ -10,6 +10,9 @@ QtObject {
         property bool blockObservers: false
     }
 
+    //! Flag to manage save and load the specific project
+    property bool     isLoadingProject: false
+
     //! Type of node.
     enum NodeType {
         General     = 0,

@@ -101,7 +101,9 @@ Window {
         fileMode: FileDialog.OpenFile
         nameFilters: [ "QtQuickStream Files (*.QQS.json)" ]
         onAccepted: {
-            NLCore.defaultRepo._localImports =  [ "QtQuickStream", "NodeLink"]
+            NLSpec.isLoadingProject = true;
+
+            NLCore.defaultRepo._localImports =  ["QtQuickStream"]
 
             NLCore.defaultRepo.loadFromFile(loadDialog.currentFile);
 
@@ -109,9 +111,11 @@ Window {
             for (var prop in NLCore.defaultRepo._qsObjects) {
                 if(NLCore.defaultRepo._qsObjects[prop].qsType === "Scene") {
                     window.scene = NLCore.defaultRepo._qsObjects[prop];
+                    window.scene.nodesChanged();
                 }
             }
 
+            NLSpec.isLoadingProject = false;
         }
     }
 }
