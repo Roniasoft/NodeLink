@@ -23,7 +23,7 @@ Repeater {
      * ****************************************************************************************/
     //! Add an element into model
     function addElement(qsObj) {
-        repeaterModel.append({"obj": qsObj})
+        repeaterModel.append({"qsObj": qsObj})
     }
 
     //! Remove an element from model
