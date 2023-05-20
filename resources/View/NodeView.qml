@@ -11,7 +11,7 @@ Rectangle {
 
     /* Property Declarations
      * ****************************************************************************************/
-    property Node node
+    property Node           node
 
     property Scene          scene
 
@@ -49,7 +49,7 @@ Rectangle {
 
     /* Signals
      * ****************************************************************************************/
-    signal clicked();
+//    signal clicked();
 
     onEditChanged: {
         nodeView.edit ? titleTextArea.forceActiveFocus() :  nodeView.forceActiveFocus()
@@ -63,6 +63,11 @@ Rectangle {
     Keys.onDeletePressed: {
         if(nodeView.isSelected)
             deletePopup.open();
+    }
+
+    onLockedChanged: {
+        nodeTools.isNodeLock = locked;
+        nodeContextMenu.isNodeLock = locked;
     }
 
     /* Children
@@ -125,6 +130,14 @@ Rectangle {
                 if (node && node.title !== text)
                     node.title = text;
             }
+
+            onPressed: (event) => {
+                           if (event.button === Qt.RightButton) {
+                               nodeView.edit = false
+                               nodeMouseArea.clicked(event)
+                           }
+            }
+
             smooth: true
             antialiasing: true
             font.pointSize: 10
@@ -166,7 +179,6 @@ Rectangle {
             focus: false
             placeholderText: qsTr("Enter description")
             color: "white"
-            selectByMouse: true
             text: node.guiConfig.description
             wrapMode:TextEdit.WrapAnywhere
             onTextChanged: {
@@ -175,10 +187,15 @@ Rectangle {
             }
             smooth: true
             antialiasing: true
-
             font.bold: true
             font.pointSize: 9
 
+            onPressed: (event) => {
+                           if (event.button === Qt.RightButton) {
+                               nodeView.edit = false;
+							   nodeMouseArea.clicked(event)
+                           }
+            }
             background: Rectangle {
                 color: "transparent";
             }
@@ -195,6 +212,7 @@ Rectangle {
         scene: nodeView.scene
         node: nodeView.node
 
+        onIsNodeLockChanged: nodeView.locked = isNodeLock;
         //! To hide color picker if selected node is changed
         Connections {
             target: nodeView
@@ -226,11 +244,19 @@ Rectangle {
                      : Qt.ArrowCursor
 
 
+        //! Manage right and left click to select and
+        //! show node contex menue.
+        onClicked: (mouse) => {
+                       scene.selectionModel.select(node);
+                       if (mouse.button === Qt.RightButton)
+                            nodeContextMenu.popup(mouse.x, mouse.y)
+                   }
+
         onPressed: (mouse) => {
             isDraging = true;
             prevX = mouse.x;
             prevY = mouse.y;
-            nodeView.clicked();
+            scene.selectionModel.select(node);
         }
 
         onReleased: (mouse) => {
@@ -258,6 +284,16 @@ Rectangle {
             }
         }
 
+        NodeContextMenu {
+            id: nodeContextMenu
+
+            scene: nodeView.scene
+            node: nodeView.node
+
+            onIsNodeLockChanged: nodeView.locked = isNodeLock;
+
+            onEditNode: nodeView.edit = true;
+        }
     }
 
     //! todo: encapsulate these mouse areas
@@ -617,7 +653,6 @@ Rectangle {
         }
     }
 
-
     //! Top Ports
     Row {
         id: topRow
@@ -638,7 +673,6 @@ Rectangle {
             }
         }
     }
-
 
     //! Left Ports
     Column {
@@ -708,7 +742,7 @@ Rectangle {
         anchors.fill: parent
         anchors.margins: -10
         enabled: locked
-        onClicked: nodeView.clicked()
+        onClicked: scene.selectionModel.select(node);
         visible: locked
     }
 }
