@@ -28,19 +28,23 @@ MenuItem {
         Rectangle {
             id: contextMenuIconRect
 
-            width: 20
-            height: 20
             radius: 5
             color: (checkable && checked) ? "#2f2f2f" : "transparent"
+            width: 25
+            height: 25
 
             anchors.left: parent.left
-            anchors.leftMargin : 5
+            anchors.leftMargin : 2
             anchors.top: parent.top;
             anchors.topMargin: 2
 
             Text {
                 id: contextMenuIcon
-                anchors.centerIn: parent
+
+                anchors.left: parent.left
+                anchors.leftMargin : 7
+                anchors.top: parent.top;
+                anchors.topMargin: 4
 
                 color: "#ababab"
                 text: menuItem.iconStr
