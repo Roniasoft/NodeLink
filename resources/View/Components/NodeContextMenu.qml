@@ -35,6 +35,7 @@ Menu {
 
     /* Children
      * ****************************************************************************************/
+    //! Edit button
     ContextMenuItem {
         name: "Edit"
         iconStr: "\uf044"
@@ -43,6 +44,7 @@ Menu {
         }
     }
 
+    //! Duplicate button
     ContextMenuItem {
         name: "Duplicate Node"
         iconStr: "\uf24d"
@@ -51,13 +53,56 @@ Menu {
         }
     }
 
+    //! Lock button
     ContextMenuItem {
+        id: lockItem
+
         name: "Lock Node"
         iconStr: "\uf30d"
         checkable: true
         checked: isNodeLock
         onClicked: {
             isNodeLock = checked;
+        }
+    }
+
+    //! Spacer
+    Rectangle {
+        id: spacerRect
+
+        anchors.top: lockItem.bottom
+        anchors.topMargin: 4
+        width: parent.width
+        height: 1
+
+        color:  Qt.lighter("#444", 1.2)
+    }
+
+    //! Delete button
+    ContextMenuItem {
+        anchors.top: spacerRect.bottom
+        anchors.topMargin: 4
+
+        name: "Delete Node"
+        iconStr: "\uf2ed"
+        onClicked: {
+            console.log("dsl uid", node._qsUuid)
+            deletePopup.open();
+        }
+
+        //! Delete popup to confirm deletion process
+        ConfirmPopUp {
+            id: deletePopup
+            onAccepted: delTimer.start();
+        }
+
+        //! Delete objects
+        Timer {
+            id: delTimer
+            repeat: false
+            running: false
+            interval: 100
+            onTriggered: scene.deleteNode(node._qsUuid);
         }
     }
 }
