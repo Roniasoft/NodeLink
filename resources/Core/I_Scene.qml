@@ -73,6 +73,9 @@ QSObject {
         nodesChanged();
         nodeAdded(node);
 
+        scene.selectionModel.clear();
+        scene.selectionModel.select(node);
+
         node.onPortAdded.connect(onPortAdded);
         return node;
     }
@@ -88,8 +91,6 @@ QSObject {
         node.title = NLStyle.objectTypesString[nodeType] + "_" + (Object.values(scene.nodes).filter(node => node.type === nodeType).length + 1)
         scene.addNode(node)
         node.addPortByHardCode();
-
-        scene.selectionModel.select(node);
 
         return node._qsUuid;
     }
@@ -111,9 +112,8 @@ QSObject {
             });
         });
 
-
-        if(selectionModel.selectedNode !== null && selectionModel.selectedNode._qsUuid === nodeUUId)
-            selectionModel.clear();
+        // Remove deleted object from selected model
+        selectionModel.remove(nodeUUId);
 
         nodeRemoved(nodes[nodeUUId]);
         delete nodes[nodeUUId];
@@ -122,7 +122,6 @@ QSObject {
         linksChanged();
         nodesChanged();
     }
-
 
     //! duplicator (third button)
     function cloneNode(nodeUUId: string) {
@@ -174,13 +173,13 @@ QSObject {
     function unlinkNodes(portA : string, portB : string) {
 
         //! clear deleted link selection
-        selectionModel.clear();
 
         // delete related links
         Object.entries(links).forEach(([key, value]) => {
             if (value.inputPort._qsUuid === portA &&
                     value.outputPort._qsUuid === portB) { {
                 linkRemoved(value);
+                selectionModel.remove(key);
                 delete links[key];
                 }
             }
@@ -212,7 +211,6 @@ QSObject {
         return foundNode;
     }
 
-
     //! Find port object from port id
     function findPort(portId: string) : Port {
         var portObj = null;
@@ -222,5 +220,21 @@ QSObject {
                 portObj = foundPort;
             }});
         return portObj;
+    }
+
+    //! Delete all selected objects (Node + Link)
+    function  deleteSelectedObjects() {
+                    // Delete objects
+                    Object.keys(scene.selectionModel.selectedModel).forEach(([key, value]) => {
+                    if(value.objectType === NLSpec.ObjectType.Node) {
+                        scene.deleteNode(value._qsUuid);
+                    }
+                    if(value.objectType === NLSpec.ObjectType.Link) {
+                        scene.unlinkNodes(value.inputPort._qsUuid, value.outputPort._qsUuid)
+                    }
+                });
+
+                // Clear object selection
+                scene.selectionModel.clear();
     }
 }
