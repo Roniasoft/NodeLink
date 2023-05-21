@@ -10,6 +10,14 @@ QtObject {
         property bool blockObservers: false
     }
 
+    //! Object types
+    enum ObjectType {
+        Node = 0,
+        Link = 1,
+
+        Unknown = 99
+    }
+
     //! Type of node.
     enum NodeType {
         General     = 0,
