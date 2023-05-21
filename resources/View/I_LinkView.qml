@@ -24,7 +24,7 @@ Canvas {
 
     property Link   link:       Link {}
 
-    property bool   isSelected: link == scene.selectionModel.selectedLink
+    property bool   isSelected: scene?.selectionModel?.isSelected(link?._qsUuid) ?? false
 
     property vector2d inputPos: scene?.portsPositions[inputPort?._qsUuid] ?? Qt.vector2d(0, 0)
 

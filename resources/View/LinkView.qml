@@ -36,7 +36,7 @@ I_LinkView {
         repeat: false
         running: false
         interval: 100
-        onTriggered: scene.unlinkNodes(link.inputPort._qsUuid, link.outputPort._qsUuid)
+        onTriggered: scene.deleteSelectedObjects();
     }
 
     //! Delete popup to confirm deletion process
