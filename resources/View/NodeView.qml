@@ -65,6 +65,17 @@ Rectangle {
             deletePopup.open();
     }
 
+    //! Use Key to manage shift pressed to handle multiObject selection
+    Keys.onPressed: (event)=> {
+                        if (event.key === Qt.Key_Shift)
+                            sceneSession.isShiftModifierPressed = true;
+                    }
+
+    Keys.onReleased: (event)=> {
+                         if(event.key === Qt.Key_Shift)
+                            sceneSession.isShiftModifierPressed = false;
+                    }
+
     onLockedChanged: {
         nodeTools.isNodeLock = locked;
         nodeContextMenu.isNodeLock = locked;
@@ -78,7 +89,7 @@ Rectangle {
         repeat: false
         running: false
         interval: 100
-        onTriggered: scene.deleteNode(node._qsUuid);
+        onTriggered: scene.deleteSelectedObjects();
     }
 
     //! Delete popup to confirm deletion process
@@ -236,6 +247,13 @@ Rectangle {
         enabled: !nodeView.edit && !sceneSession.connectingMode
 
         onDoubleClicked: {
+            // Clear all selected nodes
+            scene.selectionModel.clear();
+
+            // Select current node
+            scene.selectionModel.select(node);
+
+            // Enable edit mode
             nodeView.edit = true;
         }
 
@@ -247,7 +265,12 @@ Rectangle {
         //! Manage right and left click to select and
         //! show node contex menue.
         onClicked: (mouse) => {
+                       // Clear selection model when Shift key not pressed.
+                       if(!sceneSession.isShiftModifierPressed)
+                            scene.selectionModel.clear();
+                       // Select current node
                        scene.selectionModel.select(node);
+
                        if (mouse.button === Qt.RightButton)
                             nodeContextMenu.popup(mouse.x, mouse.y)
                    }
@@ -256,6 +279,9 @@ Rectangle {
             isDraging = true;
             prevX = mouse.x;
             prevY = mouse.y;
+
+            if(!sceneSession.isShiftModifierPressed)
+                scene.selectionModel.clear();
             scene.selectionModel.select(node);
         }
 
