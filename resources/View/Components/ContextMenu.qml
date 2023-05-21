@@ -86,8 +86,6 @@ Menu {
         scene.addNode(node)
         node.addPortByHardCode();
 
-        scene.selectionModel.select(node);
-
         return node._qsUuid;
     }
 }
