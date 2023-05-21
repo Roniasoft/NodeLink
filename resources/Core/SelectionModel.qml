@@ -8,12 +8,6 @@ QtObject {
 
     /* Property Declarations
      * ****************************************************************************************/
-    //! Selected Node
-    property Node selectedNode
-
-    //! Selected Link
-    property Link selectedLink
-
     //! Map <uuid, model(Node And/Or Link)>
     property var selectedModel: ({})
 
@@ -25,9 +19,7 @@ QtObject {
      * ****************************************************************************************/
     //! Clear all objects from selection model
     function clear() {
-        selectedNode = null;
-        selectedLink = null;
-        // delete related links
+        // delete all objects
         Object.entries(selectedModel).forEach(([key, value]) => {
                 delete selectedModel[key];
         });
@@ -37,12 +29,6 @@ QtObject {
 
     //! Remove an object from selection model
     function remove(qsUuid : string) {
-        if(selectedNode._qsUuid === qsUuid)
-            selectedNode = null;
-
-        if(selectedLink._qsUuid === qsUuid)
-            selectedLink = null;
-
         if(Object.keys(selectedModel).includes(qsUuid)) {
             delete selectedModel[qsUuid];
             selectedModelChanged();
@@ -58,8 +44,6 @@ QtObject {
     //! Select an object node
     function select(node: Node) {
         //! clear selection model when selection changed.
-        selectedLink = null;
-        selectedNode = node;
         selectedModel[node._qsUuid] = node;
         selectedModelChanged();
     }
@@ -71,16 +55,25 @@ QtObject {
 
         // Add Link object into selected model.
         selectedModel[link._qsUuid] = link;
-
-        // toggle selection with last link selection
-        selectedNode = null;
-        selectedLink = link;;
         selectedModelChanged();
     }
 
     //! Check an object is selected or not
     function isSelected(qsUuid : string) : bool {
-        console.log("is selected ",Object.keys(selectedModel), Object.keys(selectedModel).includes(qsUuid))
         return Object.keys(selectedModel).includes(qsUuid)
+    }
+
+    //! Return last selected object
+    function lastSelectedObject(objType : int) {
+            var lastSelectedObj = null;
+            if(Object.keys(selectedModel).length === 0)
+                return lastSelectedObj;
+
+            lastSelectedObj = Object.values(selectedModel)[Object.keys(selectedModel).length - 1];
+
+            if (lastSelectedObj.objectType === objType)
+                return lastSelectedObj;
+
+            return null;
     }
 }
