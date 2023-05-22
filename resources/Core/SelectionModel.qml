@@ -29,7 +29,7 @@ QtObject {
 
     //! Remove an object from selection model
     function remove(qsUuid : string) {
-        if(Object.keys(selectedModel).includes(qsUuid)) {
+        if(isSelected(qsUuid)) {
             delete selectedModel[qsUuid];
             selectedModelChanged();
         }
