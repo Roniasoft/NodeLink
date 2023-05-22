@@ -247,7 +247,7 @@ Rectangle {
 
         onDoubleClicked: {
             // Clear all selected nodes
-            scene.selectionModel.clear();
+            scene.selectionModel.clearAllExcept(node._qsUuid);
 
             // Select current node
             scene.selectionModel.select(node);
@@ -318,14 +318,14 @@ Rectangle {
         Timer {
             id: _selectionTimer
 
-            interval: 250
+            interval: 100
             repeat: false
             running: false
 
             onTriggered: {
                 // Clear selection model when Shift key not pressed.
                 if(!sceneSession.isShiftModifierPressed)
-                    scene.selectionModel.clear();
+                     scene.selectionModel.clearAllExcept(node._qsUuid);
                 // Select current node
                 if(scene.selectionModel.isSelected(node._qsUuid) &&
                         sceneSession.isShiftModifierPressed)

@@ -27,6 +27,16 @@ QtObject {
         selectedModelChanged();
     }
 
+
+    //! Clear all objects (except one with qsUuid) from selection model
+    function clearAllExcept(qsUuid : string) {
+        // delete all objects
+        Object.entries(selectedModel).forEach(([key, value]) => {
+                if(key !== qsUuid)
+                    delete selectedModel[key];
+        });
+    }
+
     //! Remove an object from selection model
     function remove(qsUuid : string) {
         if(isSelected(qsUuid)) {
