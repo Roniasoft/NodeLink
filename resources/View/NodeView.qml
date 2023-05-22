@@ -17,7 +17,7 @@ Rectangle {
 
     property SceneSession   sceneSession
 
-    property bool   edit
+    property bool           edit
 
     property bool           isSelected:      false
 
@@ -49,7 +49,6 @@ Rectangle {
 
     /* Signals
      * ****************************************************************************************/
-//    signal clicked();
 
     onEditChanged: {
         nodeView.edit ? titleTextArea.forceActiveFocus() :  nodeView.forceActiveFocus()
@@ -265,12 +264,7 @@ Rectangle {
         //! Manage right and left click to select and
         //! show node contex menue.
         onClicked: (mouse) => {
-                       // Clear selection model when Shift key not pressed.
-                       if(!sceneSession.isShiftModifierPressed)
-                            scene.selectionModel.clear();
-                       // Select current node
-                       scene.selectionModel.select(node);
-
+                       _selectionTimer.start();
                        if (mouse.button === Qt.RightButton)
                             nodeContextMenu.popup(mouse.x, mouse.y)
                    }
@@ -280,9 +274,7 @@ Rectangle {
             prevX = mouse.x;
             prevY = mouse.y;
 
-            if(!sceneSession.isShiftModifierPressed)
-                scene.selectionModel.clear();
-            scene.selectionModel.select(node);
+            _selectionTimer.start();
         }
 
         onReleased: (mouse) => {
@@ -319,6 +311,28 @@ Rectangle {
             onIsNodeLockChanged: nodeView.locked = isNodeLock;
 
             onEditNode: nodeView.edit = true;
+        }
+
+        //! Timer to manage pressed and clicked  events.
+        //! They should be avoided at the same time
+        Timer {
+            id: _selectionTimer
+
+            interval: 250
+            repeat: false
+            running: false
+
+            onTriggered: {
+                // Clear selection model when Shift key not pressed.
+                if(!sceneSession.isShiftModifierPressed)
+                    scene.selectionModel.clear();
+                // Select current node
+                if(scene.selectionModel.isSelected(node._qsUuid) &&
+                        sceneSession.isShiftModifierPressed)
+                    scene.selectionModel.remove(node._qsUuid);
+                else
+                    scene.selectionModel.select(node);
+            }
         }
     }
 

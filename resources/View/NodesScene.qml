@@ -73,7 +73,14 @@ I_NodesScene {
                        if (mouse.button === Qt.LeftButton) {
                            var gMouse = mapToItem(contentLoader.item, Qt.point(mouse.x, mouse.y));
                            var link = findLink(gMouse);
-                           scene.selectionModel.toggleLinkSelection(link);
+                           if(link === null)
+                                return;
+                           // Select current node
+                           if(scene.selectionModel.isSelected(link?._qsUuid) &&
+                              sceneSession.isShiftModifierPressed)
+                                scene.selectionModel.remove(link._qsUuid);
+                           else
+                                scene.selectionModel.toggleLinkSelection(link);
 
                        } else if (mouse.button === Qt.RightButton) {
                            contextMenu.popup(mouse.x, mouse.y)
