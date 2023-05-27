@@ -4,7 +4,6 @@ import NodeLink
 /*! ***********************************************************************************************
  * The UndoLinkObserver update UndoStack when Link properties changed.
  * ************************************************************************************************/
-
 Item {
     id: root
 
@@ -14,6 +13,7 @@ Item {
 
     property UndoStack  undoStack
 
+    //! Timer to damp excessive property change calls
     property Timer _timer : Timer {
         repeat: false
         interval: 50

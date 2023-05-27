@@ -60,9 +60,12 @@ Canvas {
                                                                         link.guiConfig.type, link.inputPort.portSide,
                                                                         link.outputPort?.portSide ?? -1)
         // Calculate position of link setting dialog.
+        // Finding the middle point of the link
+        // Currently we suppose that the line is a bezzier curve
+        // since with the LType it's not possible to find the middle point easily
+        // the design needs to be revised
         var minPoint1 = inputPos.plus(BasicLinkCalculator.connectionMargin(inputPort?.portSide ?? -1));
         var minPoint2 = outputPos.plus(BasicLinkCalculator.connectionMargin(outputPort?.portSide ?? -1));
-
         linkMidPoint = Calculation.getPositionByTolerance(0.5, [inputPos, minPoint1, minPoint2, outputPos]);
 
         // Draw the curve with LinkPainter

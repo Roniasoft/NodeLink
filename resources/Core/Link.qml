@@ -17,12 +17,7 @@ I_Node {
     //! Output port
     property Port       outputPort :    Port {}
 
-    //! First control point
-    property vector2d   controlPoint1:  Qt.vector2d(0, 0)
-
-    //! Secound control point
-    property vector2d   controlPoint2:  Qt.vector2d(0, 0)
-
+    //! Control points array (including start/end points)
     property var        controlPoints:  []
 
     //! Direction

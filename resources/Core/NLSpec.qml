@@ -39,9 +39,9 @@ QtObject {
 
     //! Type of link
     enum LinkType {
-        Bezier   = 0,
-        LLine    = 1,
-        Straight = 2,
+        Bezier   = 0,   //! Bezzier Curve
+        LLine    = 1,   //! A line like L (with one control point)
+        Straight = 2,   //! Straight Line
 
         Unknown  = 99
     }
