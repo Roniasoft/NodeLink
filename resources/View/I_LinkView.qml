@@ -3,7 +3,8 @@ import NodeLink
 import QtQuick.Controls
 import QtQuick.Shapes
 
-import "Logics/BezierCurve.js" as BezierCurve
+import "Logics/BasicLinkCalculator.js" as BasicLinkCalculator
+import "Logics/LinkPainter.js" as LinkPainter
 import "Logics/Calculation.js" as Calculation
 
 /*! ***********************************************************************************************
@@ -54,16 +55,24 @@ Canvas {
             return;
         }
 
-        // calculate the control points
-        link.controlPoint1 = inputPos.plus(BezierCurve.connectionMargin(inputPort));
-        link.controlPoint2 = outputPos.plus(BezierCurve.connectionMargin(outputPort));
+        // Calculate the control points with BasicLinkCalculator
+        link.controlPoints = BasicLinkCalculator.calculateControlPoints(inputPos, outputPos, link.direction,
+                                                                        link.guiConfig.type, link.inputPort.portSide,
+                                                                        link.outputPort?.portSide ?? -1)
+        // Calculate position of link setting dialog.
+        // Finding the middle point of the link
+        // Currently we suppose that the line is a bezzier curve
+        // since with the LType it's not possible to find the middle point easily
+        // the design needs to be revised
+        var minPoint1 = inputPos.plus(BasicLinkCalculator.connectionMargin(inputPort?.portSide ?? -1));
+        var minPoint2 = outputPos.plus(BasicLinkCalculator.connectionMargin(outputPort?.portSide ?? -1));
+        linkMidPoint = Calculation.getPositionByTolerance(0.5, [inputPos, minPoint1, minPoint2, outputPos]);
 
-        linkMidPoint = Calculation.getPositionByTolerance(0.5, [inputPos, link.controlPoint1, link.controlPoint2, outputPos]);
-        // draw the curve
-        BezierCurve.bezierCurve(context, inputPos, link.controlPoint1,
-                                link.controlPoint2, outputPos, isSelected,
+        // Draw the curve with LinkPainter
+        LinkPainter.createLink(context, inputPos, link.controlPoints, isSelected,
                                 link.guiConfig.color, link.direction,
-                                link.guiConfig.style);
+                                link.guiConfig.style, link.guiConfig.type,
+                               link.inputPort.portSide, link.outputPort?.portSide ?? -1);
     }
 
     /* Children
@@ -78,11 +87,15 @@ Canvas {
       }
   }
 
-  // requestPaint when style of link changed.
+  // requestPaint when style AND/OR type of link changed.
   Connections {
       target: link.guiConfig
 
       function onStyleChanged() {
+          canvas.requestPaint();
+      }
+
+      function onTypeChanged() {
           canvas.requestPaint();
       }
   }

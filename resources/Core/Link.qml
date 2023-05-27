@@ -17,16 +17,10 @@ I_Node {
     //! Output port
     property Port       outputPort :    Port {}
 
-    //! First control point
-    property vector2d   controlPoint1:  Qt.vector2d(0, 0)
+    //! Control points array (including start/end points)
+    property var        controlPoints:  []
 
-    //! Secound control point
-    property vector2d   controlPoint2:  Qt.vector2d(0, 0)
-
-    //! Type of Connection
-    property int        linkType:       NLSpec.LinkType.Bezier
-
-    //! Type of Connection
+    //! Direction
     property int        direction:      NLSpec.LinkDirection.Unidirectional
 
     //! Link Ui properties

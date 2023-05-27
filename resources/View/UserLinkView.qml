@@ -37,6 +37,7 @@ LinkView {
            if(tempCurve.inputPort !== null) {
                tempCurve.outputPos = Qt.vector2d(gMouse.x, gMouse.y);
                inputPortId = tempCurve.inputPort._qsUuid;
+               link.inputPort.portSide = tempCurve.inputPort.portSide;
                sceneSession.setPortVisibility(inputPortId, true)
            }
         }

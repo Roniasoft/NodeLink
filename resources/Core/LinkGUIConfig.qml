@@ -10,12 +10,15 @@ QSObject {
      * ****************************************************************************************/
 
     //! Link description
-    property string     description : ""
+    property string description: ""
 
     //! Color
-    property string     color:      "white"
+    property string color:       "white"
 
-    //! Color
-    property int         style:      NLSpec.LinkStyle.Solid
+    //! Style
+    property int    style:       NLSpec.LinkStyle.Solid
+
+    //! Type
+    property int    type:        NLSpec.LinkType.Bezier
 
 }

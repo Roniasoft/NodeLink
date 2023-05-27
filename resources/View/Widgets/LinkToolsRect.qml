@@ -180,6 +180,58 @@ Rectangle {
             }
         }
 
+        //! Type Link button
+        NLToolButton {
+            id: typeButton
+            text: NLStyle.linkTypeIcon[link.guiConfig.type]
+            Layout.preferredHeight: 30
+            Layout.preferredWidth: 30
+            Layout.topMargin: 2
+            Layout.bottomMargin: 2
+            onClicked: typeMenu.open()
+
+            // Select link Type
+            Menu {
+                id: typeMenu
+                y: typeButton.height
+
+                // Bezier Line MenuItem
+                NLMenuItem {
+                    text: NLStyle.linkTypeIcon[NLSpec.LinkType.Bezier]
+                    description: "Bezier Line"
+                    checked: link.guiConfig.type === NLSpec.LinkType.Bezier
+                    onTriggered: link.guiConfig.type = NLSpec.LinkType.Bezier
+                }
+
+                // L Line MenuItem
+                NLMenuItem {
+                    text: NLStyle.linkTypeIcon[NLSpec.LinkType.LLine]
+                    description: "L Line"
+                    checked: link.guiConfig.type === NLSpec.LinkType.LLine
+                    onTriggered: link.guiConfig.type = NLSpec.LinkType.LLine
+                }
+
+                // Straight Line MenuItem
+                NLMenuItem {
+                    text: NLStyle.linkTypeIcon[NLSpec.LinkType.Straight]
+                    description: "Straight Line"
+                    checked: link.guiConfig.type === NLSpec.LinkType.Straight
+                    onTriggered: link.guiConfig.type = NLSpec.LinkType.Straight
+                }
+
+                background: Item {
+                    implicitWidth: 135
+                    implicitHeight: 80
+                    Rectangle {
+                        anchors.fill: parent
+                        radius: 5
+                        color: "#1e1e1e"
+                        opacity: enabled ? 1 : 0.3
+                    }
+                }
+            }
+        }
+
         //Delete button
         NLToolButton {
             id: deleteButton
