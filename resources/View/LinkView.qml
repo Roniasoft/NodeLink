@@ -42,7 +42,6 @@ I_LinkView {
     //! Delete popup to confirm deletion process
     ConfirmPopUp {
         id: deletePopup
-
         onAccepted: delTimer.start();
     }
 

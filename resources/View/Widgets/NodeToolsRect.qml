@@ -23,9 +23,6 @@ Rectangle {
 
     property alias    colorPicker: colorPicker
 
-    property bool isNodeLock: false
-
-
     /* Object Properties
      * ****************************************************************************************/
     radius: 5
@@ -80,11 +77,11 @@ Rectangle {
             Layout.preferredWidth: 30
             Layout.topMargin: 2
             Layout.bottomMargin: 2
-            checked: isNodeLock
+            checked: node.guiConfig.locked
 
             //! Enabling read only
             onClicked: {
-                isNodeLock = checked;
+                node.guiConfig.locked = checked;
             }
         }
 

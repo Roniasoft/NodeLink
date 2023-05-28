@@ -28,7 +28,7 @@ QSObject {
     property var            portsPositions: ({})
 
     //! Scene Selection Model
-    property SelectionModel selectionModel: SelectionModel {}
+    property SelectionModel selectionModel: null
 
     /* Signals
      * ****************************************************************************************/
@@ -112,7 +112,7 @@ QSObject {
             });
         });
 
-        // Remove deleted object from selected model
+        // Remove the deleted object from selected model
         selectionModel.remove(nodeUUId);
 
         nodeRemoved(nodes[nodeUUId]);
@@ -171,18 +171,15 @@ QSObject {
 
     //! Unlink two ports
     function unlinkNodes(portA : string, portB : string) {
-
-        //! clear deleted link selection
-
         // delete related links
         Object.entries(links).forEach(([key, value]) => {
-            if (value.inputPort._qsUuid === portA &&
-                    value.outputPort._qsUuid === portB) { {
+            const inputPortUuid  = value.inputPort._qsUuid;
+            const outputPortUuid = value.outputPort._qsUuid;
+            if (inputPortUuid === portA && outputPortUuid === portB) {
                 linkRemoved(value);
                 selectionModel.remove(key);
                 delete links[key];
                 }
-            }
         });
         linksChanged();
     }
@@ -191,16 +188,14 @@ QSObject {
     function canLinkNodes(portA : string, portB : string): bool {
         var nodeA = findNodeId(portA);
         var nodeB = findNodeId(portB);
-
-        // todo:
-        // For very werid reasons this line of code is required to make this func works!
-        // this might be a qt bug. I should test in different qt versions
-        if (HashCompareString.compareStringModels(nodeA, nodeB) || nodeA.length === 0 || nodeB.length === 0)
+        if (HashCompareString.compareStringModels(nodeA, nodeB)
+                    || nodeA.length === 0 || nodeB.length === 0) {
             return false;
-
+        }
         return true;
     }
 
+    //! Finds the node according given portId
     function findNodeId(portId: string) : string {
         let foundNode = "";
         Object.values(nodes).find(node => {
@@ -211,7 +206,7 @@ QSObject {
         return foundNode;
     }
 
-    //! Find port object from port id
+    //! Finds port object from port id
     function findPort(portId: string) : Port {
         var portObj = null;
         Object.values(nodes).find(node => {
@@ -224,17 +219,16 @@ QSObject {
 
     //! Delete all selected objects (Node + Link)
     function  deleteSelectedObjects() {
-                    // Delete objects
-                    Object.keys(scene.selectionModel.selectedModel).forEach(([key, value]) => {
-                    if(value.objectType === NLSpec.ObjectType.Node) {
-                        scene.deleteNode(value._qsUuid);
-                    }
-                    if(value.objectType === NLSpec.ObjectType.Link) {
-                        scene.unlinkNodes(value.inputPort._qsUuid, value.outputPort._qsUuid)
-                    }
-                });
-
-                // Clear object selection
-                scene.selectionModel.clear();
+        // Delete objects
+        Object.entries(scene.selectionModel.selectedModel).forEach(([key, value]) => {
+            if(value.objectType === NLSpec.ObjectType.Node) {
+                scene.deleteNode(value._qsUuid);
+            }
+            if(value.objectType === NLSpec.ObjectType.Link) {
+                scene.unlinkNodes(value.inputPort._qsUuid, value.outputPort._qsUuid)
+            }
+        });
+		// Clear the selection
+        scene.selectionModel.clear();
     }
 }

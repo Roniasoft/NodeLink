@@ -28,4 +28,7 @@ QSObject {
     //! Color
     property string     color:      "pink"
 
+    //! Lock
+    property bool       locked:     false
+
 }

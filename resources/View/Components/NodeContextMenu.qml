@@ -14,8 +14,6 @@ Menu {
     required property Scene scene
     required property Node  node
 
-    property bool isNodeLock: false
-
     /* Object Properties
      * ****************************************************************************************/
     width: 180
@@ -60,9 +58,9 @@ Menu {
         name: "Lock Node"
         iconStr: "\uf30d"
         checkable: true
-        checked: isNodeLock
+        checked: node.guiConfig.locked
         onClicked: {
-            isNodeLock = checked;
+            node.guiConfig.locked = checked;
         }
     }
 

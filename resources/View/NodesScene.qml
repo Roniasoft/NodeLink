@@ -32,14 +32,14 @@ I_NodesScene {
 
     //! Use Key to manage shift pressed to handle multiObject selection
     Keys.onPressed: (event)=> {
-                        if (event.key === Qt.Key_Shift)
-                            sceneSession.isShiftModifierPressed = true;
-                    }
+        if (event.key === Qt.Key_Shift)
+            sceneSession.isShiftModifierPressed = true;
+    }
 
     Keys.onReleased: (event)=> {
-                         if(event.key === Qt.Key_Shift)
-                            sceneSession.isShiftModifierPressed = false;
-                    }
+        if (event.key === Qt.Key_Shift)
+           sceneSession.isShiftModifierPressed = false;
+    }
 
     /* Children
     * ****************************************************************************************/
@@ -68,30 +68,32 @@ I_NodesScene {
 
         //! We should toggle line selection with mouse press event
         onClicked: mouse => {
-                        if (!sceneSession.isShiftModifierPressed)
-                            scene.selectionModel.clear();
-                       if (mouse.button === Qt.LeftButton) {
-                           var gMouse = mapToItem(contentLoader.item, Qt.point(mouse.x, mouse.y));
-                           var link = findLink(gMouse);
-                           if(link === null)
-                                return;
-                           // Select current node
-                           if(scene.selectionModel.isSelected(link?._qsUuid) &&
-                              sceneSession.isShiftModifierPressed)
-                                scene.selectionModel.remove(link._qsUuid);
-                           else
-                                scene.selectionModel.toggleLinkSelection(link);
+            if (!sceneSession.isShiftModifierPressed)
+                 scene.selectionModel.clear();
 
-                       } else if (mouse.button === Qt.RightButton) {
-                           contextMenu.popup(mouse.x, mouse.y)
-                       }
+            if (mouse.button === Qt.LeftButton) {
+                var gMouse = mapToItem(contentLoader.item, Qt.point(mouse.x, mouse.y));
+                var link = findLink(gMouse);
+                if(link === null)
+                     return;
+
+                // Select current node
+                if(scene.selectionModel.isSelected(link?._qsUuid) &&
+                   sceneSession.isShiftModifierPressed)
+                     scene.selectionModel.remove(link._qsUuid);
+                else
+                     scene.selectionModel.toggleLinkSelection(link);
+
+            } else if (mouse.button === Qt.RightButton) {
+                contextMenu.popup(mouse.x, mouse.y)
+            }
         }
         onDoubleClicked: (mouse) => {
-                             scene.selectionModel.clear();
-                             if (mouse.button === Qt.LeftButton) {
-                                 scene.createCustomizeNode(NLSpec.NodeType.General, mouse.x, mouse.y);
-                             }
-                         }
+            scene.selectionModel.clear();
+            if (mouse.button === Qt.LeftButton) {
+                scene.createCustomizeNode(NLSpec.NodeType.General, mouse.x, mouse.y);
+            }
+        }
 
         //! Context Menu for adding a new node (for now)
         ContextMenu {

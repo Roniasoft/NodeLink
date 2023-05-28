@@ -23,7 +23,6 @@ QtObject {
         Object.entries(selectedModel).forEach(([key, value]) => {
                 delete selectedModel[key];
         });
-
         selectedModelChanged();
     }
 
@@ -32,8 +31,8 @@ QtObject {
     function clearAllExcept(qsUuid : string) {
         // delete all objects
         Object.entries(selectedModel).forEach(([key, value]) => {
-                if(key !== qsUuid)
-                    delete selectedModel[key];
+            if(key !== qsUuid)
+                delete selectedModel[key];
         });
     }
 
@@ -75,15 +74,15 @@ QtObject {
 
     //! Return last selected object
     function lastSelectedObject(objType : int) {
-            var lastSelectedObj = null;
-            if(Object.keys(selectedModel).length === 0)
-                return lastSelectedObj;
+        var lastSelectedObj = null;
+        if(Object.keys(selectedModel).length === 0)
+            return lastSelectedObj;
 
-            lastSelectedObj = Object.values(selectedModel)[Object.keys(selectedModel).length - 1];
+        lastSelectedObj = Object.values(selectedModel)[Object.keys(selectedModel).length - 1];
 
-            if (lastSelectedObj.objectType === objType)
-                return lastSelectedObj;
+        if (lastSelectedObj.objectType === objType)
+            return lastSelectedObj;
 
-            return null;
+        return null;
     }
 }

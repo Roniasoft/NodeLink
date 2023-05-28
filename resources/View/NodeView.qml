@@ -21,8 +21,6 @@ Rectangle {
 
     property bool           isSelected:      false
 
-    property bool           locked:          false
-
     property int            contentWidth
 
     property int            contentHeight
@@ -34,10 +32,10 @@ Rectangle {
     x: node.guiConfig.position.x
     y: node.guiConfig.position.y
     color: Qt.darker(node.guiConfig.color, 10)
-    border.color: locked ? "gray" : Qt.lighter(node.guiConfig.color, nodeView.isSelected ? 1.2 : 1)
+    border.color: node.guiConfig.locked ? "gray" : Qt.lighter(node.guiConfig.color, nodeView.isSelected ? 1.2 : 1)
     border.width: nodeView.isSelected ? 3 : 2
     opacity: nodeView.isSelected ? 1 : 0.8
-    z: locked ? 1 : (isSelected ? 3 : 2)
+    z: node.guiConfig.locked ? 1 : (isSelected ? 3 : 2)
     radius: 10
     smooth: true
     antialiasing: true
@@ -66,18 +64,13 @@ Rectangle {
 
     //! Use Key to manage shift pressed to handle multiObject selection
     Keys.onPressed: (event)=> {
-                        if (event.key === Qt.Key_Shift)
-                            sceneSession.isShiftModifierPressed = true;
-                    }
+        if (event.key === Qt.Key_Shift)
+            sceneSession.isShiftModifierPressed = true;
+    }
 
     Keys.onReleased: (event)=> {
-                         if(event.key === Qt.Key_Shift)
-                            sceneSession.isShiftModifierPressed = false;
-                    }
-
-    onLockedChanged: {
-        nodeTools.isNodeLock = locked;
-        nodeContextMenu.isNodeLock = locked;
+        if (event.key === Qt.Key_Shift)
+            sceneSession.isShiftModifierPressed = false;
     }
 
     /* Children
@@ -88,14 +81,17 @@ Rectangle {
         repeat: false
         running: false
         interval: 100
-        onTriggered: scene.deleteSelectedObjects();
+        onTriggered: {
+            scene.deleteSelectedObjects();
+        }
     }
 
     //! Delete popup to confirm deletion process
     ConfirmPopUp {
         id: deletePopup
-
-        onAccepted: delTimer.start();
+        onAccepted: {
+            delTimer.start();
+        }
     }
 
     //! Header Item
@@ -142,10 +138,10 @@ Rectangle {
             }
 
             onPressed: (event) => {
-                           if (event.button === Qt.RightButton) {
-                               nodeView.edit = false
-                               nodeMouseArea.clicked(event)
-                           }
+                if (event.button === Qt.RightButton) {
+                    nodeView.edit = false
+                    nodeMouseArea.clicked(event)
+                }
             }
 
             smooth: true
@@ -201,10 +197,10 @@ Rectangle {
             font.pointSize: 9
 
             onPressed: (event) => {
-                           if (event.button === Qt.RightButton) {
-                               nodeView.edit = false;
-							   nodeMouseArea.clicked(event)
-                           }
+                if (event.button === Qt.RightButton) {
+                    nodeView.edit = false;
+                    nodeMouseArea.clicked(event);
+                }
             }
             background: Rectangle {
                 color: "transparent";
@@ -222,7 +218,6 @@ Rectangle {
         scene: nodeView.scene
         node: nodeView.node
 
-        onIsNodeLockChanged: nodeView.locked = isNodeLock;
         //! To hide color picker if selected node is changed
         Connections {
             target: nodeView
@@ -264,16 +259,15 @@ Rectangle {
         //! Manage right and left click to select and
         //! show node contex menue.
         onClicked: (mouse) => {
-                       _selectionTimer.start();
-                       if (mouse.button === Qt.RightButton)
-                            nodeContextMenu.popup(mouse.x, mouse.y)
-                   }
+            _selectionTimer.start();
+            if (mouse.button === Qt.RightButton)
+                 nodeContextMenu.popup(mouse.x, mouse.y)
+        }
 
         onPressed: (mouse) => {
             isDraging = true;
             prevX = mouse.x;
             prevY = mouse.y;
-
             _selectionTimer.start();
         }
 
@@ -304,12 +298,8 @@ Rectangle {
 
         NodeContextMenu {
             id: nodeContextMenu
-
             scene: nodeView.scene
             node: nodeView.node
-
-            onIsNodeLockChanged: nodeView.locked = isNodeLock;
-
             onEditNode: nodeView.edit = true;
         }
 
@@ -324,11 +314,14 @@ Rectangle {
 
             onTriggered: {
                 // Clear selection model when Shift key not pressed.
-                if(!sceneSession.isShiftModifierPressed)
+                const isModifiedOn = sceneSession.isShiftModifierPressed;
+
+                if(!isModifiedOn)
                      scene.selectionModel.clearAllExcept(node._qsUuid);
+
+                const isAlreadySel = scene.selectionModel.isSelected(node._qsUuid);
                 // Select current node
-                if(scene.selectionModel.isSelected(node._qsUuid) &&
-                        sceneSession.isShiftModifierPressed)
+                if(isAlreadySel && isModifiedOn)
                     scene.selectionModel.remove(node._qsUuid);
                 else
                     scene.selectionModel.select(node);
@@ -781,8 +774,8 @@ Rectangle {
     MouseArea {
         anchors.fill: parent
         anchors.margins: -10
-        enabled: locked
+        enabled: node.guiConfig.locked
         onClicked: scene.selectionModel.select(node);
-        visible: locked
+        visible: node.guiConfig.locked
     }
 }

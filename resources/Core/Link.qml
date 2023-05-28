@@ -11,10 +11,10 @@ I_Node {
     /* Property Declarations
     * ****************************************************************************************/
 
-    //! Input port
+    //! Input port \todo: shouldn't be uuid?!
     property Port       inputPort :     Port {}
 
-    //! Output port
+    //! Output port \todo: shouldn't be uuid?!
     property Port       outputPort :    Port {}
 
     //! Control points array (including start/end points)

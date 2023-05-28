@@ -13,7 +13,7 @@ I_Scene {
     /* Property Properties
      * ****************************************************************************************/
     //! Scene Selection Model
-    property SelectionModel selectionModel: SelectionModel {}
+    selectionModel: SelectionModel {}
 
     //! Undo Core
     property UndoCore       _undoCore:       UndoCore {
