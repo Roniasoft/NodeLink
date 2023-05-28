@@ -16,7 +16,7 @@ QSObject {
     property string         title:          "<Untitled>"
 
     //! Nodes
-    //! map<UUID, Node>
+    //! map <UUID, Node>
     property var            nodes:          ({})
 
     //! Keep Connection models
@@ -24,7 +24,7 @@ QSObject {
     property var            links:          ({})
 
     //! Port positions (global)
-    //! map<port uuid: string, global pos: vector2d>
+    //! map <port uuid: string, global pos: vector2d>
     property var            portsPositions: ({})
 
     //! Scene Selection Model
@@ -35,11 +35,26 @@ QSObject {
 
     //! Node added
     signal nodeAdded(Node node)
+
     //! Node Removed
     signal nodeRemoved(Node node)
 
     /* Functions
      * ****************************************************************************************/
+
+    //! Check the repository if the model is loading the call the nodes add/remove
+    //! related signals to sync the UI
+    property Connections _initializeCon : Connections {
+        target: scene._qsRepo
+        function onIsLoadingChanged() {
+            if (scene._qsRepo._isLoading) {
+                Object.values(nodes).forEach(node => nodeRemoved(node));
+            } else {
+                Object.values(nodes).forEach(node => nodeAdded(node));
+            }
+        }
+    }
+
     //! Adds a node the to nodes map
     function addNode(node: Node) {
         //Sanity check
@@ -97,7 +112,6 @@ QSObject {
         portsPositionsChanged();
         linksChanged();
         nodesChanged();
-
     }
 
 

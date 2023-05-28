@@ -13,7 +13,8 @@ Window {
 
     /* Property Declarations
      * ****************************************************************************************/
-    property Scene scene: NLCore.createScene()
+
+    property Scene scene: null
 
     /* Object Properties
      * ****************************************************************************************/
@@ -28,12 +29,17 @@ Window {
     Material.accent: "#4890e2"
 
 
-    Component.onCompleted: NLCore.defaultRepo.initRootObject("QSObject");
+    Component.onCompleted: {
+        NLCore.defaultRepo.clearObjects();
+        NLCore.defaultRepo.initRootObject("Scene");
+        window.scene = Qt.binding(function() { return NLCore.defaultRepo.qsRootObject;});
+    }
 
     /* Children
      * ****************************************************************************************/
 
     NLView {
+        id: view
         scene: window.scene
         anchors.fill: parent
     }
@@ -101,21 +107,9 @@ Window {
         fileMode: FileDialog.OpenFile
         nameFilters: [ "QtQuickStream Files (*.QQS.json)" ]
         onAccepted: {
-            NLSpec.isLoadingProject = true;
-
-            NLCore.defaultRepo._localImports =  ["QtQuickStream"]
-
+            NLCore.defaultRepo.clearObjects();
             NLCore.defaultRepo.loadFromFile(loadDialog.currentFile);
-
-            //One scene exist.
-            for (var prop in NLCore.defaultRepo._qsObjects) {
-                if(NLCore.defaultRepo._qsObjects[prop].qsType === "Scene") {
-                    window.scene = NLCore.defaultRepo._qsObjects[prop];
-                    window.scene.nodesChanged();
-                }
-            }
-
-            NLSpec.isLoadingProject = false;
+//            window.scene = Qt.binding(function() { return NLCore.defaultRepo.qsRootObject;});
         }
     }
 }

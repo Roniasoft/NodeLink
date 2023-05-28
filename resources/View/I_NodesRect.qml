@@ -68,21 +68,4 @@ Rectangle {
             nodeRepeater.removeElement(node)
         }
     }
-
-    //! Connection to manage undo stack, and save and load of project.
-    Connections {
-        target: scene
-
-        enabled: NLSpec.undo.blockObservers || NLSpec.isLoadingProject
-
-        function onNodesChanged() {
-            if(NLSpec.undo.blockObservers || NLSpec.isLoadingProject) {
-                nodeRepeater.repeaterModel.clear();
-
-                Object.values(scene.nodes).forEach(nodeObj => {
-                                        nodeRepeater.addElement(nodeObj);;
-                                     });
-            }
-        }
-    }
 }
