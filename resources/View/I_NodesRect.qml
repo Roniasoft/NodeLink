@@ -42,8 +42,8 @@ Rectangle {
     }
 
     //! Links
-    Repeater {
-        model: Object.values(scene.links)
+    NLRepeater {
+        id: linkRepeater
 
         delegate: LinkView {
             scene: root.scene
@@ -59,13 +59,23 @@ Rectangle {
         target: scene
 
         //! nodeRepeater updated when a node added
-        function onNodeAdded(node) {
+        function onNodeAdded(node: Node) {
             nodeRepeater.addElement(node);
         }
 
         //! nodeRepeater updated when a node Removed
-        function onNodeRemoved(node) {
+        function onNodeRemoved(node: Node) {
             nodeRepeater.removeElement(node)
+        }
+
+        //! linkRepeater updated when a link added
+        function onLinkAdded(link: Link) {
+            linkRepeater.addElement(link);
+        }
+
+        //! linkRepeater updated when a link Removed
+        function onLinkRemoved(link: Link) {
+            linkRepeater.removeElement(link)
         }
     }
 }

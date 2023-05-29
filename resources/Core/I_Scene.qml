@@ -39,6 +39,12 @@ QSObject {
     //! Node Removed
     signal nodeRemoved(Node node)
 
+    //! Link added
+    signal linkAdded(Link link)
+
+    //! Link Removed
+    signal linkRemoved(Link link)
+
     /* Functions
      * ****************************************************************************************/
 
@@ -49,8 +55,10 @@ QSObject {
         function onIsLoadingChanged() {
             if (scene._qsRepo._isLoading) {
                 Object.values(nodes).forEach(node => nodeRemoved(node));
+                Object.values(links).forEach(link => linkRemoved(link));
             } else {
                 Object.values(nodes).forEach(node => nodeAdded(node));
+                Object.values(links).forEach(link => linkAdded(link));
             }
         }
     }
@@ -97,6 +105,7 @@ QSObject {
             Object.entries(links).forEach(([key, value]) => {
                 if (value.inputPort._qsUuid === portId ||
                         value.outputPort._qsUuid === portId) {
+                    linkRemoved(value);
                     delete links[key];
                 }
             });
@@ -155,6 +164,9 @@ QSObject {
             obj.outputPort = findPort(portB);
             links[obj._qsUuid] = obj;
             linksChanged();
+
+            // Add link into UI
+            linkAdded(obj);
         }
     }
 
@@ -167,8 +179,10 @@ QSObject {
         // delete related links
         Object.entries(links).forEach(([key, value]) => {
             if (value.inputPort._qsUuid === portA &&
-                    value.outputPort._qsUuid === portB) {
+                    value.outputPort._qsUuid === portB) { {
+                linkRemoved(value);
                 delete links[key];
+                }
             }
         });
         linksChanged();
