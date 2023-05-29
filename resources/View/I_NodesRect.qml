@@ -26,8 +26,9 @@ Rectangle {
     /*  Children
     * ****************************************************************************************/
     //! Nodes
-    Repeater {
-        model: Object.values(scene.nodes)
+    NLRepeater {
+        id: nodeRepeater
+
         delegate: NodeView {
             id: nodeView
             node: modelData
@@ -41,8 +42,8 @@ Rectangle {
     }
 
     //! Links
-    Repeater {
-        model: Object.values(scene.links)
+    NLRepeater {
+        id: linkRepeater
 
         delegate: LinkView {
             scene: root.scene
@@ -50,6 +51,31 @@ Rectangle {
             inputPort: modelData.inputPort
             outputPort: modelData.outputPort
             link: modelData
+        }
+    }
+
+    //! Connection to manage node model changes.
+    Connections {
+        target: scene
+
+        //! nodeRepeater updated when a node added
+        function onNodeAdded(node: Node) {
+            nodeRepeater.addElement(node);
+        }
+
+        //! nodeRepeater updated when a node Removed
+        function onNodeRemoved(node: Node) {
+            nodeRepeater.removeElement(node)
+        }
+
+        //! linkRepeater updated when a link added
+        function onLinkAdded(link: Link) {
+            linkRepeater.addElement(link);
+        }
+
+        //! linkRepeater updated when a link Removed
+        function onLinkRemoved(link: Link) {
+            linkRepeater.removeElement(link)
         }
     }
 }

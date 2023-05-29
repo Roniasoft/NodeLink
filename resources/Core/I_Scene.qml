@@ -16,7 +16,7 @@ QSObject {
     property string         title:          "<Untitled>"
 
     //! Nodes
-    //! map<UUID, Node>
+    //! map <UUID, Node>
     property var            nodes:          ({})
 
     //! Keep Connection models
@@ -24,14 +24,45 @@ QSObject {
     property var            links:          ({})
 
     //! Port positions (global)
-    //! map<port uuid: string, global pos: vector2d>
+    //! map <port uuid: string, global pos: vector2d>
     property var            portsPositions: ({})
 
     //! Scene Selection Model
     property SelectionModel selectionModel: SelectionModel {}
 
+    /* Signals
+     * ****************************************************************************************/
+
+    //! Node added
+    signal nodeAdded(Node node)
+
+    //! Node Removed
+    signal nodeRemoved(Node node)
+
+    //! Link added
+    signal linkAdded(Link link)
+
+    //! Link Removed
+    signal linkRemoved(Link link)
+
     /* Functions
      * ****************************************************************************************/
+
+    //! Check the repository if the model is loading the call the nodes add/remove
+    //! related signals to sync the UI
+    property Connections _initializeCon : Connections {
+        target: scene._qsRepo
+        function onIsLoadingChanged() {
+            if (scene._qsRepo._isLoading) {
+                Object.values(nodes).forEach(node => nodeRemoved(node));
+                Object.values(links).forEach(link => linkRemoved(link));
+            } else {
+                Object.values(nodes).forEach(node => nodeAdded(node));
+                Object.values(links).forEach(link => linkAdded(link));
+            }
+        }
+    }
+
     //! Adds a node the to nodes map
     function addNode(node: Node) {
         //Sanity check
@@ -40,6 +71,7 @@ QSObject {
         // Add to local administration
         nodes[node._qsUuid] = node;
         nodesChanged();
+        nodeAdded(node);
 
         node.onPortAdded.connect(onPortAdded);
         return node;
@@ -73,6 +105,7 @@ QSObject {
             Object.entries(links).forEach(([key, value]) => {
                 if (value.inputPort._qsUuid === portId ||
                         value.outputPort._qsUuid === portId) {
+                    linkRemoved(value);
                     delete links[key];
                 }
             });
@@ -82,12 +115,12 @@ QSObject {
         if(selectionModel.selectedNode !== null && selectionModel.selectedNode._qsUuid === nodeUUId)
             selectionModel.clear();
 
+        nodeRemoved(nodes[nodeUUId]);
         delete nodes[nodeUUId];
 
         portsPositionsChanged();
         linksChanged();
         nodesChanged();
-
     }
 
 
@@ -131,6 +164,9 @@ QSObject {
             obj.outputPort = findPort(portB);
             links[obj._qsUuid] = obj;
             linksChanged();
+
+            // Add link into UI
+            linkAdded(obj);
         }
     }
 
@@ -143,8 +179,10 @@ QSObject {
         // delete related links
         Object.entries(links).forEach(([key, value]) => {
             if (value.inputPort._qsUuid === portA &&
-                    value.outputPort._qsUuid === portB) {
+                    value.outputPort._qsUuid === portB) { {
+                linkRemoved(value);
                 delete links[key];
+                }
             }
         });
         linksChanged();
