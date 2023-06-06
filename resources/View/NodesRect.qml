@@ -77,27 +77,25 @@ I_NodesRect {
                                                                               var portPosVecIn = scene.portsPositions[obj?.inputPort?._qsUuid]
                                                                               portPosVecOut = scene.portsPositions[obj?.outputPort?._qsUuid]
 
+                                                                              // Find left, right, top and bottom positions.
+                                                                              // they are depend on inputPort and outputPort position (temporary).
                                                                               var tempLeftX = (portPosVecIn.x < portPosVecOut.x) ? portPosVecIn.x : portPosVecOut.x;
                                                                               var tempTopY = (portPosVecIn.y < portPosVecOut.y) ? portPosVecIn.y : portPosVecOut.y;
                                                                               var tempRightX = (portPosVecIn.x > portPosVecOut.x) ? portPosVecIn.x : portPosVecOut.x;
                                                                               var tempBottomY = (portPosVecIn.y > portPosVecOut.y) ? portPosVecIn.y : portPosVecOut.y;
 
-                                                                              if(tempLeftX < leftX) {
+                                                                              // Set temp value into it's real variable.
+                                                                              if(tempLeftX < leftX)
                                                                                  leftX = tempLeftX;
-                                                                              }
 
-                                                                              if(tempTopY < topY) {
+                                                                              if(tempTopY < topY)
                                                                                  topY = tempTopY;
-                                                                              }
 
-                                                                              if(tempRightX > rightX) {
+                                                                              if(tempRightX > rightX)
                                                                                  rightX = tempRightX;
-                                                                              }
 
-                                                                              if(tempBottomY > bottomY) {
+                                                                              if(tempBottomY > bottomY)
                                                                                  bottomY = tempBottomY;
-                                                                              }
-
                                                                           }
                                                                       });
             var margin = 5;
