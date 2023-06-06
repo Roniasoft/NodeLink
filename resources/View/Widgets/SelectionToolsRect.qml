@@ -44,7 +44,7 @@ Rectangle {
         spacing: 3
 
         //! To display a representative property of links
-        property var selectedObject: selectedNode?.find((obj, index) => index === 0);
+        property var selectedObject: Object.values(selectionModel.selectedModel)?.find((obj, index) => index === 0);
 
         property bool selectedNodeOnly: selectedNode.length > 0 && selectedLink.length === 0
         property bool selectedLinkOnly: selectedLink.length > 0 && selectedNode.length === 0
