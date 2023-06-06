@@ -208,24 +208,6 @@ Rectangle {
         }
     }
 
-    //! Node Tools (Node settings)
-    NodeToolsRect {
-        id: nodeTools
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.bottom: parent.top
-        anchors.bottomMargin: 5
-        visible: isSelected
-        scene: nodeView.scene
-        node: nodeView.node
-
-        //! To hide color picker if selected node is changed
-        Connections {
-            target: nodeView
-            function onIsSelectedChanged() {
-                nodeTools.colorPicker.visible = false
-            }
-        }
-    }
 
     //! Manage node selection and position change.
     MouseArea {

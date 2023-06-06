@@ -17,7 +17,7 @@ I_LinkView {
         if(isSelected)
             forceActiveFocus();
         else
-            linkToolRect.isEditableDescription = false;
+            link.guiConfig._isEditableDescription = false
     }
 
 
@@ -45,23 +45,6 @@ I_LinkView {
         onAccepted: delTimer.start();
     }
 
-    //! Link tools
-    LinkToolsRect {
-        id: linkToolRect
-
-        x: linkMidPoint.x - width / 2
-        y: linkMidPoint.y - height * 2
-        z: 11
-
-        visible: isSelected
-        scene: linkView.scene
-        link: linkView.link
-
-        onIsEditableDescriptionChanged: {
-                               descriptionText.focus = linkToolRect.isEditableDescription;
-                           }
-    }
-
     // Description view
     TextArea {
         id: descriptionText
@@ -69,12 +52,12 @@ I_LinkView {
         y: linkMidPoint.y
 
         text: link.guiConfig.description
-        visible: link.guiConfig.description.length > 0 || linkToolRect.isEditableDescription
+        visible: link.guiConfig.description.length > 0 || link.guiConfig._isEditableDescription
 
         color: "white"
         font.family: "Roboto"
         font.pointSize: 14
-        focus: linkToolRect.isEditableDescription
+        focus: link.guiConfig._isEditableDescription
 
         onTextChanged: {
             if (link && link.description !== text)
@@ -94,9 +77,9 @@ I_LinkView {
         onFocusChanged: {
             if(focus && !isSelected) {
                 scene.selectionModel.toggleLinkSelection(link);
-                linkToolRect.isEditableDescription = true;
+                link.guiConfig._isEditableDescription = true;
             } else if (focus) {
-               linkToolRect.isEditableDescription = true;
+               link.guiConfig._isEditableDescription = true;
             }
         }
     }
@@ -117,6 +100,11 @@ I_LinkView {
         function onColorChanged () {
             linkView.requestPaint();
         }
+
+        function on_isEditableDescription () {
+            descriptionText.focus = link.guiConfig._isEditableDescription;
+
+        }
     }
 
     //! To hide color picker if selected node is changed and
@@ -124,8 +112,7 @@ I_LinkView {
     Connections {
         target: linkView
         function onIsSelectedChanged() {
-            linkToolRect.colorPicker.visible = false;
-            descriptionText.focus = false;
+                descriptionText.focus = false;
         }
     }
 

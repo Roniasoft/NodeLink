@@ -21,4 +21,7 @@ QSObject {
     //! Type
     property int    type:        NLSpec.LinkType.Bezier
 
+    //! isEditableDescription to handle editable description
+    property bool _isEditableDescription: false
+
 }
