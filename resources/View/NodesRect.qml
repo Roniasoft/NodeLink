@@ -40,10 +40,17 @@ I_NodesRect {
             if(firstObj === undefined)
                 return;
 
-            var leftX = firstObj.guiConfig.position.x;
-            var topY = firstObj.guiConfig.position.y;
-            var rightX = firstObj.guiConfig.position.x + firstObj.guiConfig.width;
-            var bottomY = firstObj.guiConfig.position.y + firstObj.guiConfig.height;
+            var isNodeFirstObj = firstObj.objectType === NLSpec.ObjectType.Node;
+            var portPosVecOut = isNodeFirstObj ? Qt.vector2d(0, 0) : scene.portsPositions[firstObj?.outputPort?._qsUuid]
+
+            var position = isNodeFirstObj ? firstObj.guiConfig.position : scene.portsPositions[firstObj?.inputPort?._qsUuid];
+            var leftX = isNodeFirstObj ? position.x : (position.x < portPosVecOut.x) ? position.x : portPosVecOut.x;
+            var topY = isNodeFirstObj ? position.y : (position.y < portPosVecOut.y) ? position.y : portPosVecOut.y;
+
+            var rightX = isNodeFirstObj ? position.x + firstObj.guiConfig.width :
+                                          (position.x > portPosVecOut.x) ? position.x : portPosVecOut.x;
+            var bottomY = isNodeFirstObj ? position.y + firstObj.guiConfig.height :
+                                           (position.y > portPosVecOut.y) ? position.y : portPosVecOut.y;
 
             Object.values(scene.selectionModel.selectedModel).forEach(obj => {
                                                                           if(obj.objectType === NLSpec.ObjectType.Node) {
@@ -68,22 +75,27 @@ I_NodesRect {
 
                                                                           } else if(obj.objectType === NLSpec.ObjectType.Link) {
                                                                               var portPosVecIn = scene.portsPositions[obj?.inputPort?._qsUuid]
-                                                                              var portPosVecOut = scene.portsPositions[obj?.outputPort?._qsUuid]
+                                                                              portPosVecOut = scene.portsPositions[obj?.outputPort?._qsUuid]
 
-                                                                              if(portPosVecIn.x < leftX) {
-                                                                                 leftX = portPosVecIn.x;
+                                                                              var tempLeftX = (portPosVecIn.x < portPosVecOut.x) ? portPosVecIn.x : portPosVecOut.x;
+                                                                              var tempTopY = (portPosVecIn.y < portPosVecOut.y) ? portPosVecIn.y : portPosVecOut.y;
+                                                                              var tempRightX = (portPosVecIn.x > portPosVecOut.x) ? portPosVecIn.x : portPosVecOut.x;
+                                                                              var tempBottomY = (portPosVecIn.y > portPosVecOut.y) ? portPosVecIn.y : portPosVecOut.y;
+
+                                                                              if(tempLeftX < leftX) {
+                                                                                 leftX = tempLeftX;
                                                                               }
 
-                                                                              if(portPosVecIn.y < topY) {
-                                                                                 topY = portPosVecIn.y;
+                                                                              if(tempTopY < topY) {
+                                                                                 topY = tempTopY;
                                                                               }
 
-                                                                              if(portPosVecOut.x > rightX) {
-                                                                                 rightX = portPosVecOut.x;
+                                                                              if(tempRightX > rightX) {
+                                                                                 rightX = tempRightX;
                                                                               }
 
-                                                                              if(portPosVecOut.y > bottomY) {
-                                                                                 bottomY = portPosVecOut.y;
+                                                                              if(tempBottomY > bottomY) {
+                                                                                 bottomY = tempBottomY;
                                                                               }
 
                                                                           }
