@@ -48,6 +48,26 @@ Rectangle {
     /* Signals
      * ****************************************************************************************/
 
+    //! When node is selected, width, height, x, and y
+    //! changed must be sent into rubber band
+    onWidthChanged: {
+        if(isSelected)
+            scene.selectionModel.selectedObjectChanged();
+    }
+    onHeightChanged: {
+        if(isSelected)
+            scene.selectionModel.selectedObjectChanged();
+    }
+
+    onXChanged: {
+        if(isSelected)
+            scene.selectionModel.selectedObjectChanged();
+    }
+    onYChanged: {
+        if(isSelected)
+            scene.selectionModel.selectedObjectChanged();
+    }
+
     onEditChanged: {
         nodeView.edit ? titleTextArea.forceActiveFocus() :  nodeView.forceActiveFocus()
     }

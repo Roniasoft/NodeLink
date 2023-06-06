@@ -117,6 +117,9 @@ I_NodesRect {
         function onSelectedModelChanged() {
             rubberBand.calculateDimentions();
         }
-    }
 
+        function onSelectedObjectChanged() {
+           rubberBand.calculateDimentions();
+        }
+    }
 }
