@@ -32,7 +32,7 @@ Rectangle {
     width: layout.implicitWidth + 4
     border.color: "#363636"
     color: "#1e1e1e"
-
+    z: 1000
     /* Children
      * ****************************************************************************************/
 
@@ -44,8 +44,7 @@ Rectangle {
         spacing: 3
 
         //! To display a representative property of links
-        property Link link: selectedLink?.find((obj, index) => index ===0);
-        property Node node: selectedNode?.find((obj, index) => index ===0);
+        property var selectedObject: selectedNode?.find((obj, index) => index === 0);
 
         property bool selectedNodeOnly: selectedNode.length > 0 && selectedLink.length === 0
         property bool selectedLinkOnly: selectedLink.length > 0 && selectedNode.length === 0
@@ -62,25 +61,27 @@ Rectangle {
             Layout.bottomMargin: 2
             text: "\uf53f"
 
-            // Color changer appears on all selected items
+            //! Color changer appears on all selected items
             onClicked: {
                 colorPicker.visible = !colorPicker.visible
+            }
+
+            //! Set invisible when focus is false.
+            onFocusChanged: {
+                if(!focus)
+                    colorPicker.visible = false;
             }
 
             //defining a color picker element to be used in the first button
             ColorPicker {
                 id: colorPicker
-                anchors.bottom: toolsItem.top
+                anchors.top: parent.bottom
+                anchors.left: parent.left
                 anchors.topMargin: 5
-                anchors.horizontalCenter: toolsItem.horizontalCenter
                 visible: false
-                onColorChanged: (colorName)=> {
-                                    selectedNode.forEach(node => {
-                                                             node.guiConfig.color = colorName;
-                                                         });
-
-                                    selectedLink.forEach(link => {
-                                                             link.guiConfig.color = colorName;
+                onColorChanged: (colorName) => {
+                                    Object.values(selectionModel.selectedModel).forEach(obj => {
+                                                             obj.guiConfig.color = colorName;
                                                          });
                                 }
            }
@@ -95,7 +96,7 @@ Rectangle {
             Layout.preferredWidth: 30
             Layout.topMargin: 2
             Layout.bottomMargin: 2
-            onClicked: scene.cloneNode(node?._qsUuid);
+            onClicked: scene.cloneNode(layout.selectedObject?._qsUuid);
         }
 
         //! Node: Locking the card
@@ -108,7 +109,7 @@ Rectangle {
             Layout.preferredWidth: 30
             Layout.topMargin: 2
             Layout.bottomMargin: 2
-            checked: layout.node?.guiConfig?.locked ?? false
+            checked: layout.selectedObject?.guiConfig?.locked ?? false
 
             //! Enabling read only
             onClicked: node.guiConfig.locked = checked;
@@ -120,7 +121,7 @@ Rectangle {
             text: "\uf27a"
             visible: layout.selectedALinkOnly
             checkable: true
-            checked: layout.link?.guiConfig?._isEditableDescription ?? false
+            checked: layout.selectedObject?.guiConfig?._isEditableDescription ?? false
             Layout.preferredHeight: 30
             Layout.preferredWidth: 30
             Layout.topMargin: 2
@@ -128,7 +129,7 @@ Rectangle {
 
             //Enabling read only
             onClicked:{
-                link.guiConfig._isEditableDescription = editLabelButton.checked
+                layout.selectedObject.guiConfig._isEditableDescription = editLabelButton.checked
             }
 
         }
@@ -137,7 +138,7 @@ Rectangle {
         NLToolButton {
             id: directionButton
 
-            text: NLStyle.linkDirectionIcon[layout.link?.direction]
+            text: NLStyle.linkDirectionIcon[layout.selectedObject?.direction]
             Layout.preferredHeight: 30
             Layout.preferredWidth: 30
             Layout.topMargin: 2
@@ -154,7 +155,7 @@ Rectangle {
                 NLMenuItem {
                     text: NLStyle.linkDirectionIcon[NLSpec.LinkDirection.Nondirectional]
                     description: "Nondirectional"
-                    checked: layout.link?.direction === NLSpec.LinkDirection.Nondirectional
+                    checked: layout.selectedObject?.direction === NLSpec.LinkDirection.Nondirectional
                     onTriggered: {
                         selectedLink.forEach(link => {
                                                  link.direction = NLSpec.LinkDirection.Nondirectional
@@ -166,7 +167,7 @@ Rectangle {
                 NLMenuItem {
                     text: NLStyle.linkDirectionIcon[NLSpec.LinkDirection.Unidirectional]
                     description: "Unidirectional"
-                    checked: layout.link?.direction === NLSpec.LinkDirection.Unidirectional
+                    checked: layout.selectedObject?.direction === NLSpec.LinkDirection.Unidirectional
                     onTriggered: {
                         selectedLink.forEach(link => {
                                                  link.direction = NLSpec.LinkDirection.Unidirectional
@@ -178,7 +179,7 @@ Rectangle {
                 NLMenuItem {
                     text: NLStyle.linkDirectionIcon[NLSpec.LinkDirection.Bidirectional]
                     description: "Bidirectional"
-                    checked: layout.link?.direction === NLSpec.LinkDirection.Bidirectional
+                    checked: layout.selectedObject?.direction === NLSpec.LinkDirection.Bidirectional
                     onTriggered: {
                         selectedLink.forEach(link => {
                                                  link.direction = NLSpec.LinkDirection.Bidirectional
@@ -203,7 +204,7 @@ Rectangle {
         //! Link: Style button
         NLToolButton {
             id: styleButton
-            text: NLStyle.linkStyleIcon[layout.link?.guiConfig?.style]
+            text: NLStyle.linkStyleIcon[layout.selectedObject?.guiConfig?.style]
             visible: layout.selectedLinkOnly
             Layout.preferredHeight: 30
             Layout.preferredWidth: 30
@@ -220,7 +221,7 @@ Rectangle {
                 NLMenuItem {
                     text: NLStyle.linkStyleIcon[NLSpec.LinkStyle.Solid]
                     description: "Solid Line"
-                    checked: layout.link?.guiConfig?.style === NLSpec.LinkStyle.Solid
+                    checked: layout.selectedObject?.guiConfig?.style === NLSpec.LinkStyle.Solid
                     onTriggered: {
                         selectedLink.forEach(link => {
                                                  link.guiConfig.style = NLSpec.LinkStyle.Solid
@@ -232,7 +233,7 @@ Rectangle {
                 NLMenuItem {
                     text: NLStyle.linkStyleIcon[NLSpec.LinkStyle.Dash]
                     description: "Dash Line"
-                    checked: layout.link?.guiConfig?.style === NLSpec.LinkStyle.Dash
+                    checked: layout.selectedObject?.guiConfig?.style === NLSpec.LinkStyle.Dash
                     onTriggered: {
                         selectedLink.forEach(link => {
                                                  link.guiConfig.style = NLSpec.LinkStyle.Dash
@@ -244,7 +245,7 @@ Rectangle {
                 NLMenuItem {
                     text: NLStyle.linkStyleIcon[NLSpec.LinkStyle.Dot]
                     description: "Dot Line"
-                    checked: layout.link?.guiConfig?.style === NLSpec.LinkStyle.Dot
+                    checked: layout.selectedObject?.guiConfig?.style === NLSpec.LinkStyle.Dot
                     onTriggered: {
                         selectedLink.forEach(link => {
                                                  link.guiConfig.style = NLSpec.LinkStyle.Dot
@@ -268,7 +269,7 @@ Rectangle {
         //! Link: Type Link button
         NLToolButton {
             id: typeButton
-            text: NLStyle.linkTypeIcon[layout.link?.guiConfig?.type]
+            text: NLStyle.linkTypeIcon[layout.selectedObject?.guiConfig?.type]
             visible: layout.selectedLinkOnly
             Layout.preferredHeight: 30
             Layout.preferredWidth: 30
@@ -285,7 +286,7 @@ Rectangle {
                 NLMenuItem {
                     text: NLStyle.linkTypeIcon[NLSpec.LinkType.Bezier]
                     description: "Bezier Line"
-                    checked: layout.link?.guiConfig?.type === NLSpec.LinkType.Bezier
+                    checked: layout.selectedObject?.guiConfig?.type === NLSpec.LinkType.Bezier
                     onTriggered: {
                         selectedLink.forEach(link => {
                                                  link.guiConfig.type = NLSpec.LinkType.Bezier
@@ -297,7 +298,7 @@ Rectangle {
                 NLMenuItem {
                     text: NLStyle.linkTypeIcon[NLSpec.LinkType.LLine]
                     description: "L Line"
-                    checked: layout.link?.guiConfig?.type === NLSpec.LinkType.LLine
+                    checked: layout.selectedObject?.guiConfig?.type === NLSpec.LinkType.LLine
                     onTriggered: {
                         selectedLink.forEach(link => {
                                                  link.guiConfig.type = NLSpec.LinkType.LLine
@@ -309,7 +310,7 @@ Rectangle {
                 NLMenuItem {
                     text: NLStyle.linkTypeIcon[NLSpec.LinkType.Straight]
                     description: "Straight Line"
-                    checked: layout.link?.guiConfig?.type === NLSpec.LinkType.Straight
+                    checked: layout.selectedObject?.guiConfig?.type === NLSpec.LinkType.Straight
                     onTriggered: {
                         selectedLink.forEach(link => {
                                                  link.guiConfig.type = NLSpec.LinkType.Straight
