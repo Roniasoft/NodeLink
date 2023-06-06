@@ -147,6 +147,7 @@ qt_add_qml_module(NodeLink
         resources/View/Widgets/NodeToolsRect.qml
         resources/View/Widgets/LinkToolsRect.qml
         resources/View/Widgets/SideMenu.qml
+        resources/View/Widgets/SelectionToolsRect.qml
 
         resources/View/Logics/Calculation.js
         resources/View/Logics/BasicLinkCalculator.js
