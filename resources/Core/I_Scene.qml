@@ -231,4 +231,54 @@ QSObject {
 		// Clear the selection
         scene.selectionModel.clear();
     }
+
+    //! Find the nodes that are in the container item.
+    function findNodesInContainerItem(containerItem : Item) {
+
+        // Key points of container to generate line equations and it's limits.
+        var rBLeftX = containerItem.x;
+        var rBTopY = containerItem.y;
+        var rBRightX = rBLeftX + containerItem.width;
+        var rBBottomY = rBTopY + containerItem.height;
+
+        var findedObj = Object.values(nodes).filter(node => {
+            // Key points of Node to generate line equations and it's limits.
+            var nodeLeftX = node.guiConfig.position.x;
+            var nodeTopY = node.guiConfig.position.y;
+            var nodeRightX = nodeLeftX + node.guiConfig.width;
+            var nodeBottomY = nodeTopY + node.guiConfig.height;
+
+            // Checking the equations of the containerItem lines and nodes
+            // and their intersection using the obtained limits
+            var isSelected = (rBRightX > nodeLeftX && rBRightX < nodeRightX &&
+                rBBottomY < nodeBottomY && rBBottomY > nodeTopY) ||
+            (rBLeftX < nodeLeftX && rBRightX > nodeRightX &&
+                rBBottomY > nodeTopY && rBBottomY < nodeBottomY) ||
+            (rBLeftX >= nodeLeftX && rBRightX <= nodeRightX &&
+                rBTopY <= nodeTopY && rBBottomY >= nodeBottomY) ||
+            (rBLeftX > nodeLeftX && rBLeftX < nodeRightX &&
+                (rBBottomY < nodeTopY && nodeBottomY < rBBottomY) ||
+            (rBBottomY < nodeTopY && nodeBottomY > rBBottomY &&
+                nodeTopY < rBBottomY)) ||
+            (rBLeftX < nodeLeftX && rBRightX > nodeRightX &&
+                rBTopY < nodeTopY && nodeBottomY < rBBottomY) ||
+            (rBLeftX > nodeLeftX && rBLeftX < nodeRightX &&
+                rBTopY > nodeTopY && rBTopY < nodeBottomY) ||
+            (nodeLeftX > rBLeftX && rBRightX > nodeLeftX &&
+                rBTopY > nodeTopY && rBTopY < nodeBottomY) ||
+            (rBLeftX < nodeRightX && rBLeftX >  nodeLeftX &&
+                rBBottomY >  nodeTopY && rBBottomY <  nodeBottomY) ||
+            (nodeRightX <= rBRightX && nodeRightX >= rBLeftX &&
+                nodeTopY >= rBTopY && nodeBottomY <= rBBottomY) ||
+            (nodeLeftX <= rBRightX && nodeLeftX >= rBLeftX &&
+                nodeTopY >= rBTopY && nodeBottomY <= rBBottomY);
+
+            // Return the found node that is inside the container.
+            if(isSelected)
+                return node;
+        });
+
+        return findedObj;
+    }
+
 }
