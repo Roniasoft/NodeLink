@@ -55,6 +55,57 @@ Item {
         visible: hasSelectedObject
     }
 
+
+    //! MouseArea to move contain nodes.
+    MouseArea {
+        id: rubberBandMouseArea
+        anchors.fill: parent
+
+        property int    prevX:      0
+        property int    prevY:      0
+        property bool   isDraging:  false
+        hoverEnabled: rubberBandMouseArea.containsMouse
+        preventStealing: true
+
+        cursorShape: (rubberBandMouseArea.containsMouse && isDraging) ?
+                         Qt.ClosedHandCursor : Qt.OpenHandCursor
+
+        onPressed: (mouse) => {
+            isDraging = true;
+            prevX = mouse.x;
+            prevY = mouse.y;
+        }
+
+        onReleased: (mouse) => {
+            isDraging = false;
+        }
+
+        onPositionChanged: (mouse) => {
+            if (isDraging) {
+                // Prepare key variables of node movment
+                var deltaX = mouse.x - prevX;
+                prevX = mouse.x - deltaX;
+                var deltaY = mouse.y - prevY;
+                prevY = mouse.y - deltaY;
+
+                // Start movment process
+                Object.values(scene.selectionModel.selectedModel).forEach(obj => {
+                    // Ignore Link objects
+                    if(obj?.objectType === NLSpec.ObjectType.Node) {
+                        obj.guiConfig.position.x += deltaX;
+                        obj.guiConfig.position.y += deltaY;
+                    obj.guiConfig.positionChanged();
+                    if(((obj.guiConfig.position.x) < 0 && deltaX < 0)   ||
+                        ((obj.guiConfig.position.x + obj.guiConfig.width ) > contentWidth) && deltaX > 0||
+                        ((obj.guiConfig.position.y) < 0 && deltaY < 0)   ||
+                        ((obj.guiConfig.position.y + obj.guiConfig.height) > contentHeight) && deltaY > 0)
+                           isDraging = false;
+                        }
+                });
+            }
+        }
+    }
+
     //! Connection to calculate rubber band Dimentions when necessary.
     Connections {
         target: scene.selectionModel

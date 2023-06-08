@@ -260,7 +260,7 @@ QSObject {
                 (rBBottomY < nodeTopY && nodeBottomY < rBBottomY) ||
             (rBBottomY < nodeTopY && nodeBottomY > rBBottomY &&
                 nodeTopY < rBBottomY)) ||
-            (rBLeftX < nodeLeftX && rBRightX > nodeRightX &&
+            (rBLeftX < nodeLeftX && rBRightX >= nodeRightX &&
                 rBTopY < nodeTopY && nodeBottomY < rBBottomY) ||
             (rBLeftX > nodeLeftX && rBLeftX < nodeRightX &&
                 rBTopY > nodeTopY && rBTopY < nodeBottomY) ||
