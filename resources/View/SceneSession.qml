@@ -15,6 +15,11 @@ QtObject {
     //! isShiftModifierPressed to manage multi selection
     property bool isShiftModifierPressed: false
 
+    //! isCtrlPressed to draw a Rectangle
+    property bool isCtrlPressed: false
+
+    property bool isLeftClickPressedAndHold: false
+
     //! Sets port visibility
     function setPortVisibility(portId: string, visible: Boolean) {
         portsVisibility[portId] = visible;
