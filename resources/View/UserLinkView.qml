@@ -57,13 +57,13 @@ LinkView {
             }
         }
 
-
         onReleased: (mouse) => {
             var gMouse = mapToItem(parent, Qt.point(mouse.x, mouse.y));
             if(inputPortId.length > 0 && outputPortId.length > 0) {
                     scene.linkNodes(inputPortId, outputPortId);
                     clearTempConnection();
-            } else {
+
+            } else if(inputPortId.length > 0) { // Open contex menu when the input port is selected
                     contextMenu.popup(gMouse.x, gMouse.y);
             }
         }
@@ -79,6 +79,8 @@ LinkView {
                     scene.linkNodes(parent.inputPortId, parent.outputPortId);
                 parent.clearTempConnection();
             }
+
+            onAboutToHide: parent.clearTempConnection();
 
             onClosed: parent.clearTempConnection();
         }
