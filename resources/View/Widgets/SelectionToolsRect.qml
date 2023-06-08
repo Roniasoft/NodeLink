@@ -348,15 +348,7 @@ Rectangle {
                 repeat: false
                 running: false
                 interval: 100
-                onTriggered: {
-                    selectedNode.forEach(node => {
-                                             scene.deleteNode(node._qsUuid);
-                                         });
-
-                    selectedLink.forEach(link => {
-                                             scene.unlinkNodes(link.inputPort._qsUuid, link.outputPort._qsUuid);
-                                         });
-                }
+                onTriggered: scene.deleteSelectedObjects();
 
             }
 
