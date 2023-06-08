@@ -39,30 +39,35 @@ Rectangle {
             cellColor: "red";
             onClicked: {
                 colorPickerRect.colorChanged(cellColor);
+                colorPickerRect.visible = false;
             }
         }
         ColorItem {
             cellColor: "green";
             onClicked: {
                 colorPickerRect.colorChanged(cellColor);
+                colorPickerRect.visible = false;
             }
         }
         ColorItem {
             cellColor: "purple";
             onClicked: {
                 colorPickerRect.colorChanged(cellColor);
+                colorPickerRect.visible = false;
             }
         }
         ColorItem {
             cellColor: "yellow";
             onClicked: {
                 colorPickerRect.colorChanged(cellColor);
+                colorPickerRect.visible = false;
             }
         }
         ColorItem {
             cellColor: "steelblue";
             onClicked: {
                 colorPickerRect.colorChanged(cellColor);
+                colorPickerRect.visible = false;
             }
         }
         ColorItem {
