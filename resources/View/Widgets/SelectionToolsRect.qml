@@ -20,10 +20,10 @@ Rectangle {
     property SelectionModel selectionModel: scene.selectionModel
 
     //! Find all selected nodes
-    property var selectedNode: Object.values(selectionModel.selectedModel).filter(obj => obj.objectType === NLSpec.ObjectType.Node)
+    property var selectedNode: Object.values(selectionModel?.selectedModel ?? ({})).filter(obj => obj?.objectType === NLSpec.ObjectType.Node)
 
     //! Find all selected links
-    property var selectedLink: Object.values(selectionModel.selectedModel).filter(obj => obj.objectType === NLSpec.ObjectType.Link)
+    property var selectedLink: Object.values(selectionModel?.selectedModel ?? ({})).filter(obj => obj?.objectType === NLSpec.ObjectType.Link)
 
     /* Object Properties
      * ****************************************************************************************/
