@@ -16,6 +16,7 @@ I_NodesRect {
     //! Rubber band border with different opacity
     SelectionRubberBand {
         scene: root.scene
+        sceneSession: root.sceneSession
     }
 
     //! User Connection Curve

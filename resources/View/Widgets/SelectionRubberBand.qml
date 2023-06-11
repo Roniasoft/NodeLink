@@ -11,8 +11,11 @@ Item {
 
     /* Property Declarations
     * ****************************************************************************************/
-    property Scene scene
-    property bool hasSelectedObject: Object.values(scene.selectionModel.selectedModel).length > 0
+    property Scene          scene
+    property SceneSession   sceneSession
+    property SelectionModel selectionModel: scene.selectionModel
+
+    property bool           hasSelectedObject: Object.values(scene.selectionModel.selectedModel).length > 0
 
     /*  Object Properties
     * ****************************************************************************************/
@@ -63,32 +66,38 @@ Item {
 
         property int    prevX:      0
         property int    prevY:      0
-        property bool   isDraging:  false
+
+        //! Enable when select more than one Item and shift not pressed.
+        enabled: !sceneSession.isShiftModifierPressed &&
+                 Object.keys(selectionModel.selectedModel).length > 1
+
         hoverEnabled: rubberBandMouseArea.containsMouse
         preventStealing: true
+        propagateComposedEvents: true//!sceneSession.isRubberBandMoving
 
-        cursorShape: (rubberBandMouseArea.containsMouse && isDraging) ?
+        cursorShape: (rubberBandMouseArea.containsMouse && sceneSession.isRubberBandMoving) ?
                          Qt.ClosedHandCursor : Qt.OpenHandCursor
 
+        onDoubleClicked: sceneSession.isRubberBandMoving = false;
         onPressed: (mouse) => {
-            isDraging = true;
+            sceneSession.isRubberBandMoving = true;
             prevX = mouse.x;
             prevY = mouse.y;
         }
 
         onReleased: (mouse) => {
-            isDraging = false;
+            _timer.start();
         }
 
         onPositionChanged: (mouse) => {
-            if (isDraging) {
-                // Prepare key variables of node movment
+            if (sceneSession.isRubberBandMoving) {
+                // Prepare key variables of node movement
                 var deltaX = mouse.x - prevX;
                 prevX = mouse.x - deltaX;
                 var deltaY = mouse.y - prevY;
                 prevY = mouse.y - deltaY;
 
-                // Start movment process
+                // Start movement process
                 Object.values(scene.selectionModel.selectedModel).forEach(obj => {
                     // Ignore Link objects
                     if(obj?.objectType === NLSpec.ObjectType.Node) {
@@ -99,11 +108,21 @@ Item {
                         ((obj.guiConfig.position.x + obj.guiConfig.width ) > contentWidth) && deltaX > 0||
                         ((obj.guiConfig.position.y) < 0 && deltaY < 0)   ||
                         ((obj.guiConfig.position.y + obj.guiConfig.height) > contentHeight) && deltaY > 0)
-                           isDraging = false;
+                           sceneSession.isRubberBandMoving = false;
                         }
                 });
             }
         }
+    }
+
+    //! Timer to set false the rubberBand moving
+    Timer {
+        id: _timer
+        repeat: false
+        running: false
+        interval: 10
+
+        onTriggered: sceneSession.isRubberBandMoving = false;
     }
 
     //! Connection to calculate rubber band Dimentions when necessary.

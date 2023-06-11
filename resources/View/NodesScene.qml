@@ -70,14 +70,14 @@ I_NodesScene {
     MouseArea {
         anchors.fill: parent
         acceptedButtons: Qt.LeftButton | Qt.RightButton
-        enabled: !sceneSession.connectingMode
+        enabled: !sceneSession.connectingMode && !sceneSession.isRubberBandMoving
 
         hoverEnabled: true//sceneSession.isCtrlPressed
 
         property var lastPressPoint: Qt.point(0,0)
 
         //! We should toggle line selection with mouse press event
-        onClicked: mouse => {
+        onClicked: (mouse) => {
             if (!sceneSession.isShiftModifierPressed)
                  scene.selectionModel.clear();
 

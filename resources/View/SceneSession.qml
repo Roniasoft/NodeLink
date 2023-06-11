@@ -20,6 +20,8 @@ QtObject {
 
     property bool isLeftClickPressedAndHold: false
 
+    property bool isRubberBandMoving: false
+
     //! Sets port visibility
     function setPortVisibility(portId: string, visible: Boolean) {
         portsVisibility[portId] = visible;
