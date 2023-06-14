@@ -781,4 +781,13 @@ Rectangle {
         onClicked: scene.selectionModel.select(node);
         visible: node.guiConfig.locked
     }
+
+    //! Reset some properties when selection model changed.
+    Connections {
+        target: scene.selectionModel
+
+        function onSelectedModelChanged() {
+            nodeView.edit = false;
+        }
+    }
 }
