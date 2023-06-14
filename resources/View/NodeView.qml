@@ -242,7 +242,7 @@ Rectangle {
         preventStealing: true
         enabled: !nodeView.edit && !sceneSession.connectingMode
 
-        onDoubleClicked: {
+        onDoubleClicked: (mouse) => {
             // Clear all selected nodes
             scene.selectionModel.clearAllExcept(node._qsUuid);
 
@@ -261,9 +261,10 @@ Rectangle {
         //! Manage right and left click to select and
         //! show node contex menue.
         onClicked: (mouse) => {
-            _selectionTimer.start();
-            if (mouse.button === Qt.RightButton)
-                 nodeContextMenu.popup(mouse.x, mouse.y)
+            if (mouse.button === Qt.RightButton) {
+                _selectionTimer.start();
+                nodeContextMenu.popup(mouse.x, mouse.y);
+            }
         }
 
         onPressed: (mouse) => {

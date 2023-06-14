@@ -99,6 +99,10 @@ I_NodesScene {
             }
         }
         onDoubleClicked: (mouse) => {
+            //! Do nothing when user double clicks the on rubber band.
+            if(sceneSession.isMouseInRubberBand)
+                return;
+
             scene.selectionModel.clear();
             if (mouse.button === Qt.LeftButton) {
                 scene.createCustomizeNode(NLSpec.NodeType.General, mouse.x, mouse.y);
@@ -110,7 +114,7 @@ I_NodesScene {
         onPressAndHold: (mouse) => {
             if(mouse.button === Qt.LeftButton)
                 sceneSession.isLeftClickPressedAndHold = true;
-            if (sceneSession.isCtrlPressed && sceneSession.isLeftClickPressedAndHold) {
+            if (sceneSession.rubberBandSelectionMode) {
                 // create a new rectangle at the wanted position
                 lastPressPoint.x = mouse.x;
                 lastPressPoint.y = mouse.y;
@@ -125,8 +129,7 @@ I_NodesScene {
         // lastMousePos to handle temp rubber band dimentions
         property var lastMousePos: Qt.point(0, 0)
         onPositionChanged: (mouse) => {
-                               if(sceneSession.isCtrlPressed &&
-                                  sceneSession.isLeftClickPressedAndHold) {
+                               if(sceneSession.rubberBandSelectionMode) {
                                    // Update position and dimentions of temp rubber band
                                    tempRubberBand.x = Math.min(lastPressPoint.x , mouse.x)
                                    tempRubberBand.y = Math.min(lastPressPoint.y , mouse.y)
@@ -181,8 +184,7 @@ I_NodesScene {
         Item {
             id: tempRubberBand
 
-            visible: sceneSession.isCtrlPressed &&
-                     sceneSession.isLeftClickPressedAndHold
+            visible: sceneSession.rubberBandSelectionMode
 
             onVisibleChanged: {
                 if(!visible) {

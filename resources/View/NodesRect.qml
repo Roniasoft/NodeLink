@@ -13,6 +13,8 @@ I_NodesRect {
     /*  Children
     * ****************************************************************************************/
 
+    //! Temporary view objects.
+
     //! Rubber band border with different opacity
     SelectionRubberBand {
         scene: root.scene

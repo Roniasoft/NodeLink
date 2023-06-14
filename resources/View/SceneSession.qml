@@ -20,7 +20,14 @@ QtObject {
 
     property bool isLeftClickPressedAndHold: false
 
+    //! Created rubberband is moving ...
     property bool isRubberBandMoving: false
+
+    //! The mouse is inside the created rubberband or not.
+    property bool isMouseInRubberBand: false;
+
+    //! Creating rubberband with mouse and pressed and hold the ctrl btn
+    property bool rubberBandSelectionMode: isCtrlPressed && isLeftClickPressedAndHold
 
     //! Sets port visibility
     function setPortVisibility(portId: string, visible: Boolean) {

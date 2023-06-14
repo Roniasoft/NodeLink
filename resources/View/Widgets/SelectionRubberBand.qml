@@ -67,18 +67,28 @@ Item {
         property int    prevX:      0
         property int    prevY:      0
 
+        //! update isMouseInRubberBand with containsMouse
+        onContainsMouseChanged: sceneSession.isMouseInRubberBand = containsMouse
+
         //! Enable when select more than one Item and shift not pressed.
         enabled: !sceneSession.isShiftModifierPressed &&
                  Object.keys(selectionModel.selectedModel).length > 1
 
         hoverEnabled: rubberBandMouseArea.containsMouse
         preventStealing: true
-        propagateComposedEvents: true//!sceneSession.isRubberBandMoving
+        propagateComposedEvents: true //!sceneSession.isRubberBandMoving
 
         cursorShape: (rubberBandMouseArea.containsMouse && sceneSession.isRubberBandMoving) ?
                          Qt.ClosedHandCursor : Qt.OpenHandCursor
 
-        onDoubleClicked: sceneSession.isRubberBandMoving = false;
+        onDoubleClicked: (mouse) => {
+            sceneSession.isRubberBandMoving = false;
+
+            // Set mouse Accepted = false
+            // to pass double click into nodeView
+            mouse.accepted = false
+        }
+
         onPressed: (mouse) => {
             sceneSession.isRubberBandMoving = true;
             prevX = mouse.x;
