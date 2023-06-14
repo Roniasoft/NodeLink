@@ -144,8 +144,6 @@ qt_add_qml_module(NodeLink
         resources/View/I_LinkView.qml
         resources/View/UserLinkView.qml
         resources/View/SceneViewBackground.qml
-        resources/View/Widgets/NodeToolsRect.qml
-        resources/View/Widgets/LinkToolsRect.qml
         resources/View/Widgets/SideMenu.qml
         resources/View/Widgets/SelectionToolsRect.qml
         resources/View/Widgets/SelectionRubberBand.qml
