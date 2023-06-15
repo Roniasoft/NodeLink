@@ -66,18 +66,29 @@ I_NodesScene {
         onAccepted: delTimer.start();
     }
 
+    //! Nodes/Connections
+    contentItem: NodesRect {
+        scene: flickable.scene
+        sceneSession: flickable.sceneSession
+        contentWidth: flickable.contentWidth
+        contentHeight: flickable.contentHeight
+    }
+
     //! MouseArea for selection of links
     MouseArea {
         anchors.fill: parent
         acceptedButtons: Qt.LeftButton | Qt.RightButton
-        enabled: !sceneSession.connectingMode && !sceneSession.isRubberBandMoving
+        enabled: !sceneSession.isCtrlPressed &&
+                 !sceneSession.connectingMode &&
+                 !sceneSession.isRubberBandMoving
 
-        hoverEnabled: true//sceneSession.isCtrlPressed
+        propagateComposedEvents: true
 
-        property var lastPressPoint: Qt.point(0,0)
+
 
         //! We should toggle line selection with mouse press event
         onClicked: (mouse) => {
+
             if (!sceneSession.isShiftModifierPressed)
                  scene.selectionModel.clear();
 
@@ -109,123 +120,12 @@ I_NodesScene {
             }
         }
 
-        //! PressAndHold to control temp rubber band.
-        pressAndHoldInterval: 100
-        onPressAndHold: (mouse) => {
-            if(mouse.button === Qt.LeftButton)
-                sceneSession.isLeftClickPressedAndHold = true;
-            if (sceneSession.rubberBandSelectionMode) {
-                // create a new rectangle at the wanted position
-                lastPressPoint.x = mouse.x;
-                lastPressPoint.y = mouse.y;
-            }
-        }
 
-        onReleased: (mouse) => {
-                        if(mouse.button === Qt.LeftButton)
-                            sceneSession.isLeftClickPressedAndHold = false;
-                    }
-
-        // lastMousePos to handle temp rubber band dimentions
-        property var lastMousePos: Qt.point(0, 0)
-        onPositionChanged: (mouse) => {
-                               if(sceneSession.rubberBandSelectionMode) {
-                                   // Update position and dimentions of temp rubber band
-                                   tempRubberBand.x = Math.min(lastPressPoint.x , mouse.x)
-                                   tempRubberBand.y = Math.min(lastPressPoint.y , mouse.y)
-                                   tempRubberBand.width = Math.abs(lastPressPoint.x - mouse.x);
-                                   tempRubberBand.height =  Math.abs(lastPressPoint.y - mouse.y);
-
-                                   // Update content dimentions of flicable with mouse position.
-                                   if(flickable.contentX + flickable.width < tempRubberBand.x + tempRubberBand.width) {
-                                       contentX += mouse.x - lastMousePos.x
-                                   }
-                                   if(flickable.contentX > tempRubberBand.x) {
-                                       flickable.contentX = tempRubberBand.x
-                                   }
-
-                                   if(flickable.contentY + flickable.height < tempRubberBand.y + tempRubberBand.height) {
-                                       flickable.contentY += mouse.y - lastMousePos.y
-                                   }
-                                   if(flickable.contentY > tempRubberBand.y) {
-                                       flickable.contentY = tempRubberBand.y
-                                   }
-
-                                   lastMousePos = Qt.point(mouse.x, mouse.y);
-
-                                   selectionTimer.start();
-                               }
-                           }
-
-        //! Timer to handle additional fuction calls.
-        Timer {
-            id: selectionTimer
-            interval: 100
-            repeat: false
-            running: false
-
-            onTriggered: {
-                // clear selection model
-                scene.selectionModel.clear();
-                // Find objects inside foregroundItem
-                var selectedObj = scene.findNodesInContainerItem(tempRubberBand);
-                selectedObj.forEach(node => scene.selectionModel.select(node));
-            }
-        }
 
         //! Context Menu for adding a new node (for now)
         ContextMenu {
             id: contextMenu
             scene: flickable.scene
-        }
-
-
-        //! Temporary Rubber band, draw a rectangle and selec some nodes.
-        Item {
-            id: tempRubberBand
-
-            visible: sceneSession.rubberBandSelectionMode
-
-            onVisibleChanged: {
-                if(!visible) {
-                    width = 0;
-                    height = 0;
-                }
-            }
-
-            //! Rubber band border with different opacity
-            Rectangle {
-                anchors.fill: parent
-                color: "transparent"
-                opacity: 0.5
-
-                visible: rubberBand.visible
-                border.width: 3
-                border.color: "#8F30FA"
-            }
-
-            //! Rubber band to handle selection rect
-            Rectangle {
-                id: rubberBand
-
-                anchors.fill: parent
-
-                color: "#8F30FA"
-                opacity: 0.2
-            }
-
-            Connections {
-                target: sceneSession
-
-                function onIsCtrlPressedChanged() {
-                    if(!sceneSession.isCtrlPressed) {
-                        tempRubberBand.width = 0;
-                        tempRubberBand.height = 0;
-                    }
-
-                }
-            }
-
         }
 
         //! find the link under or close to the mouse cursor
@@ -242,12 +142,10 @@ I_NodesScene {
         }
     }
 
-    //! Nodes/Connections
-    contentItem: NodesRect {
+    //! HelpersView
+    HelpersView {
         scene: flickable.scene
         sceneSession: flickable.sceneSession
-        contentWidth: flickable.contentWidth
-        contentHeight: flickable.contentHeight
     }
 
     //! Foreground
@@ -273,4 +171,5 @@ I_NodesScene {
         anchors.fill: parent
         sourceComponent: foreground
     }
+
 }
