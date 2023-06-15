@@ -18,16 +18,15 @@ QtObject {
     //! isCtrlPressed to draw a Rectangle
     property bool isCtrlPressed: false
 
-    property bool isLeftClickPressedAndHold: false
-
     //! Created rubberband is moving ...
     property bool isRubberBandMoving: false
 
     //! The mouse is inside the created rubberband or not.
     property bool isMouseInRubberBand: false;
 
-    //! Creating rubberband with mouse and pressed and hold the ctrl btn
-    property bool rubberBandSelectionMode: isCtrlPressed && isLeftClickPressedAndHold
+    //! Creating rubberband with mouse and pressed and hold the ctrl btn in
+    //! SelectionHelperView
+    property bool rubberBandSelectionMode: false
 
     //! Sets port visibility
     function setPortVisibility(portId: string, visible: Boolean) {
