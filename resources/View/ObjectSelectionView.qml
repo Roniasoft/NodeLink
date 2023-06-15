@@ -78,7 +78,7 @@ Item {
         preventStealing: true
         propagateComposedEvents: true
 
-        cursorShape: (rubberBandMouseArea.containsMouse && sceneSession.isRubberBandMoving) ?
+        cursorShape: (containsMouse && sceneSession.isRubberBandMoving) ?
                          Qt.ClosedHandCursor : Qt.OpenHandCursor
 
         onDoubleClicked: (mouse) => {
@@ -191,7 +191,6 @@ Item {
                                                                           }
 
                                                                       } else if(obj.objectType === NLSpec.ObjectType.Link) {
-                                                                          console.log("controlPoints ", obj?.controlPoints)
                                                                           var portPosVecIn = scene.portsPositions[obj?.inputPort?._qsUuid]
                                                                           portPosVecOut = scene.portsPositions[obj?.outputPort?._qsUuid]
 
