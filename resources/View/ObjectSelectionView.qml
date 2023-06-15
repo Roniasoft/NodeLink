@@ -3,7 +3,7 @@ import QtQuick
 import NodeLink
 
 /*! ***********************************************************************************************
- * SelectionRubberBand is an Item that manages tools of selected object and
+ * ObjectSelectionView is an Item that manages tools of selected object and
  * draw a rectangle around them.
  * ************************************************************************************************/
 Item {
@@ -76,7 +76,7 @@ Item {
 
         hoverEnabled: rubberBandMouseArea.containsMouse
         preventStealing: true
-        propagateComposedEvents: true //!sceneSession.isRubberBandMoving
+        propagateComposedEvents: true
 
         cursorShape: (rubberBandMouseArea.containsMouse && sceneSession.isRubberBandMoving) ?
                          Qt.ClosedHandCursor : Qt.OpenHandCursor
