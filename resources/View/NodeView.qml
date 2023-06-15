@@ -787,7 +787,8 @@ Rectangle {
         target: scene.selectionModel
 
         function onSelectedModelChanged() {
-            nodeView.edit = false;
+            if(!scene.selectionModel.isSelected(node._qsUuid))
+                nodeView.edit = false;
         }
     }
 }
