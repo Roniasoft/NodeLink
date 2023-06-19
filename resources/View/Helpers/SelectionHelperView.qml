@@ -54,6 +54,8 @@ Item {
     MouseArea {
         anchors.fill: parent
 
+        acceptedButtons: Qt.LeftButton | Qt.RightButton
+
         enabled: sceneSession.isCtrlPressed
         hoverEnabled: true
         preventStealing: true
