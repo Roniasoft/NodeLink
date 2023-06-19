@@ -238,9 +238,13 @@ Rectangle {
         property bool   isDraging:  false
 
         anchors.fill: parent
+        anchors.margins: 10
         hoverEnabled: true
         preventStealing: true
         enabled: !nodeView.edit && !sceneSession.connectingMode
+
+        // To hide cursor when is disable
+        visible: enabled
 
         onDoubleClicked: (mouse) => {
             // Clear all selected nodes
@@ -251,6 +255,7 @@ Rectangle {
 
             // Enable edit mode
             nodeView.edit = true;
+            isDraging = false;
         }
 
         cursorShape: (nodeMouseArea.containsMouse && !nodeView.edit)
@@ -383,7 +388,7 @@ Rectangle {
         enabled: !sceneSession.connectingMode
         cursorShape: Qt.SizeVerCursor
         anchors.bottom: parent.bottom
-        anchors.topMargin: -10
+        anchors.bottomMargin: -10
         anchors.horizontalCenter: parent.horizontalCenter
         preventStealing: true
 

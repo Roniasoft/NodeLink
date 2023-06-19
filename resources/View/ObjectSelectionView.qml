@@ -78,6 +78,9 @@ Item {
         preventStealing: true
         propagateComposedEvents: true
 
+        // To hide cursor when is disable
+        visible: enabled
+
         cursorShape: (containsMouse && sceneSession.isRubberBandMoving) ?
                          Qt.ClosedHandCursor : Qt.OpenHandCursor
 
