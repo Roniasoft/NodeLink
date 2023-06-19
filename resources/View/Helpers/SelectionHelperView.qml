@@ -58,6 +58,15 @@ Item {
         hoverEnabled: true
         preventStealing: true
 
+        onEnabledChanged: {
+            if (!enabled) {
+                // Reset the rubberband width and height
+                selectionRubberBandItem.width  = 0;
+                selectionRubberBandItem.height = 0;
+                sceneSession.rubberBandSelectionMode = false;
+            }
+        }
+
 
         // lastPressPoint to handle temp rubber band dimentions
         property var lastPressPoint: Qt.point(0,0)
