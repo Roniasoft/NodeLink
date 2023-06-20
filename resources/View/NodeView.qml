@@ -73,7 +73,10 @@ Rectangle {
     }
 
     onIsSelectedChanged: {
-        nodeView.isSelected ? nodeView.forceActiveFocus() : nodeView.edit = false;
+        nodeView.forceActiveFocus();
+        if(!nodeView.isSelected )
+            nodeView.edit = false;
+
     }
 
     //! Handle key pressed (Del: delete selected node and link)
@@ -241,7 +244,7 @@ Rectangle {
         anchors.margins: 10
         hoverEnabled: true
         preventStealing: true
-        enabled: !nodeView.edit && !sceneSession.connectingMode
+        enabled: !nodeView.edit && !sceneSession.connectingMode && !node.guiConfig.locked
 
         // To hide cursor when is disable
         visible: enabled
@@ -267,7 +270,15 @@ Rectangle {
         //! show node contex menue.
         onClicked: (mouse) => {
             if (mouse.button === Qt.RightButton) {
-                _selectionTimer.start();
+                // Ensure the isDraging is false.
+                isDraging = false;
+
+                // Clear all selected nodes
+                scene.selectionModel.clearAllExcept(node._qsUuid);
+
+                // Select current node
+                scene.selectionModel.select(node);
+
                 nodeContextMenu.popup(mouse.x, mouse.y);
             }
         }
@@ -783,7 +794,7 @@ Rectangle {
         anchors.fill: parent
         anchors.margins: -10
         enabled: node.guiConfig.locked
-        onClicked: scene.selectionModel.select(node);
+        onClicked: _selectionTimer.start();
         visible: node.guiConfig.locked
     }
 
