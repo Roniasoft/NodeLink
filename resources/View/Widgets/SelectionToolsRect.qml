@@ -113,7 +113,7 @@ Rectangle {
             checked: layout.selectedObject?.guiConfig?.locked ?? false
 
             //! Enabling read only
-            onClicked: node.guiConfig.locked = checked;
+            onClicked: layout.selectedObject.guiConfig.locked = checked;
         }
 
         //! Link: Edit discription
