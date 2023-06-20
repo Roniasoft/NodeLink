@@ -37,6 +37,7 @@ Menu {
     ContextMenuItem {
         name: "Edit"
         iconStr: "\uf044"
+        enabled: !node.guiConfig.locked
         onClicked: {
             editNode();
         }
