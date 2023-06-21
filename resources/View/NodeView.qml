@@ -150,6 +150,7 @@ Rectangle {
 
             rightPadding: 10
 
+            readOnly: !nodeView.edit
             focus: false
             placeholderText: qsTr("Enter title")
             selectByMouse: true
@@ -209,6 +210,7 @@ Rectangle {
             placeholderText: qsTr("Enter description")
             color: "white"
             text: node.guiConfig.description
+            readOnly: !nodeView.edit
             wrapMode:TextEdit.WrapAnywhere
             onTextChanged: {
                 if (node && node.guiConfig.description !== text)
