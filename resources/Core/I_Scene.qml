@@ -234,7 +234,7 @@ QSObject {
     }
 
     //! Find the nodes that are in the container item.
-    function findNodesInContainerItem(containerItem : Item) {
+    function findNodesInContainerItem(containerItem: Item, zoomFactor: real) {
 
         // Key points of container to generate line equations and it's limits.
         var rBLeftX = containerItem.x;
@@ -244,11 +244,12 @@ QSObject {
 
         var findedObj = Object.values(nodes).filter(node => {
             // Key points of Node to generate line equations and it's limits.
-            var nodeLeftX = node.guiConfig.position.x;
-            var nodeTopY = node.guiConfig.position.y;
-            var nodeRightX = nodeLeftX + node.guiConfig.width;
-            var nodeBottomY = nodeTopY + node.guiConfig.height;
+            var position = node.guiConfig.position?.times(zoomFactor)
 
+            var nodeLeftX = position.x;
+            var nodeTopY = position.y;
+            var nodeRightX = nodeLeftX + node.guiConfig.width * zoomFactor;
+            var nodeBottomY = nodeTopY + node.guiConfig.height * zoomFactor;
             // Checking the equations of the containerItem lines and nodes
             // and their intersection using the obtained limits
             var isSelected = (rBRightX > nodeLeftX && rBRightX < nodeRightX &&
