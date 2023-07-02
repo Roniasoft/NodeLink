@@ -3,11 +3,11 @@
 
 //! Drawing a Link using give context2D
 function createLink(context, startPos, controlPoints,
-                     isSelected, color, direction, style, type,
+                     isSelected, color, direction, style, type, lineWidth,
                     inputPortSide, outputPortSide) {
 
     context.reset();
-    context.lineWidth = 2;
+    context.lineWidth = lineWidth;
     context.beginPath();
 
     // create Link

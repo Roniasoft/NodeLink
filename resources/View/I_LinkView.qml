@@ -16,23 +16,24 @@ Canvas {
 
     /* Property Declarations
     * ****************************************************************************************/
-    property Scene  scene
+    property Scene          scene
 
     property SceneSession   sceneSession
 
-    property Port   inputPort
+    property Port           inputPort
 
-    property Port   outputPort
+    property Port           outputPort
 
-    property Link   link:       Link {}
 
-    property bool   isSelected: scene?.selectionModel?.isSelected(link?._qsUuid) ?? false
+    property Link       link:       Link {}
 
-    property vector2d inputPos: scene?.portsPositions[inputPort?._qsUuid] ?? Qt.vector2d(0, 0)
+    property bool       isSelected: scene?.selectionModel?.isSelected(link?._qsUuid) ?? false
 
-    property vector2d outputPos: scene?.portsPositions[outputPort?._qsUuid] ?? Qt.vector2d(0, 0)
+    property vector2d   inputPos: scene?.portsPositions[inputPort?._qsUuid] ?? Qt.vector2d(0, 0)
 
-    property vector2d linkMidPoint: Qt.vector2d(0, 0)
+    property vector2d   outputPos: scene?.portsPositions[outputPort?._qsUuid] ?? Qt.vector2d(0, 0)
+
+    property vector2d   linkMidPoint: Qt.vector2d(0, 0)
 
     //! update painted line when change position of input and output ports
     onOutputPosChanged: canvas.requestPaint();
@@ -70,10 +71,11 @@ Canvas {
         var minPoint2 = outputPos.plus(BasicLinkCalculator.connectionMargin(outputPort?.portSide ?? -1));
         linkMidPoint = Calculation.getPositionByTolerance(0.5, [inputPos, minPoint1, minPoint2, outputPos]);
 
+        var lineWidth = 2 * sceneSession.zoomManager.zoomFactor
         // Draw the curve with LinkPainter
         LinkPainter.createLink(context, inputPos, link.controlPoints, isSelected,
                                 link.guiConfig.color, link.direction,
-                                link.guiConfig.style, link.guiConfig.type,
+                                link.guiConfig.style, link.guiConfig.type, lineWidth,
                                link.inputPort.portSide, link.outputPort?.portSide ?? -1);
     }
 
