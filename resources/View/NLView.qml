@@ -38,6 +38,7 @@ Item {
     //! Side Menu
     SideMenu {
         scene: view.scene
+        sceneSession: view.sceneSession
         anchors.right: parent.right
         anchors.rightMargin: 45
         anchors.top: parent.top
