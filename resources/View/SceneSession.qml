@@ -28,6 +28,9 @@ QtObject {
     //! SelectionHelperView
     property bool rubberBandSelectionMode: false
 
+	//! Zoom manager
+    property ZoomManager zoomManager: ZoomManager {}
+
     //! Active focus of main scene view
     signal sceneForceFocus()
 
