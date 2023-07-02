@@ -188,10 +188,7 @@ Item {
         var isNodeFirstObj = firstObj.objectType === NLSpec.ObjectType.Node;
         var portPosVecOut = isNodeFirstObj ? Qt.vector2d(0, 0) : scene.portsPositions[firstObj?.outputPort?._qsUuid]
 
-        var minusPos = firstObj.guiConfig?.position?.minus(sceneSession.zoomManager.zoomPoint)
-        var calcPos = minusPos?.times(sceneSession.zoomManager.zoomFactor - 1);
-
-        var position = isNodeFirstObj ? firstObj.guiConfig.position.plus(calcPos) :
+        var position = isNodeFirstObj ? firstObj.guiConfig?.position?.times(sceneSession.zoomManager.zoomFactor) :
                                         scene.portsPositions[firstObj?.inputPort?._qsUuid];
         var leftX = (isNodeFirstObj ? position.x : (position.x < portPosVecOut.x) ? position.x : portPosVecOut.x);
         var topY = (isNodeFirstObj ? position.y : (position.y < portPosVecOut.y) ? position.y : portPosVecOut.y);
@@ -204,14 +201,12 @@ Item {
         Object.values(scene.selectionModel.selectedModel).forEach(obj => {
                                                                       if(obj.objectType === NLSpec.ObjectType.Node) {
 
-                                                                          var minusPos = obj.guiConfig.position.minus(sceneSession.zoomManager.zoomPoint)
-                                                                          var calcPos = minusPos.times(sceneSession.zoomManager.zoomFactor - 1)
                                                                           // Find left, right, top and bottom positions.
                                                                           // they are depend on inputPort and outputPort position (temporary).
-                                                                          var pos = obj.guiConfig.position.plus(calcPos); //obj.guiConfig.position.plus(obj.guiConfig.position.minus(sceneSession.zoomManager.zoomPoint).times(sceneSession.zoomManager.zoomFactor - 1))
+                                                                          var pos = obj.guiConfig.position.times(sceneSession.zoomManager.zoomFactor); //obj.guiConfig.position.plus(obj.guiConfig.position.minus(sceneSession.zoomManager.zoomPoint).times(sceneSession.zoomManager.zoomFactor - 1))
 
                                                                           var tempLeftX = pos.x;
-                                                                          var tempTopY =pos.y;
+                                                                          var tempTopY = pos.y;
                                                                           var tempRightX = pos.x + obj.guiConfig.width * sceneSession.zoomManager.zoomFactor;
                                                                           var tempBottomY =pos.y + obj.guiConfig.height * sceneSession.zoomManager.zoomFactor;
 

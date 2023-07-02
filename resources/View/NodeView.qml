@@ -38,7 +38,7 @@ Rectangle {
 
     //! Correct position based on zoomPoint and zoomFactor
     property vector2d correctedPosition: node.guiConfig?.position?.
-                                         times(sceneSession.zoomManager.zoomFactor))
+                                         times(sceneSession.zoomManager.zoomFactor)
 
     /* Object Properties
      * ****************************************************************************************/
