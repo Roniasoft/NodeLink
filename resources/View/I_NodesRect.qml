@@ -19,8 +19,9 @@ Rectangle {
 
     /*  Object Properties
     * ****************************************************************************************/
-    width: Math.max(...Object.values(scene?.nodes ?? ({})).map(node => (node.guiConfig.position.x + node.guiConfig.width)), 1024) + 200
-    height: Math.max(...Object.values(scene?.nodes ?? ({})).map(node => (node.guiConfig.position.y + node.guiConfig.height)), 768) + 200
+    //width: (Math.max(...Object.values(scene?.nodes ?? ({})).map(node => (node.guiConfig.position.x + node.guiConfig.width)), 1024) + 200) * sceneSession.zoomManager.zoomFactor
+    //height: (Math.max(...Object.values(scene?.nodes ?? ({})).map(node => (node.guiConfig.position.y + node.guiConfig.height)), 768) + 200) * sceneSession.zoomManager.zoomFactor
+    anchors.fill: parent
     color: "transparent"
 
     Keys.forwardTo: parent
