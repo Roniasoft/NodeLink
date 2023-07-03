@@ -96,8 +96,8 @@ Item {
 
         onPressed: (mouse) => {
             sceneSession.isRubberBandMoving = true;
-            prevX = mouse.x;
-            prevY = mouse.y;
+            prevX = mouse.x * sceneSession.zoomManager.zoomFactor;
+            prevY = mouse.y * sceneSession.zoomManager.zoomFactor;
         }
 
         onReleased: (mouse) => {
@@ -107,10 +107,10 @@ Item {
         onPositionChanged: (mouse) => {
             if (sceneSession.isRubberBandMoving) {
                 // Prepare key variables of node movement
-                var deltaX = mouse.x - prevX;
-                prevX = mouse.x - deltaX;
-                var deltaY = mouse.y - prevY;
-                prevY = mouse.y - deltaY;
+                var deltaX = (mouse.x * sceneSession.zoomManager.zoomFactor - prevX);
+                prevX = mouse.x * sceneSession.zoomManager.zoomFactor - deltaX;
+                var deltaY = (mouse.y * sceneSession.zoomManager.zoomFactor- prevY);
+                prevY = mouse.y * sceneSession.zoomManager.zoomFactor - deltaY;
 
                 // Start movement process
                 Object.values(scene.selectionModel.selectedModel).forEach(obj => {
@@ -119,11 +119,11 @@ Item {
                         obj.guiConfig.position.x += deltaX;
                         obj.guiConfig.position.y += deltaY;
                     obj.guiConfig.positionChanged();
-                    if(((obj.guiConfig.position.x) < 0 && deltaX < 0)   ||
-                        ((obj.guiConfig.position.x + obj.guiConfig.width ) > contentWidth) && deltaX > 0||
-                        ((obj.guiConfig.position.y) < 0 && deltaY < 0)   ||
-                        ((obj.guiConfig.position.y + obj.guiConfig.height) > contentHeight) && deltaY > 0)
-                           sceneSession.isRubberBandMoving = false;
+//                    if(((obj.guiConfig.position.x) < 0 && deltaX < 0)   ||
+//                        ((obj.guiConfig.position.x + obj.guiConfig.width ) > contentWidth) && deltaX > 0||
+//                        ((obj.guiConfig.position.y) < 0 && deltaY < 0)   ||
+//                        ((obj.guiConfig.position.y + obj.guiConfig.height) > contentHeight) && deltaY > 0)
+//                           sceneSession.isRubberBandMoving = false;
                         }
                 });
             }

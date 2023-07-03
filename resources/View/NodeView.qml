@@ -246,8 +246,8 @@ Rectangle {
     MouseArea {
         id: nodeMouseArea
 
-        property real    prevX:      node.guiConfig.position.x
-        property real    prevY:      node.guiConfig.position.y
+        property real    prevX:      node.guiConfig.position.x  * sceneSession.zoomManager.zoomFactor
+        property real    prevY:      node.guiConfig.position.y * sceneSession.zoomManager.zoomFactor
         property bool   isDraging:  false
 
         anchors.fill: parent
@@ -296,8 +296,8 @@ Rectangle {
 
         onPressed: (mouse) => {
             isDraging = true;
-            prevX = mouse.x;
-            prevY = mouse.y;
+            prevX = mouse.x * sceneSession.zoomManager.zoomFactor;
+            prevY = mouse.y * sceneSession.zoomManager.zoomFactor;
             _selectionTimer.start();
         }
 
@@ -307,22 +307,23 @@ Rectangle {
 
         onPositionChanged: (mouse) => {
             if (isDraging) {
-                var deltaX = mouse.x - prevX;
+                var deltaX = mouse.x *  sceneSession.zoomManager.zoomFactor - prevX;
+                                   console.log("sfk ",mouse.x, deltaX, prevX,contentWidth, contentHeight)
                 node.guiConfig.position.x += deltaX / sceneSession.zoomManager.zoomFactor;
-                prevX = mouse.x - deltaX;
-                var deltaY = mouse.y - prevY;
+                prevX = mouse.x * sceneSession.zoomManager.zoomFactor - deltaX;
+                var deltaY = mouse.y * sceneSession.zoomManager.zoomFactor - prevY;
                 node.guiConfig.position.y += deltaY / sceneSession.zoomManager.zoomFactor;
                 if(NLStyle.snapEnabled){
                     node.guiConfig.position.y =  Math.ceil(node.guiConfig.position.y / 20) * 20;
                     node.guiConfig.position.x =  Math.ceil(node.guiConfig.position.x / 20) * 20;
                 }
                 node.guiConfig.positionChanged();
-                prevY = mouse.y - deltaY;
-                if(((node.guiConfig.position.x) < 0 && deltaX < 0)   ||
-                   ((node.guiConfig.position.x + node.guiConfig.width ) > contentWidth) && deltaX > 0||
-                   ((node.guiConfig.position.y) < 0 && deltaY < 0)   ||
-                   ((node.guiConfig.position.y + node.guiConfig.height) > contentHeight) && deltaY > 0)
-                    isDraging = false;
+                prevY = mouse.y * sceneSession.zoomManager.zoomFactor - deltaY;
+//                if(((node.guiConfig.position.x) < 0 && deltaX < 0)   ||
+//                   ((node.guiConfig.position.x + node.guiConfig.width ) > contentWidth) && deltaX > 0||
+//                   ((node.guiConfig.position.y) < 0 && deltaY < 0)   ||
+//                   ((node.guiConfig.position.y + node.guiConfig.height) > contentHeight) && deltaY > 0)
+//                    isDraging = false;
             }
         }
 
