@@ -31,6 +31,8 @@ Flickable {
     anchors.fill: parent
     contentWidth: 4000
     contentHeight: 4000
+    contentX: 1500
+    contentY: 1500
     focus: true
     ScrollBar.horizontal: HorizontalScrollBar{}
     ScrollBar.vertical: VerticalScrollBar{}

@@ -23,7 +23,7 @@ QtObject {
 
     readonly property QtObject overview: QtObject {
         property real scale:          0.15
-        property bool visible:        true
+        property bool visible:        false
     }
 
     property bool snapEnabled: false

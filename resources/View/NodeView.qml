@@ -162,11 +162,11 @@ Rectangle {
             focus: false
             placeholderText: qsTr("Enter title")
             selectByMouse: true
-            text: node.title + nodeView.x
+            text: node.title
             verticalAlignment: Text.AlignVCenter
             onTextChanged: {
-//                if (node && node.title !== text)
-//                    node.title = text;
+                if (node && node.title !== text)
+                    node.title = text;
             }
 
             onPressed: (event) => {
