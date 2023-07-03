@@ -31,7 +31,6 @@ QtObject {
     //! Cumulative  zoom factor
     property real     cumulativeZoomFactor: 1.0
 
-    onZoomFactorChanged: console.log("zpp : ", zoomFactor)
 //    ! Behavior on zoomFactor change
 //    Behavior on zoomFactor {NumberAnimation{duration: 100}}
 
@@ -40,6 +39,10 @@ QtObject {
 
     //! Fit scene with proper width and height in scene
     signal zoomToFitSignal();
+
+    //! Emit from side menu to update scaling in zoomIn/zoomOut process.
+    signal zoomInSignal();
+    signal zoomOutSignal()
 
     //! Set focus to scene.
     signal focusToScene();
@@ -54,9 +57,7 @@ QtObject {
     function zoomIn(zoomCenterPoint : vector2d) {
         if((maximumZoom - zoomFactor) >= zoomStep) {
             undoZoomFactor = zoomFactor;
-             console.log("- s ", zoomFactor)
             zoomFactor *= (1 + zoomStep);
-            console.log("INZOOMIN", zoomFactor)
             zoomPoint = zoomCenterPoint;
         }
 
@@ -90,7 +91,6 @@ QtObject {
 
     //! Custum zoom method with zoom factor and center point
     function customZoom(zoom : real, zoomCenterPoint : vector2d) {
-        console.log("ssscus ", zoom);
         zoomFactor = zoom;
         zoomPoint = zoomCenterPoint;
         startAnimated();
