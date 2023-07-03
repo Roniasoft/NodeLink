@@ -300,11 +300,12 @@ I_NodesScene {
             //! Calculate width and height ratio, Use minimum value to fit in width and height
             var widthRatio  = flickable.width / (rigthX - leftX);
             var heightRatio = flickable.height / (bottomY - topY);
-            var zoomFactor = nodesLength > 1 ? Math.min(widthRatio, heightRatio) : 1;
+
+            //! Maximum zoomFactor is 1.5, greater than 1.5 is not necessary.
+            var zoomFactor = nodesLength > 1 ? Math.min(widthRatio, heightRatio, 1.50) : 1;
 
             worldZoomPoint = Qt.vector2d(flickable.contentX + flickable.width / 2,
                                       flickable.contentY + flickable.height / 2);
-
 
             //! update zoom factor
             sceneSession.zoomManager.customZoom(zoomFactor, worldZoomPoint)

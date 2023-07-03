@@ -11,7 +11,7 @@ QtObject {
      * ****************************************************************************************/
 
     //! Maximum zoom value
-    property real maximumZoom   :   2.0
+    property real maximumZoom   :   1.5
 
     //! Minimum zoom value
     property real minimumZoom   : 0.5
