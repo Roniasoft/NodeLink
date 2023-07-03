@@ -29,7 +29,7 @@ Item {
                 text: "Zoom in"
             }
 
-            onClicked: sceneSession.zoomManager.zoomIn(Qt.point(0, 0));
+            onClicked: sceneSession.zoomManager.zoomInSignal();
         }
         SideMenuButton {
             text: "\uf2f9"
@@ -67,7 +67,7 @@ Item {
                 text: "Zoom out"
             }
 
-            onClicked: sceneSession.zoomManager.zoomOut(Qt.point(0, 0));
+            onClicked: sceneSession.zoomManager.zoomOutSignal();
         }
     }
 
