@@ -135,11 +135,10 @@ I_NodesScene {
 
                      zoomPoint      = Qt.vector3d(wheel.x - flickable.contentX, wheel.y - flickable.contentY, 0);
                      worldZoomPoint = Qt.vector2d(wheel.x, wheel.y);
-
-                     if(wheel.angleDelta.y > 0 && sceneSession.zoomManager.canZoomIn())
-                            flickableScale = 1 + 0.05;
-                     else if (sceneSession.zoomManager.canZoomOut())
-                            flickableScale = 1 - 0.05;
+                     if (wheel.angleDelta.y > 0 && sceneSession.zoomManager.canZoomIn())
+                            flickableScale = 1 + sceneSession.zoomManager.zoomStep;
+                     else if (wheel.angleDelta.y < 0 && sceneSession.zoomManager.canZoomOut())
+                            flickableScale = 1 - sceneSession.zoomManager.zoomStep;
                  }
 
         //! We should toggle line selection with mouse press event
@@ -254,8 +253,8 @@ I_NodesScene {
         sceneSession.contentHeight *= flickableScale;
 
         // Adjust the content position to zoom to the mouse point
-        flickable.contentX = zoomOriginX - xDiffrence;
-        flickable.contentY = zoomOriginY - yDiffrence;
+        flickable.contentX = Math.max(0, zoomOriginX - xDiffrence);
+        flickable.contentY = Math.max(0, zoomOriginY - yDiffrence);
     }
 
     //! Manage zoom in flicable and zoomManager.

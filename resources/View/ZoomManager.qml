@@ -23,7 +23,7 @@ QtObject {
     property real undoZoomFactor: 1.0
 
     //! step of zoom in/out
-    property real zoomStep      : 0.05
+    property real zoomStep      : 0.1
 
     //! zoom scene relative to zoomPoint
     property vector2d zoomPoint    : Qt.vector2d(0, 0)

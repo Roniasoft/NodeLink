@@ -93,11 +93,11 @@ void BackgroundGridsCPP::updateGraph()
                 // Iterate over all events, draw rectangle with the provided color
                 for (int i = 0; i < w2; i += mSpacing) {
                     for (int j = 0; j < h2; j += mSpacing) {
-                        painter.fillRect(QRectF(i, j, 2, 2), QBrush(QColor("#333333")));
+                        painter.fillRect(QRectF(i, j, 2, 2), QBrush(QColor(51, 51, 51)));
                     }
                 }
 
-                painter.save();
+                painter.end();
                 return image;
             });
 
