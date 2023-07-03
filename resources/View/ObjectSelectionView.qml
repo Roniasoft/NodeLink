@@ -119,12 +119,19 @@ Item {
                         obj.guiConfig.position.x += deltaX;
                         obj.guiConfig.position.y += deltaY;
                     obj.guiConfig.positionChanged();
-//                    if(((obj.guiConfig.position.x) < 0 && deltaX < 0)   ||
-//                        ((obj.guiConfig.position.x + obj.guiConfig.width ) > contentWidth) && deltaX > 0||
-//                        ((obj.guiConfig.position.y) < 0 && deltaY < 0)   ||
-//                        ((obj.guiConfig.position.y + obj.guiConfig.height) > contentHeight) && deltaY > 0)
-//                           sceneSession.isRubberBandMoving = false;
-                        }
+
+                    if((obj.guiConfig.position.x < 0  && deltaX < 0) ||
+                       (obj.guiConfig.position.y < 0 && deltaY < 0))
+                        sceneSession.isRubberBandMoving = false;
+
+                    //! Extend contentWidth and contentWidth when is necessary
+                    if (obj.guiConfig.position.x + obj.guiConfig.width > sceneSession.contentWidth && deltaX > 0)
+                        sceneSession.contentWidth += deltaX;
+
+                    if(obj.guiConfig.position.y + obj.guiConfig.height > sceneSession.contentHeight && deltaY > 0)
+                        sceneSession.contentHeight += deltaY;
+
+                    }
                 });
             }
         }

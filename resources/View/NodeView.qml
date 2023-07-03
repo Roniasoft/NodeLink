@@ -304,7 +304,6 @@ Rectangle {
         onPositionChanged: (mouse) => {
             if (isDraging) {
                 var deltaX = mouse.x *  sceneSession.zoomManager.zoomFactor - prevX;
-                                   console.log("sfk ",mouse.x, deltaX, prevX,contentWidth, contentHeight)
                 node.guiConfig.position.x += deltaX / sceneSession.zoomManager.zoomFactor;
                 prevX = mouse.x * sceneSession.zoomManager.zoomFactor - deltaX;
                 var deltaY = mouse.y * sceneSession.zoomManager.zoomFactor - prevY;
@@ -315,11 +314,16 @@ Rectangle {
                 }
                 node.guiConfig.positionChanged();
                 prevY = mouse.y * sceneSession.zoomManager.zoomFactor - deltaY;
-//                if(((node.guiConfig.position.x) < 0 && deltaX < 0)   ||
-//                   ((node.guiConfig.position.x + node.guiConfig.width ) > contentWidth) && deltaX > 0||
-//                   ((node.guiConfig.position.y) < 0 && deltaY < 0)   ||
-//                   ((node.guiConfig.position.y + node.guiConfig.height) > contentHeight) && deltaY > 0)
-//                    isDraging = false;
+
+                if((node.guiConfig.position.x < 0  && deltaX < 0) ||
+                   (node.guiConfig.position.y < 0 && deltaY < 0))
+                                 isDraging = false;
+
+                 if (node.guiConfig.position.x + node.guiConfig.width > sceneSession.contentWidth && deltaX > 0)
+                                 sceneSession.contentWidth += deltaX;
+
+                 if(node.guiConfig.position.y + node.guiConfig.height > sceneSession.contentHeight && deltaY > 0)
+                                 sceneSession.contentHeight += deltaY;
             }
         }
 

@@ -317,12 +317,18 @@ I_NodesScene {
             var fcontentX = leftX * zoomFactor - (nodesLength === 1 ? (flickable.width - (rigthX - leftX)) / 2 : 0);
             var fcontentY = topY  * zoomFactor - (nodesLength === 1 ? (flickable.height - (bottomY - topY)) / 2 : 0);
 
-            fcontentWidth = fcontentWidth < fcontentX ? fcontentX + flickable.width * 1.2 : fcontentWidth;
+            fcontentWidth = Math.max(...Object.values(scene?.nodes ?? ({})).
+                                     map(node => ((node.guiConfig.position.x + node.guiConfig.width) *
+                                                  sceneSession.zoomManager.zoomFactor)));
+            ///fcontentWidth < fcontentX ? fcontentX + flickable.width * 1.2 : fcontentWidth;
             //! Maximum contentWidth is 8000, greater than 8000, the app was slow.
-            flickable.contentWidth = Math.min(fcontentWidth, 8000);
+            sceneSession.contentWidth = Math.max(fcontentWidth, sceneSession.contentHeight);
 
-            fcontentHeight = fcontentHeight < fcontentY ? fcontentY + flickable.height  * 1.2 : fcontentHeight;
-            flickable.contentHeight = Math.min(fcontentHeight, 8000);
+            fcontentHeight = Math.max(...Object.values(scene?.nodes ?? ({})).
+                                      map(node => ((node.guiConfig.position.y + node.guiConfig.height) *
+                                                   sceneSession.zoomManager.zoomFactor)));
+            //fcontentHeight < fcontentY ? fcontentY + flickable.height  * 1.2 : fcontentHeight;
+            sceneSession.contentHeight = Math.max(fcontentHeight, sceneSession.contentHeight);
 
             // Adjust the content position to zoom to the mouse point
             flickable.contentX = fcontentX;
