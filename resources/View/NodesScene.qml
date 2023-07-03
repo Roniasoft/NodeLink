@@ -135,7 +135,8 @@ I_NodesScene {
 
                      zoomPoint      = Qt.vector3d(wheel.x - flickable.contentX, wheel.y - flickable.contentY, 0);
                      worldZoomPoint = Qt.vector2d(wheel.x, wheel.y);
-                     if (wheel.angleDelta.y > 0 && sceneSession.zoomManager.canZoomIn())
+
+                     if(wheel.angleDelta.y > 0 && sceneSession.zoomManager.canZoomIn())
                             flickableScale = 1 + sceneSession.zoomManager.zoomStep;
                      else if (wheel.angleDelta.y < 0 && sceneSession.zoomManager.canZoomOut())
                             flickableScale = 1 - sceneSession.zoomManager.zoomStep;
@@ -301,7 +302,7 @@ I_NodesScene {
             var heightRatio = flickable.height / (bottomY - topY);
 
             //! Maximum zoomFactor is 1.5, greater than 1.5 is not necessary.
-            var zoomFactor = nodesLength > 1 ? Math.min(widthRatio, heightRatio, 1.50) : 1;
+            var zoomFactor = nodesLength > 1 ? Math.min(widthRatio, heightRatio, sceneSession.zoomManager.maximumZoom) : 1;
 
             worldZoomPoint = Qt.vector2d(flickable.contentX + flickable.width / 2,
                                       flickable.contentY + flickable.height / 2);
@@ -344,7 +345,7 @@ I_NodesScene {
             worldZoomPoint = Qt.vector2d(flickable.contentX + flickable.width / 2,
                                          flickable.contentY + flickable.height / 2);
 
-            flickableScale = 1 + 0.05;
+            flickableScale = 1 + sceneSession.zoomManager.zoomStep;
         }
 
         //! Emit from side menu, Do zoomOut process
@@ -356,7 +357,7 @@ I_NodesScene {
             worldZoomPoint = Qt.vector2d(flickable.contentX + flickable.width / 2,
                                          flickable.contentY + flickable.height / 2);
 
-            flickableScale = 1 - 0.05;
+            flickableScale = 1 - sceneSession.zoomManager.zoomStep;
         }
     }
 

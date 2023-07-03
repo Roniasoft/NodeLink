@@ -99,11 +99,11 @@ QtObject {
 
     //! Can zoom In ...
     function canZoomIn() : bool {
-        return zoomFactor < (maximumZoom - zoomStep);
+        return zoomFactor * (1 + zoomStep) <= maximumZoom;
     }
 
     //! Can zoom Out ...
     function canZoomOut() : bool {
-        return zoomFactor > (minimumZoom + zoomStep);
+        return zoomFactor * (1 - zoomStep) >= minimumZoom;
     }
 }
