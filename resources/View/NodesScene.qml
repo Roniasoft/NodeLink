@@ -118,8 +118,6 @@ I_NodesScene {
     contentItem: NodesRect {
         scene: flickable.scene
         sceneSession: flickable.sceneSession
-        contentWidth: flickable.contentWidth * sceneSession.zoomManager.zoomFactor
-        contentHeight: flickable.contentHeight * sceneSession.zoomManager.zoomFactor
     }
 
     //! MouseArea for selection of links
@@ -252,8 +250,8 @@ I_NodesScene {
 
 
         //! update content dimentions
-        flickable.contentWidth  *= flickableScale;
-        flickable.contentHeight *= flickableScale;
+        sceneSession.contentWidth  *= flickableScale;
+        sceneSession.contentHeight *= flickableScale;
 
         // Adjust the content position to zoom to the mouse point
         flickable.contentX = zoomOriginX - xDiffrence;

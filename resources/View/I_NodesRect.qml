@@ -13,10 +13,6 @@ Rectangle {
 
     property SceneSession       sceneSession
 
-    property int                contentWidth
-
-    property int                contentHeight
-
     /*  Object Properties
     * ****************************************************************************************/
     //width: (Math.max(...Object.values(scene?.nodes ?? ({})).map(node => (node.guiConfig.position.x + node.guiConfig.width)), 1024) + 200) * sceneSession.zoomManager.zoomFactor
@@ -38,8 +34,6 @@ Rectangle {
             scene: root.scene
             sceneSession: root.sceneSession
             isSelected: scene.selectionModel.isSelected(modelData._qsUuid);
-            contentWidth: root.contentWidth
-            contentHeight: root.contentHeight
         }
     }
 

@@ -21,10 +21,6 @@ Rectangle {
 
     property bool           isSelected:      false
 
-    property int            contentWidth
-
-    property int            contentHeight
-
     property real fontScale: {
         var checkParam = Math.floor(Math.abs(sceneSession.zoomManager.zoomFactor - 1) * 100 / 15);
 

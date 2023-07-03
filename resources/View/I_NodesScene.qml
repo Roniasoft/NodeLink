@@ -29,8 +29,8 @@ Flickable {
     /* Object Properties
     * ****************************************************************************************/
     anchors.fill: parent
-    contentWidth: 4000
-    contentHeight: 4000
+    contentWidth: sceneSession.contentWidth
+    contentHeight: sceneSession.contentHeight
     contentX: 1500
     contentY: 1500
     focus: true
