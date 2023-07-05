@@ -125,12 +125,13 @@ I_NodesScene {
         anchors.fill: parent
         acceptedButtons: Qt.LeftButton | Qt.RightButton
         enabled: !sceneSession.connectingMode &&
-                 !sceneSession.isRubberBandMoving
+                 !sceneSession.isRubberBandMoving &&
+                 !sceneSession.isCtrlPressed
 
         propagateComposedEvents: true
 
         onWheel: (wheel) => {
-                     if(!sceneSession.isCtrlPressed)
+                     if(!sceneSession.isShiftModifierPressed)
                         return;
 
                      zoomPoint      = Qt.vector3d(wheel.x - flickable.contentX, wheel.y - flickable.contentY, 0);
