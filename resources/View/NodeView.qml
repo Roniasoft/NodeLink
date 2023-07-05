@@ -390,8 +390,10 @@ Rectangle {
         onPositionChanged: (mouse)=> {
             if (isDraging) {
                 var deltaY = mouse.y - prevY;
-                node.guiConfig.position.y += deltaY;
-                node.guiConfig.height -= deltaY;
+                var correctedDeltaY = Math.floor(deltaY);
+
+                node.guiConfig.position.y += correctedDeltaY;
+                node.guiConfig.height -= correctedDeltaY;
                 prevY = mouse.y - deltaY;
                 if(node.guiConfig.height < 70){
                     node.guiConfig.height = 70;
@@ -454,7 +456,7 @@ Rectangle {
         preventStealing: true
 
         property bool   isDraging:  false
-        property int    prevX:      0
+        property real    prevX:      0
 
         onPressed: (mouse)=> {
             isDraging = true;
@@ -468,9 +470,12 @@ Rectangle {
         onPositionChanged: (mouse)=> {
             if (isDraging) {
                 var deltaX = mouse.x - prevX;
-                node.guiConfig.position.x += deltaX;
-                node.guiConfig.width -= deltaX
+                var correctedDeltaX = Math.floor(deltaX);
+
+                node.guiConfig.position.x += correctedDeltaX;
+                node.guiConfig.width -= correctedDeltaX;
                 prevX = mouse.x - deltaX;
+
                 if(node.guiConfig.width < 100){
                     node.guiConfig.width = 100
                     if(deltaX>0){
