@@ -39,7 +39,10 @@ QtObject {
 
     //! Emit from side menu to update scaling in zoomIn/zoomOut process.
     signal zoomInSignal();
-    signal zoomOutSignal()
+    signal zoomOutSignal();
+
+    //! Zoom In/Out from NodeView
+    signal zoomNodeSignal(zoomPoint: vector2d, wheelAngle: int);
 
     //! Set focus to scene.
     signal focusToScene();

@@ -327,14 +327,14 @@ I_NodesScene {
 
             fcontentWidth = Math.max(...Object.values(scene?.nodes ?? ({})).
                                      map(node => ((node.guiConfig.position.x + node.guiConfig.width) *
-                                                  sceneSession.zoomManager.zoomFactor)));
+                                                  sceneSession.zoomManager.zoomFactor)), fcontentHeight);
 
             //! Maximum contentWidth is 8000, greater than 8000, the app was slow.
             sceneSession.contentWidth = Math.max(fcontentWidth, sceneSession.contentHeight);
 
             fcontentHeight = Math.max(...Object.values(scene?.nodes ?? ({})).
                                       map(node => ((node.guiConfig.position.y + node.guiConfig.height) *
-                                                   sceneSession.zoomManager.zoomFactor)));
+                                                   sceneSession.zoomManager.zoomFactor)), fcontentHeight);
 
             sceneSession.contentHeight = Math.max(fcontentHeight, sceneSession.contentHeight);
 
@@ -365,6 +365,19 @@ I_NodesScene {
                                          flickable.contentY + flickable.height / 2);
 
             flickableScale = 1 - sceneSession.zoomManager.zoomStep;
+        }
+
+        //! Manage zoom from nodeView.
+        function onZoomNodeSignal(zoomPointScaled: vector2d, wheelAngle: int) {
+
+            flickable.zoomPoint      = Qt.vector3d(zoomPointScaled.x - flickable.contentX, zoomPointScaled.y - flickable.contentY, 0);
+            flickable.worldZoomPoint = Qt.vector2d(zoomPointScaled.x, zoomPointScaled.y);
+
+            if(wheelAngle > 0 && sceneSession.zoomManager.canZoomIn())
+                   flickableScale = 1 + sceneSession.zoomManager.zoomStep;
+            else if (wheelAngle < 0 && sceneSession.zoomManager.canZoomOut())
+                   flickableScale = 1 - sceneSession.zoomManager.zoomStep;
+
         }
     }
 
