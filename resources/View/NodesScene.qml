@@ -70,9 +70,9 @@ I_NodesScene {
             onRunningChanged: {
                 if(!running) {
                     if(flickableScale > 1.0)
-                        sceneSession.zoomManager.zoomIn(worldZoomPoint);
+                        sceneSession.zoomManager.zoomIn();
                     else if (flickableScale < 1.0)
-                        sceneSession.zoomManager.zoomOut(worldZoomPoint);
+                        sceneSession.zoomManager.zoomOut();
 
                     updateFlickableDimention();
                     scaleBehavior.enabled = false;
@@ -251,12 +251,18 @@ I_NodesScene {
 
 
         //! update content dimentions
-        sceneSession.contentWidth  *= flickableScale;
-        sceneSession.contentHeight *= flickableScale;
+        var canWidthChange = sceneSession.contentWidth * flickableScale >= flickable.width;
+        sceneSession.contentWidth  *= canWidthChange ? flickableScale : 1;
+
+        var canHeightChange = sceneSession.contentHeight * flickableScale >= flickable.height;
+        sceneSession.contentHeight *= canHeightChange ? flickableScale : 1;
 
         // Adjust the content position to zoom to the mouse point
-        flickable.contentX = Math.max(0, zoomOriginX - xDiffrence);
-        flickable.contentY = Math.max(0, zoomOriginY - yDiffrence);
+        if (canWidthChange)
+            flickable.contentX =  Math.max(0, zoomOriginX - xDiffrence);
+
+        if (canHeightChange)
+            flickable.contentY =  Math.max(0, zoomOriginY - yDiffrence);
     }
 
     //! Manage zoom in flicable and zoomManager.
@@ -309,7 +315,7 @@ I_NodesScene {
                                       flickable.contentY + flickable.height / 2);
 
             //! update zoom factor
-            sceneSession.zoomManager.customZoom(zoomFactor, worldZoomPoint)
+            sceneSession.zoomManager.customZoom(zoomFactor)
 
             //! update content dimentions
             var fcontentWidth  = 4000 * zoomFactor
@@ -322,14 +328,14 @@ I_NodesScene {
             fcontentWidth = Math.max(...Object.values(scene?.nodes ?? ({})).
                                      map(node => ((node.guiConfig.position.x + node.guiConfig.width) *
                                                   sceneSession.zoomManager.zoomFactor)));
-            ///fcontentWidth < fcontentX ? fcontentX + flickable.width * 1.2 : fcontentWidth;
+
             //! Maximum contentWidth is 8000, greater than 8000, the app was slow.
             sceneSession.contentWidth = Math.max(fcontentWidth, sceneSession.contentHeight);
 
             fcontentHeight = Math.max(...Object.values(scene?.nodes ?? ({})).
                                       map(node => ((node.guiConfig.position.y + node.guiConfig.height) *
                                                    sceneSession.zoomManager.zoomFactor)));
-            //fcontentHeight < fcontentY ? fcontentY + flickable.height  * 1.2 : fcontentHeight;
+
             sceneSession.contentHeight = Math.max(fcontentHeight, sceneSession.contentHeight);
 
             // Adjust the content position to zoom to the mouse point

@@ -25,9 +25,6 @@ QtObject {
     //! step of zoom in/out
     property real zoomStep      : 0.1
 
-    //! zoom scene relative to zoomPoint
-    property vector2d zoomPoint    : Qt.vector2d(0, 0)
-
     //! Cumulative  zoom factor
     property real     cumulativeZoomFactor: 1.0
 
@@ -54,22 +51,20 @@ QtObject {
     /* Functions
      * ****************************************************************************************/
     //! ZoomIn method
-    function zoomIn(zoomCenterPoint : vector2d) {
-        if((maximumZoom - zoomFactor) >= zoomStep) {
+    function zoomIn() {
+        if(canZoomIn()) {
             undoZoomFactor = zoomFactor;
             zoomFactor *= (1 + zoomStep);
-            zoomPoint = zoomCenterPoint;
         }
 
         focusToScene();
     }
 
     //! ZoomOut method
-    function zoomOut(zoomCenterPoint : vector2d) {
-        if((zoomFactor - minimumZoom) >= zoomStep) {
+    function zoomOut() {
+        if(canZoomOut()) {
             undoZoomFactor = zoomFactor;
             zoomFactor *= (1 - zoomStep);
-            zoomPoint = zoomCenterPoint;
         }
         focusToScene();
     }
@@ -90,9 +85,8 @@ QtObject {
     }
 
     //! Custum zoom method with zoom factor and center point
-    function customZoom(zoom : real, zoomCenterPoint : vector2d) {
+    function customZoom(zoom : real) {
         zoomFactor = zoom;
-        zoomPoint = zoomCenterPoint;
         startAnimated();
         focusToScene();
     }
