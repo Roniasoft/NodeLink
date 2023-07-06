@@ -21,6 +21,8 @@ Rectangle {
 
     property bool           isSelected:      false
 
+    property bool           isNodeMinimal: sceneSession.zoomManager.zoomFactor < sceneSession.zoomManager.minimalZoomNode
+
     property real fontScale: {
         var checkParam = Math.floor(Math.abs(sceneSession.zoomManager.zoomFactor - 1) * 100 / 15);
 
@@ -46,7 +48,7 @@ Rectangle {
     color: Qt.darker(node.guiConfig.color, 10)
     border.color: node.guiConfig.locked ? "gray" : Qt.lighter(node.guiConfig.color, nodeView.isSelected ? 1.2 : 1)
     border.width: (nodeView.isSelected ? 3 : 2) * sceneSession.zoomManager.zoomFactor
-    opacity: nodeView.isSelected ? 1 : 0.8
+    opacity: nodeView.isSelected ? 1 :  nodeView.isNodeMinimal ? 0.6 : 0.8
     z: node.guiConfig.locked ? 1 : (isSelected ? 3 : 2)
     radius: 10
     smooth: true
@@ -57,8 +59,7 @@ Rectangle {
     Behavior on color {ColorAnimation {duration:100}}
     Behavior on border.color {ColorAnimation {duration:100}}
 
-
-    /* Signals
+    /* Slots
      * ****************************************************************************************/
 
     //! When node is selected, width, height, x, and y
@@ -70,7 +71,13 @@ Rectangle {
     onYChanged: dimensionChanged();
 
     onEditChanged: {
-        nodeView.edit ? titleTextArea.forceActiveFocus() :  nodeView.forceActiveFocus()
+        nodeView.edit ? titleTextArea.forceActiveFocus() :  nodeView.forceActiveFocus();
+
+        // Move node to minimum edit zoom
+        if(nodeView.edit && nodeView.isNodeMinimal) {
+            var zoomPoint  = Qt.vector2d(nodeView.x, nodeView.y);
+            sceneSession.zoomManager.zoomNodeSignal(zoomPoint, 1, true);
+        }
     }
 
     onIsSelectedChanged: {
@@ -128,6 +135,8 @@ Rectangle {
         anchors.right: parent.right
         anchors.top: parent.top
         anchors.margins: 12
+
+        visible: !nodeView.isNodeMinimal
         height: 20 * (fontScale >= 1.0 ? fontScale : 0.8)
 
         //! Icon
@@ -150,7 +159,7 @@ Rectangle {
             anchors.left: iconText.right
             anchors.verticalCenter: parent.verticalCenter
             anchors.leftMargin: 5
-            height: 40 * (fontScale >= 0.95 ? fontScale : 0.8)
+            height: 40 * (fontScale >= 0.95 ? fontScale : 0.9)
 
             rightPadding: 10
 
@@ -193,6 +202,7 @@ Rectangle {
         hoverEnabled: true
         clip: true
         focus: true
+        visible: !nodeView.isNodeMinimal
 
         ScrollBar.vertical: ScrollBar {
             id: scrollerV
@@ -237,6 +247,46 @@ Rectangle {
         }
     }
 
+    //! Minimal nodeview in low zoomFactor
+    Rectangle {
+        id: minimalRectangle
+        anchors.fill: parent
+        anchors.margins: 10 * sceneSession.zoomManager.zoomFactor
+
+        color: nodeView.isNodeMinimal ? "#282828" : "trasparent"
+        radius: 5
+
+        //! OpacityAnimator use when nodeView.isNodeMinimal is false to set opacity = 0.7
+        OpacityAnimator {
+            target: minimalRectangle
+
+            from: minimalRectangle.opacity
+            to: 0.7
+            duration: 200
+            running: nodeView.isNodeMinimal
+        }
+
+        //! OpacityAnimator use when nodeView.isNodeMinimal is false to set opacity = 0
+        OpacityAnimator {
+            target: minimalRectangle
+
+            from: minimalRectangle.opacity
+            to: 0
+            duration: 200
+            running: !nodeView.isNodeMinimal
+        }
+
+        //! Text Icon
+        Text {
+            font.family: "Font Awesome 6 Pro"
+            font.pixelSize: 20 * fontScale
+            anchors.centerIn: parent
+            text: "\uf8f2"
+            color: "white"
+            font.weight: 400
+            visible: nodeView.isNodeMinimal
+        }
+    }
 
     //! Manage node selection and position change.
     MouseArea {
@@ -255,6 +305,15 @@ Rectangle {
 
         // To hide cursor when is disable
         visible: enabled
+
+        //! Manage zoom in nodeview and pass it to zoomManager
+        onWheel: (wheel) => {
+                     //! active zoom with shift modifier.
+                     if(sceneSession.isShiftModifierPressed) {
+                         var zoomPoint = Qt.vector2d(wheel.x + nodeView.x, wheel.y + nodeView.y);
+                         sceneSession.zoomManager.zoomNodeSignal(zoomPoint, wheel.angleDelta.y, false);
+                     }
+                 }
 
         onDoubleClicked: (mouse) => {
             // Clear all selected nodes

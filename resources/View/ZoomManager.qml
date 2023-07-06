@@ -14,7 +14,7 @@ QtObject {
     property real maximumZoom   :   1.5
 
     //! Minimum zoom value
-    property real minimumZoom   : 0.5
+    property real minimumZoom   : 0.35
 
     //! Zoom factor, control the zoom
     property real zoomFactor    : 1.0
@@ -25,8 +25,8 @@ QtObject {
     //! step of zoom in/out
     property real zoomStep      : 0.1
 
-    //! Cumulative  zoom factor
-    property real     cumulativeZoomFactor: 1.0
+    //! In minimalZoomNode, node show a minimal Rectangle without header and description
+    property real minimalZoomNode: 0.6
 
 //    ! Behavior on zoomFactor change
 //    Behavior on zoomFactor {NumberAnimation{duration: 100}}
@@ -42,7 +42,7 @@ QtObject {
     signal zoomOutSignal();
 
     //! Zoom In/Out from NodeView
-    signal zoomNodeSignal(zoomPoint: vector2d, wheelAngle: int);
+    signal zoomNodeSignal(zoomPoint: vector2d, wheelAngle: int, moveToMinimalZoom : bool);
 
     //! Set focus to scene.
     signal focusToScene();

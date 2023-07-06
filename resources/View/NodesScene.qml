@@ -339,8 +339,8 @@ I_NodesScene {
             sceneSession.contentHeight = Math.max(fcontentHeight, sceneSession.contentHeight);
 
             // Adjust the content position to zoom to the mouse point
-            flickable.contentX = fcontentX;
-            flickable.contentY = fcontentY;
+            flickable.contentX = Math.max(0, fcontentX);
+            flickable.contentY = Math.max(0, fcontentY);
         }
 
         //! Emit from side menu, Do zoomIn process
@@ -368,16 +368,36 @@ I_NodesScene {
         }
 
         //! Manage zoom from nodeView.
-        function onZoomNodeSignal(zoomPointScaled: vector2d, wheelAngle: int) {
+        function onZoomNodeSignal(zoomPointScaled: vector2d, wheelAngle: int, moveToMinimalZoom = false) {
+
+            //! Move zoom to edit node.
+            if(moveToMinimalZoom) {
+                var origin =  zoomPointScaled.times(sceneSession.zoomManager.minimalZoomNode /
+                                                    sceneSession.zoomManager.zoomFactor)
+                //! update zoom factor
+                sceneSession.zoomManager.customZoom(sceneSession.zoomManager.minimalZoomNode)
+
+                //! update content dimentions
+                sceneSession.contentWidth  = 4000 * sceneSession.zoomManager.minimalZoomNode;
+                sceneSession.contentHeight = 4000 * sceneSession.zoomManager.minimalZoomNode;
+
+                //! Calculate contentX and contentY, when nodes has one node, the node must be in center
+                var fcontentX = origin.x - (flickable.width / 2);
+                var fcontentY = origin.y - (flickable.height / 2 ) ;
+
+                // Adjust the content position to zoom to the mouse point
+                flickable.contentX = Math.max(0, fcontentX);
+                flickable.contentY = Math.max(0, fcontentY);
+
+                return;
+            }
 
             flickable.zoomPoint      = Qt.vector3d(zoomPointScaled.x - flickable.contentX, zoomPointScaled.y - flickable.contentY, 0);
             flickable.worldZoomPoint = Qt.vector2d(zoomPointScaled.x, zoomPointScaled.y);
-
             if(wheelAngle > 0 && sceneSession.zoomManager.canZoomIn())
                    flickableScale = 1 + sceneSession.zoomManager.zoomStep;
             else if (wheelAngle < 0 && sceneSession.zoomManager.canZoomOut())
                    flickableScale = 1 - sceneSession.zoomManager.zoomStep;
-
         }
     }
 
