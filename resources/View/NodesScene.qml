@@ -330,7 +330,7 @@ I_NodesScene {
                                                   sceneSession.zoomManager.zoomFactor)), fcontentHeight);
 
             //! Maximum contentWidth is 8000, greater than 8000, the app was slow.
-            sceneSession.contentWidth = Math.max(fcontentWidth, sceneSession.contentHeight);
+            sceneSession.contentWidth = Math.max(fcontentWidth, sceneSession.contentWidth);
 
             fcontentHeight = Math.max(...Object.values(scene?.nodes ?? ({})).
                                       map(node => ((node.guiConfig.position.y + node.guiConfig.height) *
@@ -398,6 +398,21 @@ I_NodesScene {
                    flickableScale = 1 + sceneSession.zoomManager.zoomStep;
             else if (wheelAngle < 0 && sceneSession.zoomManager.canZoomOut())
                    flickableScale = 1 - sceneSession.zoomManager.zoomStep;
+        }
+
+        //! Set focus on NodesScene after zoom In/Out
+        function onFocusToScene() {
+            flickable.forceActiveFocus();
+        }
+
+        //! Reset zoom and related parameters
+        function onResetZoomSignal(zoomFactor: real) {
+            //! Reset zoom to defualt values
+            sceneSession.contentWidth = 4000;
+            sceneSession.contentHeight = 4000;
+            flickable.contentX = 1500;
+            flickable.contentY = 1500;
+            sceneSession.zoomManager.customZoom(zoomFactor);
         }
     }
 

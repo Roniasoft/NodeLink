@@ -41,7 +41,7 @@ Item {
                 text: "Reset zoom"
             }
 
-            onClicked: sceneSession.zoomManager.undoZoom();
+            onClicked: sceneSession.zoomManager.resetZoomSignal(1.0);
         }
 
         SideMenuButton {

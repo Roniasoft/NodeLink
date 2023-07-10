@@ -19,9 +19,6 @@ QtObject {
     //! Zoom factor, control the zoom
     property real zoomFactor    : 1.0
 
-    //! Keep zoom factor before zoomIn and zoomOut.
-    property real undoZoomFactor: 1.0
-
     //! step of zoom in/out
     property real zoomStep      : 0.1
 
@@ -50,31 +47,30 @@ QtObject {
     //! Use this when zoomFactor changed very fast.
     signal startAnimated();
 
+    //! reset zoom with efect on flicable
+    signal resetZoomSignal(zoomFactor : real);
+
 
     /* Functions
      * ****************************************************************************************/
     //! ZoomIn method
     function zoomIn() {
-        if(canZoomIn()) {
-            undoZoomFactor = zoomFactor;
+        if(canZoomIn())
             zoomFactor *= (1 + zoomStep);
-        }
 
         focusToScene();
     }
 
     //! ZoomOut method
     function zoomOut() {
-        if(canZoomOut()) {
-            undoZoomFactor = zoomFactor;
+        if(canZoomOut())
             zoomFactor *= (1 - zoomStep);
-        }
+
         focusToScene();
     }
 
     //! Fit scene with proper zoom factor
     function zoomToFit() {
-        undoZoomFactor = zoomFactor;
         zoomToFitSignal();
         startAnimated();
         focusToScene();
@@ -82,7 +78,6 @@ QtObject {
 
     //! Undo zoom method
     function undoZoom() {
-        zoomFactor = undoZoomFactor;
         startAnimated();
         focusToScene();
     }
