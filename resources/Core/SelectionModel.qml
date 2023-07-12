@@ -46,15 +46,15 @@ QtObject {
         }
     }
 
-    //! Select an object node
-    function select(node: Node) {
+    //! Select object nodes (Add Node object to SelectionModel)
+    function selectNode(node: Node) {
         //! clear selection model when selection changed.
         selectedModel[node._qsUuid] = node;
         selectedModelChanged();
     }
 
-    //! Toggle Link Selection (deselect if is selected already)
-    function toggleLinkSelection(link: Link) {
+    //! Select Link objects  (Add link object to SelectionModel)
+    function selectLink(link: Link) {
         if (link === null)
             return;
 

@@ -147,7 +147,7 @@ Item {
         onTriggered: sceneSession.isRubberBandMoving = false;
     }
 
-    //! Connection to calculate rubber band Dimentions when necessary.
+    //! Connection to calculate rubber band Dimensions when necessary.
     Connections {
         target: scene.selectionModel
 
@@ -160,7 +160,7 @@ Item {
         }
     }
 
-	//! Connection to calculate rubber band Dimentions when zoomFactorChanged.
+    //! Connection to calculate rubber band Dimensions when zoomFactorChanged.
     Connections {
         target: sceneSession.zoomManager
 
@@ -178,7 +178,7 @@ Item {
         interval: 5
 
          onTriggered: {
-             calculateDimentions();
+             calculateDimensions();
          }
 
     }

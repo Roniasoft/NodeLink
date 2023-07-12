@@ -320,7 +320,7 @@ Rectangle {
             scene.selectionModel.clearAllExcept(node._qsUuid);
 
             // Select current node
-            scene.selectionModel.select(node);
+            scene.selectionModel.selectNode(node);
 
             // Enable edit mode
             nodeView.edit = true;
@@ -343,7 +343,7 @@ Rectangle {
                 scene.selectionModel.clearAllExcept(node._qsUuid);
 
                 // Select current node
-                scene.selectionModel.select(node);
+                scene.selectionModel.selectNode(node);
 
                 nodeContextMenu.popup(mouse.x, mouse.y);
             }
@@ -415,7 +415,7 @@ Rectangle {
                 if(isAlreadySel && isModifiedOn)
                     scene.selectionModel.remove(node._qsUuid);
                 else
-                    scene.selectionModel.select(node);
+                    scene.selectionModel.selectNode(node);
             }
         }
     }

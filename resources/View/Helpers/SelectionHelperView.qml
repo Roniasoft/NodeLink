@@ -118,7 +118,7 @@ Item {
                 // Find objects inside foregroundItem
                 var selectedObj = scene.findNodesInContainerItem(selectionRubberBandItem,
                                                                  sceneSession.zoomManager.zoomFactor);
-                selectedObj.forEach(node => scene.selectionModel.select(node));
+                selectedObj.forEach(node => scene.selectionModel.selectNode(node));
             }
         }
     }

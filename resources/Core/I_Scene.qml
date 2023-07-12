@@ -74,7 +74,7 @@ QSObject {
         nodeAdded(node);
 
         scene.selectionModel.clear();
-        scene.selectionModel.select(node);
+        scene.selectionModel.selectNode(node);
 
         node.onPortAdded.connect(onPortAdded);
         return node;
@@ -136,7 +136,7 @@ QSObject {
         node.guiConfig.width = nodes[nodeUUId].guiConfig.width
         node.title = nodes[nodeUUId].title
         node.addPortByHardCode();
-        selectionModel.select(node);
+        selectionModel.selectNode(node);
     }
 
     //! On port added

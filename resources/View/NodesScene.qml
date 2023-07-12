@@ -74,7 +74,7 @@ I_NodesScene {
                     else if (flickableScale < 1.0)
                         sceneSession.zoomManager.zoomOut();
 
-                    updateFlickableDimention();
+                    updateFlickableDimension();
                     scaleBehavior.enabled = false;
                     zoomPoint = Qt.vector3d(0, 0, 0);
                     flickableScale = 1.00;
@@ -160,7 +160,7 @@ I_NodesScene {
                    sceneSession.isShiftModifierPressed)
                      scene.selectionModel.remove(link._qsUuid);
                 else
-                     scene.selectionModel.toggleLinkSelection(link);
+                     scene.selectionModel.selectLink(link);
 
             } else if (mouse.button === Qt.RightButton) {
                 contextMenu.popup(mouse.x, mouse.y)
@@ -233,8 +233,8 @@ I_NodesScene {
         sourceComponent: foreground
     }
 
-    //! Update flicable dimention with zoomfactor
-    function updateFlickableDimention() {
+    //! Update flicable dimension with zoomfactor
+    function updateFlickableDimension() {
 
         //! Zoom implemented in two state: first : zoom Flicable
         //!                    second: scale Item objects
