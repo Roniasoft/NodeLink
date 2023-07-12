@@ -28,6 +28,9 @@ QtObject {
     //! SelectionHelperView
     property bool rubberBandSelectionMode: false
 
+    //! Active focus of main scene view
+    signal sceneForceFocus()
+
     //! Sets port visibility
     function setPortVisibility(portId: string, visible: Boolean) {
         portsVisibility[portId] = visible;

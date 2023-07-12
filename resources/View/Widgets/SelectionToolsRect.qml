@@ -14,7 +14,8 @@ Rectangle {
 
     /* Property Declarations
      * ****************************************************************************************/
-    required property Scene scene
+    required property Scene         scene
+    required property SceneSession  sceneSession
 
     //! Selected model (Node AND/OR links)
     property SelectionModel selectionModel: scene.selectionModel
@@ -358,6 +359,9 @@ Rectangle {
                 id: deletePopup
 
                 onAccepted: delTimer.start();
+
+                onClosed: sceneSession.sceneForceFocus();
+
             }
 
         }

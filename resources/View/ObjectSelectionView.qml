@@ -54,10 +54,10 @@ Item {
         anchors.horizontalCenter: parent.horizontalCenter
 
         scene: root.scene
+        sceneSession: root.sceneSession
 
         visible: hasSelectedObject
     }
-
 
     //! MouseArea to move contain nodes.
     MouseArea {

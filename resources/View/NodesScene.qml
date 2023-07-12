@@ -170,4 +170,13 @@ I_NodesScene {
         sourceComponent: foreground
     }
 
+
+    //! Force active main scene view (flicable) when 3rdparty window closed.
+    Connections {
+        target: sceneSession
+
+        function onSceneForceFocus() {
+            flickable.forceActiveFocus();
+        }
+    }
 }
