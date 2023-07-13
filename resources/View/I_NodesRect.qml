@@ -34,8 +34,7 @@ Rectangle {
             node: modelData
             scene: root.scene
             sceneSession: root.sceneSession
-            isSelected: modelData === scene.selectionModel.selectedNode
-            onClicked: scene.selectionModel.select(modelData)
+            isSelected: scene.selectionModel.isSelected(modelData._qsUuid);
             contentWidth: root.contentWidth
             contentHeight: root.contentHeight
         }
@@ -47,7 +46,8 @@ Rectangle {
 
         delegate: LinkView {
             scene: root.scene
-            isSelected: modelData === scene.selectionModel.selectedLink
+            isSelected: scene?.selectionModel?.isSelected(modelData?._qsUuid) ?? false
+
             inputPort: modelData.inputPort
             outputPort: modelData.outputPort
             link: modelData

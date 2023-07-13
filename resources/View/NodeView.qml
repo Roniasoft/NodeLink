@@ -11,17 +11,15 @@ Rectangle {
 
     /* Property Declarations
      * ****************************************************************************************/
-    property Node node
+    property Node           node
 
     property Scene          scene
 
     property SceneSession   sceneSession
 
-    property bool   edit
+    property bool           edit
 
     property bool           isSelected:      false
-
-    property bool           locked:          false
 
     property int            contentWidth
 
@@ -34,10 +32,10 @@ Rectangle {
     x: node.guiConfig.position.x
     y: node.guiConfig.position.y
     color: Qt.darker(node.guiConfig.color, 10)
-    border.color: locked ? "gray" : Qt.lighter(node.guiConfig.color, nodeView.isSelected ? 1.2 : 1)
+    border.color: node.guiConfig.locked ? "gray" : Qt.lighter(node.guiConfig.color, nodeView.isSelected ? 1.2 : 1)
     border.width: nodeView.isSelected ? 3 : 2
     opacity: nodeView.isSelected ? 1 : 0.8
-    z: locked ? 1 : (isSelected ? 3 : 2)
+    z: node.guiConfig.locked ? 1 : (isSelected ? 3 : 2)
     radius: 10
     smooth: true
     antialiasing: true
@@ -49,7 +47,6 @@ Rectangle {
 
     /* Signals
      * ****************************************************************************************/
-    signal clicked();
 
     onEditChanged: {
         nodeView.edit ? titleTextArea.forceActiveFocus() :  nodeView.forceActiveFocus()
@@ -65,6 +62,17 @@ Rectangle {
             deletePopup.open();
     }
 
+    //! Use Key to manage shift pressed to handle multiObject selection
+    Keys.onPressed: (event)=> {
+        if (event.key === Qt.Key_Shift)
+            sceneSession.isShiftModifierPressed = true;
+    }
+
+    Keys.onReleased: (event)=> {
+        if (event.key === Qt.Key_Shift)
+            sceneSession.isShiftModifierPressed = false;
+    }
+
     /* Children
     * ****************************************************************************************/
     //! Delete node
@@ -73,14 +81,17 @@ Rectangle {
         repeat: false
         running: false
         interval: 100
-        onTriggered: scene.deleteNode(node._qsUuid);
+        onTriggered: {
+            scene.deleteSelectedObjects();
+        }
     }
 
     //! Delete popup to confirm deletion process
     ConfirmPopUp {
         id: deletePopup
-
-        onAccepted: delTimer.start();
+        onAccepted: {
+            delTimer.start();
+        }
     }
 
     //! Header Item
@@ -125,6 +136,14 @@ Rectangle {
                 if (node && node.title !== text)
                     node.title = text;
             }
+
+            onPressed: (event) => {
+                if (event.button === Qt.RightButton) {
+                    nodeView.edit = false
+                    nodeMouseArea.clicked(event)
+                }
+            }
+
             smooth: true
             antialiasing: true
             font.pointSize: 10
@@ -166,7 +185,6 @@ Rectangle {
             focus: false
             placeholderText: qsTr("Enter description")
             color: "white"
-            selectByMouse: true
             text: node.guiConfig.description
             wrapMode:TextEdit.WrapAnywhere
             onTextChanged: {
@@ -175,10 +193,15 @@ Rectangle {
             }
             smooth: true
             antialiasing: true
-
             font.bold: true
             font.pointSize: 9
 
+            onPressed: (event) => {
+                if (event.button === Qt.RightButton) {
+                    nodeView.edit = false;
+                    nodeMouseArea.clicked(event);
+                }
+            }
             background: Rectangle {
                 color: "transparent";
             }
@@ -218,6 +241,13 @@ Rectangle {
         enabled: !nodeView.edit && !sceneSession.connectingMode
 
         onDoubleClicked: {
+            // Clear all selected nodes
+            scene.selectionModel.clearAllExcept(node._qsUuid);
+
+            // Select current node
+            scene.selectionModel.select(node);
+
+            // Enable edit mode
             nodeView.edit = true;
         }
 
@@ -226,11 +256,19 @@ Rectangle {
                      : Qt.ArrowCursor
 
 
+        //! Manage right and left click to select and
+        //! show node contex menue.
+        onClicked: (mouse) => {
+            _selectionTimer.start();
+            if (mouse.button === Qt.RightButton)
+                 nodeContextMenu.popup(mouse.x, mouse.y)
+        }
+
         onPressed: (mouse) => {
             isDraging = true;
             prevX = mouse.x;
             prevY = mouse.y;
-            nodeView.clicked();
+            _selectionTimer.start();
         }
 
         onReleased: (mouse) => {
@@ -258,6 +296,37 @@ Rectangle {
             }
         }
 
+        NodeContextMenu {
+            id: nodeContextMenu
+            scene: nodeView.scene
+            node: nodeView.node
+            onEditNode: nodeView.edit = true;
+        }
+
+        //! Timer to manage pressed and clicked  events.
+        //! They should be avoided at the same time
+        Timer {
+            id: _selectionTimer
+
+            interval: 100
+            repeat: false
+            running: false
+
+            onTriggered: {
+                // Clear selection model when Shift key not pressed.
+                const isModifiedOn = sceneSession.isShiftModifierPressed;
+
+                if(!isModifiedOn)
+                     scene.selectionModel.clearAllExcept(node._qsUuid);
+
+                const isAlreadySel = scene.selectionModel.isSelected(node._qsUuid);
+                // Select current node
+                if(isAlreadySel && isModifiedOn)
+                    scene.selectionModel.remove(node._qsUuid);
+                else
+                    scene.selectionModel.select(node);
+            }
+        }
     }
 
     //! todo: encapsulate these mouse areas
@@ -617,7 +686,6 @@ Rectangle {
         }
     }
 
-
     //! Top Ports
     Row {
         id: topRow
@@ -638,7 +706,6 @@ Rectangle {
             }
         }
     }
-
 
     //! Left Ports
     Column {
@@ -707,8 +774,8 @@ Rectangle {
     MouseArea {
         anchors.fill: parent
         anchors.margins: -10
-        enabled: locked
-        onClicked: nodeView.clicked()
-        visible: locked
+        enabled: node.guiConfig.locked
+        onClicked: scene.selectionModel.select(node);
+        visible: node.guiConfig.locked
     }
 }

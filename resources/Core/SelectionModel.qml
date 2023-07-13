@@ -8,12 +8,8 @@ QtObject {
 
     /* Property Declarations
      * ****************************************************************************************/
-    //! Selected Node
-    property Node selectedNode
-
-    //! Selected Link
-    property Link selectedLink
-
+    //! Map <uuid, model(Node And/Or Link)>
+    property var selectedModel: ({})
 
 
     /* Signals
@@ -21,9 +17,31 @@ QtObject {
 
     /* Functions
      * ****************************************************************************************/
+    //! Clear all objects from selection model
     function clear() {
-        selectedNode = null;
-        selectedLink = null;
+        // delete all objects
+        Object.entries(selectedModel).forEach(([key, value]) => {
+                delete selectedModel[key];
+        });
+        selectedModelChanged();
+    }
+
+
+    //! Clear all objects (except one with qsUuid) from selection model
+    function clearAllExcept(qsUuid : string) {
+        // delete all objects
+        Object.entries(selectedModel).forEach(([key, value]) => {
+            if(key !== qsUuid)
+                delete selectedModel[key];
+        });
+    }
+
+    //! Remove an object from selection model
+    function remove(qsUuid : string) {
+        if(isSelected(qsUuid)) {
+            delete selectedModel[qsUuid];
+            selectedModelChanged();
+        }
     }
 
     function clearSelection() {
@@ -32,10 +50,11 @@ QtObject {
     function reset() {
     }
 
+    //! Select an object node
     function select(node: Node) {
         //! clear selection model when selection changed.
-        clear();
-        selectedNode = node;
+        selectedModel[node._qsUuid] = node;
+        selectedModelChanged();
     }
 
     //! Toggle Link Selection (deselect if is selected already)
@@ -43,11 +62,27 @@ QtObject {
         if (link === null)
             return;
 
-         //! clear selection model when selection changed.
-        clear();
-        // toggle selection
-        selectedLink = (selectedLink === null || link._qsUuid !== selectedLink._qsUuid)
-                ? link
-                : null;
+        // Add Link object into selected model.
+        selectedModel[link._qsUuid] = link;
+        selectedModelChanged();
+    }
+
+    //! Check an object is selected or not
+    function isSelected(qsUuid : string) : bool {
+        return Object.keys(selectedModel).includes(qsUuid)
+    }
+
+    //! Return last selected object
+    function lastSelectedObject(objType : int) {
+        var lastSelectedObj = null;
+        if(Object.keys(selectedModel).length === 0)
+            return lastSelectedObj;
+
+        lastSelectedObj = Object.values(selectedModel)[Object.keys(selectedModel).length - 1];
+
+        if (lastSelectedObj.objectType === objType)
+            return lastSelectedObj;
+
+        return null;
     }
 }

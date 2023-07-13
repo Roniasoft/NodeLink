@@ -23,25 +23,44 @@ MenuItem {
     background: Rectangle{
         anchors.fill: parent
         radius: 5
-//        anchors.rightMargin: 2
-//        anchors.leftMargin: 2
         color: (menuItem.hoverTracker) ? "#363636" : "transparent"
-        Text {
-            id: contextMenuIcon
-            width: 20
-            height: 20
-            anchors { left: parent.left; leftMargin : 5; top: parent.top;
-                    topMargin: 4}
-            color: "#ababab"
-            text: menuItem.iconStr
-            font.family: "Font Awesome 6 Pro"
-            font.pixelSize: 14
-            font.weight: 400
+
+        Rectangle {
+            id: contextMenuIconRect
+
+            radius: 5
+            color: (checkable && checked) ? "#2f2f2f" : "transparent"
+            width: 25
+            height: 25
+
+            anchors.left: parent.left
+            anchors.leftMargin : 2
+            anchors.top: parent.top;
+            anchors.topMargin: 2
+
+            Text {
+                id: contextMenuIcon
+
+                anchors.left: parent.left
+                anchors.leftMargin : 7
+                anchors.top: parent.top;
+                anchors.topMargin: 4
+
+                color: "#ababab"
+                text: menuItem.iconStr
+                font.family: "Font Awesome 6 Pro"
+                font.pixelSize: 14
+                font.weight: 400
+
+            }
         }
         Text {
             id: contextMenuText
-            anchors { left: contextMenuIcon.right; leftMargin : 7; top: parent.top;
-                    topMargin: 2}
+            anchors.left: contextMenuIconRect.right;
+            anchors.leftMargin : 7
+            anchors.top: parent.top
+            anchors.topMargin: 2
+
             text: menuItem.name
             color: "#ababab"
             font.pixelSize: 14
@@ -51,4 +70,5 @@ MenuItem {
         menuItem.hoverTracker = !menuItem.hoverTracker
     }
 
+    indicator: Item {}
 }
