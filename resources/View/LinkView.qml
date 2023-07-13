@@ -17,7 +17,7 @@ I_LinkView {
         if(isSelected)
             forceActiveFocus();
         else
-            link.guiConfig._isEditableDescription = false
+            link.guiConfig._isEditableDescription = false;
     }
 
 
