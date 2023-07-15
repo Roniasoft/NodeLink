@@ -46,12 +46,6 @@ QtObject {
         }
     }
 
-    function clearSelection() {
-    }
-
-    function reset() {
-    }
-
     //! Select an object node
     function select(node: Node) {
         //! clear selection model when selection changed.
