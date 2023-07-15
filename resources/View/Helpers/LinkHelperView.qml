@@ -104,7 +104,7 @@ LinkView {
         //! find Corresponding port
         function findCorrespondingPortSide (inputPort : Port, outputNodeUuid : string) : string {
 
-            switch (inputPort?.portSide ?? 0)  {
+            switch (inputPort?.portSide ?? NLSpec.PortPositionSide.Top)  {
                 case (NLSpec.PortPositionSide.Top): {
                     return findPortByPortSide(outputNodeUuid, NLSpec.PortPositionSide.Bottom);
                 }
