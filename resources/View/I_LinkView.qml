@@ -18,6 +18,8 @@ Canvas {
     * ****************************************************************************************/
     property Scene  scene
 
+    property SceneSession   sceneSession
+
     property Port   inputPort
 
     property Port   outputPort

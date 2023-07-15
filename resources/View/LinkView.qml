@@ -54,6 +54,7 @@ I_LinkView {
         text: link.guiConfig.description
         visible: link.guiConfig.description.length > 0 || link.guiConfig._isEditableDescription
 
+
         color: "white"
         font.family: "Roboto"
         font.pointSize: 14
@@ -75,9 +76,18 @@ I_LinkView {
         }
 
         onFocusChanged: {
-            if(focus && !isSelected) {
+            // select Link only when shiftModifier was pressed.
+            if (sceneSession.isShiftModifierPressed) {
+                linkView.forceActiveFocus();
                 scene.selectionModel.toggleLinkSelection(link);
-                link.guiConfig._isEditableDescription = true;
+                return;
+            }
+
+            if (focus && !isSelected) {
+                scene.selectionModel.clear(link?._qsUuid);
+                scene.selectionModel.toggleLinkSelection(link);
+                if (!sceneSession.isShiftModifierPressed)
+                    link.guiConfig._isEditableDescription = true;
             } else if (focus) {
                link.guiConfig._isEditableDescription = true;
             }
@@ -101,9 +111,11 @@ I_LinkView {
             linkView.requestPaint();
         }
 
-        function on_isEditableDescription () {
-            descriptionText.focus = link.guiConfig._isEditableDescription;
-
+        //! Get the IsEditableDescriptionChanged signal and change
+        //! focus to corresponding Item view
+        function on_IsEditableDescriptionChanged () {
+            if(link.guiConfig._isEditableDescription)
+                descriptionText.forceActiveFocus();
         }
     }
 
@@ -112,14 +124,7 @@ I_LinkView {
     Connections {
         target: linkView
         function onIsSelectedChanged() {
-                descriptionText.focus = false;
+            descriptionText.focus = false;
         }
     }
-
-//    MouseArea {
-//       anchors.fill: parent
-
-//       enabled: isSelected && !descriptionText.activeFocus
-//       onDoubleClicked: descriptionText.forceActiveFocus();
-//    }
 }
