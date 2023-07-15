@@ -50,23 +50,11 @@ Rectangle {
 
     //! When node is selected, width, height, x, and y
     //! changed must be sent into rubber band
-    onWidthChanged: {
-        if(isSelected)
-            scene.selectionModel.selectedObjectChanged();
-    }
-    onHeightChanged: {
-        if(isSelected)
-            scene.selectionModel.selectedObjectChanged();
-    }
+    onWidthChanged: dimentionChanged();
+    onHeightChanged: dimentionChanged();
 
-    onXChanged: {
-        if(isSelected)
-            scene.selectionModel.selectedObjectChanged();
-    }
-    onYChanged: {
-        if(isSelected)
-            scene.selectionModel.selectedObjectChanged();
-    }
+    onXChanged: dimentionChanged();
+    onYChanged: dimentionChanged();
 
     onEditChanged: {
         nodeView.edit ? titleTextArea.forceActiveFocus() :  nodeView.forceActiveFocus()
@@ -808,5 +796,15 @@ Rectangle {
             if(!scene.selectionModel.isSelected(node._qsUuid))
                 nodeView.edit = false;
         }
+    }
+
+
+    /* Functions
+     * ****************************************************************************************/
+
+    //! Handle dimention change
+    function dimentionChanged() {
+        if(nodeView.isSelected)
+            scene.selectionModel.selectedObjectChanged();
     }
 }
