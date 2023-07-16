@@ -13,10 +13,9 @@ I_NodesRect {
     /*  Children
     * ****************************************************************************************/
 
-    //! User Connection Curve
-    UserLinkView {
+    //! Rubber band border with different opacity
+    ObjectSelectionView {
         scene: root.scene
-        anchors.fill: parent
+        sceneSession: root.sceneSession
     }
-
 }

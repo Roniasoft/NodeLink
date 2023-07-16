@@ -19,8 +19,8 @@ Rectangle {
 
     /*  Object Properties
     * ****************************************************************************************/
-    width: Math.max(...Object.values(scene.nodes).map(node => (node.guiConfig.position.x + node.guiConfig.width)), 1024) + 200
-    height: Math.max(...Object.values(scene.nodes).map(node => (node.guiConfig.position.y + node.guiConfig.height)), 768) + 200
+    width: Math.max(...Object.values(scene?.nodes ?? ({})).map(node => (node.guiConfig.position.x + node.guiConfig.width)), 1024) + 200
+    height: Math.max(...Object.values(scene?.nodes ?? ({})).map(node => (node.guiConfig.position.y + node.guiConfig.height)), 768) + 200
     color: "transparent"
 
     /*  Children
@@ -46,6 +46,7 @@ Rectangle {
 
         delegate: LinkView {
             scene: root.scene
+            sceneSession: root.sceneSession
             isSelected: scene?.selectionModel?.isSelected(modelData?._qsUuid) ?? false
 
             inputPort: modelData.inputPort

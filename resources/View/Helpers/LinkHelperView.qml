@@ -1,4 +1,5 @@
 import QtQuick
+
 import NodeLink
 
 /*! ***********************************************************************************************
@@ -10,6 +11,8 @@ LinkView {
 
     /* Object Properties
      * ****************************************************************************************/
+    //! Scene session contains information about scene states (UI related)
+    property SceneSession   sceneSession
 
 
     /* Property Declarations
@@ -19,10 +22,10 @@ LinkView {
     /* Children
     * ****************************************************************************************/
     MouseArea {
+        id: mouseArea
         anchors.fill: parent
         enabled: sceneSession.connectingMode
         hoverEnabled: true
-        propagateComposedEvents: true
         preventStealing: true
 
         property string inputPortId : ""
@@ -57,14 +60,16 @@ LinkView {
             }
         }
 
-
         onReleased: (mouse) => {
             var gMouse = mapToItem(parent, Qt.point(mouse.x, mouse.y));
             if(inputPortId.length > 0 && outputPortId.length > 0) {
                     scene.linkNodes(inputPortId, outputPortId);
                     clearTempConnection();
-            } else {
+
+            } else if(inputPortId.length > 0) { // Open contex menu when the input port is selected
                     contextMenu.popup(gMouse.x, gMouse.y);
+            } else {
+                    clearTempConnection();
             }
         }
 
@@ -79,6 +84,8 @@ LinkView {
                     scene.linkNodes(parent.inputPortId, parent.outputPortId);
                 parent.clearTempConnection();
             }
+
+            onAboutToHide: parent.clearTempConnection();
 
             onClosed: parent.clearTempConnection();
         }
@@ -97,7 +104,7 @@ LinkView {
         //! find Corresponding port
         function findCorrespondingPortSide (inputPort : Port, outputNodeUuid : string) : string {
 
-            switch (inputPort.portSide)  {
+            switch (inputPort?.portSide ?? NLSpec.PortPositionSide.Top)  {
                 case (NLSpec.PortPositionSide.Top): {
                     return findPortByPortSide(outputNodeUuid, NLSpec.PortPositionSide.Bottom);
                 }

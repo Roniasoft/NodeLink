@@ -48,12 +48,24 @@ Rectangle {
     /* Signals
      * ****************************************************************************************/
 
+    //! When node is selected, width, height, x, and y
+    //! changed must be sent into rubber band
+    onWidthChanged: dimensionChanged();
+    onHeightChanged: dimensionChanged();
+
+    onXChanged: dimensionChanged();
+    onYChanged: dimensionChanged();
+
     onEditChanged: {
         nodeView.edit ? titleTextArea.forceActiveFocus() :  nodeView.forceActiveFocus()
     }
 
     onIsSelectedChanged: {
-        nodeView.isSelected ? nodeView.forceActiveFocus() : nodeView.edit = false;
+        //! Current nodeView keep the focus, current focus handle in the upper layers.
+        nodeView.forceActiveFocus();
+        if(!nodeView.isSelected )
+            nodeView.edit = false;
+
     }
 
     //! Handle key pressed (Del: delete selected node and link)
@@ -127,6 +139,7 @@ Rectangle {
 
             rightPadding: 10
 
+            readOnly: !nodeView.edit
             focus: false
             placeholderText: qsTr("Enter title")
             selectByMouse: true
@@ -186,6 +199,7 @@ Rectangle {
             placeholderText: qsTr("Enter description")
             color: "white"
             text: node.guiConfig.description
+            readOnly: !nodeView.edit
             wrapMode:TextEdit.WrapAnywhere
             onTextChanged: {
                 if (node && node.guiConfig.description !== text)
@@ -208,24 +222,6 @@ Rectangle {
         }
     }
 
-    //! Node Tools (Node settings)
-    NodeToolsRect {
-        id: nodeTools
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.bottom: parent.top
-        anchors.bottomMargin: 5
-        visible: isSelected
-        scene: nodeView.scene
-        node: nodeView.node
-
-        //! To hide color picker if selected node is changed
-        Connections {
-            target: nodeView
-            function onIsSelectedChanged() {
-                nodeTools.colorPicker.visible = false
-            }
-        }
-    }
 
     //! Manage node selection and position change.
     MouseArea {
@@ -236,11 +232,16 @@ Rectangle {
         property bool   isDraging:  false
 
         anchors.fill: parent
+        anchors.margins: 10
         hoverEnabled: true
         preventStealing: true
-        enabled: !nodeView.edit && !sceneSession.connectingMode
+        enabled: !nodeView.edit && !sceneSession.connectingMode &&
+                 !node.guiConfig.locked && !sceneSession.isCtrlPressed
 
-        onDoubleClicked: {
+        // To hide cursor when is disable
+        visible: enabled
+
+        onDoubleClicked: (mouse) => {
             // Clear all selected nodes
             scene.selectionModel.clearAllExcept(node._qsUuid);
 
@@ -249,6 +250,7 @@ Rectangle {
 
             // Enable edit mode
             nodeView.edit = true;
+            isDraging = false;
         }
 
         cursorShape: (nodeMouseArea.containsMouse && !nodeView.edit)
@@ -259,9 +261,18 @@ Rectangle {
         //! Manage right and left click to select and
         //! show node contex menue.
         onClicked: (mouse) => {
-            _selectionTimer.start();
-            if (mouse.button === Qt.RightButton)
-                 nodeContextMenu.popup(mouse.x, mouse.y)
+            if (mouse.button === Qt.RightButton) {
+                // Ensure the isDraging is false.
+                isDraging = false;
+
+                // Clear all selected nodes
+                scene.selectionModel.clearAllExcept(node._qsUuid);
+
+                // Select current node
+                scene.selectionModel.select(node);
+
+                nodeContextMenu.popup(mouse.x, mouse.y);
+            }
         }
 
         onPressed: (mouse) => {
@@ -380,7 +391,7 @@ Rectangle {
         enabled: !sceneSession.connectingMode
         cursorShape: Qt.SizeVerCursor
         anchors.bottom: parent.bottom
-        anchors.topMargin: -10
+        anchors.bottomMargin: -10
         anchors.horizontalCenter: parent.horizontalCenter
         preventStealing: true
 
@@ -775,7 +786,27 @@ Rectangle {
         anchors.fill: parent
         anchors.margins: -10
         enabled: node.guiConfig.locked
-        onClicked: scene.selectionModel.select(node);
+        onClicked: _selectionTimer.start();
         visible: node.guiConfig.locked
+    }
+
+    //! Reset some properties when selection model changed.
+    Connections {
+        target: scene.selectionModel
+
+        function onSelectedModelChanged() {
+            if(!scene.selectionModel.isSelected(node._qsUuid))
+                nodeView.edit = false;
+        }
+    }
+
+
+    /* Functions
+     * ****************************************************************************************/
+
+    //! Handle dimension change
+    function dimensionChanged() {
+        if(nodeView.isSelected)
+            scene.selectionModel.selectedObjectChanged();
     }
 }

@@ -18,6 +18,7 @@ I_NodesScene {
     /* Object Properties
     * ****************************************************************************************/
     anchors.fill: parent
+    interactive: !sceneSession.isCtrlPressed
 
     /* Children
     * ****************************************************************************************/
@@ -34,11 +35,16 @@ I_NodesScene {
     Keys.onPressed: (event)=> {
         if (event.key === Qt.Key_Shift)
             sceneSession.isShiftModifierPressed = true;
+        if(event.key === Qt.Key_Control)
+            sceneSession.isCtrlPressed = true;
+
     }
 
     Keys.onReleased: (event)=> {
         if (event.key === Qt.Key_Shift)
            sceneSession.isShiftModifierPressed = false;
+        if(event.key === Qt.Key_Control)
+             sceneSession.isCtrlPressed = false;
     }
 
     /* Children
@@ -60,14 +66,29 @@ I_NodesScene {
         onAccepted: delTimer.start();
     }
 
+    //! Nodes/Connections
+    contentItem: NodesRect {
+        scene: flickable.scene
+        sceneSession: flickable.sceneSession
+        contentWidth: flickable.contentWidth
+        contentHeight: flickable.contentHeight
+    }
+
     //! MouseArea for selection of links
     MouseArea {
         anchors.fill: parent
         acceptedButtons: Qt.LeftButton | Qt.RightButton
-        enabled: !sceneSession.connectingMode
+        enabled: !sceneSession.isCtrlPressed &&
+                 !sceneSession.connectingMode &&
+                 !sceneSession.isRubberBandMoving
+
+        propagateComposedEvents: true
+
+
 
         //! We should toggle line selection with mouse press event
-        onClicked: mouse => {
+        onClicked: (mouse) => {
+
             if (!sceneSession.isShiftModifierPressed)
                  scene.selectionModel.clear();
 
@@ -89,6 +110,10 @@ I_NodesScene {
             }
         }
         onDoubleClicked: (mouse) => {
+            //! Do nothing when user double clicks the on rubber band.
+            if(sceneSession.isMouseInRubberBand)
+                return;
+
             scene.selectionModel.clear();
             if (mouse.button === Qt.LeftButton) {
                 scene.createCustomizeNode(NLSpec.NodeType.General, mouse.x, mouse.y);
@@ -115,12 +140,10 @@ I_NodesScene {
         }
     }
 
-    //! Nodes/Connections
-    contentItem: NodesRect {
+    //! HelpersView
+    HelpersView {
         scene: flickable.scene
         sceneSession: flickable.sceneSession
-        contentWidth: flickable.contentWidth
-        contentHeight: flickable.contentHeight
     }
 
     //! Foreground
@@ -146,4 +169,5 @@ I_NodesScene {
         anchors.fill: parent
         sourceComponent: foreground
     }
+
 }

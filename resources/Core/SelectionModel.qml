@@ -1,4 +1,4 @@
-import QtQuick 2.15
+import QtQuick
 
 /*! ***********************************************************************************************
  * This class keeps track of a view's selected items
@@ -14,6 +14,8 @@ QtObject {
 
     /* Signals
      * ****************************************************************************************/
+
+    signal selectedObjectChanged();
 
     /* Functions
      * ****************************************************************************************/
@@ -42,12 +44,6 @@ QtObject {
             delete selectedModel[qsUuid];
             selectedModelChanged();
         }
-    }
-
-    function clearSelection() {
-    }
-
-    function reset() {
     }
 
     //! Select an object node

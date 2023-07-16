@@ -23,7 +23,9 @@ MenuItem {
     background: Rectangle{
         anchors.fill: parent
         radius: 5
-        color: (menuItem.hoverTracker) ? "#363636" : "transparent"
+        color: (menuItem.hoverTracker && menuItem.enabled) ? "#363636" : "transparent"
+
+        opacity: menuItem.enabled ? 1 : 0.5
 
         Rectangle {
             id: contextMenuIconRect
