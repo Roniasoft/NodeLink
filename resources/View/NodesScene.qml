@@ -120,8 +120,6 @@ I_NodesScene {
             }
         }
 
-
-
         //! Context Menu for adding a new node (for now)
         ContextMenu {
             id: contextMenu

@@ -143,11 +143,11 @@ Item {
         target: scene.selectionModel
 
         function onSelectedModelChanged() {
-            calculateDimentions();
+            calculateDimensions();
         }
 
         function onSelectedObjectChanged() {
-           calculateDimentions();
+           calculateDimensions();
         }
     }
 
@@ -155,7 +155,7 @@ Item {
     * ****************************************************************************************/
 
     //! calculate X, Y, width and height of rubber band
-    function calculateDimentions() {
+    function calculateDimensions() {
         var firstObj = Object.values(scene.selectionModel.selectedModel)[0];
         if(firstObj === undefined)
             return;

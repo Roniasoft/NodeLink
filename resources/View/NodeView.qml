@@ -50,17 +50,18 @@ Rectangle {
 
     //! When node is selected, width, height, x, and y
     //! changed must be sent into rubber band
-    onWidthChanged: dimentionChanged();
-    onHeightChanged: dimentionChanged();
+    onWidthChanged: dimensionChanged();
+    onHeightChanged: dimensionChanged();
 
-    onXChanged: dimentionChanged();
-    onYChanged: dimentionChanged();
+    onXChanged: dimensionChanged();
+    onYChanged: dimensionChanged();
 
     onEditChanged: {
         nodeView.edit ? titleTextArea.forceActiveFocus() :  nodeView.forceActiveFocus()
     }
 
     onIsSelectedChanged: {
+        //! Current nodeView keep the focus, current focus handle in the upper layers.
         nodeView.forceActiveFocus();
         if(!nodeView.isSelected )
             nodeView.edit = false;
@@ -234,7 +235,8 @@ Rectangle {
         anchors.margins: 10
         hoverEnabled: true
         preventStealing: true
-        enabled: !nodeView.edit && !sceneSession.connectingMode && !node.guiConfig.locked
+        enabled: !nodeView.edit && !sceneSession.connectingMode &&
+                 !node.guiConfig.locked && !sceneSession.isCtrlPressed
 
         // To hide cursor when is disable
         visible: enabled
@@ -802,8 +804,8 @@ Rectangle {
     /* Functions
      * ****************************************************************************************/
 
-    //! Handle dimention change
-    function dimentionChanged() {
+    //! Handle dimension change
+    function dimensionChanged() {
         if(nodeView.isSelected)
             scene.selectionModel.selectedObjectChanged();
     }
