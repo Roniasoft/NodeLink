@@ -54,7 +54,7 @@ Popup {
 
         opacity: 0.95
         color: "black"
-        radius: 5
+        radius: 10
     }
 
     Rectangle {
