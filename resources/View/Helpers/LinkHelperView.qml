@@ -7,7 +7,7 @@ import NodeLink
  * Using a js canvas for drawing
  * ************************************************************************************************/
 LinkView {
-    id: tempCurve
+    id: root
 
     /* Object Properties
      * ****************************************************************************************/
@@ -34,13 +34,13 @@ LinkView {
         //! Find if there is any port beneath the mouse pointer
         onPressed: (mouse) => {
            var portId = findPortInRect(mouse, 5);
-           tempCurve.inputPort = scene.findPort(portId);
+           root.inputPort = scene.findPort(portId);
            var gMouse = mapToItem(parent, Qt.point(mouse.x, mouse.y));
 
-           if(tempCurve.inputPort !== null) {
-               tempCurve.outputPos = Qt.vector2d(gMouse.x, gMouse.y);
-               inputPortId = tempCurve.inputPort._qsUuid;
-               link.inputPort.portSide = tempCurve.inputPort.portSide;
+           if(root.inputPort !== null) {
+               root.outputPos = Qt.vector2d(gMouse.x, gMouse.y);
+               inputPortId = root.inputPort._qsUuid;
+               link.inputPort.portSide = root.inputPort.portSide;
                sceneSession.setPortVisibility(inputPortId, true)
            }
         }
@@ -50,7 +50,7 @@ LinkView {
             var gMouse = mapToItem(parent, Qt.point(mouse.x, mouse.y));
 
             if(inputPortId.length > 0) {
-                tempCurve.outputPos = Qt.vector2d(gMouse.x, gMouse.y);
+                root.outputPos = Qt.vector2d(gMouse.x, gMouse.y);
             }
 
             sceneSession.setPortVisibility(outputPortId, false);
@@ -76,9 +76,10 @@ LinkView {
         ContextMenu {
             id: contextMenu
             scene: root.scene
+            sceneSession: root.sceneSession
 
             onNodeAdded: (nodeUuid) => {
-                parent.outputPortId = parent.findCorrespondingPortSide(tempCurve.inputPort, nodeUuid);
+                parent.outputPortId = parent.findCorrespondingPortSide(root.inputPort, nodeUuid);
 
                 if(parent.inputPortId.length > 0 && parent.outputPortId.length > 0)
                     scene.linkNodes(parent.inputPortId, parent.outputPortId);
@@ -92,7 +93,7 @@ LinkView {
 
         //! clear temp connection.
         function clearTempConnection() {
-            tempCurve.inputPort = null;
+            root.inputPort = null;
             sceneSession.connectingMode = false;
             sceneSession.setPortVisibility(inputPortId, false);
             sceneSession.setPortVisibility(outputPortId, false);

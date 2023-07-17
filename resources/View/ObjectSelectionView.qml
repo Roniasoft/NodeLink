@@ -22,6 +22,8 @@ Item {
     visible: hasSelectedObject
     z: 1000
 
+    Keys.forwardTo: parent
+
     /*  Children
     * ****************************************************************************************/
     //! Rubber band border with different opacity
@@ -54,10 +56,10 @@ Item {
         anchors.horizontalCenter: parent.horizontalCenter
 
         scene: root.scene
+        sceneSession: root.sceneSession
 
         visible: hasSelectedObject
     }
-
 
     //! MouseArea to move contain nodes.
     MouseArea {

@@ -14,6 +14,9 @@ Menu {
     required property Scene scene
     required property Node  node
 
+    property SceneSession   sceneSession: null
+
+
     /* Object Properties
      * ****************************************************************************************/
     width: 180
@@ -84,14 +87,12 @@ Menu {
 
         name: "Delete Node"
         iconStr: "\uf2ed"
-        onClicked: {
-            console.log("dsl uid", node._qsUuid)
-            deletePopup.open();
-        }
+        onClicked: deletePopup.open();
 
         //! Delete popup to confirm deletion process
         ConfirmPopUp {
             id: deletePopup
+            sceneSession: contextMenu.sceneSession
             onAccepted: delTimer.start();
         }
 

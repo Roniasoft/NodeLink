@@ -101,9 +101,11 @@ Rectangle {
     //! Delete popup to confirm deletion process
     ConfirmPopUp {
         id: deletePopup
-        onAccepted: {
-            delTimer.start();
-        }
+        confirmText: "Are you sure you want to delete " +
+                                     (Object.keys(scene.selectionModel.selectedModel).length > 1 ?
+                                         "these items?" : "this item?");
+        sceneSession: nodeView.sceneSession
+        onAccepted: delTimer.start();
     }
 
     //! Header Item
@@ -310,6 +312,7 @@ Rectangle {
         NodeContextMenu {
             id: nodeContextMenu
             scene: nodeView.scene
+            sceneSession: nodeView.sceneSession
             node: nodeView.node
             onEditNode: nodeView.edit = true;
         }

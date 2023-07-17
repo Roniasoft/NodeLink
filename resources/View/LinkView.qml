@@ -42,6 +42,12 @@ I_LinkView {
     //! Delete popup to confirm deletion process
     ConfirmPopUp {
         id: deletePopup
+
+        confirmText: "Are you sure you want to delete " +
+                                     (Object.keys(scene.selectionModel.selectedModel).length > 1 ?
+                                         "these items?" : "this item?");
+
+        sceneSession: linkView.sceneSession
         onAccepted: delTimer.start();
     }
 

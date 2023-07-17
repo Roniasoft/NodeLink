@@ -14,7 +14,8 @@ Rectangle {
 
     /* Property Declarations
      * ****************************************************************************************/
-    required property Scene scene
+    required property Scene         scene
+    required property SceneSession  sceneSession
 
     //! Selected model (Node AND/OR links)
     property SelectionModel selectionModel: scene.selectionModel
@@ -357,6 +358,10 @@ Rectangle {
             ConfirmPopUp {
                 id: deletePopup
 
+                sceneSession: toolsItem.sceneSession
+                confirmText: "Are you sure you want to delete " +
+                             (Object.keys(selectionModel.selectedModel).length > 1 ?
+                                 "these items?" : "this item?");
                 onAccepted: delTimer.start();
             }
 

@@ -23,6 +23,8 @@ Rectangle {
     height: Math.max(...Object.values(scene?.nodes ?? ({})).map(node => (node.guiConfig.position.y + node.guiConfig.height)), 768) + 200
     color: "transparent"
 
+    Keys.forwardTo: parent
+
     /*  Children
     * ****************************************************************************************/
     //! Nodes
