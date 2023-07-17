@@ -42,6 +42,7 @@ I_LinkView {
     //! Delete popup to confirm deletion process
     ConfirmPopUp {
         id: deletePopup
+        sceneSession: linkView.sceneSession
         onAccepted: delTimer.start();
     }
 

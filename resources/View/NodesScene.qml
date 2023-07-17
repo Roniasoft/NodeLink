@@ -26,7 +26,7 @@ I_NodesScene {
 
     //! Handle key pressed (Del: delete selected node and link)
     Keys.onDeletePressed: {
-        if(scene.selectionModel.selectedModel.length > 0) {
+        if(Object.keys(scene.selectionModel.selectedModel).length > 0) {
             deletePopup.open();
         }
     }
@@ -63,6 +63,10 @@ I_NodesScene {
     //! Delete popup to confirm deletion process
     ConfirmPopUp {
         id: deletePopup
+        confirmText: "Are you sure you want to delete " +
+                     (Object.keys(scene.selectionModel.selectedModel).length > 1 ?
+                         "these items?" : "this item?");
+        sceneSession: flickable.sceneSession
         onAccepted: delTimer.start();
     }
 

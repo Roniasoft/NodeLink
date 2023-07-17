@@ -358,13 +358,11 @@ Rectangle {
             ConfirmPopUp {
                 id: deletePopup
 
+                sceneSession: toolsItem.sceneSession
                 confirmText: "Are you sure you want to delete " +
                              (Object.keys(selectionModel.selectedModel).length > 1 ?
-                                 "these items?" : "this item?")
+                                 "these items?" : "this item?");
                 onAccepted: delTimer.start();
-
-                onClosed: sceneSession.sceneForceFocus();
-
             }
 
         }

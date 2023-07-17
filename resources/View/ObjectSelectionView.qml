@@ -22,6 +22,8 @@ Item {
     visible: hasSelectedObject
     z: 1000
 
+    Keys.forwardTo: parent
+
     /*  Children
     * ****************************************************************************************/
     //! Rubber band border with different opacity
