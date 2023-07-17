@@ -19,8 +19,10 @@ Rectangle {
 
     property bool           edit
 
-    property bool           isSelected:      false
+    //! Node is selected or not
+    property bool           isSelected:    scene?.selectionModel?.isSelected(modelData?._qsUuid ?? "") ?? false
 
+    //! Node is in minimal state or not (based in zoom factor)
     property bool           isNodeMinimal: sceneSession.zoomManager.zoomFactor < sceneSession.zoomManager.minimalZoomNode
 
     property real fontScale: {
@@ -279,10 +281,10 @@ Rectangle {
         //! Text Icon
         Text {
             font.family: "Font Awesome 6 Pro"
-            font.pixelSize: 20 * fontScale
+            font.pixelSize: 20
             anchors.centerIn: parent
-            text: "\uf8f2"
-            color: "white"
+            text: NLStyle.nodeIcons[node.type]
+            color: node.guiConfig.color
             font.weight: 400
             visible: nodeView.isNodeMinimal
         }
