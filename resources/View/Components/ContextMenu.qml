@@ -11,7 +11,8 @@ Menu {
 
     /* Property Declarations
      * ****************************************************************************************/
-    required property Scene  scene;
+    required property Scene         scene;
+    required property SceneSession  sceneSession;
 
     /* Object Properties
      * ****************************************************************************************/
@@ -25,6 +26,9 @@ Menu {
         border.width: 1
         border.color: "#1c1c1c"
     }
+
+    //! Move focus on the scene
+    onClosed: sceneSession.sceneForceFocus();
 
     /* Signals
      * ****************************************************************************************/

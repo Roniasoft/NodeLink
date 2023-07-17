@@ -128,6 +128,7 @@ I_NodesScene {
         ContextMenu {
             id: contextMenu
             scene: flickable.scene
+            sceneSession: flickable.sceneSession 
         }
 
         //! find the link under or close to the mouse cursor
