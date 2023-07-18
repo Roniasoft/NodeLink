@@ -297,16 +297,10 @@ I_NodesScene {
                                                    bottomY = Math.max(bottomY, bottomNodeY);
                                                });
 
-            // Add margin to borders
-            var margin = 5;
-            leftX   -= margin;
-            topY    -= margin;
-            rigthX  += margin
-            bottomY += margin
 
             //! Calculate width and height ratio, Use minimum value to fit in width and height
-            var widthRatio  = flickable.width / (rigthX - leftX);
-            var heightRatio = flickable.height / (bottomY - topY);
+            var widthRatio  = flickable.width / (rigthX - leftX) / 1.15;
+            var heightRatio = flickable.height / (bottomY - topY) / 1.15;
 
             //! Maximum zoomFactor is 1.5, greater than 1.5 is not necessary.
             var zoomFactor = nodesLength > 1 ? Math.min(widthRatio, heightRatio, sceneSession.zoomManager.maximumZoom) : 1;
@@ -322,12 +316,12 @@ I_NodesScene {
             var fcontentHeight = 4000 * zoomFactor
 
             //! Calculate contentX and contentY, when nodes has one node, the node must be in center
-            var fcontentX = leftX * zoomFactor - (nodesLength === 1 ? (flickable.width - (rigthX - leftX)) / 2 : 0);
-            var fcontentY = topY  * zoomFactor - (nodesLength === 1 ? (flickable.height - (bottomY - topY)) / 2 : 0);
+            var fcontentX = leftX * zoomFactor * 0.95 - (nodesLength === 1 ? (flickable.width - (rigthX - leftX)) / 2 : 0);
+            var fcontentY = topY  * zoomFactor * 0.95 - (nodesLength === 1 ? (flickable.height - (bottomY - topY)) / 2 : 0);
 
             fcontentWidth = Math.max(...Object.values(scene?.nodes ?? ({})).
                                      map(node => ((node.guiConfig.position.x + node.guiConfig.width) *
-                                                  sceneSession.zoomManager.zoomFactor)), fcontentHeight);
+                                                  sceneSession.zoomManager.zoomFactor)), fcontentWidth);
 
             //! Maximum contentWidth is 8000, greater than 8000, the app was slow.
             sceneSession.contentWidth = Math.max(fcontentWidth, sceneSession.contentWidth);
