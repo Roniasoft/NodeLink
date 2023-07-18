@@ -97,6 +97,9 @@ QSObject {
 
     //! Deletes a node from the scene
     function deleteNode(nodeUUId: string) {
+        // Remove the deleted object from selected model
+        selectionModel.remove(nodeUUId);
+
         //! delete the node ports from the portsPosition map
         Object.keys(nodes[nodeUUId].ports).forEach(portId => {
             // delete from portsPositions
@@ -112,10 +115,8 @@ QSObject {
             });
         });
 
-        // Remove the deleted object from selected model
-        selectionModel.remove(nodeUUId);
-
         nodeRemoved(nodes[nodeUUId]);
+
         delete nodes[nodeUUId];
 
         portsPositionsChanged();
