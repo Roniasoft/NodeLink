@@ -25,6 +25,9 @@ QtObject {
     //! In minimalZoomNode, node show a minimal Rectangle without header and description
     property real minimalZoomNode: 0.6
 
+    //! zoom in node edit mode (When a node is in minimal mode)
+    property real nodeEditZoom   : 2.0
+
 //    ! Behavior on zoomFactor change
 //    Behavior on zoomFactor {NumberAnimation{duration: 100}}
 

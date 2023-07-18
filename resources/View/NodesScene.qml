@@ -366,14 +366,16 @@ I_NodesScene {
 
             //! Move zoom to edit node.
             if(moveToMinimalZoom) {
-                var origin =  zoomPointScaled.times(sceneSession.zoomManager.minimalZoomNode /
+                var nodeEditZoom = sceneSession.zoomManager.nodeEditZoom;
+
+                var origin =  zoomPointScaled.times(nodeEditZoom /
                                                     sceneSession.zoomManager.zoomFactor)
                 //! update zoom factor
-                sceneSession.zoomManager.customZoom(sceneSession.zoomManager.minimalZoomNode)
+                sceneSession.zoomManager.customZoom(nodeEditZoom)
 
                 //! update content dimentions
-                sceneSession.contentWidth  = 4000 * sceneSession.zoomManager.minimalZoomNode;
-                sceneSession.contentHeight = 4000 * sceneSession.zoomManager.minimalZoomNode;
+                sceneSession.contentWidth  = 4000 * nodeEditZoom;
+                sceneSession.contentHeight = 4000 * nodeEditZoom;
 
                 //! Calculate contentX and contentY, when nodes has one node, the node must be in center
                 var fcontentX = origin.x - (flickable.width / 2);

@@ -77,8 +77,9 @@ Rectangle {
 
         // Move node to minimum edit zoom
         if(nodeView.edit && nodeView.isNodeMinimal) {
-            var zoomPoint  = Qt.vector2d(nodeView.x, nodeView.y);
-            sceneSession.zoomManager.zoomNodeSignal(zoomPoint, 1, true);
+            var zoomPoint  = Qt.vector2d(nodeView.x + nodeView.width / 2,
+                                         nodeView.y + nodeView.height / 2);
+            sceneSession.zoomManager.zoomNodeSignal(zoomPoint, 1.0, true);
         }
     }
 
