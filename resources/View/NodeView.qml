@@ -875,6 +875,16 @@ Rectangle {
         enabled: node.guiConfig.locked
         onClicked: _selectionTimer.start();
         visible: node.guiConfig.locked
+
+        //! Manage zoom in nodeview and pass it to zoomManager in lock mode.
+        onWheel: (wheel) => {
+                     //! active zoom with shift modifier.
+                     if(sceneSession.isShiftModifierPressed) {
+                         var zoomPoint = Qt.vector2d(wheel.x + nodeView.x, wheel.y + nodeView.y);
+                         sceneSession.zoomManager.zoomNodeSignal(zoomPoint, wheel.angleDelta.y, false);
+                     }
+                 }
+
     }
 
     //! Reset some properties when selection model changed.
