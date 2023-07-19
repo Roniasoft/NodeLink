@@ -25,16 +25,8 @@ Rectangle {
     //! Node is in minimal state or not (based in zoom factor)
     property bool           isNodeMinimal: sceneSession.zoomManager.zoomFactor < sceneSession.zoomManager.minimalZoomNode
 
-    property real fontScale: {
-        var checkParam = Math.floor(Math.abs(sceneSession.zoomManager.zoomFactor - 1) * 100 / 15);
-
-        if(checkParam => 1)
-            return sceneSession.zoomManager.zoomFactor;
-        else
-            return fontScale;
-
-    }
-
+    //! To change fonts with animation
+    property real           fontScale: 1
 
     //! Correct position based on zoomPoint and zoomFactor
     property vector2d correctedPosition: node.guiConfig?.position?.
@@ -42,8 +34,8 @@ Rectangle {
 
     /* Object Properties
      * ****************************************************************************************/
-    width: node.guiConfig.width * sceneSession.zoomManager.zoomFactor
-    height: node.guiConfig.height * sceneSession.zoomManager.zoomFactor
+    width: node.guiConfig.width
+    height: node.guiConfig.height
     x: correctedPosition.x
     y: correctedPosition.y
 
@@ -57,6 +49,11 @@ Rectangle {
     antialiasing: true
     layer.enabled: false
 
+    //! NodeView scales relative to top left
+    transform: Scale {
+        xScale: sceneSession.zoomManager.zoomFactor
+        yScale: sceneSession.zoomManager.zoomFactor
+    }
 
     Behavior on color {ColorAnimation {duration:100}}
     Behavior on border.color {ColorAnimation {duration:100}}
@@ -73,7 +70,6 @@ Rectangle {
     onYChanged: dimensionChanged();
 
     onEditChanged: {
-        nodeView.edit ? titleTextArea.forceActiveFocus() :  nodeView.forceActiveFocus();
 
         // Move node to minimum edit zoom
         if(nodeView.edit && nodeView.isNodeMinimal) {
@@ -81,6 +77,7 @@ Rectangle {
                                          nodeView.y + nodeView.height / 2);
             sceneSession.zoomManager.zoomNodeSignal(zoomPoint, 1.0, true);
         }
+        nodeView.edit ? titleTextArea.forceActiveFocus() :  nodeView.forceActiveFocus();
     }
 
     onIsSelectedChanged: {
@@ -161,7 +158,7 @@ Rectangle {
             anchors.right: parent.right
             anchors.left: iconText.right
             anchors.verticalCenter: parent.verticalCenter
-            anchors.leftMargin: 5
+            anchors.leftMargin: 5 * fontScale
             height: 40 * (fontScale >= 0.95 ? fontScale : 0.9)
 
             rightPadding: 10
