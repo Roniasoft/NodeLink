@@ -67,7 +67,7 @@ QtObject {
     //! ZoomOut method
     function zoomOut() {
         if(canZoomOut())
-            zoomFactor *= (1 - zoomStep);
+            zoomFactor /= (1 + zoomStep);
 
         focusToScene();
     }
@@ -99,6 +99,6 @@ QtObject {
 
     //! Can zoom Out ...
     function canZoomOut() : bool {
-        return zoomFactor * (1 - zoomStep) >= minimumZoom;
+        return zoomFactor / (1 + zoomStep) >= minimumZoom;
     }
 }

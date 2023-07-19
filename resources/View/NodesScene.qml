@@ -94,7 +94,7 @@ I_NodesScene {
 
         NumberAnimation {
             duration: 100
-            easing.type: Easing.InOutQuad
+            easing.type: Easing.Linear
 
             onRunningChanged: {
                 if(!running) {
@@ -169,7 +169,7 @@ I_NodesScene {
                      if(wheel.angleDelta.y > 0 && sceneSession.zoomManager.canZoomIn())
                             prepareScale(1 + sceneSession.zoomManager.zoomStep);
                      else if (wheel.angleDelta.y < 0 && sceneSession.zoomManager.canZoomOut())
-                            prepareScale(1 - sceneSession.zoomManager.zoomStep);
+                            prepareScale(1 / (1 + sceneSession.zoomManager.zoomStep));
                  }
 
         //! We should toggle line selection with mouse press event
@@ -390,7 +390,7 @@ I_NodesScene {
             worldZoomPoint = Qt.vector2d(flickable.contentX + flickable.width / 2,
                                          flickable.contentY + flickable.height / 2);
 
-            prepareScale(1- sceneSession.zoomManager.zoomStep);
+            prepareScale(1 / (1 + sceneSession.zoomManager.zoomStep));
         }
 
         //! Manage zoom from nodeView.
@@ -425,7 +425,7 @@ I_NodesScene {
             if(wheelAngle > 0 && sceneSession.zoomManager.canZoomIn())
                    prepareScale(1 + sceneSession.zoomManager.zoomStep);
             else if (wheelAngle < 0 && sceneSession.zoomManager.canZoomOut())
-                   prepareScale(1 - sceneSession.zoomManager.zoomStep);
+                   prepareScale(1 / (1 + sceneSession.zoomManager.zoomStep))
         }
 
         //! Set focus on NodesScene after zoom In/Out
