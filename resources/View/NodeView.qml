@@ -26,25 +26,7 @@ Rectangle {
     property bool           isNodeMinimal: sceneSession.zoomManager.zoomFactor < sceneSession.zoomManager.minimalZoomNode
 
     //! To change fonts with animation
-    property real           fontScale: 1;//sceneSession.zoomManager.zoomFactor
-
-
-    Behavior on fontScale {
-        id: scaleBehavior
-       enabled: false
-        NumberAnimation {
-            easing.type: Easing.InOutQuad
-            duration: 10
-        }
-    }
-
-
-    transform: Scale {
-        xScale: sceneSession.zoomManager.zoomFactor
-        yScale: sceneSession.zoomManager.zoomFactor
-        origin.x:  0
-        origin.y:  0
-    }
+    property real           fontScale: 1
 
     //! Correct position based on zoomPoint and zoomFactor
     property vector2d correctedPosition: node.guiConfig?.position?.
@@ -52,8 +34,8 @@ Rectangle {
 
     /* Object Properties
      * ****************************************************************************************/
-    width: node.guiConfig.width * 1//sceneSession.zoomManager.zoomFactor
-    height: node.guiConfig.height * 1//sceneSession.zoomManager.zoomFactor
+    width: node.guiConfig.width
+    height: node.guiConfig.height
     x: correctedPosition.x
     y: correctedPosition.y
 
@@ -67,6 +49,11 @@ Rectangle {
     antialiasing: true
     layer.enabled: false
 
+    //! NodeView scales relative to top left
+    transform: Scale {
+        xScale: sceneSession.zoomManager.zoomFactor
+        yScale: sceneSession.zoomManager.zoomFactor
+    }
 
     Behavior on color {ColorAnimation {duration:100}}
     Behavior on border.color {ColorAnimation {duration:100}}

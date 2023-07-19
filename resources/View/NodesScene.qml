@@ -20,9 +20,6 @@ I_NodesScene {
     //! flicable scale, use in scale transform
     property real flickableScale: 1.00
 
-    //! enableContentsBehavior controls contents behavior
-    property bool enableContentsBehavior: false
-
     property vector3d    zoomPoint:      Qt.vector3d(0, 0, 0)
     property vector2d    worldZoomPoint: Qt.vector2d(0, 0)
 
@@ -61,32 +58,6 @@ I_NodesScene {
 
     /* Children
     * ****************************************************************************************/
-
-    //! Behavior on contentX
-    Behavior on contentX  {
-        enabled: enableContentsBehavior
-        NumberAnimation {
-            easing.type: Easing.InOutQuad
-            duration: 20
-            onRunningChanged: {
-                if(!running)
-                    enableContentsBehavior = false;
-            }
-        }
-    }
-
-    //! Behavior on contentY
-    Behavior on contentY {
-        enabled: enableContentsBehavior
-        NumberAnimation {
-            easing.type: Easing.InOutQuad
-            duration: 20
-            onRunningChanged: {
-                if(!running)
-                    enableContentsBehavior = false;
-                }
-            }
-        }
 
     //! Behavior on scaleX
     Behavior on flickableScale {
@@ -361,9 +332,6 @@ I_NodesScene {
 
             sceneSession.contentHeight = Math.max(fcontentHeight, sceneSession.contentHeight);
 
-            //! Enable Contents animation
-            enableContentsBehavior = true;
-
             // Adjust the content position to zoom to the mouse point
             flickable.contentX = Math.max(0, fcontentX);
             flickable.contentY = Math.max(0, fcontentY);
@@ -439,9 +407,6 @@ I_NodesScene {
             sceneSession.contentWidth = 4000;
             sceneSession.contentHeight = 4000;
 
-            //! Enable Contents animation
-            enableContentsBehavior = true;
-
             //! Change contents to initial value
             flickable.contentX = 1500;
             flickable.contentY = 1500;
@@ -465,9 +430,6 @@ I_NodesScene {
 
     //! Prepare scale to set on the scene scale
     function prepareScale(scale: real) {
-        //! Disable Contents animation
-        enableContentsBehavior = false;
-
         flickableScale = scale;
     }
 }
