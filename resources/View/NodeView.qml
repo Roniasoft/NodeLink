@@ -25,17 +25,26 @@ Rectangle {
     //! Node is in minimal state or not (based in zoom factor)
     property bool           isNodeMinimal: sceneSession.zoomManager.zoomFactor < sceneSession.zoomManager.minimalZoomNode
 
-    property real fontScale: {
-        var checkParam = Math.floor(Math.abs(sceneSession.zoomManager.zoomFactor - 1) * 100 / 15);
+    //! To change fonts with animation
+    property real           fontScale: sceneSession.zoomManager.zoomFactor
 
-        if(checkParam => 1)
-            return sceneSession.zoomManager.zoomFactor;
-        else
-            return fontScale;
 
+    Behavior on fontScale {
+        id: scaleBehavior
+//       enabled: false
+        NumberAnimation {
+            easing.type: Easing.InOutQuad
+            duration: 10
+        }
     }
 
 
+//    transform: Scale {
+//        xScale: nodeScale
+//        yScale: nodeScale
+//        origin.x:  width / 2
+//        origin.y:  height / 2
+//    }
     //! Correct position based on zoomPoint and zoomFactor
     property vector2d correctedPosition: node.guiConfig?.position?.
                                          times(sceneSession.zoomManager.zoomFactor)
@@ -73,7 +82,6 @@ Rectangle {
     onYChanged: dimensionChanged();
 
     onEditChanged: {
-        nodeView.edit ? titleTextArea.forceActiveFocus() :  nodeView.forceActiveFocus();
 
         // Move node to minimum edit zoom
         if(nodeView.edit && nodeView.isNodeMinimal) {
@@ -81,6 +89,7 @@ Rectangle {
                                          nodeView.y + nodeView.height / 2);
             sceneSession.zoomManager.zoomNodeSignal(zoomPoint, 1.0, true);
         }
+        nodeView.edit ? titleTextArea.forceActiveFocus() :  nodeView.forceActiveFocus();
     }
 
     onIsSelectedChanged: {
@@ -161,7 +170,7 @@ Rectangle {
             anchors.right: parent.right
             anchors.left: iconText.right
             anchors.verticalCenter: parent.verticalCenter
-            anchors.leftMargin: 5
+            anchors.leftMargin: 5 * fontScale
             height: 40 * (fontScale >= 0.95 ? fontScale : 0.9)
 
             rightPadding: 10
@@ -189,6 +198,12 @@ Rectangle {
             font.pointSize: 10 * fontScale
             font.bold: true
         }
+
+
+//        transform: Scale {
+//            xScale: fontScale
+//            yScale: fontScale
+//        }
     }
 
     //! ScrollView to manage scroll view in Text Area

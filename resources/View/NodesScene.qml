@@ -20,6 +20,9 @@ I_NodesScene {
     //! flicable scale, use in scale transform
     property real flickableScale: 1.00
 
+    //! enableContentsBehavior controls contents behavior
+    property bool enableContentsBehavior: false
+
     property vector3d    zoomPoint:      Qt.vector3d(0, 0, 0)
     property vector2d    worldZoomPoint: Qt.vector2d(0, 0)
 
@@ -58,6 +61,32 @@ I_NodesScene {
 
     /* Children
     * ****************************************************************************************/
+
+    //! Behavior on contentX
+    Behavior on contentX  {
+        enabled: enableContentsBehavior
+        NumberAnimation {
+            easing.type: Easing.InOutQuad
+            duration: 20
+            onRunningChanged: {
+                if(!running)
+                    enableContentsBehavior = false;
+            }
+        }
+    }
+
+    //! Behavior on contentY
+    Behavior on contentY {
+        enabled: enableContentsBehavior
+        NumberAnimation {
+            easing.type: Easing.InOutQuad
+            duration: 20
+            onRunningChanged: {
+                if(!running)
+                    enableContentsBehavior = false;
+                }
+            }
+        }
 
     //! Behavior on scaleX
     Behavior on flickableScale {
@@ -138,9 +167,9 @@ I_NodesScene {
                      worldZoomPoint = Qt.vector2d(wheel.x, wheel.y);
 
                      if(wheel.angleDelta.y > 0 && sceneSession.zoomManager.canZoomIn())
-                            flickableScale = 1 + sceneSession.zoomManager.zoomStep;
+                            prepareScale(1 + sceneSession.zoomManager.zoomStep);
                      else if (wheel.angleDelta.y < 0 && sceneSession.zoomManager.canZoomOut())
-                            flickableScale = 1 - sceneSession.zoomManager.zoomStep;
+                            prepareScale(1 - sceneSession.zoomManager.zoomStep);
                  }
 
         //! We should toggle line selection with mouse press event
@@ -332,6 +361,9 @@ I_NodesScene {
 
             sceneSession.contentHeight = Math.max(fcontentHeight, sceneSession.contentHeight);
 
+            //! Enable Contents animation
+            enableContentsBehavior = true;
+
             // Adjust the content position to zoom to the mouse point
             flickable.contentX = Math.max(0, fcontentX);
             flickable.contentY = Math.max(0, fcontentY);
@@ -346,7 +378,7 @@ I_NodesScene {
             worldZoomPoint = Qt.vector2d(flickable.contentX + flickable.width / 2,
                                          flickable.contentY + flickable.height / 2);
 
-            flickableScale = 1 + sceneSession.zoomManager.zoomStep;
+            prepareScale(1 + sceneSession.zoomManager.zoomStep);
         }
 
         //! Emit from side menu, Do zoomOut process
@@ -358,7 +390,7 @@ I_NodesScene {
             worldZoomPoint = Qt.vector2d(flickable.contentX + flickable.width / 2,
                                          flickable.contentY + flickable.height / 2);
 
-            flickableScale = 1 - sceneSession.zoomManager.zoomStep;
+            prepareScale(1- sceneSession.zoomManager.zoomStep);
         }
 
         //! Manage zoom from nodeView.
@@ -391,9 +423,9 @@ I_NodesScene {
             flickable.zoomPoint      = Qt.vector3d(zoomPointScaled.x - flickable.contentX, zoomPointScaled.y - flickable.contentY, 0);
             flickable.worldZoomPoint = Qt.vector2d(zoomPointScaled.x, zoomPointScaled.y);
             if(wheelAngle > 0 && sceneSession.zoomManager.canZoomIn())
-                   flickableScale = 1 + sceneSession.zoomManager.zoomStep;
+                   prepareScale(1 + sceneSession.zoomManager.zoomStep);
             else if (wheelAngle < 0 && sceneSession.zoomManager.canZoomOut())
-                   flickableScale = 1 - sceneSession.zoomManager.zoomStep;
+                   prepareScale(1 - sceneSession.zoomManager.zoomStep);
         }
 
         //! Set focus on NodesScene after zoom In/Out
@@ -406,8 +438,15 @@ I_NodesScene {
             //! Reset zoom to defualt values
             sceneSession.contentWidth = 4000;
             sceneSession.contentHeight = 4000;
+
+            //! Enable Contents animation
+            enableContentsBehavior = true;
+
+            //! Change contents to initial value
             flickable.contentX = 1500;
             flickable.contentY = 1500;
+
+
             sceneSession.zoomManager.customZoom(zoomFactor);
         }
     }
@@ -419,5 +458,16 @@ I_NodesScene {
         function onSceneForceFocus() {
             flickable.forceActiveFocus();
         }
+    }
+
+    /* Functions
+    * ****************************************************************************************/
+
+    //! Prepare scale to set on the scene scale
+    function prepareScale(scale: real) {
+        //! Disable Contents animation
+        enableContentsBehavior = false;
+
+        flickableScale = scale;
     }
 }
