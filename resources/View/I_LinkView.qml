@@ -71,11 +71,13 @@ Canvas {
         var minPoint2 = outputPos.plus(BasicLinkCalculator.connectionMargin(outputPort?.portSide ?? -1));
         linkMidPoint = Calculation.getPositionByTolerance(0.5, [inputPos, minPoint1, minPoint2, outputPos]);
 
-        var lineWidth = 2 * sceneSession.zoomManager.zoomFactor
+        var lineWidth = 2 * sceneSession.zoomManager.zoomFactor;
+        var arrowHeadLength = 10 * sceneSession.zoomManager.zoomFactor;
+
         // Draw the curve with LinkPainter
         LinkPainter.createLink(context, inputPos, link.controlPoints, isSelected,
                                 link.guiConfig.color, link.direction,
-                                link.guiConfig.style, link.guiConfig.type, lineWidth,
+                                link.guiConfig.style, link.guiConfig.type, lineWidth, arrowHeadLength,
                                link.inputPort.portSide, link.outputPort?.portSide ?? -1);
     }
 
