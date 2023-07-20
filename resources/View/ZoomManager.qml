@@ -59,7 +59,7 @@ QtObject {
     //! ZoomIn method
     function zoomIn() {
         if(canZoomIn())
-            zoomFactor *= (1 + zoomStep);
+                zoomFactor *= (1 + zoomInStep());
 
         focusToScene();
     }
@@ -67,7 +67,7 @@ QtObject {
     //! ZoomOut method
     function zoomOut() {
         if(canZoomOut())
-            zoomFactor /= (1 + zoomStep);
+                zoomFactor /= (1 + zoomOutStep());
 
         focusToScene();
     }
@@ -94,11 +94,35 @@ QtObject {
 
     //! Can zoom In ...
     function canZoomIn() : bool {
-        return zoomFactor * (1 + zoomStep) <= maximumZoom;
+        return zoomFactor - maximumZoom < 0.001;
     }
 
     //! Can zoom Out ...
     function canZoomOut() : bool {
-        return zoomFactor / (1 + zoomStep) >= minimumZoom;
+        return zoomFactor - minimumZoom > 0.001;
+    }
+
+    //! Zoom in step
+    function zoomInStep() : real {
+                if(canZoomIn()) {
+                    if(zoomFactor * (1 + zoomStep) >= maximumZoom)
+                        return Math.abs(maximumZoom - zoomFactor) / zoomFactor;
+                    else
+                        return zoomStep;
+                }
+
+                return 0.0;
+    }
+
+    //! Zoom out step
+    function zoomOutStep() : real {
+                if(canZoomOut()) {
+                    if(zoomFactor / (1 + zoomStep) <= minimumZoom)
+                        return Math.abs(zoomFactor - minimumZoom) / minimumZoom;
+                    else
+                        return zoomStep;
+                }
+
+                return 0.0;
     }
 }

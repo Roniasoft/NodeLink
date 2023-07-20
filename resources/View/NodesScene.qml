@@ -138,9 +138,9 @@ I_NodesScene {
                      worldZoomPoint = Qt.vector2d(wheel.x, wheel.y);
 
                      if(wheel.angleDelta.y > 0 && sceneSession.zoomManager.canZoomIn())
-                            prepareScale(1 + sceneSession.zoomManager.zoomStep);
+                            prepareScale(1 + sceneSession.zoomManager.zoomInStep());
                      else if (wheel.angleDelta.y < 0 && sceneSession.zoomManager.canZoomOut())
-                            prepareScale(1 / (1 + sceneSession.zoomManager.zoomStep));
+                            prepareScale(1 / (1 + sceneSession.zoomManager.zoomOutStep()));
                  }
 
         //! We should toggle line selection with mouse press event
@@ -349,7 +349,7 @@ I_NodesScene {
             worldZoomPoint = Qt.vector2d(flickable.contentX + flickable.width / 2,
                                          flickable.contentY + flickable.height / 2);
 
-            prepareScale(1 + sceneSession.zoomManager.zoomStep);
+            prepareScale(1 + sceneSession.zoomManager.zoomInStep());
         }
 
         //! Emit from side menu, Do zoomOut process
@@ -361,7 +361,7 @@ I_NodesScene {
             worldZoomPoint = Qt.vector2d(flickable.contentX + flickable.width / 2,
                                          flickable.contentY + flickable.height / 2);
 
-            prepareScale(1 / (1 + sceneSession.zoomManager.zoomStep));
+            prepareScale(1 / (1 + sceneSession.zoomManager.zoomOutStep()));
         }
 
         //! Manage zoom from nodeView.
@@ -394,9 +394,9 @@ I_NodesScene {
             flickable.zoomPoint      = Qt.vector3d(zoomPointScaled.x - flickable.contentX, zoomPointScaled.y - flickable.contentY, 0);
             flickable.worldZoomPoint = Qt.vector2d(zoomPointScaled.x, zoomPointScaled.y);
             if(wheelAngle > 0 && sceneSession.zoomManager.canZoomIn())
-                   prepareScale(1 + sceneSession.zoomManager.zoomStep);
+                   prepareScale(1 + sceneSession.zoomManager.zoomInStep());
             else if (wheelAngle < 0 && sceneSession.zoomManager.canZoomOut())
-                   prepareScale(1 / (1 + sceneSession.zoomManager.zoomStep))
+                   prepareScale(1 / (1 + sceneSession.zoomManager.zoomOutStep()))
         }
 
         //! Set focus on NodesScene after zoom In/Out
