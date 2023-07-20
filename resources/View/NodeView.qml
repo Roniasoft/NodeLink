@@ -279,7 +279,7 @@ Rectangle {
         //! Text Icon
         Text {
             font.family: "Font Awesome 6 Pro"
-            font.pixelSize: 20
+            font.pixelSize: 60
             anchors.centerIn: parent
             text: NLStyle.nodeIcons[node.type]
             color: node.guiConfig.color
