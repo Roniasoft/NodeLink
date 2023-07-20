@@ -41,7 +41,7 @@ Rectangle {
 
     color: Qt.darker(node.guiConfig.color, 10)
     border.color: node.guiConfig.locked ? "gray" : Qt.lighter(node.guiConfig.color, nodeView.isSelected ? 1.2 : 1)
-    border.width: (nodeView.isSelected ? 3 : 2) * sceneSession.zoomManager.zoomFactor
+    border.width: (nodeView.isSelected ? 3 : 2)
     opacity: nodeView.isSelected ? 1 :  nodeView.isNodeMinimal ? 0.6 : 0.8
     z: node.guiConfig.locked ? 1 : (isSelected ? 3 : 2)
     radius: 10
@@ -73,8 +73,8 @@ Rectangle {
 
         // Move node to minimum edit zoom
         if(nodeView.edit && nodeView.isNodeMinimal) {
-            var zoomPoint  = Qt.vector2d(nodeView.x + nodeView.width / 2,
-                                         nodeView.y + nodeView.height / 2);
+            var zoomPoint  = Qt.vector2d(nodeView.x - nodeView.width / 2,
+                                         nodeView.y - nodeView.height / 2);
             sceneSession.zoomManager.zoomNodeSignal(zoomPoint, 1.0, true);
         }
         nodeView.edit ? titleTextArea.forceActiveFocus() :  nodeView.forceActiveFocus();
@@ -251,7 +251,7 @@ Rectangle {
     Rectangle {
         id: minimalRectangle
         anchors.fill: parent
-        anchors.margins: 10 * sceneSession.zoomManager.zoomFactor
+        anchors.margins: 10
 
         color: nodeView.isNodeMinimal ? "#282828" : "trasparent"
         radius: 5
@@ -292,8 +292,8 @@ Rectangle {
     MouseArea {
         id: nodeMouseArea
 
-        property real    prevX:      node.guiConfig.position.x  * sceneSession.zoomManager.zoomFactor
-        property real    prevY:      node.guiConfig.position.y * sceneSession.zoomManager.zoomFactor
+        property real    prevX:      node.guiConfig.position.x
+        property real    prevY:      node.guiConfig.position.y
         property bool   isDraging:  false
 
         anchors.fill: parent
@@ -787,7 +787,7 @@ Rectangle {
         id: topRow
         anchors.top: parent.top
         anchors.horizontalCenter: parent.horizontalCenter
-        anchors.margins: -(NLStyle.portView.size * sceneSession.zoomManager.zoomFactor + NLStyle.portView.borderSize - nodeView.border.width) / 2 // we should use the size/2 of port from global style file
+        anchors.margins: -(NLStyle.portView.size /** sceneSession.zoomManager.zoomFactor */ + NLStyle.portView.borderSize - nodeView.border.width) / 2 // we should use the size/2 of port from global style file
         spacing: 5         // this can also be defined in the style file
 
         Repeater {
@@ -797,8 +797,12 @@ Rectangle {
                 scene: nodeView.scene
                 sceneSession: nodeView.sceneSession
                 opacity: (topPortsMouseArea.containsMouse || sceneSession.portsVisibility[modelData._qsUuid])? 1 : 0
-                globalX: nodeView.x + topRow.x + x + NLStyle.portView.size / 2 * sceneSession.zoomManager.zoomFactor
-                globalY: nodeView.y + topRow.y + mapToItem(topRow, Qt.point(x, y)).y + NLStyle.portView.size / 2 * sceneSession.zoomManager.zoomFactor
+
+                //! Position relative to node view
+                property point relativePos: mapToItem(nodeView, x, y)
+
+                globalX: nodeView.x + relativePos.x * sceneSession.zoomManager.zoomFactor// - NLStyle.portView.size / 2
+                globalY: nodeView.y + relativePos.y + NLStyle.portView.size / 2
             }
         }
     }
@@ -818,8 +822,12 @@ Rectangle {
                 scene: nodeView.scene
                 sceneSession: nodeView.sceneSession
                 opacity: (leftPortsMouseArea.containsMouse || sceneSession.portsVisibility[modelData._qsUuid])? 1 : 0
-                globalX: nodeView.x + leftColumn.x + mapToItem(leftColumn, Qt.point(x, y)).x + NLStyle.portView.size / 2 * sceneSession.zoomManager.zoomFactor
-                globalY: nodeView.y + leftColumn.y + y + NLStyle.portView.size / 2 * sceneSession.zoomManager.zoomFactor
+
+                //! Position relative to node view
+                property point relativePos: mapToItem(nodeView, x, y)
+
+                globalX: nodeView.x + relativePos.x + NLStyle.portView.size / 2
+                globalY: nodeView.y + relativePos.y * sceneSession.zoomManager.zoomFactor
             }
         }
     }
@@ -829,7 +837,7 @@ Rectangle {
         id: rightColumn
         anchors.right: parent.right
         anchors.verticalCenter: parent.verticalCenter
-        anchors.margins: -(NLStyle.portView.size * sceneSession.zoomManager.zoomFactor+ NLStyle.portView.borderSize - nodeView.border.width) / 2 // we should use the size/2 of port from global style file
+        anchors.margins: -(NLStyle.portView.size * sceneSession.zoomManager.zoomFactor + NLStyle.portView.borderSize - nodeView.border.width) / 2 // we should use the size/2 of port from global style file
         spacing: 5         // this can also be defined in the style file
 
         Repeater {
@@ -839,8 +847,12 @@ Rectangle {
                 scene: nodeView.scene
                 sceneSession: nodeView.sceneSession
                 opacity: (rightPortsMouseArea.containsMouse || sceneSession.portsVisibility[modelData._qsUuid]) ? 1 : 0
-                globalX: nodeView.x + rightColumn.x + mapToItem(rightColumn, Qt.point(x, y)).x + NLStyle.portView.size / 2 * sceneSession.zoomManager.zoomFactor
-                globalY: nodeView.y + rightColumn.y + y + NLStyle.portView.size / 2 * sceneSession.zoomManager.zoomFactor
+
+                //! Position relative to node view
+                property point relativePos: mapToItem(nodeView, x, y)
+
+                globalX: nodeView.x + (relativePos.x - width / 2 )* sceneSession.zoomManager.zoomFactor
+                globalY: nodeView.y + (relativePos.y ) * sceneSession.zoomManager.zoomFactor
             }
         }
     }
@@ -860,8 +872,12 @@ Rectangle {
                 scene: nodeView.scene
                 sceneSession: nodeView.sceneSession
                 opacity: (bottomPortsMouseArea.containsMouse || sceneSession.portsVisibility[modelData._qsUuid]) ? 1 : 0
-                globalX: nodeView.x + bottomRow.x + x + NLStyle.portView.size / 2 * sceneSession.zoomManager.zoomFactor
-                globalY: nodeView.y + bottomRow.y + mapToItem(bottomRow, Qt.point(x, y)).y + NLStyle.portView.size / 2 * sceneSession.zoomManager.zoomFactor
+
+                //! Position relative to node view
+                property point relativePos: mapToItem(nodeView, x, y)
+
+                globalX: nodeView.x + relativePos.x * sceneSession.zoomManager.zoomFactor
+                globalY: nodeView.y + (relativePos.y - width / 2) * sceneSession.zoomManager.zoomFactor
             }
         }
     }

@@ -41,8 +41,8 @@ Rectangle {
 
     /* Object Properties
      * ****************************************************************************************/
-    width: NLStyle.portView.size * sceneSession.zoomManager.zoomFactor
-    border.width: NLStyle.portView.borderSize * sceneSession.zoomManager.zoomFactor
+    width: NLStyle.portView.size
+    border.width: NLStyle.portView.borderSize
     height: width
     radius: width
     color: "#8b6cef"
