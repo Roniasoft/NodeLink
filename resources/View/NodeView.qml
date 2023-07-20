@@ -787,7 +787,7 @@ Rectangle {
         id: topRow
         anchors.top: parent.top
         anchors.horizontalCenter: parent.horizontalCenter
-        anchors.margins: -(NLStyle.portView.size /** sceneSession.zoomManager.zoomFactor */ + NLStyle.portView.borderSize - nodeView.border.width) / 2 // we should use the size/2 of port from global style file
+        anchors.margins: -(NLStyle.portView.size + NLStyle.portView.borderSize - nodeView.border.width) / 2 // we should use the size/2 of port from global style file
         spacing: 5         // this can also be defined in the style file
 
         Repeater {
@@ -812,7 +812,7 @@ Rectangle {
         id: leftColumn
         anchors.left: parent.left
         anchors.verticalCenter: parent.verticalCenter
-        anchors.margins: -(NLStyle.portView.size * sceneSession.zoomManager.zoomFactor + NLStyle.portView.borderSize - nodeView.border.width) / 2 // we should use the size/2 of port from global style file
+        anchors.margins: -(NLStyle.portView.size + NLStyle.portView.borderSize - nodeView.border.width) / 2 // we should use the size/2 of port from global style file
         spacing: 5         // this can also be defined in the style file
 
         Repeater {
@@ -837,7 +837,7 @@ Rectangle {
         id: rightColumn
         anchors.right: parent.right
         anchors.verticalCenter: parent.verticalCenter
-        anchors.margins: -(NLStyle.portView.size * sceneSession.zoomManager.zoomFactor + NLStyle.portView.borderSize - nodeView.border.width) / 2 // we should use the size/2 of port from global style file
+        anchors.margins: -(NLStyle.portView.size + NLStyle.portView.borderSize - nodeView.border.width) / 2 // we should use the size/2 of port from global style file
         spacing: 5         // this can also be defined in the style file
 
         Repeater {
@@ -862,7 +862,7 @@ Rectangle {
         id: bottomRow
         anchors.bottom: parent.bottom
         anchors.horizontalCenter: parent.horizontalCenter
-        anchors.margins: -(NLStyle.portView.size * sceneSession.zoomManager.zoomFactor + NLStyle.portView.borderSize - nodeView.border.width) / 2 // we should use the size/2 of port from global style file
+        anchors.margins: -(NLStyle.portView.size + NLStyle.portView.borderSize - nodeView.border.width) / 2 // we should use the size/2 of port from global style file
         spacing: 5          // this can also be defined in the style file
 
         Repeater {
