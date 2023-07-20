@@ -316,8 +316,11 @@ I_NodesScene {
             var fcontentHeight = 4000 * zoomFactor
 
             //! Calculate contentX and contentY, when nodes has one node, the node must be in center
-            var fcontentX = leftX * zoomFactor * 0.95 - (nodesLength === 1 ? (flickable.width - (rigthX - leftX)) / 2 : 0);
-            var fcontentY = topY  * zoomFactor * 0.95 - (nodesLength === 1 ? (flickable.height - (bottomY - topY)) / 2 : 0);
+            //! Contents margin
+            var cantentMargin = nodesLength === 1 ? 1 : 0.95;
+
+            var fcontentX = leftX * zoomFactor * cantentMargin - (nodesLength === 1 ? (flickable.width - (rigthX - leftX)) / 2 : 0);
+            var fcontentY = topY  * zoomFactor * cantentMargin - (nodesLength === 1 ? (flickable.height - (bottomY - topY)) / 2 : 0);
 
             fcontentWidth = Math.max(...Object.values(scene?.nodes ?? ({})).
                                      map(node => ((node.guiConfig.position.x + node.guiConfig.width) *
