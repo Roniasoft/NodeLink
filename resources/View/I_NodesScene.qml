@@ -34,8 +34,6 @@ Flickable {
     contentX: 1500
     contentY: 1500
     focus: true
-    ScrollBar.horizontal: HorizontalScrollBar{}
-    ScrollBar.vertical: VerticalScrollBar{}
 
     FontLoader {
         source: "qrc:/NodeLink/resources/fonts/Font Awesome 6 Pro-Regular-400.otf"

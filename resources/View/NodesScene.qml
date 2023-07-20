@@ -56,6 +56,17 @@ I_NodesScene {
              sceneSession.isCtrlPressed = false;
     }
 
+    //! Change ScrollBars
+    ScrollBar.horizontal: HorizontalScrollBar {
+        //! Hide scrollbar when zoom process is running ...
+        visible: flickableScale === 1.0
+    }
+
+    ScrollBar.vertical: VerticalScrollBar {
+        //! Hide scrollbar when zoom process is running ...
+        visible: flickableScale === 1.0
+    }
+
     /* Children
     * ****************************************************************************************/
 
