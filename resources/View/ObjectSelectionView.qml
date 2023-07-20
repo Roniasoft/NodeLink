@@ -175,12 +175,9 @@ Item {
 
         running: false
         repeat: false
-        interval: 5
+        interval: 0
 
-         onTriggered: {
-             calculateDimensions();
-         }
-
+         onTriggered: calculateDimensions();
     }
 
     /*  Functions
