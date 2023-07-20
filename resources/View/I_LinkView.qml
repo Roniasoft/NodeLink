@@ -61,7 +61,7 @@ Canvas {
         // Calculate the control points with BasicLinkCalculator
         link.controlPoints = BasicLinkCalculator.calculateControlPoints(inputPos, outputPos, link.direction,
                                                                         link.guiConfig.type, link.inputPort.portSide,
-                                                                        link.outputPort?.portSide ?? -1)
+                                                                        link.outputPort?.portSide ?? -1, sceneSession.zoomManager.zoomFactor)
         // Calculate position of link setting dialog.
         // Finding the middle point of the link
         // Currently we suppose that the line is a bezzier curve
