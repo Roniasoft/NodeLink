@@ -13,7 +13,7 @@ ToolButton {
     width: 30
     height: 30
     text: "\uf2ed"
-    font.family: "Font Awesome 6 Pro"
+    font.family: NLStyle.fontType.font6Pro
     font.pixelSize: 17
     font.weight: 400
 

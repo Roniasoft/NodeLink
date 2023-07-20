@@ -111,7 +111,7 @@ Popup {
         Text {
             text: popUp.confirmText
             font.pointSize: 10
-            font.family: "Roboto"
+            font.family: NLStyle.fontType.roboto
             color: "white"
             horizontalAlignment: Text.AlignHCenter
             wrapMode: Text.WordWrap
@@ -142,7 +142,7 @@ Popup {
                 }
                 text: qsTr("Yes")
 
-                font.family: "Roboto"
+                font.family: NLStyle.fontType.roboto
                 font.pointSize: yesBtn.enabled && yesBtn.hovered ? 12 : 10
 
                 onClicked: {
@@ -165,7 +165,7 @@ Popup {
                 }
 
                 text: qsTr("No")
-                font.family: "Roboto"
+                font.family: NLStyle.fontType.roboto
                 font.pointSize: noBtn.enabled && noBtn.hovered ? 12 : 10
                 onClicked: {
                     popUp.rejected();

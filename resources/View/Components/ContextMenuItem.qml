@@ -50,7 +50,7 @@ MenuItem {
 
                 color: "#ababab"
                 text: menuItem.iconStr
-                font.family: "Font Awesome 6 Pro"
+                font.family: NLStyle.fontType.font6Pro
                 font.pixelSize: 14
                 font.weight: 400
 

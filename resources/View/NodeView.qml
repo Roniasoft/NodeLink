@@ -120,7 +120,7 @@ Rectangle {
         //! Icon
         Text {
             id: iconText
-            font.family: "Font Awesome 6 Pro"
+            font.family: NLStyle.fontType.font6Pro
             font.pixelSize: 20
             anchors.left: parent.left
             anchors.verticalCenter: parent.verticalCenter

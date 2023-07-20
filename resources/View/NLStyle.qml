@@ -11,6 +11,7 @@ QtObject {
     /* Property Declarations
      * ****************************************************************************************/
     property alias radiusAmount: _radiusAmount
+    property alias fontType:     _fontType
 
     /* Button related
      * ****************************************************************************************/
@@ -104,5 +105,13 @@ QtObject {
         readonly property double toolButton:     5
         readonly property double toolTip:        4
         readonly property double sideMenuButton: 4
+    }
+
+    //! Font
+    readonly property QtObject _fontType: QtObject {
+        id: _fontType
+
+        readonly property string roboto:   "Roboto"
+        readonly property string font6Pro: "Font Awesome 6 Pro"
     }
 }

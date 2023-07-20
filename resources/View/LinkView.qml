@@ -62,7 +62,7 @@ I_LinkView {
 
 
         color: "white"
-        font.family: "Roboto"
+        font.family: NLStyle.fontType.roboto
         font.pointSize: 14
         focus: link.guiConfig._isEditableDescription
 
