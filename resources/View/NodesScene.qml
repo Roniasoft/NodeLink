@@ -148,9 +148,9 @@ I_NodesScene {
                      zoomPoint      = Qt.vector3d(wheel.x - flickable.contentX, wheel.y - flickable.contentY, 0);
                      worldZoomPoint = Qt.vector2d(wheel.x, wheel.y);
 
-                     if(wheel.angleDelta.y > 0 && sceneSession.zoomManager.canZoomIn())
+                     if(wheel.angleDelta.y > 0)
                             prepareScale(1 + sceneSession.zoomManager.zoomInStep());
-                     else if (wheel.angleDelta.y < 0 && sceneSession.zoomManager.canZoomOut())
+                     else if (wheel.angleDelta.y < 0)
                             prepareScale(1 / (1 + sceneSession.zoomManager.zoomOutStep()));
                  }
 
@@ -242,38 +242,6 @@ I_NodesScene {
         id: foregroundLoader
         anchors.fill: parent
         sourceComponent: foreground
-    }
-
-    //! Update flicable dimension with zoomfactor
-    function updateFlickableDimension() {
-
-        //! Zoom implemented in two state: first : zoom Flicable
-        //!                    second: scale Item objects
-
-        //! Calculation parameters in flicable:
-        //! zoomFactor, zoomPoint (in center now), contentX (horizontal scrollbar),
-        //! contentY (vertical scrollbar)
-
-        var xDiffrence = worldZoomPoint.x - contentX;
-        var yDiffrence = worldZoomPoint.y - contentY;
-
-        var zoomOriginX = worldZoomPoint.x * flickableScale;
-        var zoomOriginY = worldZoomPoint.y * flickableScale;
-
-
-        //! update content dimentions
-        var canWidthChange = sceneSession.contentWidth * flickableScale >= flickable.width;
-        sceneSession.contentWidth  *= canWidthChange ? flickableScale : 1;
-
-        var canHeightChange = sceneSession.contentHeight * flickableScale >= flickable.height;
-        sceneSession.contentHeight *= canHeightChange ? flickableScale : 1;
-
-        // Adjust the content position to zoom to the mouse point
-        if (canWidthChange)
-            flickable.contentX =  Math.max(0, zoomOriginX - xDiffrence);
-
-        if (canHeightChange)
-            flickable.contentY =  Math.max(0, zoomOriginY - yDiffrence);
     }
 
     //! Manage zoom in flicable and zoomManager.
@@ -404,9 +372,9 @@ I_NodesScene {
 
             flickable.zoomPoint      = Qt.vector3d(zoomPointScaled.x - flickable.contentX, zoomPointScaled.y - flickable.contentY, 0);
             flickable.worldZoomPoint = Qt.vector2d(zoomPointScaled.x, zoomPointScaled.y);
-            if(wheelAngle > 0 && sceneSession.zoomManager.canZoomIn())
+            if(wheelAngle > 0)
                    prepareScale(1 + sceneSession.zoomManager.zoomInStep());
-            else if (wheelAngle < 0 && sceneSession.zoomManager.canZoomOut())
+            else if (wheelAngle < 0)
                    prepareScale(1 / (1 + sceneSession.zoomManager.zoomOutStep()))
         }
 
@@ -441,6 +409,38 @@ I_NodesScene {
 
     /* Functions
     * ****************************************************************************************/
+
+    //! Update flicable dimension with zoomfactor
+    function updateFlickableDimension() {
+
+        //! Zoom implemented in two state: first : zoom Flicable
+        //!                    second: scale Item objects
+
+        //! Calculation parameters in flicable:
+        //! zoomFactor, zoomPoint (in center now), contentX (horizontal scrollbar),
+        //! contentY (vertical scrollbar)
+
+        var xDiffrence = worldZoomPoint.x - contentX;
+        var yDiffrence = worldZoomPoint.y - contentY;
+
+        var zoomOriginX = worldZoomPoint.x * flickableScale;
+        var zoomOriginY = worldZoomPoint.y * flickableScale;
+
+
+        //! update content dimentions
+        var canWidthChange = sceneSession.contentWidth * flickableScale >= flickable.width;
+        sceneSession.contentWidth  *= canWidthChange ? flickableScale : 1;
+
+        var canHeightChange = sceneSession.contentHeight * flickableScale >= flickable.height;
+        sceneSession.contentHeight *= canHeightChange ? flickableScale : 1;
+
+        // Adjust the content position to zoom to the mouse point
+        if (canWidthChange)
+            flickable.contentX =  Math.max(0, zoomOriginX - xDiffrence);
+
+        if (canHeightChange)
+            flickable.contentY =  Math.max(0, zoomOriginY - yDiffrence);
+    }
 
     //! Prepare scale to set on the scene scale
     function prepareScale(scale: real) {
