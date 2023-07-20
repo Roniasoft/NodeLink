@@ -10,6 +10,7 @@ QtObject {
 
     /* Property Declarations
      * ****************************************************************************************/
+    property alias radiusAmount: _radiusAmount
 
     /* Button related
      * ****************************************************************************************/
@@ -84,4 +85,24 @@ QtObject {
 
         "Unknown"             // Unknown
     ]
+
+    //! Radius
+    readonly property QtObject _radiusAmount: QtObject {
+        id: _radiusAmount
+
+        readonly property double nodeOverview:   20
+        readonly property double blockerNode:    10
+        readonly property double confirmPopup:   10
+        readonly property double nodeView:       10
+        readonly property double contextMenu:    5
+        readonly property double colorPicker:    5
+        readonly property double sideMenuGroup:  5
+        readonly property double selectionTool:  5
+        readonly property double linkView:       5
+        readonly property double menuItem:       5
+        readonly property double toolItem:       5
+        readonly property double toolButton:     5
+        readonly property double toolTip:        4
+        readonly property double sideMenuButton: 4
+    }
 }

@@ -54,7 +54,7 @@ Popup {
 
         opacity: 0.95
         color: "black"
-        radius: 10
+        radius: NLStyle.radiusAmount.confirmPopup
     }
 
     Rectangle {
@@ -138,7 +138,7 @@ Popup {
                 checkable: true
                 background: Rectangle {
                     color: yesBtn.enabled && (yesBtn.hovered || yesBtn.checked)? Qt.lighter("gray", 1.5) : "gray"
-                    radius: 10
+                    radius: NLStyle.radiusAmount.confirmPopup
                 }
                 text: qsTr("Yes")
 
@@ -161,7 +161,7 @@ Popup {
 
                 background: Rectangle {
                     color: noBtn.enabled && (noBtn.hovered || noBtn.checked) ? Qt.lighter("gray", 1.5) : "gray"
-                    radius: 10
+                    radius: NLStyle.radiusAmount.confirmPopup
                 }
 
                 text: qsTr("No")

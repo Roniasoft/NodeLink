@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls
+import NodeLink
 
 /*! ***********************************************************************************************
  * MenuItem customize menu item.
@@ -62,7 +63,7 @@ MenuItem {
         id:toolButtonController
         width: menuItem.width
         height: menuItem.height
-        radius: 5
+        radius: NLStyle.radiusAmount.menuItem
         color: menuItem.hovered ? "#2f2f2f" : "transparent"
         opacity: enabled ? 1 : 0.3
         Behavior on color{ColorAnimation{duration: 75}}

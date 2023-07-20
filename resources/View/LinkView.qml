@@ -75,7 +75,7 @@ I_LinkView {
         rightPadding: 10
 
         background: Rectangle {
-            radius: 5
+            radius: NLStyle.radiusAmount.linkView
             border.width: 3
             border.color: isSelected ? link.guiConfig.color : "transparent"
             color: "#1e1e1e"

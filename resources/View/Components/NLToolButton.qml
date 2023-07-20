@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls
+import NodeLink
 
 /*! ***********************************************************************************************
  * Tool bar buttons
@@ -32,7 +33,7 @@ ToolButton {
         id:toolButtonController
         width: toolButton.width
         height: toolButton.height
-        radius: 5
+        radius: NLStyle.radiusAmount.toolButton
         color: toolButton.hovered || toolButton.checked? "#2f2f2f" : "transparent"
         opacity: enabled ? 1 : 0.3
         Behavior on color{ColorAnimation{duration: 75}}

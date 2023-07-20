@@ -22,7 +22,7 @@ MenuItem {
 
     background: Rectangle{
         anchors.fill: parent
-        radius: 5
+        radius: NLStyle.radiusAmount.contextMenu
         color: (menuItem.hoverTracker && menuItem.enabled) ? "#363636" : "transparent"
 
         opacity: menuItem.enabled ? 1 : 0.5
@@ -30,7 +30,7 @@ MenuItem {
         Rectangle {
             id: contextMenuIconRect
 
-            radius: 5
+            radius: NLStyle.radiusAmount.contextMenu
             color: (checkable && checked) ? "#2f2f2f" : "transparent"
             width: 25
             height: 25

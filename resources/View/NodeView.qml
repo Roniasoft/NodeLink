@@ -36,7 +36,7 @@ Rectangle {
     border.width: nodeView.isSelected ? 3 : 2
     opacity: nodeView.isSelected ? 1 : 0.8
     z: node.guiConfig.locked ? 1 : (isSelected ? 3 : 2)
-    radius: 10
+    radius: NLStyle.radiusAmount.nodeView
     smooth: true
     antialiasing: true
     layer.enabled: false

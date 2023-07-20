@@ -19,7 +19,7 @@ Rectangle {
 
     /* Object Properties
      * ****************************************************************************************/
-    radius: 5
+    radius: NLStyle.radiusAmount.sideMenuGroup
     height: layout.implicitHeight
     width: 34
     border.color: "#3f3f3f"
