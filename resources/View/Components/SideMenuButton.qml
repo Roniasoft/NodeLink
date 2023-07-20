@@ -37,7 +37,7 @@ ToolButton {
         id: sideMenuToolButtonController
         width: sideMenuToolButtons.width
         height: sideMenuToolButtons.height
-        radius: NLStyle.radiusAmount.sideMenuButton
+        radius: NLStyle.radiusAmount.itemButton
         color: sideMenuToolButtons.hovered ? "#494949" : "transparent"
         Rectangle {
             color: sideMenuToolButtons.hovered ? "#494949" : "transparent"

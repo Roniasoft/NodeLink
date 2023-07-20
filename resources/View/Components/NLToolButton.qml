@@ -33,7 +33,7 @@ ToolButton {
         id:toolButtonController
         width: toolButton.width
         height: toolButton.height
-        radius: NLStyle.radiusAmount.toolButton
+        radius: NLStyle.radiusAmount.itemButton
         color: toolButton.hovered || toolButton.checked? "#2f2f2f" : "transparent"
         opacity: enabled ? 1 : 0.3
         Behavior on color{ColorAnimation{duration: 75}}

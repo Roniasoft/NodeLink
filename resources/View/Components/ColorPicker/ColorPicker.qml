@@ -20,7 +20,7 @@ Rectangle {
     width: colorPicker.width + 15
     height: 50
     color: "transparent"
-    radius: NLStyle.radiusAmount.colorPicker
+    radius: NLStyle.radiusAmount.itemButton
     border.width: 1
     border.color: "#363636"
 

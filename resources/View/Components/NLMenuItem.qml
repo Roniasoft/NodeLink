@@ -63,7 +63,7 @@ MenuItem {
         id:toolButtonController
         width: menuItem.width
         height: menuItem.height
-        radius: NLStyle.radiusAmount.menuItem
+        radius: NLStyle.radiusAmount.itemButton
         color: menuItem.hovered ? "#2f2f2f" : "transparent"
         opacity: enabled ? 1 : 0.3
         Behavior on color{ColorAnimation{duration: 75}}
