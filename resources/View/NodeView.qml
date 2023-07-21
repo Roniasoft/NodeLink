@@ -25,9 +25,6 @@ Rectangle {
     //! Node is in minimal state or not (based in zoom factor)
     property bool           isNodeMinimal: sceneSession.zoomManager.zoomFactor < sceneSession.zoomManager.minimalZoomNode
 
-    //! To change fonts with animation
-    property real           fontScale: 1
-
     //! Correct position based on zoomPoint and zoomFactor
     property vector2d positionMapped: node.guiConfig?.position?.
                                          times(sceneSession.zoomManager.zoomFactor)
@@ -137,13 +134,13 @@ Rectangle {
         anchors.margins: 12
 
         visible: !nodeView.isNodeMinimal
-        height: 20 * (fontScale >= 1.0 ? fontScale : 0.8)
+        height: 20
 
         //! Icon
         Text {
             id: iconText
             font.family: "Font Awesome 6 Pro"
-            font.pixelSize: 20 * fontScale
+            font.pixelSize: 20
             anchors.left: parent.left
             anchors.verticalCenter: parent.verticalCenter
             text: NLStyle.nodeIcons[node.type]
@@ -158,8 +155,8 @@ Rectangle {
             anchors.right: parent.right
             anchors.left: iconText.right
             anchors.verticalCenter: parent.verticalCenter
-            anchors.leftMargin: 5 * fontScale
-            height: 40 * (fontScale >= 0.95 ? fontScale : 0.9)
+            anchors.leftMargin: 5
+            height: 40
 
             rightPadding: 10
 
@@ -183,7 +180,7 @@ Rectangle {
 
             smooth: true
             antialiasing: true
-            font.pointSize: 10 * fontScale
+            font.pointSize: 10
             font.bold: true
         }
     }
@@ -197,7 +194,7 @@ Rectangle {
         anchors.bottom: parent.bottom
         anchors.left: parent.left
         anchors.margins: 12
-        anchors.topMargin: 5 * fontScale
+        anchors.topMargin: 5
 
         hoverEnabled: true
         clip: true
@@ -233,7 +230,7 @@ Rectangle {
             smooth: true
             antialiasing: true
             font.bold: true
-            font.pointSize: 9 * fontScale
+            font.pointSize: 9
 
             onPressed: (event) => {
                 if (event.button === Qt.RightButton) {
