@@ -29,15 +29,15 @@ Rectangle {
     property real           fontScale: 1
 
     //! Correct position based on zoomPoint and zoomFactor
-    property vector2d correctedPosition: node.guiConfig?.position?.
+    property vector2d positionMapped: node.guiConfig?.position?.
                                          times(sceneSession.zoomManager.zoomFactor)
 
     /* Object Properties
      * ****************************************************************************************/
     width: node.guiConfig.width
     height: node.guiConfig.height
-    x: correctedPosition.x
-    y: correctedPosition.y
+    x: positionMapped.x
+    y: positionMapped.y
 
     color: Qt.darker(node.guiConfig.color, 10)
     border.color: node.guiConfig.locked ? "gray" : Qt.lighter(node.guiConfig.color, nodeView.isSelected ? 1.2 : 1)

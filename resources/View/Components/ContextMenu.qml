@@ -87,11 +87,11 @@ Menu {
         var position = Qt.vector2d(contextMenu.x, contextMenu.y);
 
         // Correct position with zoompoint and zoom factor into real position.
-        var positionCorrection = position?.times(1 / sceneSession.zoomManager.zoomFactor)
+        var positionMapped = position?.times(1 / sceneSession.zoomManager.zoomFactor)
 
 
-        node.guiConfig.position.x = positionCorrection.x;
-        node.guiConfig.position.y = positionCorrection.y;
+        node.guiConfig.position.x = positionMapped.x;
+        node.guiConfig.position.y = positionMapped.y;
 
 
         node.guiConfig.color = NLStyle.nodeColors[nodeType]//Qt.rgba(Math.random(), Math.random(), Math.random(), 1)

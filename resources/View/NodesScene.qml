@@ -187,9 +187,9 @@ I_NodesScene {
                 var position = Qt.vector2d(mouse.x, mouse.y);
 
                 // Correct position with zoom factor into real position.
-                var positionCorrection = position?.times(1 / sceneSession.zoomManager.zoomFactor)
+                var positionMapped = position?.times(1 / sceneSession.zoomManager.zoomFactor)
 
-                scene.createCustomizeNode(NLSpec.NodeType.General, positionCorrection.x, positionCorrection.y);
+                scene.createCustomizeNode(NLSpec.NodeType.General, positionMapped.x, positionMapped.y);
             }
         }
 
