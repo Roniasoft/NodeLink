@@ -32,8 +32,8 @@ QtObject {
     property ZoomManager zoomManager: ZoomManager {}
 
     //! width and height of flickable in ui session
-    property real contentWidth: 4000
-    property real contentHeight: 4000
+    property real contentWidth : NLStyle.scene.defaultContentWidth
+    property real contentHeight: NLStyle.scene.defaultContentHeight
 
     //! Active focus of main scene view
     signal sceneForceFocus()

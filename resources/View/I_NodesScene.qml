@@ -31,8 +31,8 @@ Flickable {
     anchors.fill: parent
     contentWidth: sceneSession.contentWidth
     contentHeight: sceneSession.contentHeight
-    contentX: 1500
-    contentY: 1500
+    contentX: NLStyle.scene.defaultContentX
+    contentY: NLStyle.scene.defaultContentY
     focus: true
 
     FontLoader {

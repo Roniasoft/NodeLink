@@ -291,8 +291,8 @@ I_NodesScene {
             sceneSession.zoomManager.customZoom(zoomFactor)
 
             //! update content dimentions
-            var fcontentWidth  = 4000 * zoomFactor
-            var fcontentHeight = 4000 * zoomFactor
+            var fcontentWidth  = NLStyle.scene.defaultContentWidth  * zoomFactor
+            var fcontentHeight = NLStyle.scene.defaultContentHeight * zoomFactor
 
             //! Calculate contentX and contentY, when nodes has one node, the node must be in center
             //! Contents margin
@@ -356,8 +356,8 @@ I_NodesScene {
                 sceneSession.zoomManager.customZoom(nodeEditZoom)
 
                 //! update content dimentions
-                sceneSession.contentWidth  = 4000 * nodeEditZoom;
-                sceneSession.contentHeight = 4000 * nodeEditZoom;
+                sceneSession.contentWidth  = NLStyle.scene.defaultContentWidth  * nodeEditZoom;
+                sceneSession.contentHeight = NLStyle.scene.defaultContentHeight * nodeEditZoom;
 
                 //! Calculate contentX and contentY, when nodes has one node, the node must be in center
                 var fcontentX = origin.x - (flickable.width / 2);
@@ -386,8 +386,8 @@ I_NodesScene {
         //! Reset zoom and related parameters
         function onResetZoomSignal(zoomFactor: real) {
             //! Reset zoom to defualt values
-            sceneSession.contentWidth = 4000;
-            sceneSession.contentHeight = 4000;
+            sceneSession.contentWidth  = NLStyle.scene.defaultContentWidth;
+            sceneSession.contentHeight = NLStyle.scene.defaultContentHeight;
 
             //! Change contents to initial value
             flickable.contentX = 1500;

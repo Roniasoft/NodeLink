@@ -26,6 +26,14 @@ QtObject {
         property bool visible:        false
     }
 
+    //! Defualt Scene contents dimension.
+    readonly property QtObject scene: QtObject {
+        property real defaultContentWidth:  4000
+        property real defaultContentHeight: 4000
+        property real defaultContentX:      1500
+        property real defaultContentY:      1500
+    }
+
     property bool snapEnabled: false
 
     readonly property var nodeIcons: [
