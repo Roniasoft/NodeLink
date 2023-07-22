@@ -347,7 +347,7 @@ function straightLineControlPoints(startPos, endPos, inputType, outputType, dire
 }
 
 //! Connection Margin with port side.
-function connectionMargin (portSide, zoomFactor) {
+function connectionMargin (portSide, zoomFactor = 1) {
 
     switch (portSide) {
     case 0: // \todo: use NLSpec some how here

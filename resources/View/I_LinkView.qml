@@ -67,12 +67,13 @@ Canvas {
         // Currently we suppose that the line is a bezzier curve
         // since with the LType it's not possible to find the middle point easily
         // the design needs to be revised
-        var minPoint1 = inputPos.plus(BasicLinkCalculator.connectionMargin(inputPort?.portSide ?? -1));
-        var minPoint2 = outputPos.plus(BasicLinkCalculator.connectionMargin(outputPort?.portSide ?? -1));
+        var zoomFactor = sceneSession.zoomManager.zoomFactor
+        var minPoint1 = inputPos.plus(BasicLinkCalculator.connectionMargin(inputPort?.portSide ?? -1, zoomFactor));
+        var minPoint2 = outputPos.plus(BasicLinkCalculator.connectionMargin(outputPort?.portSide ?? -1, zoomFactor));
         linkMidPoint = Calculation.getPositionByTolerance(0.5, [inputPos, minPoint1, minPoint2, outputPos]);
 
-        var lineWidth = 2 * sceneSession.zoomManager.zoomFactor;
-        var arrowHeadLength = 10 * sceneSession.zoomManager.zoomFactor;
+        var lineWidth = 2 * zoomFactor;
+        var arrowHeadLength = 10 * zoomFactor;
 
         // Draw the curve with LinkPainter
         LinkPainter.createLink(context, inputPos, link.controlPoints, isSelected,
