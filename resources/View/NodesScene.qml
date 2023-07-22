@@ -75,7 +75,7 @@ I_NodesScene {
         id: scaleBehavior
 
         NumberAnimation {
-            duration: 100
+            duration: 200
             easing.type: Easing.Linear
 
             onRunningChanged: {

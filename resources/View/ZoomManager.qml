@@ -11,7 +11,7 @@ QtObject {
      * ****************************************************************************************/
 
     //! Maximum zoom value
-    property real maximumZoom   :   1.5
+    property real maximumZoom   :   2.5
 
     //! Minimum zoom value
     property real minimumZoom   : 0.35
@@ -20,7 +20,7 @@ QtObject {
     property real zoomFactor    : 1.0
 
     //! step of zoom in/out
-    property real zoomStep      : 0.1
+    property real zoomStep      : 0.3
 
     //! In minimalZoomNode, node show a minimal Rectangle without header and description
     property real minimalZoomNode: 0.6
