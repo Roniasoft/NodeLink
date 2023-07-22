@@ -116,8 +116,12 @@ Item {
                 // clear selection model
                 scene.selectionModel.clear();
                 // Find objects inside foregroundItem
-                var selectedObj = scene.findNodesInContainerItem(selectionRubberBandItem,
-                                                                 sceneSession.zoomManager.zoomFactor);
+                var zoomFactor = sceneSession.zoomManager.zoomFactor
+                var selectionRubberBandRect = Qt.rect(selectionRubberBandItem.x / zoomFactor,
+                                                      selectionRubberBandItem.y / zoomFactor,
+                                                      selectionRubberBandItem.width / zoomFactor,
+                                                      selectionRubberBandItem.height / zoomFactor);
+                var selectedObj = scene.findNodesInContainerItem(selectionRubberBandRect);
                 selectedObj.forEach(node => scene.selectionModel.selectNode(node));
             }
         }
