@@ -244,7 +244,7 @@ I_NodesScene {
         sourceComponent: foreground
     }
 
-    //! Manage zoom in flicable and zoomManager.
+    //! Manage zoom in flickable and zoomManager.
     Connections {
         target: sceneSession.zoomManager
 

@@ -23,6 +23,7 @@ QtObject {
 
     readonly property QtObject overview: QtObject {
         property real scale:          0.15
+        //! The current OverView is corrupted, must be updated based on plan.
         property bool visible:        false
     }
 

@@ -68,7 +68,9 @@ Rectangle {
 
     onEditChanged: {
 
-        // Move node to minimum edit zoom
+        // When Node is editting and zoomFactor is less than minimalZoomNode,
+        // and need a node to be edit
+        // The zoom will change to the minimum editable value
         if(nodeView.edit && nodeView.isNodeMinimal) {
             var zoomPoint  = Qt.vector2d(nodeView.x + nodeView.width * sceneSession.zoomManager.zoomFactor / 2,
                                          nodeView.y + nodeView.height * sceneSession.zoomManager.zoomFactor / 2);
