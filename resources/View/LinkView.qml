@@ -63,8 +63,14 @@ I_LinkView {
 
         color: "white"
         font.family: "Roboto"
-        font.pointSize: 14 * sceneSession.zoomManager.zoomFactor
+        font.pointSize: 14
         focus: link.guiConfig._isEditableDescription
+
+        //! Scale with zoomFactor
+        transform: Scale {
+            xScale: sceneSession.zoomManager.zoomFactor
+            yScale: sceneSession.zoomManager.zoomFactor
+        }
 
         onTextChanged: {
             if (link && link.description !== text)
