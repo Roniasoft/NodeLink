@@ -429,10 +429,13 @@ I_NodesScene {
 
         //! update content dimentions
         var canWidthChange = sceneSession.contentWidth * flickableScale >= flickable.width;
-        sceneSession.contentWidth  *= canWidthChange ? flickableScale : 1;
+        var isNotRight =  (sceneSession.contentWidth - flickable.contentX - flickable.width) > 0
+        sceneSession.contentWidth  *= (canWidthChange && isNotRight )? flickableScale : 1;
 
         var canHeightChange = sceneSession.contentHeight * flickableScale >= flickable.height;
-        sceneSession.contentHeight *= canHeightChange ? flickableScale : 1;
+        var isNotBottom = (sceneSession.contentHeight - flickable.contentY - flickable.height) > 0
+
+        sceneSession.contentHeight *= (canHeightChange && isNotBottom) ? flickableScale : 1;
 
         // Adjust the content position to zoom to the mouse point
         if (canWidthChange)
