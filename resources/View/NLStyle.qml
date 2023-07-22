@@ -23,7 +23,16 @@ QtObject {
 
     readonly property QtObject overview: QtObject {
         property real scale:          0.15
-        property bool visible:        true
+        //! The current OverView is corrupted, must be updated based on plan.
+        property bool visible:        false
+    }
+
+    //! Defualt Scene contents dimension.
+    readonly property QtObject scene: QtObject {
+        property real defaultContentWidth:  4000
+        property real defaultContentHeight: 4000
+        property real defaultContentX:      1500
+        property real defaultContentY:      1500
     }
 
     property bool snapEnabled: false

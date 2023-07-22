@@ -11,9 +11,6 @@ LinkView {
 
     /* Object Properties
      * ****************************************************************************************/
-    //! Scene session contains information about scene states (UI related)
-    property SceneSession   sceneSession
-
 
     /* Property Declarations
     * ****************************************************************************************/

@@ -29,11 +29,11 @@ Flickable {
     /* Object Properties
     * ****************************************************************************************/
     anchors.fill: parent
-    contentWidth: 4000
-    contentHeight: 4000
+    contentWidth: sceneSession.contentWidth
+    contentHeight: sceneSession.contentHeight
+    contentX: NLStyle.scene.defaultContentX
+    contentY: NLStyle.scene.defaultContentY
     focus: true
-    ScrollBar.horizontal: HorizontalScrollBar{}
-    ScrollBar.vertical: VerticalScrollBar{}
 
     FontLoader {
         source: "qrc:/NodeLink/resources/fonts/Font Awesome 6 Pro-Regular-400.otf"

@@ -96,8 +96,8 @@ Item {
 
         onPressed: (mouse) => {
             sceneSession.isRubberBandMoving = true;
-            prevX = mouse.x;
-            prevY = mouse.y;
+            prevX = mouse.x * sceneSession.zoomManager.zoomFactor;
+            prevY = mouse.y * sceneSession.zoomManager.zoomFactor;
         }
 
         onReleased: (mouse) => {
@@ -107,10 +107,10 @@ Item {
         onPositionChanged: (mouse) => {
             if (sceneSession.isRubberBandMoving) {
                 // Prepare key variables of node movement
-                var deltaX = mouse.x - prevX;
-                prevX = mouse.x - deltaX;
-                var deltaY = mouse.y - prevY;
-                prevY = mouse.y - deltaY;
+                var deltaX = (mouse.x * sceneSession.zoomManager.zoomFactor - prevX);
+                prevX = mouse.x * sceneSession.zoomManager.zoomFactor - deltaX;
+                var deltaY = (mouse.y * sceneSession.zoomManager.zoomFactor- prevY);
+                prevY = mouse.y * sceneSession.zoomManager.zoomFactor - deltaY;
 
                 // Start movement process
                 Object.values(scene.selectionModel.selectedModel).forEach(obj => {
@@ -119,12 +119,19 @@ Item {
                         obj.guiConfig.position.x += deltaX;
                         obj.guiConfig.position.y += deltaY;
                     obj.guiConfig.positionChanged();
-                    if(((obj.guiConfig.position.x) < 0 && deltaX < 0)   ||
-                        ((obj.guiConfig.position.x + obj.guiConfig.width ) > contentWidth) && deltaX > 0||
-                        ((obj.guiConfig.position.y) < 0 && deltaY < 0)   ||
-                        ((obj.guiConfig.position.y + obj.guiConfig.height) > contentHeight) && deltaY > 0)
-                           sceneSession.isRubberBandMoving = false;
-                        }
+
+                    if((obj.guiConfig.position.x < 0  && deltaX < 0) ||
+                       (obj.guiConfig.position.y < 0 && deltaY < 0))
+                        sceneSession.isRubberBandMoving = false;
+
+                    //! Extend contentWidth and contentWidth when is necessary
+                    if (obj.guiConfig.position.x + obj.guiConfig.width > sceneSession.contentWidth && deltaX > 0)
+                        sceneSession.contentWidth += deltaX;
+
+                    if(obj.guiConfig.position.y + obj.guiConfig.height > sceneSession.contentHeight && deltaY > 0)
+                        sceneSession.contentHeight += deltaY;
+
+                    }
                 });
             }
         }
@@ -140,7 +147,7 @@ Item {
         onTriggered: sceneSession.isRubberBandMoving = false;
     }
 
-    //! Connection to calculate rubber band Dimentions when necessary.
+    //! Connection to calculate rubber band Dimensions when necessary.
     Connections {
         target: scene.selectionModel
 
@@ -151,6 +158,26 @@ Item {
         function onSelectedObjectChanged() {
            calculateDimensions();
         }
+    }
+
+    //! Connection to calculate rubber band Dimensions when zoomFactorChanged.
+    Connections {
+        target: sceneSession.zoomManager
+
+        function onZoomFactorChanged() {
+            _timerUpdateDimention.start();
+        }
+    }
+
+    //! Wait to update all factors that depeand on zoom factor then do calculations
+    Timer {
+        id: _timerUpdateDimention
+
+        running: false
+        repeat: false
+        interval: 0
+
+         onTriggered: calculateDimensions();
     }
 
     /*  Functions
@@ -165,35 +192,43 @@ Item {
         var isNodeFirstObj = firstObj.objectType === NLSpec.ObjectType.Node;
         var portPosVecOut = isNodeFirstObj ? Qt.vector2d(0, 0) : scene.portsPositions[firstObj?.outputPort?._qsUuid]
 
-        var position = isNodeFirstObj ? firstObj.guiConfig.position : scene.portsPositions[firstObj?.inputPort?._qsUuid];
-        var leftX = isNodeFirstObj ? position.x : (position.x < portPosVecOut.x) ? position.x : portPosVecOut.x;
-        var topY = isNodeFirstObj ? position.y : (position.y < portPosVecOut.y) ? position.y : portPosVecOut.y;
+        var position = isNodeFirstObj ? firstObj.guiConfig?.position?.times(sceneSession.zoomManager.zoomFactor) :
+                                        scene.portsPositions[firstObj?.inputPort?._qsUuid];
+        var leftX = (isNodeFirstObj ? position.x : (position.x < portPosVecOut.x) ? position.x : portPosVecOut.x);
+        var topY = (isNodeFirstObj ? position.y : (position.y < portPosVecOut.y) ? position.y : portPosVecOut.y);
 
-        var rightX = isNodeFirstObj ? position.x + firstObj.guiConfig.width :
-                                      (position.x > portPosVecOut.x) ? position.x : portPosVecOut.x;
-        var bottomY = isNodeFirstObj ? position.y + firstObj.guiConfig.height :
-                                       (position.y > portPosVecOut.y) ? position.y : portPosVecOut.y;
+        var rightX = (isNodeFirstObj ? position.x + firstObj.guiConfig.width * sceneSession.zoomManager.zoomFactor :
+                                      (position.x > portPosVecOut.x) ? position.x : portPosVecOut.x);
+        var bottomY = (isNodeFirstObj ? position.y + firstObj.guiConfig.height * sceneSession.zoomManager.zoomFactor :
+                                       (position.y > portPosVecOut.y) ? position.y : portPosVecOut.y);
 
         Object.values(scene.selectionModel.selectedModel).forEach(obj => {
                                                                       if(obj.objectType === NLSpec.ObjectType.Node) {
-                                                                          if(obj.guiConfig.position.x < leftX) {
-                                                                              leftX = obj.guiConfig.position.x;
+
+                                                                          // Find left, right, top and bottom positions.
+                                                                          // they are depend on inputPort and outputPort position (temporary).
+                                                                          var pos = obj.guiConfig.position.times(sceneSession.zoomManager.zoomFactor); //obj.guiConfig.position.plus(obj.guiConfig.position.minus(sceneSession.zoomManager.zoomPoint).times(sceneSession.zoomManager.zoomFactor - 1))
+
+                                                                          var tempLeftX = pos.x;
+                                                                          var tempTopY = pos.y;
+                                                                          var tempRightX = pos.x + obj.guiConfig.width * sceneSession.zoomManager.zoomFactor;
+                                                                          var tempBottomY =pos.y + obj.guiConfig.height * sceneSession.zoomManager.zoomFactor;
+
+
+                                                                          if(tempLeftX < leftX) {
+                                                                              leftX = tempLeftX;
+                                                                          }
+                                                                          if(tempTopY < topY) {
+                                                                              topY = tempTopY;
                                                                           }
 
-                                                                          if(obj.guiConfig.position.x < leftX) {
-                                                                              leftX = obj.guiConfig.position.x;
-                                                                          }
-                                                                          if(obj.guiConfig.position.y < topY) {
-                                                                              topY = obj.guiConfig.position.y;
+                                                                          if(rightX < tempRightX) {
+                                                                              rightX = tempRightX;
                                                                           }
 
-                                                                          if(rightX < obj.guiConfig.position.x + obj.guiConfig.width) {
-                                                                              rightX = obj.guiConfig.position.x + obj.guiConfig.width;
-                                                                          }
-
-                                                                          if(bottomY < obj.guiConfig.position.y + obj.guiConfig.height) {
-                                                                              bottomY = obj.guiConfig.position.y + obj.guiConfig.height;
-                                                                          }
+                                                                          if(bottomY < tempBottomY) {
+                                                                              bottomY = tempBottomY;
+                                                                           }
 
                                                                       } else if(obj.objectType === NLSpec.ObjectType.Link) {
                                                                           var portPosVecIn = scene.portsPositions[obj?.inputPort?._qsUuid]
@@ -201,10 +236,10 @@ Item {
 
                                                                           // Find left, right, top and bottom positions.
                                                                           // they are depend on inputPort and outputPort position (temporary).
-                                                                          var tempLeftX = (portPosVecIn.x < portPosVecOut.x) ? portPosVecIn.x : portPosVecOut.x;
-                                                                          var tempTopY = (portPosVecIn.y < portPosVecOut.y) ? portPosVecIn.y : portPosVecOut.y;
-                                                                          var tempRightX = (portPosVecIn.x > portPosVecOut.x) ? portPosVecIn.x : portPosVecOut.x;
-                                                                          var tempBottomY = (portPosVecIn.y > portPosVecOut.y) ? portPosVecIn.y : portPosVecOut.y;
+                                                                          tempLeftX = (portPosVecIn.x < portPosVecOut.x) ? portPosVecIn.x : portPosVecOut.x;
+                                                                          tempTopY = (portPosVecIn.y < portPosVecOut.y) ? portPosVecIn.y : portPosVecOut.y;
+                                                                          tempRightX = (portPosVecIn.x > portPosVecOut.x) ? portPosVecIn.x : portPosVecOut.x;
+                                                                          tempBottomY = (portPosVecIn.y > portPosVecOut.y) ? portPosVecIn.y : portPosVecOut.y;
 
                                                                           // Set temp value into it's real variable.
                                                                           if(tempLeftX < leftX)
@@ -218,14 +253,17 @@ Item {
 
                                                                           if(tempBottomY > bottomY)
                                                                              bottomY = tempBottomY;
+
                                                                       }
                                                                   });
         var margin = 5;
 
         // Update dimentions
-        root.x = leftX - margin;
-        root.y = topY - margin;
-        root.width  = rightX  - leftX + 2 * margin
-        root.height = bottomY - topY + 2 * margin
+        root.width  = (rightX  - leftX + 2 * margin)
+        root.height = (bottomY - topY + 2 * margin)
+
+        // Locate at center
+        root.x = (leftX + rightX) / 2 - root.width / 2;
+        root.y = (bottomY + topY) / 2 - root.height / 2;
     }
 }

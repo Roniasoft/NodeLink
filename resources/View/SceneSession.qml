@@ -28,6 +28,13 @@ QtObject {
     //! SelectionHelperView
     property bool rubberBandSelectionMode: false
 
+	//! Zoom manager
+    property ZoomManager zoomManager: ZoomManager {}
+
+    //! width and height of flickable in ui session
+    property real contentWidth : NLStyle.scene.defaultContentWidth
+    property real contentHeight: NLStyle.scene.defaultContentHeight
+
     //! Active focus of main scene view
     signal sceneForceFocus()
 

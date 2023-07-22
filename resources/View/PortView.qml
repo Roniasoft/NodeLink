@@ -21,10 +21,10 @@ Rectangle {
     property SceneSession   sceneSession
 
     //! GlobalX is set after positioning the port in the scene
-    property int            globalX
+    property real           globalX
 
     //! GlobalY is set after positioning the port in the scene
-    property int            globalY
+    property real           globalY
 
     //! GlobalPos is a 2d vector filled by globalX and globalY
     readonly property vector2d globalPos:      Qt.vector2d(globalX, globalY)

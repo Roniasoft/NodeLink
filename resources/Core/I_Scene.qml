@@ -74,7 +74,7 @@ QSObject {
         nodeAdded(node);
 
         scene.selectionModel.clear();
-        scene.selectionModel.select(node);
+        scene.selectionModel.selectNode(node);
 
         node.onPortAdded.connect(onPortAdded);
         return node;
@@ -136,7 +136,7 @@ QSObject {
         node.guiConfig.width = nodes[nodeUUId].guiConfig.width
         node.title = nodes[nodeUUId].title
         node.addPortByHardCode();
-        selectionModel.select(node);
+        selectionModel.selectNode(node);
     }
 
     //! On port added
@@ -234,7 +234,7 @@ QSObject {
     }
 
     //! Find the nodes that are in the container item.
-    function findNodesInContainerItem(containerItem : Item) {
+    function findNodesInContainerItem(containerItem: rect) {
 
         // Key points of container to generate line equations and it's limits.
         var rBLeftX = containerItem.x;
@@ -244,11 +244,12 @@ QSObject {
 
         var findedObj = Object.values(nodes).filter(node => {
             // Key points of Node to generate line equations and it's limits.
-            var nodeLeftX = node.guiConfig.position.x;
-            var nodeTopY = node.guiConfig.position.y;
+            var position = node.guiConfig.position
+
+            var nodeLeftX = position.x;
+            var nodeTopY = position.y;
             var nodeRightX = nodeLeftX + node.guiConfig.width;
             var nodeBottomY = nodeTopY + node.guiConfig.height;
-
             // Checking the equations of the containerItem lines and nodes
             // and their intersection using the obtained limits
             var isSelected = (rBRightX > nodeLeftX && rBRightX < nodeRightX &&

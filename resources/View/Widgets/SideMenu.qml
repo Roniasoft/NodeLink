@@ -9,7 +9,8 @@ import NodeLink
 Item {
     id: sideMenu1
 
-    property Scene scene
+    property Scene        scene
+    property SceneSession sceneSession
 
     /* Children
      * ****************************************************************************************/
@@ -27,6 +28,8 @@ Item {
                 visible: parent.hovered
                 text: "Zoom in"
             }
+
+            onClicked: sceneSession.zoomManager.zoomInSignal();
         }
         SideMenuButton {
             text: "\uf2f9"
@@ -37,6 +40,8 @@ Item {
                 visible: parent.hovered
                 text: "Reset zoom"
             }
+
+            onClicked: sceneSession.zoomManager.resetZoomSignal(1.0);
         }
 
         SideMenuButton {
@@ -44,10 +49,12 @@ Item {
             position: "middle"
             Layout.preferredHeight: 34
             Layout.preferredWidth: 34
-            NLToolTip{
+            NLToolTip {
                 visible: parent.hovered
                 text: "Zoom to fit"
             }
+
+            onClicked: sceneSession.zoomManager.zoomToFit();
         }
 
         SideMenuButton {
@@ -59,6 +66,8 @@ Item {
                 visible: parent.hovered
                 text: "Zoom out"
             }
+
+            onClicked: sceneSession.zoomManager.zoomOutSignal();
         }
     }
 
