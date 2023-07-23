@@ -28,7 +28,7 @@ Rectangle {
 
     /* Object Properties
      * ****************************************************************************************/
-    radius: 5
+    radius: NLStyle.radiusAmount.itemButton
     height: 34
     width: layout.implicitWidth + 4
     border.color: "#363636"
@@ -195,7 +195,7 @@ Rectangle {
                     Rectangle {
                         id: toolButtonController
                         anchors.fill: parent
-                        radius: 5
+                        radius: NLStyle.radiusAmount.itemButton
                         color: "#1e1e1e"
                         opacity: enabled ? 1 : 0.3
                     }
@@ -260,7 +260,7 @@ Rectangle {
                     implicitHeight: 80
                     Rectangle {
                         anchors.fill: parent
-                        radius: 5
+                        radius: NLStyle.radiusAmount.itemButton
                         color: "#1e1e1e"
                         opacity: enabled ? 1 : 0.3
                     }
@@ -325,7 +325,7 @@ Rectangle {
                     implicitHeight: 80
                     Rectangle {
                         anchors.fill: parent
-                        radius: 5
+                        radius: NLStyle.radiusAmount.itemButton
                         color: "#1e1e1e"
                         opacity: enabled ? 1 : 0.3
                     }

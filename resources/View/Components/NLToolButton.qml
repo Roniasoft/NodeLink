@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls
+import NodeLink
 
 /*! ***********************************************************************************************
  * Tool bar buttons
@@ -12,7 +13,7 @@ ToolButton {
     width: 30
     height: 30
     text: "\uf2ed"
-    font.family: "Font Awesome 6 Pro"
+    font.family: NLStyle.fontType.font6Pro
     font.pixelSize: 17
     font.weight: 400
 
@@ -32,7 +33,7 @@ ToolButton {
         id:toolButtonController
         width: toolButton.width
         height: toolButton.height
-        radius: 5
+        radius: NLStyle.radiusAmount.itemButton
         color: toolButton.hovered || toolButton.checked? "#2f2f2f" : "transparent"
         opacity: enabled ? 1 : 0.3
         Behavior on color{ColorAnimation{duration: 75}}

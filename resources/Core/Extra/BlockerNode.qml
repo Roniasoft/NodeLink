@@ -17,7 +17,7 @@ Rectangle {
     height: node.guiConfig.height
     x: node.guiConfig.position.x
     y: node.guiConfig.position.y
-    radius: 10
+    radius: NLStyle.radiusAmount.blockerNode
     smooth: true
     antialiasing: true
     layer.enabled: false

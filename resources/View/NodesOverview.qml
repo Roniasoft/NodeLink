@@ -13,7 +13,7 @@ I_NodesRect {
     color: "#1e1e1e"
     border.width: 8
     border.color: "#55FFFFFF"
-    radius: 20
+    radius: NLStyle.radiusAmount.nodeOverview
     scale: NLStyle.overview.scale
     transformOrigin: Item.TopLeft
 

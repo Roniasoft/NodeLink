@@ -21,7 +21,7 @@ Menu {
     //background is overrided
     background: Rectangle{
         anchors.fill: parent
-        radius: 5
+        radius: NLStyle.radiusAmount.itemButton
         color: "#262626"
         border.width: 1
         border.color: "#1c1c1c"

@@ -41,7 +41,7 @@ Rectangle {
     border.width: (nodeView.isSelected ? 3 : 2)
     opacity: nodeView.isSelected ? 1 :  nodeView.isNodeMinimal ? 0.6 : 0.8
     z: node.guiConfig.locked ? 1 : (isSelected ? 3 : 2)
-    radius: 10
+    radius: NLStyle.radiusAmount.nodeView
     smooth: true
     antialiasing: true
     layer.enabled: false
@@ -141,7 +141,7 @@ Rectangle {
         //! Icon
         Text {
             id: iconText
-            font.family: "Font Awesome 6 Pro"
+            font.family: NLStyle.fontType.font6Pro
             font.pixelSize: 20
             anchors.left: parent.left
             anchors.verticalCenter: parent.verticalCenter
@@ -253,7 +253,7 @@ Rectangle {
         anchors.margins: 10
 
         color: nodeView.isNodeMinimal ? "#282828" : "trasparent"
-        radius: 5
+        radius: NLStyle.radiusAmount.nodeView
 
         //! OpacityAnimator use when nodeView.isNodeMinimal is false to set opacity = 0.7
         OpacityAnimator {
@@ -277,7 +277,7 @@ Rectangle {
 
         //! Text Icon
         Text {
-            font.family: "Font Awesome 6 Pro"
+            font.family: NLStyle.fontType.font6Pro
             font.pixelSize: 60
             anchors.centerIn: parent
             text: NLStyle.nodeIcons[node.type]

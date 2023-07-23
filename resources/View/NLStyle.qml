@@ -10,6 +10,8 @@ QtObject {
 
     /* Property Declarations
      * ****************************************************************************************/
+    property alias radiusAmount: _radiusAmount
+    property alias fontType:     _fontType
 
     /* Button related
      * ****************************************************************************************/
@@ -93,4 +95,25 @@ QtObject {
 
         "Unknown"             // Unknown
     ]
+
+    //! Radius
+    readonly property QtObject _radiusAmount: QtObject {
+        id: _radiusAmount
+
+        readonly property double nodeOverview:   20
+        readonly property double blockerNode:    10
+        readonly property double confirmPopup:   10
+        readonly property double nodeView:       10
+        readonly property double linkView:       5
+        readonly property double itemButton:     5
+        readonly property double toolTip:        4
+    }
+
+    //! Font
+    readonly property QtObject _fontType: QtObject {
+        id: _fontType
+
+        readonly property string roboto:   "Roboto"
+        readonly property string font6Pro: "Font Awesome 6 Pro"
+    }
 }

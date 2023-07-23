@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls
+import NodeLink
 
 /*! ***********************************************************************************************
  * Custom NodeLink Tooltip
@@ -19,7 +20,7 @@ ToolTip {
     /* Children
      * ****************************************************************************************/
     background: Rectangle{
-        radius: 4
+        radius: NLStyle.radiusAmount.toolTip
         color: "black"
     }
     contentItem: Text{

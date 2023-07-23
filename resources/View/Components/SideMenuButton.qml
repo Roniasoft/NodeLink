@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls
+import NodeLink
 
 /*! ***********************************************************************************************
  * Buttons designed for the side menu
@@ -16,7 +17,7 @@ ToolButton {
     width: 30
     height: 30
     text: "\uf2ed"
-    font.family: "Font Awesome 6 Pro"
+    font.family: NLStyle.fontType.font6Pro
     font.pixelSize: 15
     font.weight: 400
 
@@ -36,7 +37,7 @@ ToolButton {
         id: sideMenuToolButtonController
         width: sideMenuToolButtons.width
         height: sideMenuToolButtons.height
-        radius: 4
+        radius: NLStyle.radiusAmount.itemButton
         color: sideMenuToolButtons.hovered ? "#494949" : "transparent"
         Rectangle {
             color: sideMenuToolButtons.hovered ? "#494949" : "transparent"
