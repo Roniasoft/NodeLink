@@ -253,7 +253,7 @@ Rectangle {
         anchors.margins: 10
 
         color: nodeView.isNodeMinimal ? "#282828" : "trasparent"
-        radius: 5
+        radius: NLStyle.radiusAmount.nodeView
 
         //! OpacityAnimator use when nodeView.isNodeMinimal is false to set opacity = 0.7
         OpacityAnimator {
@@ -277,7 +277,7 @@ Rectangle {
 
         //! Text Icon
         Text {
-            font.family: "Font Awesome 6 Pro"
+            font.family: NLStyle.fontType.font6Pro
             font.pixelSize: 60
             anchors.centerIn: parent
             text: NLStyle.nodeIcons[node.type]
