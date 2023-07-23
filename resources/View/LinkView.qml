@@ -66,6 +66,12 @@ I_LinkView {
         font.pointSize: 14
         focus: link.guiConfig._isEditableDescription
 
+        //! Scale with zoomFactor
+        transform: Scale {
+            xScale: sceneSession.zoomManager.zoomFactor
+            yScale: sceneSession.zoomManager.zoomFactor
+        }
+
         onTextChanged: {
             if (link && link.description !== text)
                 link.guiConfig.description = text;
@@ -85,13 +91,13 @@ I_LinkView {
             // select Link only when shiftModifier was pressed.
             if (sceneSession.isShiftModifierPressed) {
                 linkView.forceActiveFocus();
-                scene.selectionModel.toggleLinkSelection(link);
+                scene.selectionModel.selectLink(link);
                 return;
             }
 
             if (focus && !isSelected) {
                 scene.selectionModel.clear(link?._qsUuid);
-                scene.selectionModel.toggleLinkSelection(link);
+                scene.selectionModel.selectLink(link);
                 if (!sceneSession.isShiftModifierPressed)
                     link.guiConfig._isEditableDescription = true;
             } else if (focus) {

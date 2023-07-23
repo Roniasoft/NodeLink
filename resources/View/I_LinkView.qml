@@ -16,23 +16,24 @@ Canvas {
 
     /* Property Declarations
     * ****************************************************************************************/
-    property Scene  scene
+    property Scene          scene
 
     property SceneSession   sceneSession
 
-    property Port   inputPort
+    property Port           inputPort
 
-    property Port   outputPort
+    property Port           outputPort
 
-    property Link   link:       Link {}
 
-    property bool   isSelected: scene?.selectionModel?.isSelected(link?._qsUuid) ?? false
+    property Link       link:       Link {}
 
-    property vector2d inputPos: scene?.portsPositions[inputPort?._qsUuid] ?? Qt.vector2d(0, 0)
+    property bool       isSelected: scene?.selectionModel?.isSelected(link?._qsUuid) ?? false
 
-    property vector2d outputPos: scene?.portsPositions[outputPort?._qsUuid] ?? Qt.vector2d(0, 0)
+    property vector2d   inputPos: scene?.portsPositions[inputPort?._qsUuid] ?? Qt.vector2d(0, 0)
 
-    property vector2d linkMidPoint: Qt.vector2d(0, 0)
+    property vector2d   outputPos: scene?.portsPositions[outputPort?._qsUuid] ?? Qt.vector2d(0, 0)
+
+    property vector2d   linkMidPoint: Qt.vector2d(0, 0)
 
     //! update painted line when change position of input and output ports
     onOutputPosChanged: canvas.requestPaint();
@@ -60,20 +61,24 @@ Canvas {
         // Calculate the control points with BasicLinkCalculator
         link.controlPoints = BasicLinkCalculator.calculateControlPoints(inputPos, outputPos, link.direction,
                                                                         link.guiConfig.type, link.inputPort.portSide,
-                                                                        link.outputPort?.portSide ?? -1)
+                                                                        link.outputPort?.portSide ?? -1, sceneSession.zoomManager.zoomFactor)
         // Calculate position of link setting dialog.
         // Finding the middle point of the link
         // Currently we suppose that the line is a bezzier curve
         // since with the LType it's not possible to find the middle point easily
         // the design needs to be revised
-        var minPoint1 = inputPos.plus(BasicLinkCalculator.connectionMargin(inputPort?.portSide ?? -1));
-        var minPoint2 = outputPos.plus(BasicLinkCalculator.connectionMargin(outputPort?.portSide ?? -1));
+        var zoomFactor = sceneSession.zoomManager.zoomFactor
+        var minPoint1 = inputPos.plus(BasicLinkCalculator.connectionMargin(inputPort?.portSide ?? -1, zoomFactor));
+        var minPoint2 = outputPos.plus(BasicLinkCalculator.connectionMargin(outputPort?.portSide ?? -1, zoomFactor));
         linkMidPoint = Calculation.getPositionByTolerance(0.5, [inputPos, minPoint1, minPoint2, outputPos]);
+
+        var lineWidth = 2 * zoomFactor;
+        var arrowHeadLength = 10 * zoomFactor;
 
         // Draw the curve with LinkPainter
         LinkPainter.createLink(context, inputPos, link.controlPoints, isSelected,
                                 link.guiConfig.color, link.direction,
-                                link.guiConfig.style, link.guiConfig.type,
+                                link.guiConfig.style, link.guiConfig.type, lineWidth, arrowHeadLength,
                                link.inputPort.portSide, link.outputPort?.portSide ?? -1);
     }
 

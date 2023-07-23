@@ -149,6 +149,7 @@ qt_add_qml_module(NodeLink
         resources/View/Helpers/HelpersView.qml
         resources/View/Helpers/SelectionHelperView.qml
         resources/View/Helpers/LinkHelperView.qml
+        resources/View/ZoomManager.qml
 
         resources/View/Logics/Calculation.js
         resources/View/Logics/BasicLinkCalculator.js

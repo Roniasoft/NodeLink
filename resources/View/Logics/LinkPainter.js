@@ -3,11 +3,11 @@
 
 //! Drawing a Link using give context2D
 function createLink(context, startPos, controlPoints,
-                     isSelected, color, direction, style, type,
+                     isSelected, color, direction, style, type, lineWidth, arrowHeadLength,
                     inputPortSide, outputPortSide) {
 
     context.reset();
-    context.lineWidth = 2;
+    context.lineWidth = lineWidth;
     context.beginPath();
 
     // create Link
@@ -59,13 +59,13 @@ function createLink(context, startPos, controlPoints,
     var startPosCP = controlPoints[0];
     switch (direction) {
     case 1: { // Unidirectional
-        arrow(context, controlPoints[(startPosCP === startPos) ? controlPoints.length - 1 : 0], outputPortSide, color);
+        arrow(context, controlPoints[(startPosCP === startPos) ? controlPoints.length - 1 : 0], outputPortSide, color, arrowHeadLength);
         break;
     }
 
     case 2: { // Unidirectional
-        arrow(context, controlPoints[(startPosCP === startPos) ? controlPoints.length - 1 : 0], outputPortSide, color);
-        arrow(context, controlPoints[(startPosCP === startPos) ? 0 : controlPoints.length - 1 ], inputPortSide, color);
+        arrow(context, controlPoints[(startPosCP === startPos) ? controlPoints.length - 1 : 0], outputPortSide, color, arrowHeadLength);
+        arrow(context, controlPoints[(startPosCP === startPos) ? 0 : controlPoints.length - 1 ], inputPortSide, color, arrowHeadLength);
         break;
     }
 
@@ -75,11 +75,11 @@ function createLink(context, startPos, controlPoints,
 }
 
 // Code to draw a simple arrow on TypeScript canvas got from https://stackoverflow.com/a/64756256/867349
-function arrow(context, targetPoint, portSide, color) {
+function arrow(context, targetPoint, portSide, color, arrowHeadLength) {
     const dx = arrowAngle(portSide).x;
     const dy = arrowAngle(portSide).y;
 
-    const headlen = 10; // length of head in pixels
+    const headlen = arrowHeadLength; // length of head in pixels
     // Calculate Arrow angle
     const angle = Math.atan2(dy, dx);
 

@@ -19,33 +19,43 @@ Rectangle {
 
     property bool           edit
 
-    property bool           isSelected:      false
+    //! Node is selected or not
+    property bool           isSelected:    scene?.selectionModel?.isSelected(modelData?._qsUuid ?? "") ?? false
 
-    property int            contentWidth
+    //! Node is in minimal state or not (based in zoom factor)
+    property bool           isNodeMinimal: sceneSession.zoomManager.zoomFactor < sceneSession.zoomManager.minimalZoomNode
 
-    property int            contentHeight
+    //! Correct position based on zoomPoint and zoomFactor
+    property vector2d positionMapped: node.guiConfig?.position?.
+                                         times(sceneSession.zoomManager.zoomFactor)
 
     /* Object Properties
      * ****************************************************************************************/
     width: node.guiConfig.width
     height: node.guiConfig.height
-    x: node.guiConfig.position.x
-    y: node.guiConfig.position.y
+    x: positionMapped.x
+    y: positionMapped.y
+
     color: Qt.darker(node.guiConfig.color, 10)
     border.color: node.guiConfig.locked ? "gray" : Qt.lighter(node.guiConfig.color, nodeView.isSelected ? 1.2 : 1)
-    border.width: nodeView.isSelected ? 3 : 2
-    opacity: nodeView.isSelected ? 1 : 0.8
+    border.width: (nodeView.isSelected ? 3 : 2)
+    opacity: nodeView.isSelected ? 1 :  nodeView.isNodeMinimal ? 0.6 : 0.8
     z: node.guiConfig.locked ? 1 : (isSelected ? 3 : 2)
     radius: NLStyle.radiusAmount.nodeView
     smooth: true
     antialiasing: true
     layer.enabled: false
 
+    //! NodeView scales relative to top left
+    transform: Scale {
+        xScale: sceneSession.zoomManager.zoomFactor
+        yScale: sceneSession.zoomManager.zoomFactor
+    }
+
     Behavior on color {ColorAnimation {duration:100}}
     Behavior on border.color {ColorAnimation {duration:100}}
 
-
-    /* Signals
+    /* Slots
      * ****************************************************************************************/
 
     //! When node is selected, width, height, x, and y
@@ -57,7 +67,16 @@ Rectangle {
     onYChanged: dimensionChanged();
 
     onEditChanged: {
-        nodeView.edit ? titleTextArea.forceActiveFocus() :  nodeView.forceActiveFocus()
+
+        // When Node is editting and zoomFactor is less than minimalZoomNode,
+        // and need a node to be edit
+        // The zoom will change to the minimum editable value
+        if(nodeView.edit && nodeView.isNodeMinimal) {
+            var zoomPoint  = Qt.vector2d(nodeView.x + nodeView.width * sceneSession.zoomManager.zoomFactor / 2,
+                                         nodeView.y + nodeView.height * sceneSession.zoomManager.zoomFactor / 2);
+            sceneSession.zoomManager.zoomNodeSignal(zoomPoint, 1.0, true);
+        }
+        nodeView.edit ? titleTextArea.forceActiveFocus() :  nodeView.forceActiveFocus();
     }
 
     onIsSelectedChanged: {
@@ -115,6 +134,8 @@ Rectangle {
         anchors.right: parent.right
         anchors.top: parent.top
         anchors.margins: 12
+
+        visible: !nodeView.isNodeMinimal
         height: 20
 
         //! Icon
@@ -180,6 +201,7 @@ Rectangle {
         hoverEnabled: true
         clip: true
         focus: true
+        visible: !nodeView.isNodeMinimal
 
         ScrollBar.vertical: ScrollBar {
             id: scrollerV
@@ -224,13 +246,53 @@ Rectangle {
         }
     }
 
+    //! Minimal nodeview in low zoomFactor
+    Rectangle {
+        id: minimalRectangle
+        anchors.fill: parent
+        anchors.margins: 10
+
+        color: nodeView.isNodeMinimal ? "#282828" : "trasparent"
+        radius: 5
+
+        //! OpacityAnimator use when nodeView.isNodeMinimal is false to set opacity = 0.7
+        OpacityAnimator {
+            target: minimalRectangle
+
+            from: minimalRectangle.opacity
+            to: 0.7
+            duration: 200
+            running: nodeView.isNodeMinimal
+        }
+
+        //! OpacityAnimator use when nodeView.isNodeMinimal is false to set opacity = 0
+        OpacityAnimator {
+            target: minimalRectangle
+
+            from: minimalRectangle.opacity
+            to: 0
+            duration: 200
+            running: !nodeView.isNodeMinimal
+        }
+
+        //! Text Icon
+        Text {
+            font.family: "Font Awesome 6 Pro"
+            font.pixelSize: 60
+            anchors.centerIn: parent
+            text: NLStyle.nodeIcons[node.type]
+            color: node.guiConfig.color
+            font.weight: 400
+            visible: nodeView.isNodeMinimal
+        }
+    }
 
     //! Manage node selection and position change.
     MouseArea {
         id: nodeMouseArea
 
-        property int    prevX:      node.guiConfig.position.x
-        property int    prevY:      node.guiConfig.position.y
+        property real    prevX:      node.guiConfig.position.x
+        property real    prevY:      node.guiConfig.position.y
         property bool   isDraging:  false
 
         anchors.fill: parent
@@ -243,12 +305,21 @@ Rectangle {
         // To hide cursor when is disable
         visible: enabled
 
+        //! Manage zoom in nodeview and pass it to zoomManager
+        onWheel: (wheel) => {
+                     //! active zoom with shift modifier.
+                     if(sceneSession.isShiftModifierPressed) {
+                         var zoomPoint = Qt.vector2d(wheel.x + nodeView.x, wheel.y + nodeView.y);
+                         sceneSession.zoomManager.zoomNodeSignal(zoomPoint, wheel.angleDelta.y, false);
+                     }
+                 }
+
         onDoubleClicked: (mouse) => {
             // Clear all selected nodes
             scene.selectionModel.clearAllExcept(node._qsUuid);
 
             // Select current node
-            scene.selectionModel.select(node);
+            scene.selectionModel.selectNode(node);
 
             // Enable edit mode
             nodeView.edit = true;
@@ -271,7 +342,7 @@ Rectangle {
                 scene.selectionModel.clearAllExcept(node._qsUuid);
 
                 // Select current node
-                scene.selectionModel.select(node);
+                scene.selectionModel.selectNode(node);
 
                 nodeContextMenu.popup(mouse.x, mouse.y);
             }
@@ -279,8 +350,8 @@ Rectangle {
 
         onPressed: (mouse) => {
             isDraging = true;
-            prevX = mouse.x;
-            prevY = mouse.y;
+            prevX = mouse.x * sceneSession.zoomManager.zoomFactor;
+            prevY = mouse.y * sceneSession.zoomManager.zoomFactor;
             _selectionTimer.start();
         }
 
@@ -290,22 +361,27 @@ Rectangle {
 
         onPositionChanged: (mouse) => {
             if (isDraging) {
-                var deltaX = mouse.x - prevX;
-                node.guiConfig.position.x += deltaX;
-                prevX = mouse.x - deltaX;
-                var deltaY = mouse.y - prevY;
-                node.guiConfig.position.y += deltaY;
+                var deltaX = mouse.x *  sceneSession.zoomManager.zoomFactor - prevX;
+                node.guiConfig.position.x += deltaX / sceneSession.zoomManager.zoomFactor;
+                prevX = mouse.x * sceneSession.zoomManager.zoomFactor - deltaX;
+                var deltaY = mouse.y * sceneSession.zoomManager.zoomFactor - prevY;
+                node.guiConfig.position.y += deltaY / sceneSession.zoomManager.zoomFactor;
                 if(NLStyle.snapEnabled){
                     node.guiConfig.position.y =  Math.ceil(node.guiConfig.position.y / 20) * 20;
                     node.guiConfig.position.x =  Math.ceil(node.guiConfig.position.x / 20) * 20;
                 }
                 node.guiConfig.positionChanged();
-                prevY = mouse.y - deltaY;
-                if(((node.guiConfig.position.x) < 0 && deltaX < 0)   ||
-                   ((node.guiConfig.position.x + node.guiConfig.width ) > contentWidth) && deltaX > 0||
-                   ((node.guiConfig.position.y) < 0 && deltaY < 0)   ||
-                   ((node.guiConfig.position.y + node.guiConfig.height) > contentHeight) && deltaY > 0)
-                    isDraging = false;
+                prevY = mouse.y * sceneSession.zoomManager.zoomFactor - deltaY;
+
+                if((node.guiConfig.position.x < 0  && deltaX < 0) ||
+                   (node.guiConfig.position.y < 0 && deltaY < 0))
+                                 isDraging = false;
+
+                 if (node.guiConfig.position.x + node.guiConfig.width > sceneSession.contentWidth && deltaX > 0)
+                                 sceneSession.contentWidth += deltaX;
+
+                 if(node.guiConfig.position.y + node.guiConfig.height > sceneSession.contentHeight && deltaY > 0)
+                                 sceneSession.contentHeight += deltaY;
             }
         }
 
@@ -338,7 +414,7 @@ Rectangle {
                 if(isAlreadySel && isModifiedOn)
                     scene.selectionModel.remove(node._qsUuid);
                 else
-                    scene.selectionModel.select(node);
+                    scene.selectionModel.selectNode(node);
             }
         }
     }
@@ -372,8 +448,10 @@ Rectangle {
         onPositionChanged: (mouse)=> {
             if (isDraging) {
                 var deltaY = mouse.y - prevY;
-                node.guiConfig.position.y += deltaY;
-                node.guiConfig.height -= deltaY;
+                var correctedDeltaY = Math.floor(deltaY);
+
+                node.guiConfig.position.y += correctedDeltaY;
+                node.guiConfig.height -= correctedDeltaY;
                 prevY = mouse.y - deltaY;
                 if(node.guiConfig.height < 70){
                     node.guiConfig.height = 70;
@@ -436,7 +514,7 @@ Rectangle {
         preventStealing: true
 
         property bool   isDraging:  false
-        property int    prevX:      0
+        property real    prevX:      0
 
         onPressed: (mouse)=> {
             isDraging = true;
@@ -450,9 +528,12 @@ Rectangle {
         onPositionChanged: (mouse)=> {
             if (isDraging) {
                 var deltaX = mouse.x - prevX;
-                node.guiConfig.position.x += deltaX;
-                node.guiConfig.width -= deltaX
+                var correctedDeltaX = Math.floor(deltaX);
+
+                node.guiConfig.position.x += correctedDeltaX;
+                node.guiConfig.width -= correctedDeltaX;
                 prevX = mouse.x - deltaX;
+
                 if(node.guiConfig.width < 100){
                     node.guiConfig.width = 100
                     if(deltaX>0){
@@ -715,8 +796,12 @@ Rectangle {
                 scene: nodeView.scene
                 sceneSession: nodeView.sceneSession
                 opacity: (topPortsMouseArea.containsMouse || sceneSession.portsVisibility[modelData._qsUuid])? 1 : 0
-                globalX: nodeView.x + topRow.x + x + NLStyle.portView.size / 2
-                globalY: nodeView.y + topRow.y + mapToItem(topRow, Qt.point(x, y)).y + NLStyle.portView.size / 2
+
+                //! Position relative to node view
+                property point relativePos: mapToItem(nodeView, x, y)
+
+                globalX: nodeView.x + relativePos.x * sceneSession.zoomManager.zoomFactor// - NLStyle.portView.size / 2
+                globalY: nodeView.y + relativePos.y + NLStyle.portView.size / 2
             }
         }
     }
@@ -736,8 +821,12 @@ Rectangle {
                 scene: nodeView.scene
                 sceneSession: nodeView.sceneSession
                 opacity: (leftPortsMouseArea.containsMouse || sceneSession.portsVisibility[modelData._qsUuid])? 1 : 0
-                globalX: nodeView.x + leftColumn.x + mapToItem(leftColumn, Qt.point(x, y)).x + NLStyle.portView.size / 2
-                globalY: nodeView.y + leftColumn.y + y + NLStyle.portView.size / 2
+
+                //! Position relative to node view
+                property point relativePos: mapToItem(nodeView, x, y)
+
+                globalX: nodeView.x + relativePos.x + NLStyle.portView.size / 2
+                globalY: nodeView.y + relativePos.y * sceneSession.zoomManager.zoomFactor
             }
         }
     }
@@ -757,8 +846,12 @@ Rectangle {
                 scene: nodeView.scene
                 sceneSession: nodeView.sceneSession
                 opacity: (rightPortsMouseArea.containsMouse || sceneSession.portsVisibility[modelData._qsUuid]) ? 1 : 0
-                globalX: nodeView.x + rightColumn.x + mapToItem(rightColumn, Qt.point(x, y)).x + NLStyle.portView.size / 2
-                globalY: nodeView.y + rightColumn.y + y + NLStyle.portView.size / 2
+
+                //! Position relative to node view
+                property point relativePos: mapToItem(nodeView, x, y)
+
+                globalX: nodeView.x + (relativePos.x - width / 2 )* sceneSession.zoomManager.zoomFactor
+                globalY: nodeView.y + (relativePos.y ) * sceneSession.zoomManager.zoomFactor
             }
         }
     }
@@ -778,8 +871,12 @@ Rectangle {
                 scene: nodeView.scene
                 sceneSession: nodeView.sceneSession
                 opacity: (bottomPortsMouseArea.containsMouse || sceneSession.portsVisibility[modelData._qsUuid]) ? 1 : 0
-                globalX: nodeView.x + bottomRow.x + x + NLStyle.portView.size / 2
-                globalY: nodeView.y + bottomRow.y + mapToItem(bottomRow, Qt.point(x, y)).y + NLStyle.portView.size / 2
+
+                //! Position relative to node view
+                property point relativePos: mapToItem(nodeView, x, y)
+
+                globalX: nodeView.x + relativePos.x * sceneSession.zoomManager.zoomFactor
+                globalY: nodeView.y + (relativePos.y - width / 2) * sceneSession.zoomManager.zoomFactor
             }
         }
     }
@@ -791,6 +888,16 @@ Rectangle {
         enabled: node.guiConfig.locked
         onClicked: _selectionTimer.start();
         visible: node.guiConfig.locked
+
+        //! Manage zoom in nodeview and pass it to zoomManager in lock mode.
+        onWheel: (wheel) => {
+                     //! active zoom with shift modifier.
+                     if(sceneSession.isShiftModifierPressed) {
+                         var zoomPoint = Qt.vector2d(wheel.x + nodeView.x, wheel.y + nodeView.y);
+                         sceneSession.zoomManager.zoomNodeSignal(zoomPoint, wheel.angleDelta.y, false);
+                     }
+                 }
+
     }
 
     //! Reset some properties when selection model changed.

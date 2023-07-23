@@ -83,8 +83,17 @@ Menu {
         var node = QSSerializer.createQSObject(NLStyle.nodeNames[nodeType], ["NodeLink"], NLCore.defaultRepo);
         node._qsRepo = NLCore.defaultRepo;
         node.type = nodeType;
-        node.guiConfig.position.x = contextMenu.x;
-        node.guiConfig.position.y = contextMenu.y;
+
+        var position = Qt.vector2d(contextMenu.x, contextMenu.y);
+
+        // Correct position with zoompoint and zoom factor into real position.
+        var positionMapped = position?.times(1 / sceneSession.zoomManager.zoomFactor)
+
+
+        node.guiConfig.position.x = positionMapped.x;
+        node.guiConfig.position.y = positionMapped.y;
+
+
         node.guiConfig.color = NLStyle.nodeColors[nodeType]//Qt.rgba(Math.random(), Math.random(), Math.random(), 1)
         node.title = NLStyle.objectTypesString[nodeType] + "_" + (Object.values(scene.nodes).filter(node => node.type === nodeType).length + 1)
         scene.addNode(node)
