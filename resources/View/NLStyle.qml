@@ -98,7 +98,6 @@ QtObject {
         readonly property double linkView:       5
         readonly property double itemButton:     5
         readonly property double toolTip:        4
-        readonly property double sideMenuButton: 4
     }
 
     //! Font
