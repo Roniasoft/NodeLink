@@ -30,20 +30,23 @@ LinkView {
 
         //! Find if there is any port beneath the mouse pointer
         onPressed: (mouse) => {
-           var portId = findPortInRect(mouse, 5);
-           root.inputPort = scene.findPort(portId);
-           var gMouse = mapToItem(parent, Qt.point(mouse.x, mouse.y));
+ //                      root.visible = false
+            var portId = findPortInRect(mouse, 5);
+            root.inputPort = scene.findPort(portId);
+            var gMouse = mapToItem(parent, Qt.point(mouse.x, mouse.y));
+            if(root.inputPort !== null) {
+                root.outputPos = Qt.vector2d(gMouse.x, gMouse.y);
+                inputPortId = root.inputPort._qsUuid;
+                link.inputPort.portSide = root.inputPort.portSide;
+                sceneSession.setPortVisibility(inputPortId, true)
+                root.opacity = 0
+            }
 
-           if(root.inputPort !== null) {
-               root.outputPos = Qt.vector2d(gMouse.x, gMouse.y);
-               inputPortId = root.inputPort._qsUuid;
-               link.inputPort.portSide = root.inputPort.portSide;
-               sceneSession.setPortVisibility(inputPortId, true)
-           }
         }
 
         //! While mouse pos is changing check for existing ports
         onPositionChanged: (mouse) => {
+            root.opacity = 1
             var gMouse = mapToItem(parent, Qt.point(mouse.x, mouse.y));
 
             if(inputPortId.length > 0) {
@@ -55,6 +58,7 @@ LinkView {
             if (outputPortId.length > 0) {
                 sceneSession.setPortVisibility(outputPortId, true);
             }
+
         }
 
         onReleased: (mouse) => {
@@ -68,6 +72,7 @@ LinkView {
             } else {
                     clearTempConnection();
             }
+            sceneSession.connectingMode = false
         }
 
         ContextMenu {
