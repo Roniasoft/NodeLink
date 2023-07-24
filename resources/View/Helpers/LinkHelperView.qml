@@ -27,6 +27,8 @@ LinkView {
 
         property string inputPortId : ""
         property string outputPortId: ""
+        property string inputPortNodeId
+        property Node   inputPortNode
 
         //! Find if there is any port beneath the mouse pointer
         onPressed: (mouse) => {
@@ -70,11 +72,41 @@ LinkView {
                 scene.linkNodes(inputPortId, outputPortId);
                 clearTempConnection();
             } else if(inputPortId.length > 0) { // Open contex menu when the input port is selected
-                if (root.opacity === 1)
+                if (root.opacity === 1) {
                     contextMenu.popup(gMouse.x, gMouse.y);
-                sceneSession.connectingMode = false
+                    sceneSession.connectingMode = false
+                }
+                else {
+                    mouseArea.inputPortNodeId = scene.findNodeId(inputPortId)
+                    mouseArea.inputPortNode = scene.nodes[mouseArea.inputPortNodeId]
+                    clearTempConnection();
+                    _selectionTimer.start()
+                }
             } else {
                 clearTempConnection();
+            }
+        }
+
+        Timer {
+            id: _selectionTimer
+
+            interval: 100
+            repeat: false
+            running: false
+
+            onTriggered: {
+                // Clear selection model when Shift key not pressed.
+                const isModifiedOn = sceneSession.isShiftModifierPressed;
+
+                if(!isModifiedOn)
+                    scene.selectionModel.clearAllExcept(mouseArea.inputPortNodeId);
+
+                const isAlreadySel = scene.selectionModel.isSelected(mouseArea.inputPortNodeId);
+                // Select current node
+                if(isAlreadySel && isModifiedOn)
+                    scene.selectionModel.remove(mouseArea.inputPortNodeId);
+                else
+                    scene.selectionModel.select(mouseArea.inputPortNode);
             }
         }
 
