@@ -228,6 +228,7 @@ I_NodesScene {
         id: backgroundLoader
         anchors.fill: parent
         sourceComponent: background
+        z: -10
     }
 
     //! Content Loader

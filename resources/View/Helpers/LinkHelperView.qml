@@ -30,7 +30,6 @@ LinkView {
 
         //! Find if there is any port beneath the mouse pointer
         onPressed: (mouse) => {
- //                      root.visible = false
             var portId = findPortInRect(mouse, 5);
             root.inputPort = scene.findPort(portId);
             var gMouse = mapToItem(parent, Qt.point(mouse.x, mouse.y));
@@ -46,6 +45,7 @@ LinkView {
 
         //! While mouse pos is changing check for existing ports
         onPositionChanged: (mouse) => {
+            scene.unlinkNodes(inputPortId, outputPortId);
             root.opacity = 1
             var gMouse = mapToItem(parent, Qt.point(mouse.x, mouse.y));
 
@@ -54,9 +54,12 @@ LinkView {
             }
 
             sceneSession.setPortVisibility(outputPortId, false);
-            outputPortId = findPortInRect(mouse, 20);
+            outputPortId = findPortInRect(mouse, 40);
             if (outputPortId.length > 0) {
                 sceneSession.setPortVisibility(outputPortId, true);
+                if(scene.canLinkNodes(inputPortId, outputPortId))
+                    scene.linkNodes(inputPortId, outputPortId);
+                root.opacity = 0
             }
 
         }
@@ -64,15 +67,15 @@ LinkView {
         onReleased: (mouse) => {
             var gMouse = mapToItem(parent, Qt.point(mouse.x, mouse.y));
             if(inputPortId.length > 0 && outputPortId.length > 0) {
-                    scene.linkNodes(inputPortId, outputPortId);
-                    clearTempConnection();
-
+                scene.linkNodes(inputPortId, outputPortId);
+                clearTempConnection();
             } else if(inputPortId.length > 0) { // Open contex menu when the input port is selected
+                if (root.opacity === 1)
                     contextMenu.popup(gMouse.x, gMouse.y);
+                sceneSession.connectingMode = false
             } else {
-                    clearTempConnection();
+                clearTempConnection();
             }
-            sceneSession.connectingMode = false
         }
 
         ContextMenu {
