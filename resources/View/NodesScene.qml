@@ -20,6 +20,9 @@ I_NodesScene {
     //! flicable scale, use in scale transform
     property real flickableScale: 1.00
 
+    //! enableContentsBehavior controls contents behavior
+    property bool enableContentsBehavior: false
+
     property vector3d    zoomPoint:      Qt.vector3d(0, 0, 0)
     property vector2d    worldZoomPoint: Qt.vector2d(0, 0)
 
@@ -56,19 +59,34 @@ I_NodesScene {
              sceneSession.isCtrlPressed = false;
     }
 
-    //! Change ScrollBars
-    ScrollBar.horizontal: HorizontalScrollBar {
-        //! Hide scrollbar when zoom process is running ...
-        visible: flickableScale === 1.0
-    }
-
-    ScrollBar.vertical: VerticalScrollBar {
-        //! Hide scrollbar when zoom process is running ...
-        visible: flickableScale === 1.0
-    }
-
     /* Children
     * ****************************************************************************************/
+
+    //! Behavior on contentX
+    Behavior on contentX  {
+        enabled: enableContentsBehavior
+        NumberAnimation {
+            easing.type: Easing.InOutQuad
+            duration: 20
+            onRunningChanged: {
+                if(!running)
+                    enableContentsBehavior = false;
+            }
+        }
+    }
+
+    //! Behavior on contentY
+    Behavior on contentY {
+        enabled: enableContentsBehavior
+        NumberAnimation {
+            easing.type: Easing.InOutQuad
+            duration: 20
+            onRunningChanged: {
+                if(!running)
+                    enableContentsBehavior = false;
+                }
+            }
+        }
 
     //! Behavior on scaleX
     Behavior on flickableScale {
