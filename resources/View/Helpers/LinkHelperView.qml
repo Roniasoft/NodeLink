@@ -62,7 +62,6 @@ LinkView {
                     scene.linkNodes(inputPortId, outputPortId);
                 root.opacity = 0
             }
-
         }
 
         onReleased: (mouse) => {
@@ -75,29 +74,12 @@ LinkView {
                     contextMenu.popup(gMouse.x, gMouse.y);
                     sceneSession.connectingMode = false
                 }
-                else {
-                    selectionFunction(mouseArea.inputPortId);
+                else { //If the port is just clicked and no connection is made, no menu opens
                     clearTempConnection();
                 }
             } else {
                 clearTempConnection();
             }
-        }
-
-        function selectionFunction(inputPortId) {
-            const isModifiedOn = sceneSession.isShiftModifierPressed;
-            var inputPortNodeId = scene.findNodeId(inputPortId)
-            var inputPortNode = scene.findNode(inputPortId)
-
-            if(!isModifiedOn)
-                scene.selectionModel.clearAllExcept(inputPortNodeId);
-
-            const isAlreadySel = scene.selectionModel.isSelected(inputPortNodeId);
-
-            if(isAlreadySel && isModifiedOn)
-                scene.selectionModel.remove(inputPortNodeId);
-            else
-                scene.selectionModel.selectNode(inputPortNode);
         }
 
         ContextMenu {

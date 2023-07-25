@@ -61,6 +61,7 @@ Rectangle {
         propagateComposedEvents: true
 
         onPressed: mouse => {
+            selectionFunction(port._qsUuid);
             sceneSession.connectingMode = true;
             //Set mouse.accepeted to false to pass mouse events to last active parent
             mouse.accepted = false
@@ -71,5 +72,22 @@ Rectangle {
             //Set mouse.accepeted to false to pass mouse events to last active parent
             mouse.accepted = false
         }
+    }
+
+    //! Selects the port's parent node
+    function selectionFunction(inputPortId) {
+        const isModifiedOn = sceneSession.isShiftModifierPressed;
+        var inputPortNodeId = scene.findNodeId(inputPortId)
+        var inputPortNode = scene.findNode(inputPortId)
+
+        if(!isModifiedOn)
+            scene.selectionModel.clearAllExcept(inputPortNodeId);
+
+        const isAlreadySel = scene.selectionModel.isSelected(inputPortNodeId);
+
+        if(isAlreadySel && isModifiedOn)
+            scene.selectionModel.remove(inputPortNodeId);
+        else
+            scene.selectionModel.selectNode(inputPortNode);
     }
 }
