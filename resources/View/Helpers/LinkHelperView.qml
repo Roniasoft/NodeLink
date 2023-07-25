@@ -27,8 +27,6 @@ LinkView {
 
         property string inputPortId : ""
         property string outputPortId: ""
-        property string inputPortNodeId
-        property Node   inputPortNode
 
         //! Find if there is any port beneath the mouse pointer
         onPressed: (mouse) => {
@@ -47,7 +45,8 @@ LinkView {
 
         //! While mouse pos is changing check for existing ports
         onPositionChanged: (mouse) => {
-            scene.unlinkNodes(inputPortId, outputPortId);
+            if (!findPortInRect(mouse, 30))
+                scene.unlinkNodes(inputPortId, outputPortId);
             root.opacity = 1
             var gMouse = mapToItem(parent, Qt.point(mouse.x, mouse.y));
 
@@ -56,7 +55,7 @@ LinkView {
             }
 
             sceneSession.setPortVisibility(outputPortId, false);
-            outputPortId = findPortInRect(mouse, 40);
+            outputPortId = findPortInRect(mouse, 30);
             if (outputPortId.length > 0) {
                 sceneSession.setPortVisibility(outputPortId, true);
                 if(scene.canLinkNodes(inputPortId, outputPortId))
@@ -77,37 +76,28 @@ LinkView {
                     sceneSession.connectingMode = false
                 }
                 else {
-                    mouseArea.inputPortNodeId = scene.findNodeId(inputPortId)
-                    mouseArea.inputPortNode = scene.nodes[mouseArea.inputPortNodeId]
+                    selectionFunction(mouseArea.inputPortId);
                     clearTempConnection();
-                    _selectionTimer.start()
                 }
             } else {
                 clearTempConnection();
             }
         }
 
-        Timer {
-            id: _selectionTimer
+        function selectionFunction(inputPortId) {
+            const isModifiedOn = sceneSession.isShiftModifierPressed;
+            var inputPortNodeId = scene.findNodeId(inputPortId)
+            var inputPortNode = scene.findNode(inputPortId)
 
-            interval: 100
-            repeat: false
-            running: false
+            if(!isModifiedOn)
+                scene.selectionModel.clearAllExcept(inputPortNodeId);
 
-            onTriggered: {
-                // Clear selection model when Shift key not pressed.
-                const isModifiedOn = sceneSession.isShiftModifierPressed;
+            const isAlreadySel = scene.selectionModel.isSelected(inputPortNodeId);
 
-                if(!isModifiedOn)
-                    scene.selectionModel.clearAllExcept(mouseArea.inputPortNodeId);
-
-                const isAlreadySel = scene.selectionModel.isSelected(mouseArea.inputPortNodeId);
-                // Select current node
-                if(isAlreadySel && isModifiedOn)
-                    scene.selectionModel.remove(mouseArea.inputPortNodeId);
-                else
-                    scene.selectionModel.select(mouseArea.inputPortNode);
-            }
+            if(isAlreadySel && isModifiedOn)
+                scene.selectionModel.remove(inputPortNodeId);
+            else
+                scene.selectionModel.selectNode(inputPortNode);
         }
 
         ContextMenu {
