@@ -26,6 +26,9 @@ I_NodesScene {
     property vector3d    zoomPoint:      Qt.vector3d(0, 0, 0)
     property vector2d    worldZoomPoint: Qt.vector2d(0, 0)
 
+    //! Aggregate wheel angle to manage zoom process.
+    property real        zoomOnWheel:    0.0
+
     /* Object Properties
     * ****************************************************************************************/
 
@@ -98,15 +101,21 @@ I_NodesScene {
 
             onRunningChanged: {
                 if(!running) {
+                    var zoomStepTimes = zoomOnWheel / 120;
+                    zoomStepTimes = Math.abs(zoomStepTimes) > 4 ? 4 * Math.abs(zoomStepTimes) / zoomStepTimes
+                                                              : zoomStepTimes;
+                    zoomStepTimes = zoomStepTimes === 0 ? 1 : zoomStepTimes;
+
                     if(flickableScale > 1.0)
-                        sceneSession.zoomManager.zoomIn();
+                        sceneSession.zoomManager.zoomIn(zoomStepTimes);
                     else if (flickableScale < 1.0)
-                        sceneSession.zoomManager.zoomOut();
+                        sceneSession.zoomManager.zoomOut(Math.abs(zoomStepTimes));
 
                     updateFlickableDimension();
                     scaleBehavior.enabled = false;
                     zoomPoint = Qt.vector3d(0, 0, 0);
                     flickableScale = 1.00;
+                    zoomOnWheel = 0.0;
                     scaleBehavior.enabled = true;
                 }
             }
@@ -121,6 +130,26 @@ I_NodesScene {
           yScale: flickableScale
 
        }
+
+    //! Timer to aggregate zoom process with wheel.
+    Timer {
+        id: zoomWheelTimer
+        running: false
+        repeat: false
+
+        interval: 10
+
+        onTriggered: {
+            var zoomStepTimes = zoomOnWheel / 120;
+            zoomStepTimes = Math.abs(zoomStepTimes) > 4 ? 4 * Math.abs(zoomStepTimes) / zoomStepTimes
+                                                      : zoomStepTimes;
+            if(zoomOnWheel > 0)
+                prepareScale(1 + sceneSession.zoomManager.zoomInStep(zoomStepTimes));
+            else if (zoomOnWheel     < 0)
+                prepareScale(1 / (1 + sceneSession.zoomManager.zoomOutStep(Math.abs(zoomStepTimes))));
+            
+        }
+    }
 
     //! Delete selected objects
     Timer {
@@ -166,10 +195,8 @@ I_NodesScene {
                      zoomPoint      = Qt.vector3d(wheel.x - flickable.contentX, wheel.y - flickable.contentY, 0);
                      worldZoomPoint = Qt.vector2d(wheel.x, wheel.y);
 
-                     if(wheel.angleDelta.y > 0)
-                            prepareScale(1 + sceneSession.zoomManager.zoomInStep());
-                     else if (wheel.angleDelta.y < 0)
-                            prepareScale(1 / (1 + sceneSession.zoomManager.zoomOutStep()));
+                     zoomOnWheel += wheel.angleDelta.y;
+                     zoomWheelTimer.start();
                  }
 
         //! We should toggle line selection with mouse press event
@@ -390,10 +417,10 @@ I_NodesScene {
 
             flickable.zoomPoint      = Qt.vector3d(zoomPointScaled.x - flickable.contentX, zoomPointScaled.y - flickable.contentY, 0);
             flickable.worldZoomPoint = Qt.vector2d(zoomPointScaled.x, zoomPointScaled.y);
-            if(wheelAngle > 0)
-                   prepareScale(1 + sceneSession.zoomManager.zoomInStep());
-            else if (wheelAngle < 0)
-                   prepareScale(1 / (1 + sceneSession.zoomManager.zoomOutStep()))
+
+            //! Update wheel angle value and start a timer that handle zoom process.
+            zoomOnWheel += wheelAngle;
+            zoomWheelTimer.start();
         }
 
         //! Set focus on NodesScene after zoom In/Out
