@@ -56,17 +56,16 @@ LinkView {
 
             sceneSession.setPortVisibility(outputPortId, false);
             outputPortId = findPortInRect(mouse, 30);
-            if (outputPortId.length > 0) {
+            if (outputPortId.length > 0 && scene.canLinkNodes(inputPortId, outputPortId)) {
                 sceneSession.setPortVisibility(outputPortId, true);
-                if(scene.canLinkNodes(inputPortId, outputPortId))
-                    scene.linkNodes(inputPortId, outputPortId);
+                scene.linkNodes(inputPortId, outputPortId);
                 root.opacity = 0
             }
         }
 
         onReleased: (mouse) => {
             var gMouse = mapToItem(parent, Qt.point(mouse.x, mouse.y));
-            if(inputPortId.length > 0 && outputPortId.length > 0) {
+            if(inputPortId.length > 0 && outputPortId.length > 0 && scene.canLinkNodes(inputPortId, outputPortId)) {
                 scene.linkNodes(inputPortId, outputPortId);
                 clearTempConnection();
             } else if(inputPortId.length > 0) { // Open contex menu when the input port is selected
