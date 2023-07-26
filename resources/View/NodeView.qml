@@ -11,24 +11,41 @@ Rectangle {
 
     /* Property Declarations
      * ****************************************************************************************/
-    property Node           node
+    property Node         node
 
-    property Scene          scene
+    property Scene        scene
 
-    property SceneSession   sceneSession
+    property SceneSession sceneSession
 
-    property bool           edit
+    property bool         edit
 
     //! Node is selected or not
-    property bool           isSelected:    scene?.selectionModel?.isSelected(modelData?._qsUuid ?? "") ?? false
+    property bool         isSelected:     scene?.selectionModel?.isSelected(modelData?._qsUuid ?? "") ?? false
 
     //! Node is in minimal state or not (based in zoom factor)
-    property bool           isNodeMinimal: sceneSession.zoomManager.zoomFactor < sceneSession.zoomManager.minimalZoomNode
+    property bool         isNodeMinimal:  sceneSession.zoomManager.zoomFactor < sceneSession.zoomManager.minimalZoomNode
 
     //! Correct position based on zoomPoint and zoomFactor
-    property vector2d positionMapped: node.guiConfig?.position?.
-                                         times(sceneSession.zoomManager.zoomFactor)
+    property vector2d     positionMapped: node.guiConfig?.position?.
+                                            times(sceneSession.zoomManager.zoomFactor)
 
+    //! NodeGlobalPos is a 2d vector filled by x and y of each node (position of each node)
+    property vector2d     nodeGlobalPos:  Qt.vector2d(nodeView.x, nodeView.y)
+
+    //! NodeGlobalSize is a 2d vector filled by width and height of each node (size of each node)
+    property vector2d     nodeGlobalSize: Qt.vector2d(nodeView.width, nodeView.height)
+
+    //! Whenever NodeGlobalPos or NodeGlobalSuze is changed, we should update the
+    //!  related maps in scene/sceneSession
+    onNodeGlobalPosChanged: {
+        scene.nodesPositions[node._qsUuid] = nodeGlobalPos;
+        scene.nodesPositionsChanged();
+    }
+
+    onNodeGlobalSizeChanged: {
+        scene.nodesSizes[node._qsUuid] = nodeGlobalSize;
+        scene.nodesSizesChanged();
+    }
     /* Object Properties
      * ****************************************************************************************/
     width: node.guiConfig.width

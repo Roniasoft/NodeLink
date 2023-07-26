@@ -30,6 +30,14 @@ QSObject {
     //! Scene Selection Model
     property SelectionModel selectionModel: null
 
+    //! Node positions (global)
+    //! map <node uuid: string, global pos: vector2d>
+    property var            nodesPositions: ({})
+
+    //! Node sizes (global)
+    //! map <node uuid: string, global size: vector2d>
+    property var            nodesSizes:     ({})
+
     /* Signals
      * ****************************************************************************************/
 
@@ -104,6 +112,8 @@ QSObject {
         Object.keys(nodes[nodeUUId].ports).forEach(portId => {
             // delete from portsPositions
             delete portsPositions[portId];
+            delete nodesPositions[nodeUUId];
+            delete nodesSizes[nodeUUId];
 
             // delete related links
             Object.entries(links).forEach(([key, value]) => {
@@ -120,6 +130,8 @@ QSObject {
         delete nodes[nodeUUId];
 
         portsPositionsChanged();
+        nodesPositionsChanged();
+        nodesSizesChanged();
         linksChanged();
         nodesChanged();
     }

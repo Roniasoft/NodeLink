@@ -45,7 +45,7 @@ LinkView {
 
         //! While mouse pos is changing check for existing ports
         onPositionChanged: (mouse) => {
-            if (!findPortInRect(mouse, 30))
+            if (findClosesPort(mouse, 10) !== outputPortId)
                 scene.unlinkNodes(inputPortId, outputPortId);
             root.opacity = 1
             var gMouse = mapToItem(parent, Qt.point(mouse.x, mouse.y));
@@ -55,7 +55,7 @@ LinkView {
             }
 
             sceneSession.setPortVisibility(outputPortId, false);
-            outputPortId = findPortInRect(mouse, 30);
+            outputPortId = findClosesPort(mouse, 10);
             if (outputPortId.length > 0 && scene.canLinkNodes(inputPortId, outputPortId)) {
                 sceneSession.setPortVisibility(outputPortId, true);
                 scene.linkNodes(inputPortId, outputPortId);
@@ -153,10 +153,58 @@ LinkView {
                 if((value.x - searchMargin) <= gMouse.x &&  gMouse.x <= (value.x + searchMargin)) {
                     if((value.y - searchMargin) <= gMouse.y && gMouse.y <= (value.y + searchMargin))
                         findedKey = key;
-                        }
-                    });
+                    }
+                });
 
-                return findedKey;
+            return findedKey;
         }
+        //! Finds nodes in proximity of search margin, calls findClosestPortInNodes and returns the closest port Id
+        function findClosesPort (mouse : point, searchMargin : int) : string {
+            var gMouse = mapToItem(parent, Qt.point(mouse.x, mouse.y));
+            let foundNodeIds = [];
+            var finalPortId = ""
+
+            Object.entries(scene.nodesPositions).forEach(([key, value]) => {
+                if (gMouse.x >= value.x - searchMargin && gMouse.x <= value.x + scene.nodesSizes[key].x + searchMargin) {
+                    if (gMouse.y >= value.y - searchMargin && gMouse.y <= value.y + scene.nodesSizes[key].y + searchMargin)
+                        foundNodeIds.push(key);
+                }
+            });
+
+            if (foundNodeIds)
+                finalPortId = findClosestPortInNodes(foundNodeIds, gMouse)
+            return finalPortId;
+        }
+
+        //! Finds closes port Id amongst given node Ids
+        function findClosestPortInNodes (foundNodesId, gMouse : point) : string {
+            var ports = []
+            var closestPortId = "";
+            var minDistance = Number.MAX_VALUE;
+
+            for (var i = 0 ; i < foundNodesId.length; i++) {
+                Object.entries(scene.nodes[foundNodesId[i]].ports).forEach(([key, value]) => {
+                        ports.push(key)
+                });
+            }
+
+            for (i = 0; i < ports.length; i++) {
+                var portId = ports[i];
+                var portPosition = scene.portsPositions[portId];
+                var distance = calculateManhattanDistance(gMouse, portPosition);
+
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    closestPortId = portId;
+                }
+            }
+            return closestPortId;
+        }
+
+        //! Calculates the ManhattenDisance between two points
+        function calculateManhattanDistance(point1, point2) {
+            return Math.abs(point1.x - point2.x) + Math.abs(point1.y - point2.y);
+        }
+
     }
 }
