@@ -33,7 +33,7 @@ LinkView {
             var portId = findPortInRect(Qt.point(mouse.x, mouse.y), 5);
             root.inputPort = scene.findPort(portId);
             var gMouse = mapToItem(parent, Qt.point(mouse.x, mouse.y));
-            if(root.inputPort !== null) {
+            if (root.inputPort !== null) {
                 root.outputPos = Qt.vector2d(gMouse.x, gMouse.y);
                 inputPortId = root.inputPort._qsUuid;
                 link.inputPort.portSide = root.inputPort.portSide;
@@ -45,37 +45,35 @@ LinkView {
 
         //! While mouse pos is changing check for existing ports
         onPositionChanged: (mouse) => {
-            root.opacity = 1
             var closestPortId = findClosestPort(Qt.point(mouse.x, mouse.y), 10)
-            if (closestPortId !== outputPortId)
+            if (outputPortId.length > 0 && closestPortId === outputPortId)
+                return;
+
+            root.opacity = 1
+            if (outputPortId.length > 0) {
                 scene.unlinkNodes(inputPortId, outputPortId);
-
-            var gMouse = mapToItem(parent, Qt.point(mouse.x, mouse.y));
-
-            if(inputPortId.length > 0) {
-                root.outputPos = Qt.vector2d(gMouse.x, gMouse.y);
+                sceneSession.setPortVisibility(outputPortId, false);
             }
-            sceneSession.setPortVisibility(outputPortId, false);
-            outputPortId = closestPortId;
-            if (inputPortId.length > 0 && outputPortId.length > 0 && scene.canLinkNodes(inputPortId, outputPortId)) {
+
+            // canLinkNodes should check if the link already exists or not
+            if (closestPortId.length > 0 && scene.canLinkNodes(inputPortId, closestPortId)) {
+                outputPortId = closestPortId;
+                root.opacity = 0
                 sceneSession.setPortVisibility(outputPortId, true);
                 scene.linkNodes(inputPortId, outputPortId);
-                root.opacity = 0
+            } else if (inputPortId.length > 0) {
+                outputPortId = "";
+                var gMouse = mapToItem(parent, Qt.point(mouse.x, mouse.y));
+                root.outputPos = Qt.vector2d(gMouse.x, gMouse.y);
             }
         }
 
         onReleased: (mouse) => {
             var gMouse = mapToItem(parent, Qt.point(mouse.x, mouse.y));
-            if (inputPortId.length > 0 && outputPortId.length <= 0) {
-                if (root.opacity === 1) {
-                    contextMenu.popup(gMouse.x, gMouse.y);
-                    sceneSession.connectingMode = false
-                }
-                else { //If the port is just clicked and no connection is made, no menu opens
-                    clearTempConnection();
-                }
-            }
-            else {
+            if (root.opacity === 1) {
+                contextMenu.popup(gMouse.x, gMouse.y);
+                sceneSession.connectingMode = false
+            } else { // If the port is just clicked or it is snapped and no connection is made, no menu opens
                 clearTempConnection();
             }
         }
