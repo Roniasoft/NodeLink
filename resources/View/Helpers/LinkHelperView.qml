@@ -30,7 +30,7 @@ LinkView {
 
         //! Find if there is any port beneath the mouse pointer
         onPressed: (mouse) => {
-            var portId = findPortInRect(mouse, 5);
+            var portId = findPortInRect(Qt.point(mouse.x, mouse.y), 5);
             root.inputPort = scene.findPort(portId);
             var gMouse = mapToItem(parent, Qt.point(mouse.x, mouse.y));
             if(root.inputPort !== null) {
@@ -45,7 +45,7 @@ LinkView {
 
         //! While mouse pos is changing check for existing ports
         onPositionChanged: (mouse) => {
-            var closestPortId = findClosestPort(mouse, 10)
+            var closestPortId = findClosestPort(Qt.point(mouse.x, mouse.y), 10)
             if (closestPortId !== outputPortId)
                 scene.unlinkNodes(inputPortId, outputPortId);
             root.opacity = 1
@@ -145,8 +145,8 @@ LinkView {
         }
 
         //! Find nearest port with mouse position and port position
-        function findPortInRect (mouse : point, searchMargin : int) : string {
-            var gMouse = mapToItem(parent, Qt.point(mouse.x, mouse.y));
+        function findPortInRect (mousePoint : point, searchMargin : int) : string {
+            var gMouse = mapToItem(parent, Qt.point(mousePoint.x, mousePoint.y));
             let findedKey = "";
 
             Object.entries(scene.portsPositions).forEach(([key, value]) => {
@@ -159,8 +159,8 @@ LinkView {
             return findedKey;
         }
         //! Finds nodes in proximity of search margin, calls findClosestPortInNodes and returns the closest port Id
-        function findClosestPort (mouse : point, searchMargin : int) : string {
-            var gMouse = mapToItem(parent, Qt.point(mouse.x, mouse.y));
+        function findClosestPort (mousePoint : point, searchMargin : int) : string {
+            var gMouse = mapToItem(parent, Qt.point(mousePoint.x, mousePoint.y));
             let foundNodeIds = [];
             var finalPortId = ""
 
@@ -177,7 +177,7 @@ LinkView {
         }
 
         //! Finds closes port Id amongst given node Ids
-        function findClosestPortInNodes (foundNodesId, gMouse : point) : string {
+        function findClosestPortInNodes (foundNodesId : string, gMouse : point) : string {
             var ports = []
             var closestPortId = "";
             var minDistance = Number.MAX_VALUE;
@@ -202,7 +202,7 @@ LinkView {
         }
 
         //! Calculates the ManhattenDisance between two points
-        function calculateManhattanDistance(point1, point2) {
+        function calculateManhattanDistance(point1 : vector2d, point2 : vector2d) {
             return Math.abs(point1.x - point2.x) + Math.abs(point1.y - point2.y);
         }
 
