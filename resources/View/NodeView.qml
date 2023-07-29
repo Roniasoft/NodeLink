@@ -797,11 +797,13 @@ Rectangle {
                 sceneSession: nodeView.sceneSession
                 opacity: (topPortsMouseArea.containsMouse || sceneSession.portsVisibility[modelData._qsUuid])? 1 : 0
 
-                //! Position relative to node view
-                property point relativePos: mapToItem(nodeView, x, y)
+                //! Mapped position based on PortView, container and zoom factor
+                property vector2d positionMapped: Qt.vector2d(topRow.x + x + NLStyle.portView.size / 2,
+                                                              topRow.y + y + NLStyle.portView.size / 2).
+                                                              times(sceneSession.zoomManager.zoomFactor)
 
-                globalX: nodeView.x + relativePos.x * sceneSession.zoomManager.zoomFactor// - NLStyle.portView.size / 2
-                globalY: nodeView.y + relativePos.y + NLStyle.portView.size / 2
+                globalX: nodeView.x + positionMapped.x
+                globalY: nodeView.y + positionMapped.y
             }
         }
     }
@@ -822,11 +824,13 @@ Rectangle {
                 sceneSession: nodeView.sceneSession
                 opacity: (leftPortsMouseArea.containsMouse || sceneSession.portsVisibility[modelData._qsUuid])? 1 : 0
 
-                //! Position relative to node view
-                property point relativePos: mapToItem(nodeView, x, y)
+                //! Mapped position based on PortView, container and zoom factor
+                property vector2d positionMapped: Qt.vector2d(leftColumn.x + x + NLStyle.portView.size / 2,
+                                                     leftColumn.y + y + NLStyle.portView.size / 2).
+                                                     times(sceneSession.zoomManager.zoomFactor)
 
-                globalX: nodeView.x + relativePos.x + NLStyle.portView.size / 2
-                globalY: nodeView.y + relativePos.y * sceneSession.zoomManager.zoomFactor
+                globalX: nodeView.x + positionMapped.x
+                globalY: nodeView.y + positionMapped.y
             }
         }
     }
@@ -847,11 +851,13 @@ Rectangle {
                 sceneSession: nodeView.sceneSession
                 opacity: (rightPortsMouseArea.containsMouse || sceneSession.portsVisibility[modelData._qsUuid]) ? 1 : 0
 
-                //! Position relative to node view
-                property point relativePos: mapToItem(nodeView, x, y)
+                //! Mapped position based on PortView, container and zoom factor
+                property vector2d positionMapped: Qt.vector2d(rightColumn.x + x + NLStyle.portView.size / 2,
+                                                              rightColumn.y + y + NLStyle.portView.size / 2).
+                                                              times(sceneSession.zoomManager.zoomFactor)
 
-                globalX: nodeView.x + (relativePos.x - width / 2 )* sceneSession.zoomManager.zoomFactor
-                globalY: nodeView.y + (relativePos.y ) * sceneSession.zoomManager.zoomFactor
+                globalX: nodeView.x + positionMapped.x
+                globalY: nodeView.y + positionMapped.y
             }
         }
     }
@@ -872,11 +878,13 @@ Rectangle {
                 sceneSession: nodeView.sceneSession
                 opacity: (bottomPortsMouseArea.containsMouse || sceneSession.portsVisibility[modelData._qsUuid]) ? 1 : 0
 
-                //! Position relative to node view
-                property point relativePos: mapToItem(nodeView, x, y)
+                //! Mapped position based on PortView, container and zoom factor
+                property vector2d positionMapped: Qt.vector2d(bottomRow.x + x + NLStyle.portView.size / 2,
+                                                              bottomRow.y + y + NLStyle.portView.size / 2).
+                                                              times(sceneSession.zoomManager.zoomFactor)
 
-                globalX: nodeView.x + relativePos.x * sceneSession.zoomManager.zoomFactor
-                globalY: nodeView.y + (relativePos.y - width / 2) * sceneSession.zoomManager.zoomFactor
+                globalX: nodeView.x + positionMapped.x
+                globalY: nodeView.y + positionMapped.y
             }
         }
     }
