@@ -96,20 +96,20 @@ I_NodesScene {
         id: scaleBehavior
 
         NumberAnimation {
+            id: scaleBehaviorAnimation
             duration: 200
-            easing.type: Easing.Linear
+            easing.type: Easing.InOutQuad
 
             onRunningChanged: {
                 if(!running) {
                     var zoomStepTimes = zoomOnWheel / 120;
-                    zoomStepTimes = Math.abs(zoomStepTimes) > 4 ? 4 * Math.abs(zoomStepTimes) / zoomStepTimes
-                                                              : zoomStepTimes;
+                    zoomStepTimes = Math.abs(zoomStepTimes) > 4 ? 4 : Math.abs(zoomStepTimes);
                     zoomStepTimes = zoomStepTimes === 0 ? 1 : zoomStepTimes;
 
-                    if(flickableScale > 1.0)
+                    if (flickableScale > 1.0)
                         sceneSession.zoomManager.zoomIn(zoomStepTimes);
                     else if (flickableScale < 1.0)
-                        sceneSession.zoomManager.zoomOut(Math.abs(zoomStepTimes));
+                        sceneSession.zoomManager.zoomOut(zoomStepTimes);
 
                     updateFlickableDimension();
                     scaleBehavior.enabled = false;
@@ -137,16 +137,15 @@ I_NodesScene {
         running: false
         repeat: false
 
-        interval: 10
+        interval: 250
 
         onTriggered: {
             var zoomStepTimes = zoomOnWheel / 120;
-            zoomStepTimes = Math.abs(zoomStepTimes) > 4 ? 4 * Math.abs(zoomStepTimes) / zoomStepTimes
-                                                      : zoomStepTimes;
-            if(zoomOnWheel > 0)
+            zoomStepTimes = Math.abs(zoomStepTimes) > 4 ? 4 : Math.abs(zoomStepTimes);
+            if (zoomOnWheel > 0)
                 prepareScale(1 + sceneSession.zoomManager.zoomInStep(zoomStepTimes));
-            else if (zoomOnWheel     < 0)
-                prepareScale(1 / (1 + sceneSession.zoomManager.zoomOutStep(Math.abs(zoomStepTimes))));
+            else if (zoomOnWheel < 0)
+                prepareScale(1 / (1 + sceneSession.zoomManager.zoomOutStep(zoomStepTimes)));
             
         }
     }
@@ -192,8 +191,10 @@ I_NodesScene {
                      if(!sceneSession.isShiftModifierPressed)
                         return;
 
-                     zoomPoint      = Qt.vector3d(wheel.x - flickable.contentX, wheel.y - flickable.contentY, 0);
-                     worldZoomPoint = Qt.vector2d(wheel.x, wheel.y);
+                     if (zoomOnWheel === 0) {
+                         zoomPoint      = Qt.vector3d(wheel.x - flickable.contentX, wheel.y - flickable.contentY, 0);
+                         worldZoomPoint = Qt.vector2d(wheel.x, wheel.y);
+                     }
 
                      zoomOnWheel += wheel.angleDelta.y;
                      zoomWheelTimer.start();
@@ -392,7 +393,7 @@ I_NodesScene {
         function onZoomNodeSignal(zoomPointScaled: vector2d, wheelAngle: int, moveToMinimalZoom = false) {
 
             //! Move zoom to edit node.
-            if(moveToMinimalZoom) {
+            if (moveToMinimalZoom) {
                 var nodeEditZoom = sceneSession.zoomManager.nodeEditZoom;
 
                 var origin =  zoomPointScaled.times(nodeEditZoom /
@@ -415,8 +416,10 @@ I_NodesScene {
                 return;
             }
 
-            flickable.zoomPoint      = Qt.vector3d(zoomPointScaled.x - flickable.contentX, zoomPointScaled.y - flickable.contentY, 0);
-            flickable.worldZoomPoint = Qt.vector2d(zoomPointScaled.x, zoomPointScaled.y);
+            if (zoomOnWheel === 0) {
+                flickable.zoomPoint      = Qt.vector3d(zoomPointScaled.x - flickable.contentX, zoomPointScaled.y - flickable.contentY, 0);
+                flickable.worldZoomPoint = Qt.vector2d(zoomPointScaled.x, zoomPointScaled.y);
+            }
 
             //! Update wheel angle value and start a timer that handle zoom process.
             zoomOnWheel += wheelAngle;
@@ -492,6 +495,7 @@ I_NodesScene {
 
     //! Prepare scale to set on the scene scale
     function prepareScale(scale: real) {
+        scaleBehaviorAnimation.duration = 30 * Math.abs(1 - scale) / sceneSession.zoomManager.zoomStep;
         flickableScale = scale;
     }
 }

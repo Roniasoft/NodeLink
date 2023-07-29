@@ -20,7 +20,7 @@ QtObject {
     property real zoomFactor    : 1.0
 
     //! step of zoom in/out
-    property real zoomStep      : 0.3
+    property real zoomStep      : 0.15
 
     //! In minimalZoomNode, node show a minimal Rectangle without header and description
     property real minimalZoomNode: 0.6
@@ -106,10 +106,10 @@ QtObject {
     //! Zoom in step
     function zoomInStep(numberSteps = 1) : real {
                 if(canZoomIn()) {
-                    if(zoomFactor * (1 + zoomStep * numberSteps) >= maximumZoom)
+                    if (zoomFactor * (1 + zoomStep * numberSteps) >= maximumZoom)
                         return Math.abs(maximumZoom - zoomFactor) / zoomFactor;
                     else
-                        return zoomStep;
+                        return zoomStep * numberSteps;
                 }
 
                 return 0.0;
@@ -118,10 +118,10 @@ QtObject {
     //! Zoom out step
     function zoomOutStep(numberSteps = 1) : real {
                 if(canZoomOut()) {
-                    if(zoomFactor / (1 + zoomStep * numberSteps) <= minimumZoom)
+                    if (zoomFactor / (1 + zoomStep * numberSteps) <= minimumZoom)
                         return Math.abs(zoomFactor - minimumZoom) / minimumZoom;
                     else
-                        return zoomStep;
+                        return zoomStep * numberSteps;
                 }
 
                 return 0.0;
