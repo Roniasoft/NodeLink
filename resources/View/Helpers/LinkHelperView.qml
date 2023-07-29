@@ -45,7 +45,8 @@ LinkView {
 
         //! While mouse pos is changing check for existing ports
         onPositionChanged: (mouse) => {
-            if (findClosesPort(mouse, 10) !== outputPortId)
+            var closestPortId = findClosestPort(mouse, 10)
+            if (closestPortId !== outputPortId)
                 scene.unlinkNodes(inputPortId, outputPortId);
             root.opacity = 1
             var gMouse = mapToItem(parent, Qt.point(mouse.x, mouse.y));
@@ -53,9 +54,8 @@ LinkView {
             if(inputPortId.length > 0) {
                 root.outputPos = Qt.vector2d(gMouse.x, gMouse.y);
             }
-
             sceneSession.setPortVisibility(outputPortId, false);
-            outputPortId = findClosesPort(mouse, 10);
+            outputPortId = closestPortId;
             if (outputPortId.length > 0 && scene.canLinkNodes(inputPortId, outputPortId)) {
                 sceneSession.setPortVisibility(outputPortId, true);
                 scene.linkNodes(inputPortId, outputPortId);
@@ -159,7 +159,7 @@ LinkView {
             return findedKey;
         }
         //! Finds nodes in proximity of search margin, calls findClosestPortInNodes and returns the closest port Id
-        function findClosesPort (mouse : point, searchMargin : int) : string {
+        function findClosestPort (mouse : point, searchMargin : int) : string {
             var gMouse = mapToItem(parent, Qt.point(mouse.x, mouse.y));
             let foundNodeIds = [];
             var finalPortId = ""
