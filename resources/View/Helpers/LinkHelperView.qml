@@ -59,8 +59,7 @@ LinkView {
             outputPortId = closestPortId;
             if (inputPortId.length > 0 && outputPortId.length > 0 && scene.canLinkNodes(inputPortId, outputPortId)) {
                 sceneSession.setPortVisibility(outputPortId, true);
-//                scene.linkNodes(inputPortId, outputPortId);
-                                   root.outputPos = Qt.vector2d(gMouse.x, gMouse.y);
+                scene.linkNodes(inputPortId, outputPortId);
                 root.opacity = 0
             }
         }
