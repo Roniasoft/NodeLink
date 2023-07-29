@@ -11,23 +11,23 @@ Rectangle {
 
     /* Property Declarations
      * ****************************************************************************************/
-    property Node           node
+    property Node         node
 
-    property Scene          scene
+    property Scene        scene
 
-    property SceneSession   sceneSession
+    property SceneSession sceneSession
 
-    property bool           edit
+    property bool         edit
 
     //! Node is selected or not
-    property bool           isSelected:    scene?.selectionModel?.isSelected(modelData?._qsUuid ?? "") ?? false
+    property bool         isSelected:     scene?.selectionModel?.isSelected(modelData?._qsUuid ?? "") ?? false
 
     //! Node is in minimal state or not (based in zoom factor)
-    property bool           isNodeMinimal: sceneSession.zoomManager.zoomFactor < sceneSession.zoomManager.minimalZoomNode
+    property bool         isNodeMinimal:  sceneSession.zoomManager.zoomFactor < sceneSession.zoomManager.minimalZoomNode
 
     //! Correct position based on zoomPoint and zoomFactor
-    property vector2d positionMapped: node.guiConfig?.position?.
-                                         times(sceneSession.zoomManager.zoomFactor)
+    property vector2d     positionMapped: node.guiConfig?.position?.
+                                            times(sceneSession.zoomManager.zoomFactor)
 
     /* Object Properties
      * ****************************************************************************************/
