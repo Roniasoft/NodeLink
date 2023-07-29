@@ -164,10 +164,14 @@ LinkView {
             let foundNodeIds = [];
             var finalPortId = ""
 
-            Object.entries(scene.nodesPositions).forEach(([key, value]) => {
-                if (gMouse.x >= value.x - searchMargin && gMouse.x <= value.x + scene.nodesSizes[key].x + searchMargin) {
-                    if (gMouse.y >= value.y - searchMargin && gMouse.y <= value.y + scene.nodesSizes[key].y + searchMargin)
-                        foundNodeIds.push(key);
+            Object.values(scene.nodes).forEach(node => {
+                var zoomFactor = sceneSession.zoomManager.zoomFactor;
+                var nodePosition = node.guiConfig.position.times(zoomFactor);
+                if (gMouse.x >= nodePosition.x - searchMargin &&
+                gMouse.x <= nodePosition.x + node.guiConfig.width * zoomFactor + searchMargin) {
+                    if (gMouse.y >= nodePosition.y - searchMargin &&
+                    gMouse.y <= nodePosition.y + node.guiConfig.height * zoomFactor + searchMargin)
+                        foundNodeIds.push(node._qsUuid);
                 }
             });
 

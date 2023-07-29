@@ -29,23 +29,6 @@ Rectangle {
     property vector2d     positionMapped: node.guiConfig?.position?.
                                             times(sceneSession.zoomManager.zoomFactor)
 
-    //! NodeGlobalPos is a 2d vector filled by x and y of each node (position of each node)
-    property vector2d     nodeGlobalPos:  Qt.vector2d(nodeView.x, nodeView.y)
-
-    //! NodeGlobalSize is a 2d vector filled by width and height of each node (size of each node)
-    property vector2d     nodeGlobalSize: Qt.vector2d(nodeView.width, nodeView.height)
-
-    //! Whenever NodeGlobalPos or NodeGlobalSuze is changed, we should update the
-    //!  related maps in scene/sceneSession
-    onNodeGlobalPosChanged: {
-        scene.nodesPositions[node._qsUuid] = nodeGlobalPos;
-        scene.nodesPositionsChanged();
-    }
-
-    onNodeGlobalSizeChanged: {
-        scene.nodesSizes[node._qsUuid] = nodeGlobalSize;
-        scene.nodesSizesChanged();
-    }
     /* Object Properties
      * ****************************************************************************************/
     width: node.guiConfig.width
