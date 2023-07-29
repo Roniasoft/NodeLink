@@ -45,10 +45,11 @@ LinkView {
 
         //! While mouse pos is changing check for existing ports
         onPositionChanged: (mouse) => {
+            root.opacity = 1
             var closestPortId = findClosestPort(Qt.point(mouse.x, mouse.y), 10)
             if (closestPortId !== outputPortId)
                 scene.unlinkNodes(inputPortId, outputPortId);
-            root.opacity = 1
+
             var gMouse = mapToItem(parent, Qt.point(mouse.x, mouse.y));
 
             if(inputPortId.length > 0) {
@@ -56,19 +57,17 @@ LinkView {
             }
             sceneSession.setPortVisibility(outputPortId, false);
             outputPortId = closestPortId;
-            if (outputPortId.length > 0 && scene.canLinkNodes(inputPortId, outputPortId)) {
+            if (inputPortId.length > 0 && outputPortId.length > 0 && scene.canLinkNodes(inputPortId, outputPortId)) {
                 sceneSession.setPortVisibility(outputPortId, true);
-                scene.linkNodes(inputPortId, outputPortId);
+//                scene.linkNodes(inputPortId, outputPortId);
+                                   root.outputPos = Qt.vector2d(gMouse.x, gMouse.y);
                 root.opacity = 0
             }
         }
 
         onReleased: (mouse) => {
             var gMouse = mapToItem(parent, Qt.point(mouse.x, mouse.y));
-            if(inputPortId.length > 0 && outputPortId.length > 0 && scene.canLinkNodes(inputPortId, outputPortId)) {
-                scene.linkNodes(inputPortId, outputPortId);
-                clearTempConnection();
-            } else if(inputPortId.length > 0) { // Open contex menu when the input port is selected
+            if (inputPortId.length > 0 && outputPortId.length <= 0) {
                 if (root.opacity === 1) {
                     contextMenu.popup(gMouse.x, gMouse.y);
                     sceneSession.connectingMode = false
@@ -76,7 +75,8 @@ LinkView {
                 else { //If the port is just clicked and no connection is made, no menu opens
                     clearTempConnection();
                 }
-            } else {
+            }
+            else {
                 clearTempConnection();
             }
         }
