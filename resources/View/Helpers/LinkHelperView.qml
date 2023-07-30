@@ -66,6 +66,8 @@ LinkView {
             // Invisible last detected port
             sceneSession.setPortVisibility(outputPortId, false);
 
+            // Update outpot port side
+            outputPortSide = findPortSide(link.inputPort.portSide);
 
             // Update outputPortId with new port found.
             outputPortId = closestPortId;
@@ -232,5 +234,27 @@ LinkView {
             return Math.abs(point1.x - point2.x) + Math.abs(point1.y - point2.y);
         }
 
+        //! Find outputport side based on inputPortSide to draw correct arrow
+        function findPortSide(inputPortSide) {
+            switch (inputPortSide)  {
+                case (NLSpec.PortPositionSide.Top): {
+                    return NLSpec.PortPositionSide.Bottom;
+                }
+                case (NLSpec.PortPositionSide.Bottom): {
+                    return  NLSpec.PortPositionSide.Top;
+                }
+                case (NLSpec.PortPositionSide.Left): {
+                    return  NLSpec.PortPositionSide.Right;
+                }
+                case (NLSpec.PortPositionSide.Right): {
+                    return NLSpec.PortPositionSide.Left;
+                }
+
+                default: {
+                return NLSpec.PortPositionSide.Top
+            }
+            }
+
+        }
     }
 }
