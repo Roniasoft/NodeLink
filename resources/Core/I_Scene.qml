@@ -185,14 +185,33 @@ QSObject {
         linksChanged();
     }
 
-    //! Checks if two ports can be linked or not
+    //! The ability to create a link is detected in the canLinkNodes function.
+    //! Rols:
+    //!     - A link must be established between two specific links
+    //!     - Link can not be duplicate
+    //!     - A node cannot establish a link with itself
     function canLinkNodes(portA : string, portB : string): bool {
+
+        //! Sanity check
+        if (portA.length === 0 || portB.length === 0)
+            return false;
+
+        // Find exist links with portA as input port and portB as output port.
+        var sameLinks = Object.values(links).filter(link =>
+            HashCompareString.compareStringModels(link.inputPort._qsUuid, portA) &&
+            HashCompareString.compareStringModels(link.outputPort._qsUuid, portB));
+
+        if (sameLinks.length > 0)
+            return false;
+
+        // A node cannot establish a link with itself
         var nodeA = findNodeId(portA);
         var nodeB = findNodeId(portB);
         if (HashCompareString.compareStringModels(nodeA, nodeB)
                     || nodeA.length === 0 || nodeB.length === 0) {
             return false;
         }
+
         return true;
     }
 

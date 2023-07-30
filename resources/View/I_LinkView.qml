@@ -35,6 +35,9 @@ Canvas {
 
     property vector2d   linkMidPoint: Qt.vector2d(0, 0)
 
+    //! outPut port side
+    property int        outputPortSide: link.outputPort?.portSide ?? -1
+
     //! update painted line when change position of input and output ports
     onOutputPosChanged: canvas.requestPaint();
     onInputPosChanged:  canvas.requestPaint();
@@ -61,7 +64,7 @@ Canvas {
         // Calculate the control points with BasicLinkCalculator
         link.controlPoints = BasicLinkCalculator.calculateControlPoints(inputPos, outputPos, link.direction,
                                                                         link.guiConfig.type, link.inputPort.portSide,
-                                                                        link.outputPort?.portSide ?? -1, sceneSession.zoomManager.zoomFactor)
+                                                                        outputPortSide, sceneSession.zoomManager.zoomFactor)
         // Calculate position of link setting dialog.
         // Finding the middle point of the link
         // Currently we suppose that the line is a bezzier curve
@@ -79,7 +82,7 @@ Canvas {
         LinkPainter.createLink(context, inputPos, link.controlPoints, isSelected,
                                 link.guiConfig.color, link.direction,
                                 link.guiConfig.style, link.guiConfig.type, lineWidth, arrowHeadLength,
-                               link.inputPort.portSide, link.outputPort?.portSide ?? -1);
+                               link.inputPort.portSide, outputPortSide);
     }
 
     /* Children

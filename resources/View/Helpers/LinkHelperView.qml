@@ -32,49 +32,78 @@ LinkView {
         onPressed: (mouse) => {
             var portId = findPortInRect(Qt.point(mouse.x, mouse.y), 5);
             root.inputPort = scene.findPort(portId);
-            var gMouse = mapToItem(parent, Qt.point(mouse.x, mouse.y));
-            if (root.inputPort !== null) {
+            var gMouse = mapToItem(parent, mouse.x, mouse.y);
+            if (root.inputPort) {
+                root.opacity = 0 // The link will be shown on the first move
                 root.outputPos = Qt.vector2d(gMouse.x, gMouse.y);
                 inputPortId = root.inputPort._qsUuid;
                 link.inputPort.portSide = root.inputPort.portSide;
                 sceneSession.setPortVisibility(inputPortId, true)
-                root.opacity = 0
             }
 
         }
 
         //! While mouse pos is changing check for existing ports
         onPositionChanged: (mouse) => {
-            var closestPortId = findClosestPort(Qt.point(mouse.x, mouse.y), 10)
+
+            // Sanity check
+            if (inputPortId.length === 0)
+                 return;
+
+            // make it visible on first move
+            root.opacity = 1.0
+
+            // Hide input port
+            if (sceneSession.portsVisibility[inputPortId])
+                sceneSession.setPortVisibility(inputPortId, false);
+
+            // Find the closest port based on specified margin
+            var closestPortId = findClosestPort(inputPortId, Qt.point(mouse.x, mouse.y), 10)
+
             if (outputPortId.length > 0 && closestPortId === outputPortId)
-                return;
+                 return;
 
-            root.opacity = 1
+            // Hide last detected port
+            sceneSession.setPortVisibility(outputPortId, false);
+
+            // Update outputPortId with new port found.
+            outputPortId = closestPortId;
+
+            // Update outputPos to paint line with new position.
             if (outputPortId.length > 0) {
-                scene.unlinkNodes(inputPortId, outputPortId);
-                sceneSession.setPortVisibility(outputPortId, false);
-            }
-
-            // canLinkNodes should check if the link already exists or not
-            if (closestPortId.length > 0 && scene.canLinkNodes(inputPortId, closestPortId)) {
-                outputPortId = closestPortId;
-                root.opacity = 0
+                // find the detected port position to link it as a TEMP LINK
+                root.outputPos = scene.portsPositions[outputPortId];
+                // Find port side based on the found output port
+                root.outputPortSide = scene.findPort(outputPortId)?.portSide ??
+                                   findPortSide(link.inputPort.portSide)
                 sceneSession.setPortVisibility(outputPortId, true);
-                scene.linkNodes(inputPortId, outputPortId);
-            } else if (inputPortId.length > 0) {
-                outputPortId = "";
-                var gMouse = mapToItem(parent, Qt.point(mouse.x, mouse.y));
+            } else {
+                // Find the global mouse position and update outputPos
+                var gMouse = mapToItem(parent, mouse.x, mouse.y);
                 root.outputPos = Qt.vector2d(gMouse.x, gMouse.y);
+                // Find port side based on the input port
+                root.outputPortSide = findPortSide(link.inputPort.portSide)
             }
         }
 
         onReleased: (mouse) => {
-            var gMouse = mapToItem(parent, Qt.point(mouse.x, mouse.y));
-            if (root.opacity === 1) {
-                contextMenu.popup(gMouse.x, gMouse.y);
-                sceneSession.connectingMode = false
-            } else { // If the port is just clicked or it is snapped and no connection is made, no menu opens
+            // Sanity check
+            if (inputPortId.length === 0) {
                 clearTempConnection();
+                return;
+            }
+
+            if (outputPortId.length > 0) {
+                    scene.linkNodes(inputPortId, outputPortId);
+                    clearTempConnection();
+
+            } else {  // Open context menu when the outport not selected
+                    // Update node position
+                    var gMouse = mapToItem(parent, mouse.x, mouse.y);
+                    contextMenu.nodePosition = calculateNodePosition(Qt.vector2d(gMouse.x, gMouse.y),
+                                                                     link.inputPort.portSide);
+                    contextMenu.popup(gMouse.x, gMouse.y);
+                    sceneSession.connectingMode = false;
             }
         }
 
@@ -155,9 +184,13 @@ LinkView {
 
             return findedKey;
         }
+
         //! Finds nodes in proximity of search margin, calls findClosestPortInNodes and returns the closest port Id
-        function findClosestPort (mousePoint : point, searchMargin : int) : string {
-            var gMouse = mapToItem(parent, Qt.point(mousePoint.x, mousePoint.y));
+        //!     inputPortId: input node id to check the ability to establish a link in findClosestPortInNodes
+        //!     mousePoint: To calculate distance.
+        //!     searchMargin: A margin to search nodes
+        function findClosestPort (inputPortId: string, mousePoint: point, searchMargin: int) : string {
+            var gMouse = mapToItem(parent, mousePoint.x, mousePoint.y);
             let foundNodeIds = [];
             var finalPortId = ""
 
@@ -168,37 +201,46 @@ LinkView {
                 gMouse.x <= nodePosition.x + node.guiConfig.width * zoomFactor + searchMargin) {
                     if (gMouse.y >= nodePosition.y - searchMargin &&
                     gMouse.y <= nodePosition.y + node.guiConfig.height * zoomFactor + searchMargin)
-                        foundNodeIds.push(node._qsUuid);
+                            foundNodeIds.push(node._qsUuid);
                 }
             });
 
             if (foundNodeIds)
-                finalPortId = findClosestPortInNodes(foundNodeIds, gMouse)
+                finalPortId = findClosestPortInNodes(inputPortId, foundNodeIds, gMouse)
             return finalPortId;
         }
 
-        //! Finds closes port Id amongst given node Ids
-        function findClosestPortInNodes (foundNodesId : string, gMouse : point) : string {
+        //! Finds closes port Id amongst given node Ids,
+        //!     inputPortId: input node id to check the ability to establish a link
+        //!     foundNodesId: Nodes id as an array
+        //!     gMouse: To calculate distance.
+        function findClosestPortInNodes (inputPortId: string, foundNodesId: array, gMouse: point) : string {
+
+            // Port Uuid array
             var ports = []
             var closestPortId = "";
             var minDistance = Number.MAX_VALUE;
 
-            for (var i = 0 ; i < foundNodesId.length; i++) {
-                Object.entries(scene.nodes[foundNodesId[i]].ports).forEach(([key, value]) => {
-                        ports.push(key)
+            // Find ports that can be linked in Nodes
+            foundNodesId.forEach(nodeId => {
+                    Object.keys(scene.nodes[nodeId].ports).forEach(portUuid => {
+                        if (scene.canLinkNodes(inputPortId, portUuid))
+                            ports.push(portUuid)
+                    });
+
                 });
-            }
 
-            for (i = 0; i < ports.length; i++) {
-                var portId = ports[i];
-                var portPosition = scene.portsPositions[portId];
-                var distance = calculateManhattanDistance(gMouse, portPosition);
+            // Find closest port
+            ports.forEach(portUuid => {
+                    var portPosition = scene.portsPositions[portUuid];
+                    var distance = calculateManhattanDistance(gMouse, portPosition);
 
-                if (distance < minDistance) {
-                    minDistance = distance;
-                    closestPortId = portId;
-                }
-            }
+                    if (distance < minDistance) {
+                        minDistance = distance;
+                        closestPortId = portUuid;
+                    }
+            });
+
             return closestPortId;
         }
 
@@ -207,5 +249,51 @@ LinkView {
             return Math.abs(point1.x - point2.x) + Math.abs(point1.y - point2.y);
         }
 
+        //! Find outputport side based on inputPortSide to draw correct arrow
+        function findPortSide(inputPortSide: int) : int {
+            switch (inputPortSide)  {
+                case (NLSpec.PortPositionSide.Top): {
+                    return NLSpec.PortPositionSide.Bottom;
+                }
+                case (NLSpec.PortPositionSide.Bottom): {
+                    return  NLSpec.PortPositionSide.Top;
+                }
+                case (NLSpec.PortPositionSide.Left): {
+                    return  NLSpec.PortPositionSide.Right;
+                }
+                case (NLSpec.PortPositionSide.Right): {
+                    return NLSpec.PortPositionSide.Left;
+                }
+
+                default: {
+                return NLSpec.PortPositionSide.Top
+                }
+            }
+        }
+
+        //! Calculate node position based on contextmenu position,
+        //! inputPortSide and defualt node width and height
+        function calculateNodePosition(mousePoint: vector2d, inputPortSide: int) : vector2d {
+                var correctionFactor = Qt.vector2d(0, 0);
+                switch (inputPortSide)  {
+                    case (NLSpec.PortPositionSide.Top): {
+                        correctionFactor = Qt.vector2d(NLStyle.node.width / 2, NLStyle.node.height);
+                    } break;
+
+                    case (NLSpec.PortPositionSide.Bottom): {
+                        correctionFactor = Qt.vector2d(NLStyle.node.width / 2, 0);
+                    } break;
+
+                    case (NLSpec.PortPositionSide.Left): {
+                       correctionFactor = Qt.vector2d(NLStyle.node.width, NLStyle.node.height / 2);
+                    } break;
+
+                    case (NLSpec.PortPositionSide.Right): {
+                        correctionFactor = Qt.vector2d(0, NLStyle.node.height / 2);
+                    } break;
+                }
+
+                return mousePoint.minus(correctionFactor);
+        }
     }
 }
