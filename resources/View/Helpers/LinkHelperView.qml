@@ -34,6 +34,7 @@ LinkView {
             root.inputPort = scene.findPort(portId);
             var gMouse = mapToItem(parent, mouse.x, mouse.y);
             if (root.inputPort) {
+                root.opacity = 0 // starts invisible and will be shown on first move
                 root.outputPos = Qt.vector2d(gMouse.x, gMouse.y);
                 inputPortId = root.inputPort._qsUuid;
                 link.inputPort.portSide = root.inputPort.portSide;
@@ -48,6 +49,9 @@ LinkView {
             // Sanity check
             if (inputPortId.length === 0)
                  return;
+
+            // make it visible on first move
+            root.opacity = 1.0
 
             // Invisible input port
             if (sceneSession.portsVisibility[inputPortId])
