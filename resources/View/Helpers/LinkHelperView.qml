@@ -49,7 +49,7 @@ LinkView {
             if (inputPortId.length === 0)
                  return;
 
-            // Invisible inpot port
+            // Invisible input port
             if (sceneSession.portsVisibility[inputPortId])
                 sceneSession.setPortVisibility(inputPortId, false);
 
@@ -76,7 +76,7 @@ LinkView {
             outputPortId = closestPortId;
 
             // Update outputPos to paint line with new position.
-            if(outputPortId.length > 0)
+            if (outputPortId.length > 0)
                 // find the detected port position to link it as a TEMP LINK
                 root.outputPos = scene.portsPositions[outputPortId];
             else {
@@ -97,11 +97,11 @@ LinkView {
 
             var gMouse = mapToItem(parent, mouse.x, mouse.y);
 
-            if(outputPortId.length > 0) {
+            if (outputPortId.length > 0) {
                     scene.linkNodes(inputPortId, outputPortId);
                     clearTempConnection();
 
-            } else { // Open contex menu when the input port is selected
+            } else {  // Open context menu when the outport not selected
                     // Update node position
                     contextMenu.nodePosition = calculateNodePosition(Qt.vector2d(gMouse.x, gMouse.y),
                                                                      link.inputPort.portSide);
@@ -258,7 +258,7 @@ LinkView {
 
                 default: {
                 return NLSpec.PortPositionSide.Top
-            }
+                }
             }
         }
 
