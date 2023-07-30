@@ -70,23 +70,21 @@ LinkView {
             // Invisible last detected port
             sceneSession.setPortVisibility(outputPortId, false);
 
-            // Update outpot port side
-            // Find port side based on the found output port
-            root.outputPortSide = closestPortId.length === 0 ? findPortSide(link.inputPort.portSide)
-                                                      : scene.findPort(closestPortId)?.portSide ??
-                                                        findPortSide(link.inputPort.portSide);
-
             // Update outputPortId with new port found.
             outputPortId = closestPortId;
 
             // Update outputPos to paint line with new position.
-            if (outputPortId.length > 0)
+            if (outputPortId.length > 0) {
                 // find the detected port position to link it as a TEMP LINK
                 root.outputPos = scene.portsPositions[outputPortId];
-            else {
+                // Find port side based on the found output port
+                root.outputPortSide = scene.findPort(outputPortId)?.portSide ?? findPortSide(link.inputPort.portSide)
+            } else {
                 // Find the global mouse position and update outputPos
                 var gMouse = mapToItem(parent, mouse.x, mouse.y);
                 root.outputPos = Qt.vector2d(gMouse.x, gMouse.y);
+                // Find port side based on the input port
+                root.outputPortSide = findPortSide(link.inputPort.portSide)
             }
 
             sceneSession.setPortVisibility(outputPortId, outputPortId.length > 0);
