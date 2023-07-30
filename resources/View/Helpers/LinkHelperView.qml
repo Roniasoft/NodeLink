@@ -67,7 +67,10 @@ LinkView {
             sceneSession.setPortVisibility(outputPortId, false);
 
             // Update outpot port side
-            outputPortSide = findPortSide(link.inputPort.portSide);
+            // Find port side based on the found output port
+            root.outputPortSide = closestPortId.length === 0 ? findPortSide(link.inputPort.portSide)
+                                                      : scene.findPort(closestPortId)?.portSide ??
+                                                        findPortSide(link.inputPort.portSide);
 
             // Update outputPortId with new port found.
             outputPortId = closestPortId;
