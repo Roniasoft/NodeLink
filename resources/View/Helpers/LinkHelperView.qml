@@ -32,49 +32,73 @@ LinkView {
         onPressed: (mouse) => {
             var portId = findPortInRect(Qt.point(mouse.x, mouse.y), 5);
             root.inputPort = scene.findPort(portId);
-            var gMouse = mapToItem(parent, Qt.point(mouse.x, mouse.y));
-            if (root.inputPort !== null) {
+            var gMouse = mapToItem(parent, mouse.x, mouse.y);
+            if (root.inputPort) {
                 root.outputPos = Qt.vector2d(gMouse.x, gMouse.y);
                 inputPortId = root.inputPort._qsUuid;
                 link.inputPort.portSide = root.inputPort.portSide;
                 sceneSession.setPortVisibility(inputPortId, true)
-                root.opacity = 0
             }
 
         }
 
         //! While mouse pos is changing check for existing ports
         onPositionChanged: (mouse) => {
+
+            // Sanity check
+            if (inputPortId.length === 0)
+                 return;
+
+            // Invisible inpot port
+            if (sceneSession.portsVisibility[inputPortId])
+                sceneSession.setPortVisibility(inputPortId, false);
+
+            // Find the closest port based on specified margin
             var closestPortId = findClosestPort(Qt.point(mouse.x, mouse.y), 10)
+
+            // check closest port Id
+            if (!scene.canLinkNodes(inputPortId, closestPortId))
+                 closestPortId = "";
+
             if (outputPortId.length > 0 && closestPortId === outputPortId)
-                return;
+                 return;
 
-            root.opacity = 1
-            if (outputPortId.length > 0) {
-                scene.unlinkNodes(inputPortId, outputPortId);
-                sceneSession.setPortVisibility(outputPortId, false);
-            }
+            // Invisible last detected port
+            sceneSession.setPortVisibility(outputPortId, false);
 
-            // canLinkNodes should check if the link already exists or not
-            if (closestPortId.length > 0 && scene.canLinkNodes(inputPortId, closestPortId)) {
-                outputPortId = closestPortId;
-                root.opacity = 0
-                sceneSession.setPortVisibility(outputPortId, true);
-                scene.linkNodes(inputPortId, outputPortId);
-            } else if (inputPortId.length > 0) {
-                outputPortId = "";
-                var gMouse = mapToItem(parent, Qt.point(mouse.x, mouse.y));
+
+            // Update outputPortId with new port found.
+            outputPortId = closestPortId;
+
+            // Update outputPos to paint line with new position.
+            if(outputPortId.length > 0)
+                // find the detected port position to link it as a TEMP LINK
+                root.outputPos = scene.portsPositions[outputPortId];
+            else {
+                // Find the global mouse position and update outputPos
+                var gMouse = mapToItem(parent, mouse.x, mouse.y);
                 root.outputPos = Qt.vector2d(gMouse.x, gMouse.y);
             }
+
+            sceneSession.setPortVisibility(outputPortId, outputPortId.length > 0);
         }
 
         onReleased: (mouse) => {
-            var gMouse = mapToItem(parent, Qt.point(mouse.x, mouse.y));
-            if (root.opacity === 1) {
-                contextMenu.popup(gMouse.x, gMouse.y);
-                sceneSession.connectingMode = false
-            } else { // If the port is just clicked or it is snapped and no connection is made, no menu opens
+            // Sanity check
+            if (inputPortId.length === 0) {
                 clearTempConnection();
+                return;
+            }
+
+            var gMouse = mapToItem(parent, mouse.x, mouse.y);
+
+            if(outputPortId.length > 0) {
+                    scene.linkNodes(inputPortId, outputPortId);
+                    clearTempConnection();
+
+            } else { // Open contex menu when the input port is selected
+                    contextMenu.popup(gMouse.x, gMouse.y);
+                    sceneSession.connectingMode = false;
             }
         }
 
@@ -155,6 +179,7 @@ LinkView {
 
             return findedKey;
         }
+
         //! Finds nodes in proximity of search margin, calls findClosestPortInNodes and returns the closest port Id
         function findClosestPort (mousePoint : point, searchMargin : int) : string {
             var gMouse = mapToItem(parent, Qt.point(mousePoint.x, mousePoint.y));
