@@ -37,6 +37,13 @@ QtObject {
         property real defaultContentY:      1500
     }
 
+    //! Defualt Node parameters.
+    readonly property QtObject node: QtObject {
+        property real   width:  200
+        property real   height: 150
+        property string color:  "pink"
+    }
+
     property bool snapEnabled: false
 
     readonly property var nodeIcons: [

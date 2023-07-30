@@ -14,6 +14,9 @@ Menu {
     required property Scene         scene;
     required property SceneSession  sceneSession;
 
+    //! node create in nodePosition
+    property vector2d nodePosition: Qt.vector2d(x, y);
+
     /* Object Properties
      * ****************************************************************************************/
     width: 180
@@ -87,11 +90,9 @@ Menu {
         var position = Qt.vector2d(contextMenu.x, contextMenu.y);
 
         // Correct position with zoompoint and zoom factor into real position.
-        var positionMapped = position?.times(1 / sceneSession.zoomManager.zoomFactor)
+        var positionMapped = nodePosition?.times(1 / sceneSession.zoomManager.zoomFactor)
 
-
-        node.guiConfig.position.x = positionMapped.x;
-        node.guiConfig.position.y = positionMapped.y;
+        node.guiConfig.position = positionMapped;
 
 
         node.guiConfig.color = NLStyle.nodeColors[nodeType]//Qt.rgba(Math.random(), Math.random(), Math.random(), 1)

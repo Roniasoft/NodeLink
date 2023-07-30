@@ -1,5 +1,6 @@
 import QtQuick
 
+import NodeLink
 import QtQuickStream
 
 /*! ***********************************************************************************************
@@ -20,13 +21,13 @@ QSObject {
     property vector2d   position:   Qt.vector2d(0.0, 0.0);
 
     //! Width
-    property int        width:      200
+    property int        width:      NLStyle.node.width
 
     //! Height
-    property int        height:     150
+    property int        height:     NLStyle.node.height
 
     //! Color
-    property string     color:      "pink"
+    property string     color:      NLStyle.node.color
 
     //! Lock
     property bool       locked:     false
