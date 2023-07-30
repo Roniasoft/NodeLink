@@ -238,7 +238,7 @@ LinkView {
         }
 
         //! Find outputport side based on inputPortSide to draw correct arrow
-        function findPortSide(inputPortSide) {
+        function findPortSide(inputPortSide: int) : int {
             switch (inputPortSide)  {
                 case (NLSpec.PortPositionSide.Top): {
                     return NLSpec.PortPositionSide.Bottom;
@@ -257,6 +257,7 @@ LinkView {
                 return NLSpec.PortPositionSide.Top
             }
             }
+        }
 
         }
     }
