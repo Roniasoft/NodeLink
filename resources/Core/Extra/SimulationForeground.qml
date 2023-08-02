@@ -13,7 +13,8 @@ Item {
     * ****************************************************************************************/
     //! Blocker Nodes
     //! Array <Node: uuid>
-    property var    nodes: []
+    property var    nodes: Object.values(scene.nodes).filter(node => node?.status === NotionNode.NodeStatus.Inactive)
+                                                     .map(node => node._qsUuid);
 
     //! Scene
     property Scene  scene
