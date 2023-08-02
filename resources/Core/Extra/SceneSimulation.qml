@@ -131,11 +131,11 @@ Item {
 
             // When node is transient, the node data must be used instead original node.
             if(downNode?.type === NLSpec.NodeType.Transition) {
-                var transientTo = scene.findNodeId(downNode?.nodeData?.data)
-                downNode = transientTo;
+                var transientTo = scene.findNodeId(downNode?.nodeData?.data);
+                if(transientTo)
+                    downNode = transientTo;
             }
 
-            console.log(downNode, downNode?.status)
             if (checkNodeEntryCondition(downNode))
                 downNode.updateNodeStatus(NotionNode.NodeStatus.Active)
 
@@ -176,6 +176,10 @@ Item {
         }
 
         scene.selectionModel.selectNode(rootNodes[0]);
+
+        //! InActive all nodes
+        Object.values(nodes).forEach(node => node?.updateNodeStatus(NotionNode.NodeStatus.Inactive))
+
         evaluatedNodes = [];
         evaluatedNodesChanged();
 
