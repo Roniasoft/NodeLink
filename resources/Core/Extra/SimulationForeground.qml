@@ -19,12 +19,15 @@ Item {
     //! Scene
     property Scene  scene
 
+    property SceneSession   sceneSession
+
     /*  Children
     * ****************************************************************************************/
     //! Nodes
     Repeater {
         model: nodes
         delegate: BlockerNode {
+            sceneSession: root.sceneSession
             node: scene.nodes[modelData]
 //            scene: root.scene
         }

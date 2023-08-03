@@ -7,7 +7,16 @@ import QtQuick.Controls
  * ************************************************************************************************/
 Rectangle {
 
+    /* Property Declarations
+    * ****************************************************************************************/
     property Node node
+
+    property SceneSession   sceneSession
+
+    property real zoomFactor: sceneSession.zoomManager.zoomFactor
+
+    //! Correct position based on zoomPoint and zoomFactor
+    property vector2d     positionMapped: node.guiConfig?.position?.times(zoomFactor)
 
     /*  Object Properties
     * ****************************************************************************************/
@@ -15,13 +24,18 @@ Rectangle {
     opacity: 0.7
     width: node.guiConfig.width
     height: node.guiConfig.height
-    x: node.guiConfig.position.x
-    y: node.guiConfig.position.y
+    x: positionMapped.x
+    y: positionMapped.y
     radius: NLStyle.radiusAmount.blockerNode
     smooth: true
     antialiasing: true
     layer.enabled: false
 
+    //! Scales relative to top left
+    transform: Scale {
+        xScale: zoomFactor
+        yScale: zoomFactor
+    }
 
     //! Mouse are to blcok all mouse interactions
     MouseArea {
