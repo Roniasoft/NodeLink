@@ -23,7 +23,7 @@ Item {
     //! Scene model, use to simulation
     required property Scene  scene
 
-    //! Simulation Enability
+    //! Simulation Enability, Call reset before starting simulation (SceneSimulation.SimulationEnableType.Running)
     property int simulationEnabled:  SceneSimulation.SimulationEnableType.Stopped
 
     //! Error message
@@ -80,11 +80,6 @@ Item {
 
     //! When the node is changed, the simulation needs to be re-evaluted
     onNodeChanged: evaluate();
-
-    onSimulationEnabledChanged: {
-        if(simulationEnabled === SceneSimulation.SimulationEnableType.Running)
-            reset();
-    }
 
     //! Evaluates the next possible nodes
     function evaluate() {
