@@ -37,6 +37,11 @@ Item {
     property var    nextNodes:          Object.values(nodes).filter(node => node?.status !== NotionNode.NodeStatus.Inactive)
                                                             .map(node => node._qsUuid);
 
+    property Node parentNode: null
+
+    //! map<current node uuid, parent node uuid>
+    property var previousNodes: ({})
+
     //! All nodes in selected Scene
     //! use nodes map in Scene model
     property var    nodes:              Object.values(scene?.nodes ?? ({}))
@@ -90,7 +95,7 @@ Item {
         var parentNode = Object.values(nodes).find(node => node?.status === NotionNode.NodeStatus.Selected);
         parentNode?.updateNodeStatus(NotionNode.NodeStatus.Active);
 
-        console.log(node._qsUuid, node?.status)
+        console.log(node._qsUuid, node?.status);
         //! Update selected node status
         node?.updateNodeStatus(NotionNode.NodeStatus.Selected);
 
@@ -125,7 +130,6 @@ Item {
 
         // Find all downstream nodes
         nodeLinks.forEach(link => {
-
             // Find downstream NodeId/Node
             var downNode = scene.findNode(link.outputPort._qsUuid);
 
@@ -136,13 +140,31 @@ Item {
                     downNode = transientTo;
             }
 
-            if (checkNodeEntryCondition(downNode))
-                downNode.updateNodeStatus(NotionNode.NodeStatus.Active)
+            console.log(downNode?.status);
+            if (checkNodeEntryCondition(downNode)) {
+                downNode?.updateNodeStatus(NotionNode.NodeStatus.Active);
+            }  
 
         });
+
+        //! Update previous nodes
+        if (node._qsUuid !== (simulation?.parentNode?._qsUuid ?? "") &&
+            previousNodes[simulation?.parentNode?._qsUuid] !== node._qsUuid)
+            previousNodes[node._qsUuid] = simulation?.parentNode?._qsUuid ?? "";
+
+        //! Active previousNodes
+        Object.entries(previousNodes).forEach(([key, value]) => {
+                       if (key === node._qsUuid) {
+                               var parentNode = scene.nodes[value];
+                               parentNode?.updateNodeStatus(NotionNode.NodeStatus.Active);
+                           }
+                       });
+
+        //! update current node ad parent node of next selected node
+        simulation.parentNode = node;
     }
 
-    //! Check entry condition with parent of port
+    //! Check entry condition of node
     function checkNodeEntryCondition(node: Node) : bool {
         // Data type is Action.
         console.log(node, node?.status)
@@ -162,7 +184,6 @@ Item {
         scene.selectionModel.clear();
         //! Find root nodes
         var rootNodes = nodes.filter(node => node.type === NLSpec.NodeType.Root);
-        console.log(rootNodes)
         var rootNodeCount = rootNodes.length;
         //! Select only one root node.
         if (rootNodeCount !== 1) {
@@ -189,5 +210,10 @@ Item {
         nextNodes = [];
         nextNodesChanged();
         errorString = "";
+
+        // Reset previousNodes map
+        parentNode = null;
+        previousNodes = ({});
+        previousNodesChanged();
     }
 }
