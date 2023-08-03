@@ -11,12 +11,20 @@ Item {
 
     /* Property Declarations
      * ****************************************************************************************/
+    //! Simulation Enability types
+    enum SimulationEnableType {
+        Running = 0,
+        Paused  = 1,
+        Stopped = 2,
+
+        Unknown = 99
+    }
 
     //! Scene model, use to simulation
     required property Scene  scene
 
     //! Simulation Enability
-    property bool simulationEnabled:  false
+    property int simulationEnabled:  SceneSimulation.SimulationEnableType.Stopped
 
     //! Error message
     property string errorString: ""
@@ -74,7 +82,7 @@ Item {
     onNodeChanged: evaluate();
 
     onSimulationEnabledChanged: {
-        if(simulationEnabled)
+        if(simulationEnabled === SceneSimulation.SimulationEnableType.Running)
             reset();
     }
 
@@ -192,7 +200,7 @@ Item {
                 "You need to delete the extra ROOT nodes")
             console.assert(errorString);
 
-            simulationEnabled = false;
+            simulationEnabled = SceneSimulation.SimulationEnableType.Stopped;
             return;
         }
 

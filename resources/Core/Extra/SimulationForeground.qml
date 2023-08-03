@@ -29,7 +29,6 @@ Item {
         delegate: BlockerNode {
             sceneSession: root.sceneSession
             node: scene.nodes[modelData]
-//            scene: root.scene
         }
     }
 }
