@@ -397,6 +397,30 @@ I_NodesScene {
 
             sceneSession.zoomManager.customZoom(zoomFactor);
         }
+
+        //! Manage zoom to node signal
+        function onZoomToNodeSignal(node: Node, targetZoomFactor: real) {
+            var origin  = Qt.vector2d(node.guiConfig.position.x + node.guiConfig.width / 2,
+                                         node.guiConfig.position.y + node.guiConfig.height / 2);
+
+            //! Prepare positions with targetZoomFactor.
+            origin =  origin.times(targetZoomFactor)
+
+            //! update zoom factor
+            sceneSession.zoomManager.customZoom(targetZoomFactor)
+
+            //! update content dimentions
+            sceneSession.contentWidth  = NLStyle.scene.defaultContentWidth  * targetZoomFactor;
+            sceneSession.contentHeight = NLStyle.scene.defaultContentHeight * targetZoomFactor;
+
+            //! Calculate contentX and contentY, when nodes has one node, the node must be in center
+            var fcontentX = origin.x - (flickable.width / 2);
+            var fcontentY = origin.y - (flickable.height / 2 ) ;
+
+            // Adjust the content position to zoom to the mouse point
+            flickable.contentX = Math.max(0, fcontentX);
+            flickable.contentY = Math.max(0, fcontentY);
+        }
     }
 
     //! Force active main scene view (flicable) when 3rdparty window closed.
@@ -449,5 +473,5 @@ I_NodesScene {
     //! Prepare scale to set on the scene scale
     function prepareScale(scale: real) {
         flickableScale = scale;
-    }
+    }  
 }

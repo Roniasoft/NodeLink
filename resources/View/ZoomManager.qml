@@ -42,7 +42,10 @@ QtObject {
     signal zoomOutSignal();
 
     //! Zoom In/Out from NodeView
-    signal zoomNodeSignal(zoomPoint: vector2d, wheelAngle: int, moveToMinimalZoom : bool);
+    signal zoomNodeSignal(zoomPoint: vector2d, wheelAngle: int);
+
+    //! Zoom into a node
+    signal zoomToNodeSignal(node: Node, targetZoomFactor: real);
 
     //! Set focus to scene.
     signal focusToScene();
