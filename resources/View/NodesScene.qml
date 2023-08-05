@@ -345,31 +345,7 @@ I_NodesScene {
         }
 
         //! Manage zoom from nodeView.
-        function onZoomNodeSignal(zoomPointScaled: vector2d, wheelAngle: int, moveToMinimalZoom = false) {
-
-            //! Move zoom to edit node.
-            if(moveToMinimalZoom) {
-                var nodeEditZoom = sceneSession.zoomManager.nodeEditZoom;
-
-                var origin =  zoomPointScaled.times(nodeEditZoom /
-                                                    sceneSession.zoomManager.zoomFactor)
-                //! update zoom factor
-                sceneSession.zoomManager.customZoom(nodeEditZoom)
-
-                //! update content dimentions
-                sceneSession.contentWidth  = NLStyle.scene.defaultContentWidth  * nodeEditZoom;
-                sceneSession.contentHeight = NLStyle.scene.defaultContentHeight * nodeEditZoom;
-
-                //! Calculate contentX and contentY, when nodes has one node, the node must be in center
-                var fcontentX = origin.x - (flickable.width / 2);
-                var fcontentY = origin.y - (flickable.height / 2 ) ;
-
-                // Adjust the content position to zoom to the mouse point
-                flickable.contentX = Math.max(0, fcontentX);
-                flickable.contentY = Math.max(0, fcontentY);
-
-                return;
-            }
+        function onZoomNodeSignal(zoomPointScaled: vector2d, wheelAngle: int) {
 
             flickable.zoomPoint      = Qt.vector3d(zoomPointScaled.x - flickable.contentX, zoomPointScaled.y - flickable.contentY, 0);
             flickable.worldZoomPoint = Qt.vector2d(zoomPointScaled.x, zoomPointScaled.y);

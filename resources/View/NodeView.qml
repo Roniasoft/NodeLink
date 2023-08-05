@@ -71,11 +71,9 @@ Rectangle {
         // When Node is editting and zoomFactor is less than minimalZoomNode,
         // and need a node to be edit
         // The zoom will change to the minimum editable value
-        if(nodeView.edit && nodeView.isNodeMinimal) {
-            var zoomPoint  = Qt.vector2d(nodeView.x + nodeView.width * sceneSession.zoomManager.zoomFactor / 2,
-                                         nodeView.y + nodeView.height * sceneSession.zoomManager.zoomFactor / 2);
-            sceneSession.zoomManager.zoomNodeSignal(zoomPoint, 1.0, true);
-        }
+        if(nodeView.edit && nodeView.isNodeMinimal)
+            sceneSession.zoomManager.zoomToNodeSignal(node, sceneSession.zoomManager.nodeEditZoom);
+
         nodeView.edit ? titleTextArea.forceActiveFocus() :  nodeView.forceActiveFocus();
     }
 
@@ -310,7 +308,7 @@ Rectangle {
                      //! active zoom with shift modifier.
                      if(sceneSession.isShiftModifierPressed) {
                          var zoomPoint = Qt.vector2d(wheel.x + nodeView.x, wheel.y + nodeView.y);
-                         sceneSession.zoomManager.zoomNodeSignal(zoomPoint, wheel.angleDelta.y, false);
+                         sceneSession.zoomManager.zoomNodeSignal(zoomPoint, wheel.angleDelta.y);
                      }
                  }
 
@@ -902,7 +900,7 @@ Rectangle {
                      //! active zoom with shift modifier.
                      if(sceneSession.isShiftModifierPressed) {
                          var zoomPoint = Qt.vector2d(wheel.x + nodeView.x, wheel.y + nodeView.y);
-                         sceneSession.zoomManager.zoomNodeSignal(zoomPoint, wheel.angleDelta.y, false);
+                         sceneSession.zoomManager.zoomNodeSignal(zoomPoint, wheel.angleDelta.y);
                      }
                  }
 
