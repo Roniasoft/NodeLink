@@ -11,9 +11,23 @@ Item {
 
     /* Property Declarations
      * ****************************************************************************************/
+    //! Simulation Enability types
+    enum SimulationEnableType {
+        Running = 0,
+        Paused  = 1,
+        Stopped = 2,
+
+        Unknown = 99
+    }
 
     //! Scene model, use to simulation
     required property Scene  scene
+
+    //! Simulation Enability, Call reset before starting simulation (SceneSimulation.SimulationEnableType.Running)
+    property int simulationEnabled:  SceneSimulation.SimulationEnableType.Stopped
+
+    //! Error message
+    property string errorString: ""
 
     //! Reference node of the simulation. Next possible nodes will be
     //! determined based on this reference node.
@@ -28,7 +42,13 @@ Item {
 
     //! Next available nodes for evaluation
     //! array <node uuid>
-    property var    nextNodes:          []
+    property var    nextNodes:          Object.values(nodes).filter(node => node?.status !== NotionNode.NodeStatus.Inactive)
+                                                            .map(node => node._qsUuid);
+
+    property Node parentNode: null
+
+    //! map<current node uuid, parent node uuid>
+    property var previousNodes: ({})
 
     //! All nodes in selected Scene
     //! use nodes map in Scene model
@@ -66,8 +86,21 @@ Item {
         if (scene === null || node === null)
             return;
 
-        nextNodes = [];
-        nextNodesChanged();
+        //! InActive all active nodes
+        var activeNodes = Object.values(nodes).filter(node => node?.status === NotionNode.NodeStatus.Active);
+        activeNodes.forEach(node => {
+                                console.log(node?.status)
+                                node?.updateNodeStatus(NotionNode.NodeStatus.Inactive)
+                            });
+
+
+        //! Find last selected node and change it's status into Active
+        var parentNode = Object.values(nodes).find(node => node?.status === NotionNode.NodeStatus.Selected);
+        parentNode?.updateNodeStatus(NotionNode.NodeStatus.Active);
+
+        console.log(node._qsUuid, node?.status);
+        //! Update selected node status
+        node?.updateNodeStatus(NotionNode.NodeStatus.Selected);
 
         // Update evaluated nodes
         // while re-evaluating, the node shouldn't be added again
@@ -94,42 +127,83 @@ Item {
             });
         }
 
-
         // find links that their inputPort is located in this node
         // List <Link>
         var nodeLinks = links.filter(link => scene.findNodeId(link.inputPort._qsUuid) === node._qsUuid);
 
         // Find all downstream nodes
-        // List<Node>
-        var downstreamNodes = []
         nodeLinks.forEach(link => {
             // Find downstream NodeId/Node
-            var downNodeId = scene.findNodeId(link.outputPort._qsUuid);
-            var downNode = scene.nodes[downNodeId];
+            var downNode = scene.findNode(link.outputPort._qsUuid);
 
             // When node is transient, the node data must be used instead original node.
             if(downNode?.type === NLSpec.NodeType.Transition) {
-                var transientTo = scene.findNodeId(downNode?.nodeData?.data)
-                downNode = transientTo;
+                var transientTo = scene.findNodeId(downNode?.nodeData?.data);
+                if(transientTo)
+                    downNode = transientTo;
             }
 
-            // Data type is Action.
-            var nodeConditions = downNode?.entryCondition?.conditions ?? [];
-            var entryConditionRes = true;
-            nodeConditions.forEach(nodeCondition => {
-                if (activatedActions.indexOf(nodeCondition) == -1) {
-                    entryConditionRes = false
-                }
-            });
-            if (entryConditionRes == true) {
-                nextNodes.push(downNodeId);
-                nextNodesChanged();
+            console.log(downNode?.status);
+            if (checkNodeEntryCondition(downNode)) {
+                downNode?.updateNodeStatus(NotionNode.NodeStatus.Active);
+            }  
+
+        });
+
+        //! Update previous nodes
+        if (node._qsUuid !== (simulation?.parentNode?._qsUuid ?? "") &&
+            previousNodes[simulation?.parentNode?._qsUuid] !== node._qsUuid)
+            previousNodes[node._qsUuid] = simulation?.parentNode?._qsUuid ?? "";
+
+        //! Active previousNodes
+        Object.entries(previousNodes).forEach(([key, value]) => {
+                       if (key === node._qsUuid) {
+                               var parentNode = scene.nodes[value];
+                               parentNode?.updateNodeStatus(NotionNode.NodeStatus.Active);
+                           }
+                       });
+
+        //! update current node ad parent node of next selected node
+        simulation.parentNode = node;
+    }
+
+    //! Check entry condition of node
+    function checkNodeEntryCondition(node: Node) : bool {
+        // Data type is Action.
+        console.log(node, node?.status)
+        var nodeConditions = node?.entryCondition?.conditions ?? [];
+        var nodeEntryConditionRes = true;
+        nodeConditions.forEach(nodeCondition => {
+            if (activatedActions.indexOf(nodeCondition) == -1) {
+                nodeEntryConditionRes = false
             }
         });
+
+        return nodeEntryConditionRes;
     }
 
     //! Reset Simulation
     function reset() {
+        scene.selectionModel.clear();
+        //! Find root nodes
+        var rootNodes = nodes.filter(node => node.type === NLSpec.NodeType.Root);
+        var rootNodeCount = rootNodes.length;
+        //! Select only one root node.
+        if (rootNodeCount !== 1) {
+            errorString = "The simulation process cannot start, " +
+             (rootNodeCount === 0 ? "You need a ROOT node." :
+                "You need to delete the extra ROOT nodes")
+            console.assert(errorString);
+
+            simulationEnabled = SceneSimulation.SimulationEnableType.Stopped;
+            return;
+        }
+
+        scene.selectionModel.selectNode(rootNodes[0]);
+
+        //! InActive all nodes
+        Object.values(nodes).forEach(node => node?.updateNodeStatus(NotionNode.NodeStatus.Inactive))
+
         evaluatedNodes = [];
         evaluatedNodesChanged();
 
@@ -138,5 +212,11 @@ Item {
 
         nextNodes = [];
         nextNodesChanged();
+        errorString = "";
+
+        // Reset previousNodes map
+        parentNode = null;
+        previousNodes = ({});
+        previousNodesChanged();
     }
 }
