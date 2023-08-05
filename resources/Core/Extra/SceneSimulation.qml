@@ -57,6 +57,14 @@ Item {
     //! All links in the scene
     property var    links:              Object.values(scene?.links ?? ({}))
 
+    //! Zoom factor of selectede node.
+    property real selectedNodeZoomFactor: 1.4
+
+    signal zoomToNode(node: Node, targetZoomFactor: real)
+
+    /* Children
+    * ****************************************************************************************/
+
     // watch for all actions active/inactive for current node
     Repeater {
         model: Object.values(node?.nodeData?.data ?? ({})) ?? []    // Actions
@@ -85,6 +93,9 @@ Item {
     function evaluate() {
         if (scene === null || node === null)
             return;
+
+        //! when a node changed and checked some conditins, we zoom into selected node.
+        zoomToNode(node, selectedNodeZoomFactor);
 
         //! InActive all active nodes
         var activeNodes = Object.values(nodes).filter(node => node?.status === NotionNode.NodeStatus.Active);

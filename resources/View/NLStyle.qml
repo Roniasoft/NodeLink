@@ -41,6 +41,7 @@ QtObject {
     readonly property QtObject node: QtObject {
         property real   width:  200
         property real   height: 150
+        property real   opacity: 1.0
         property string color:  "pink"
     }
 
