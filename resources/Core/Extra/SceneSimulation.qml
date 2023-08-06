@@ -124,9 +124,13 @@ Item {
                 }
             }
 
-            scene.selectionModel.clearAllExcept(nodeToSelect._qsUuid)
+            var isNeedEvaluate = node._qsUuid === nodeToSelect._qsUuid;
+            // Select node and evaluate it.
+            scene.selectionModel.clearAllExcept(nodeToSelect._qsUuid);
             scene.selectionModel.selectNode(nodeToSelect);
-            zoomToNode(nodeToSelect, selectedNodeZoomFactor);
+            if (isNeedEvaluate)
+                evaluate();
+
         } else if (simulationEnabled === SceneSimulation.SimulationEnableType.Running)
             reset();
     }
