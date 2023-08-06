@@ -262,6 +262,7 @@ Item {
         // Data type is Action.
         var nodeConditions = node?.entryCondition?.conditions ?? [];
         var nodeEntryConditionRes = true;
+        node.unMetConditions = [];
         nodeConditions.forEach(nodeCondition => {
             if (activatedActions.indexOf(nodeCondition) == -1) {
                 nodeEntryConditionRes = false
