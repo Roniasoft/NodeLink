@@ -50,12 +50,17 @@ Item {
     //! map<current node uuid, parent node uuid>
     property var previousNodes: ({})
 
+    //! map<link uuid, actual color>
+    property var  prevColors: ({})
+
     //! All nodes in selected Scene
     //! use nodes map in Scene model
     property var    nodes:              Object.values(scene?.nodes ?? ({}))
 
     //! All links in the scene
     property var    links:              Object.values(scene?.links ?? ({}))
+
+    property var    allActions
 
     //! Zoom factor of selectede node.
     property real selectedNodeZoomFactor: 1.4
@@ -149,8 +154,10 @@ Item {
     function colorChange() {
         for (var key in links) {
             if (links.hasOwnProperty(key)) {
+                if (links[key].guiConfig.color !== "red" && links[key].guiConfig.color !== "green")
+                    prevColors[scene.findNode(links[key].outputPort._qsUuid)._qsUuid] = links[key].guiConfig.color
                 if (editEnabled)
-                    links[key].guiConfig.color = "white"
+                    links[key].guiConfig.color = prevColors[scene.findNode(links[key].outputPort._qsUuid)._qsUuid]
                 if ((scene.findNode(links[key].outputPort._qsUuid).status === NotionNode.NodeStatus.Active
                         || scene.findNode(links[key].outputPort._qsUuid).status === NotionNode.NodeStatus.Selected) && !editEnabled)
                     links[key].guiConfig.color = "green"
