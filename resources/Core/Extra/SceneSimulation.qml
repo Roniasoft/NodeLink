@@ -126,6 +126,7 @@ Item {
 
             scene.selectionModel.clearAllExcept(nodeToSelect._qsUuid)
             scene.selectionModel.selectNode(nodeToSelect);
+            zoomToNode(nodeToSelect, selectedNodeZoomFactor);
         } else if (simulationEnabled === SceneSimulation.SimulationEnableType.Running)
             reset();
     }
