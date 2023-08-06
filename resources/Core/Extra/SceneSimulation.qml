@@ -70,7 +70,7 @@ Item {
 
     //! zoomToNode manage zoom to node process in simulation mode.
     //! Edit Mode
-    property bool editEnabled: scene._editEnabled
+    property bool editEnabled: simulationEnabled === SceneSimulation.SimulationEnableType.Paused;
 
     signal zoomToNode(node: Node, targetZoomFactor: real)
 
@@ -92,6 +92,7 @@ Item {
                 target: action
                 function onActiveChanged() {
                     simulation.evaluate();
+                    simulation.colorChange();
                 }
             }
         }
@@ -155,7 +156,7 @@ Item {
             if (links[key].guiConfig.color !== "red" && links[key].guiConfig.color !== "green")
                 prevColors[scene.findNode(links[key].outputPort._qsUuid)._qsUuid] = links[key].guiConfig.color
                 links[key].guiConfig.color = prevColors[scene.findNode(links[key].outputPort._qsUuid)._qsUuid]
-            if (scene.findNode(links[key].inputPort._qsUuid) == node) {
+            if (scene.findNode(links[key].inputPort._qsUuid) === node) {
                 if ((scene.findNode(links[key].outputPort._qsUuid).status === NotionNode.NodeStatus.Active
                         || scene.findNode(links[key].outputPort._qsUuid).status === NotionNode.NodeStatus.Selected) && !editEnabled)
                     links[key].guiConfig.color = "green"
