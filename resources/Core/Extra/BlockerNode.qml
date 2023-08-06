@@ -43,10 +43,11 @@ Rectangle {
         hoverEnabled: true
     }
 
+    //! Why a node is not accessible
     Rectangle {
         anchors.centerIn: parent
         width: parent.width
-        height: parent.height / 4
+        height: parent.height
         color: "transparent"
 
         Text {
@@ -57,8 +58,8 @@ Rectangle {
             horizontalAlignment: Qt.AlignHCenter
             verticalAlignment: Qt.AlignVCenter
             font.weight: !textVisible ? 400 : Font.Medium
-            text: textVisible ? "Entry condition is not met" : "\uf06a"
-            font.pixelSize:  textVisible ? 13 : Math.min(parent.width, parent.height)
+            text: textVisible ? ("Entry condition is not met" + "\n" + formatConditionsText()) : "\uf06a"
+            font.pixelSize:  textVisible ? 11 : Math.min(parent.width, parent.height) / 4
             color: "grey"
 
             MouseArea {
@@ -74,6 +75,14 @@ Rectangle {
             }
         }
 
+    }
+
+    //! function to join the unMet conditions in the form of a string
+    function formatConditionsText() {
+        if (node.unMetConditions.length === 0)
+            return "";
+        else
+            return node.unMetConditions.join("\n");
     }
 
 }

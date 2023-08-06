@@ -97,7 +97,6 @@ Item {
         }
     }
 
-
     /* Slots
      * ****************************************************************************************/
 
@@ -266,6 +265,8 @@ Item {
         nodeConditions.forEach(nodeCondition => {
             if (activatedActions.indexOf(nodeCondition) == -1) {
                 nodeEntryConditionRes = false
+                if (node.unMetConditions.indexOf(findActionById(nodeCondition)) === -1)
+                    node.unMetConditions.push(findActionById(nodeCondition))
             }
         });
 
@@ -324,5 +325,18 @@ Item {
 
         // Reset simulation log
         postLog("The simulation process was reset.")
+    }
+
+    //! Returns the action with the asked ID
+    function findActionById(id) {
+        for (var nodeKey in nodes) {
+            var node = nodes[nodeKey];
+            for (var actionKey in node?.nodeData?.data) {
+                if (actionKey === id) {
+                    return node.nodeData.data[actionKey].name + ", Node Name: " + node.title;
+                }
+            }
+        }
+        return null; // Action not found
     }
 }
