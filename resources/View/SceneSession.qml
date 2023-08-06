@@ -38,6 +38,9 @@ QtObject {
     property real contentWidth : NLStyle.scene.defaultContentWidth
     property real contentHeight: NLStyle.scene.defaultContentHeight
 
+    //! Is scene editable or not
+    property bool isSceneEditable: true
+
     //! Active focus of main scene view
     signal sceneForceFocus()
 

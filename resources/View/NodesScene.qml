@@ -35,7 +35,7 @@ I_NodesScene {
 
     //! Handle key pressed (Del: delete selected node and link)
     Keys.onDeletePressed: {
-        if(Object.keys(scene.selectionModel.selectedModel).length > 0) {
+        if(sceneSession.isSceneEditable && Object.keys(scene.selectionModel.selectedModel).length > 0) {
             deletePopup.open();
         }
     }
@@ -173,7 +173,7 @@ I_NodesScene {
                 else
                      scene.selectionModel.selectLink(link);
 
-            } else if (mouse.button === Qt.RightButton) {
+            } else if (sceneSession.isSceneEditable && mouse.button === Qt.RightButton) {
                 contextMenu.popup(mouse.x, mouse.y)
             }
         }
@@ -183,7 +183,7 @@ I_NodesScene {
                 return;
 
             scene.selectionModel.clear();
-            if (mouse.button === Qt.LeftButton) {
+            if (sceneSession.isSceneEditable && mouse.button === Qt.LeftButton) {
                 var position = Qt.vector2d(mouse.x, mouse.y);
 
                 // Correct position with zoom factor into real position.

@@ -116,7 +116,6 @@ QSObject {
                 }
             });
         });
-
         nodeRemoved(nodes[nodeUUId]);
 
         delete nodes[nodeUUId];
