@@ -42,7 +42,7 @@ Item {
 
     //! Next available nodes for evaluation
     //! array <node uuid>
-    property var    nextNodes:          Object.values(nodes).filter(node => node?.status !== NotionNode.NodeStatus.Inactive)
+    property var    activeNodes:          Object.values(nodes).filter(node => node?.status === NotionNode.NodeStatus.Active)
                                                             .map(node => node._qsUuid);
 
     property Node parentNode: null
@@ -60,7 +60,14 @@ Item {
     //! Zoom factor of selectede node.
     property real selectedNodeZoomFactor: 1.4
 
+    /* Signals
+    * ****************************************************************************************/
+
+    //! zoomToNode manage zoom to node process in simulation mode.
     signal zoomToNode(node: Node, targetZoomFactor: real)
+
+    //! Post a message from the simulation to the simulation logger
+    signal postLog(simulationLog: string);
 
     /* Children
     * ****************************************************************************************/
@@ -83,33 +90,70 @@ Item {
     }
 
 
-    /* Functions
+    /* Slots
      * ****************************************************************************************/
 
     //! When the node is changed, the simulation needs to be re-evaluted
-    onNodeChanged: evaluate();
+    onNodeChanged: {
+        if (simulationEnabled === SceneSimulation.SimulationEnableType.Running)
+            evaluate();
+    }
+
+    //! Update node selection after edit mode changed, if node was removed,
+    //! We ignore it in selection.
+    onSimulationEnabledChanged: {
+        if (node && simulationEnabled === SceneSimulation.SimulationEnableType.Running) {
+            //! Select only one root node.
+            if (!checkSimulationCondition()) {
+                return;
+            }
+
+            var nodeToSelect = node;
+            if (!checkNodeEntryCondition(nodeToSelect)) {
+                postLog("Can not select the last node.");
+                var upstreamNodeToSelect = previousNodes[nodeToSelect._qsUuid];
+                if (upstreamNodeToSelect.length !==0) {
+                    nodeToSelect = nodes.find(node => node._qsUuid === upstreamNodeToSelect);
+                }
+
+                if(!checkNodeEntryCondition(nodeToSelect)) {
+                    // Select root node
+                    postLog("Select the ROOT node.");
+                    nodeToSelect = nodes.find(node => node.type === NLSpec.NodeType.Root);
+                    nodeToSelect?.updateNodeStatus(NotionNode.NodeStatus.Selected);
+                }
+            }
+
+            scene.selectionModel.clearAllExcept(nodeToSelect._qsUuid)
+            scene.selectionModel.selectNode(nodeToSelect);
+        } else if (simulationEnabled === SceneSimulation.SimulationEnableType.Running)
+            reset();
+    }
+
+    /* Functions
+     * ****************************************************************************************/
 
     //! Evaluates the next possible nodes
     function evaluate() {
-        if (scene === null || node === null)
+        if (!(scene && node)) {
+            errorString = "Undefined ERROR";
             return;
+        }
 
         //! when a node changed and checked some conditins, we zoom into selected node.
         zoomToNode(node, selectedNodeZoomFactor);
 
         //! InActive all active nodes
-        var activeNodes = Object.values(nodes).filter(node => node?.status === NotionNode.NodeStatus.Active);
-        activeNodes.forEach(node => {
-                                console.log(node?.status)
+        var activeNodes = nodes.filter(node => node?.status === NotionNode.NodeStatus.Active);
+        activeNodes.forEach(node =>
                                 node?.updateNodeStatus(NotionNode.NodeStatus.Inactive)
-                            });
+                            );
 
 
         //! Find last selected node and change it's status into Active
         var parentNode = Object.values(nodes).find(node => node?.status === NotionNode.NodeStatus.Selected);
         parentNode?.updateNodeStatus(NotionNode.NodeStatus.Active);
 
-        console.log(node._qsUuid, node?.status);
         //! Update selected node status
         node?.updateNodeStatus(NotionNode.NodeStatus.Selected);
 
@@ -154,7 +198,6 @@ Item {
                     downNode = transientTo;
             }
 
-            console.log(downNode?.status);
             if (checkNodeEntryCondition(downNode)) {
                 downNode?.updateNodeStatus(NotionNode.NodeStatus.Active);
             }  
@@ -180,8 +223,11 @@ Item {
 
     //! Check entry condition of node
     function checkNodeEntryCondition(node: Node) : bool {
+        // Check node existence
+        if(!Object.keys(scene.nodes).includes(node?._qsUuid ?? ""))
+            return false
+
         // Data type is Action.
-        console.log(node, node?.status)
         var nodeConditions = node?.entryCondition?.conditions ?? [];
         var nodeEntryConditionRes = true;
         nodeConditions.forEach(nodeCondition => {
@@ -193,27 +239,44 @@ Item {
         return nodeEntryConditionRes;
     }
 
-    //! Reset Simulation
-    function reset() {
-        scene.selectionModel.clear();
+    //! Check simulation condition
+    function checkSimulationCondition() : bool {
         //! Find root nodes
         var rootNodes = nodes.filter(node => node.type === NLSpec.NodeType.Root);
         var rootNodeCount = rootNodes.length;
         //! Select only one root node.
         if (rootNodeCount !== 1) {
-            errorString = "The simulation process cannot start, " +
-             (rootNodeCount === 0 ? "You need a ROOT node." :
-                "You need to delete the extra ROOT nodes")
-            console.assert(errorString);
+            errorString = "The simulation process cannot start,"
+                        + " Keep only one ROOT node."
 
             simulationEnabled = SceneSimulation.SimulationEnableType.Stopped;
+            console.assert(errorString);
+            return false;
+        }
+
+        return true;
+    }
+
+    //! Reset Simulation
+    function reset() {
+        scene.selectionModel.clear();
+        errorString = "";
+
+        //! Select only one root node.
+        if (!checkSimulationCondition()) {
             return;
         }
 
-        scene.selectionModel.selectNode(rootNodes[0]);
-
         //! InActive all nodes
-        Object.values(nodes).forEach(node => node?.updateNodeStatus(NotionNode.NodeStatus.Inactive))
+        nodes.forEach(node =>
+                node?.updateNodeStatus(NotionNode.NodeStatus.Inactive)
+            );
+
+        // Select root node
+        var rootNode = nodes.find(node => node.type === NLSpec.NodeType.Root);
+        scene.selectionModel.selectNode(rootNode);
+        rootNode?.updateNodeStatus(NotionNode.NodeStatus.Selected)
+
 
         evaluatedNodes = [];
         evaluatedNodesChanged();
@@ -221,13 +284,12 @@ Item {
         activatedActions = [];
         activatedActionsChanged();
 
-        nextNodes = [];
-        nextNodesChanged();
-        errorString = "";
-
         // Reset previousNodes map
         parentNode = null;
         previousNodes = ({});
         previousNodesChanged();
+
+        // Reset simulation log
+        postLog("The simulation process was reset.")
     }
 }
