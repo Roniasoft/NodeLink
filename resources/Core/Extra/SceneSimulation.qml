@@ -152,11 +152,10 @@ Item {
     //! Changed Links colors
     function colorChange() {
         for (var key in links) {
-            if (links.hasOwnProperty(key)) {
-                if (links[key].guiConfig.color !== "red" && links[key].guiConfig.color !== "green")
-                    prevColors[scene.findNode(links[key].outputPort._qsUuid)._qsUuid] = links[key].guiConfig.color
-                if (editEnabled)
-                    links[key].guiConfig.color = prevColors[scene.findNode(links[key].outputPort._qsUuid)._qsUuid]
+            if (links[key].guiConfig.color !== "red" && links[key].guiConfig.color !== "green")
+                prevColors[scene.findNode(links[key].outputPort._qsUuid)._qsUuid] = links[key].guiConfig.color
+                links[key].guiConfig.color = prevColors[scene.findNode(links[key].outputPort._qsUuid)._qsUuid]
+            if (scene.findNode(links[key].inputPort._qsUuid) == node) {
                 if ((scene.findNode(links[key].outputPort._qsUuid).status === NotionNode.NodeStatus.Active
                         || scene.findNode(links[key].outputPort._qsUuid).status === NotionNode.NodeStatus.Selected) && !editEnabled)
                     links[key].guiConfig.color = "green"
