@@ -57,8 +57,6 @@ Item {
     //! All links in the scene
     property var    links:              Object.values(scene?.links ?? ({}))
 
-    property var    allActions
-
     //! Zoom factor of selectede node.
     property real selectedNodeZoomFactor: 1.4
 
@@ -66,8 +64,6 @@ Item {
     * ****************************************************************************************/
 
     //! zoomToNode manage zoom to node process in simulation mode.
-    //! Edit Mode
-    property bool editEnabled: simulationEnabled === SceneSimulation.SimulationEnableType.Paused;
 
     signal zoomToNode(node: Node, targetZoomFactor: real)
 
@@ -138,6 +134,9 @@ Item {
         } else if (simulationEnabled === SceneSimulation.SimulationEnableType.Running)
             reset();
     }
+
+    /* Functions
+     * ****************************************************************************************/
 
     //! Evaluates the next possible nodes
     function evaluate() {
@@ -233,15 +232,16 @@ Item {
         if(!Object.keys(scene.nodes).includes(node?._qsUuid ?? ""))
             return false
 
-        // Data type is Action.
+        // Data type is uuids of Action (i.e., string).
         var nodeConditions = node?.entryCondition?.conditions ?? [];
         var nodeEntryConditionRes = true;
         node._unMetConditions = [];
         nodeConditions.forEach(nodeCondition => {
             if (activatedActions.indexOf(nodeCondition) == -1) {
                 nodeEntryConditionRes = false
-                if (node._unMetConditions.indexOf(findActionById(nodeCondition)) === -1)
-                    node._unMetConditions.push(findActionById(nodeCondition))
+                var action = findActionById(nodeCondition);
+                if (action.length > 0 && !node._unMetConditions.includes(action))
+                    node._unMetConditions.push(action)
             }
         });
 
@@ -303,7 +303,7 @@ Item {
     }
 
     //! Returns the action with the asked ID
-    function findActionById(id) {
+    function findActionById(id: string) : string {
         for (var nodeKey in nodes) {
             var node = nodes[nodeKey];
             for (var actionKey in node?.nodeData?.data) {
@@ -312,6 +312,6 @@ Item {
                 }
             }
         }
-        return null; // Action not found
+        return ""; // Action not found
     }
 }
