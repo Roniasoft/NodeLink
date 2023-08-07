@@ -39,7 +39,7 @@ Canvas {
     property int        outputPortSide: link.outputPort?.portSide ?? -1
 
     //! Link color
-    property string     linkColor: Object.keys(sceneSession.linkColor).includes(link?._qsUuid ?? "") ? sceneSession.linkColor[link._qsUuid] : link.guiConfig.color
+    property string     linkColor: Object.keys(sceneSession.linkColorOverrideMap).includes(link?._qsUuid ?? "") ? sceneSession.linkColorOverrideMap[link._qsUuid] : link.guiConfig.color
 
     //! update painted line when change position of input and output ports
     onOutputPosChanged: canvas.requestPaint();

@@ -64,17 +64,13 @@ Item {
     * ****************************************************************************************/
 
     //! zoomToNode manage zoom to node process in simulation mode.
-    //! Edit Mode
-    property bool editEnabled: simulationEnabled === SceneSimulation.SimulationEnableType.Paused;
-
-    //! Zooms to the current node
     signal zoomToNode(node: Node, targetZoomFactor: real)
 
     //! Adds a new color to link color map (red & green links)
-    signal linkColorAdd(id: string, chosenColor: string)
+    signal linkColorOverrideReq(id: string, chosenColor: string)
 
     //! Clears the color map entirely
-    signal clearColorMap()
+    signal clearLinkColorOverrideMap()
 
     //! Post a message from the simulation to the simulation logger
     signal postLog(simulationLog: string);
@@ -98,7 +94,6 @@ Item {
                     postLog(("\r\n Action " + action.name + (action.active ? " activated." : " inactivated.") + "\r\n"));
                     simulation.updateActivatedActions();
                     simulation.evaluate();
-                    simulation.colorChange();
                 }
             }
         }
@@ -111,12 +106,12 @@ Item {
     onNodeChanged: {
         if (simulationEnabled === SceneSimulation.SimulationEnableType.Running)
             evaluate();
-        colorChange();
     }
 
     //! Update node selection after edit mode changed, if node was removed,
     //! We ignore it in selection.
     onSimulationEnabledChanged: {
+        updateLinkColors();
         if (node && simulationEnabled === SceneSimulation.SimulationEnableType.Running) {
             //! Select only one root node.
             if (!checkSimulationCondition()) {
@@ -139,21 +134,22 @@ Item {
             reset();
     }
 
-    onEditEnabledChanged: colorChange();
     /* Functions
      * ****************************************************************************************/
 
     //! Changed Links colors
-    function colorChange() {
-        clearColorMap()
+    function updateLinkColors() {
+        clearLinkColorOverrideMap()
+        if (simulationEnabled !== SceneSimulation.SimulationEnableType.Running)
+            return;
         links.forEach (link => {
-            if (scene.findNode(link.inputPort._qsUuid) === node && !editEnabled) {
+            if (scene.findNode(link.inputPort._qsUuid) === node) {
                 if (scene.findNode(link.outputPort._qsUuid).status === NotionNode.NodeStatus.Active
                         || scene.findNode(link.outputPort._qsUuid).status === NotionNode.NodeStatus.Selected) {
-                    linkColorAdd(link._qsUuid, "green")
+                    linkColorOverrideReq(link._qsUuid, "green")
                 }
                 if (scene.findNode(link.outputPort._qsUuid).status === NotionNode.NodeStatus.Inactive) {
-                    linkColorAdd(link._qsUuid, "red")
+                    linkColorOverrideReq(link._qsUuid, "red")
                 }
             }
         });
@@ -232,6 +228,8 @@ Item {
 
         //! update current node ad parent node of next selected node
         simulation.parentNode = node;
+
+         updateLinkColors();
     }
 
     //! Check entry condition of node
