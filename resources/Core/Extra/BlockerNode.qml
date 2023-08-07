@@ -79,10 +79,10 @@ Rectangle {
 
     //! function to join the unMet conditions in the form of a string
     function formatConditionsText() {
-        if (node.unMetConditions.length === 0)
+        if (node._unMetConditions.length === 0)
             return "";
         else
-            return node.unMetConditions.join("\n");
+            return node._unMetConditions.join("\n");
     }
 
 }

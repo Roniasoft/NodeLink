@@ -28,7 +28,7 @@ Node {
     property int status: NotionNode.NodeStatus.Inactive
 
 	//! Unmet conditions and the nodes they're related to
-    property var unMetConditions: []
+    property var _unMetConditions: []
 
     /* Functions
      * ****************************************************************************************/

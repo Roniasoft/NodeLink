@@ -262,12 +262,12 @@ Item {
         // Data type is Action.
         var nodeConditions = node?.entryCondition?.conditions ?? [];
         var nodeEntryConditionRes = true;
-        node.unMetConditions = [];
+        node._unMetConditions = [];
         nodeConditions.forEach(nodeCondition => {
             if (activatedActions.indexOf(nodeCondition) == -1) {
                 nodeEntryConditionRes = false
-                if (node.unMetConditions.indexOf(findActionById(nodeCondition)) === -1)
-                    node.unMetConditions.push(findActionById(nodeCondition))
+                if (node._unMetConditions.indexOf(findActionById(nodeCondition)) === -1)
+                    node._unMetConditions.push(findActionById(nodeCondition))
             }
         });
 
