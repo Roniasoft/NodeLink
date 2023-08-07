@@ -72,17 +72,21 @@ Item {
     /* Children
     * ****************************************************************************************/
 
-    // watch for all actions active/inactive for current node
+    // watch for all actions active/inactive for selected node
     Repeater {
         model: Object.values(node?.nodeData?.data ?? ({})) ?? []    // Actions
-        enabled: node?.type === NLSpec.NodeType.Step ?? false
+        enabled: simulationEnabled === SceneSimulation.SimulationEnableType.Running && (node?.type === NLSpec.NodeType.Step ?? false)
         delegate: Item {
             property Action action: modelData
 
             // check if the action is activate/inactivate then re-evaluate
             Connections {
                 target: action
+                enabled: simulationEnabled === SceneSimulation.SimulationEnableType.Running
                 function onActiveChanged() {
+                    //Update activated actions
+                    postLog(("\r\n Action " + action.name + (action.active ? " activated." : " inactivated.") + "\r\n"));
+                    simulation.updateActivatedActions();
                     simulation.evaluate();
                 }
             }
@@ -107,21 +111,10 @@ Item {
                 return;
             }
 
-            var nodeToSelect = node;
-            if (!checkNodeEntryCondition(nodeToSelect)) {
-                postLog("Can not select the last node.");
-                var upstreamNodeToSelect = previousNodes[nodeToSelect._qsUuid];
-                if (upstreamNodeToSelect.length !==0) {
-                    nodeToSelect = nodes.find(node => node._qsUuid === upstreamNodeToSelect);
-                }
+            simulation.updateActivatedActions();
 
-                if(!checkNodeEntryCondition(nodeToSelect)) {
-                    // Select root node
-                    postLog("Select the ROOT node.");
-                    nodeToSelect = nodes.find(node => node.type === NLSpec.NodeType.Root);
-                    nodeToSelect?.updateNodeStatus(NotionNode.NodeStatus.Selected);
-                }
-            }
+            // Find upstream node
+            var nodeToSelect = findNodeToSelect(node);
 
             var isNeedEvaluate = node._qsUuid === nodeToSelect._qsUuid;
             // Select node and evaluate it.
@@ -144,46 +137,33 @@ Item {
             return;
         }
 
+        // Check entry condition and update selected node status
+        // This happen when change activation action and
+        // switch from edit mode.
+        if (checkNodeEntryCondition(node))
+            node?.updateNodeStatus(NotionNode.NodeStatus.Selected);
+        else { // must not happened in any time
+            var nodeToSelect = findNodeToSelect(node);
+            scene.selectionModel.selectNode(nodeToSelect);
+            scene.selectionModel.clearAllExcept(nodeToSelect._qsUuid);
+            evaluate();
+            return;
+        }
+
         //! when a node changed and checked some conditins, we zoom into selected node.
         zoomToNode(node, selectedNodeZoomFactor);
 
-        //! InActive all active nodes
-        var activeNodes = nodes.filter(node => node?.status === NotionNode.NodeStatus.Active);
-        activeNodes.forEach(node =>
-                                node?.updateNodeStatus(NotionNode.NodeStatus.Inactive)
-                            );
-
-
-        //! Find last selected node and change it's status into Active
-        var parentNode = Object.values(nodes).find(node => node?.status === NotionNode.NodeStatus.Selected);
-        parentNode?.updateNodeStatus(NotionNode.NodeStatus.Active);
-
-        //! Update selected node status
-        node?.updateNodeStatus(NotionNode.NodeStatus.Selected);
+        //! InActive all nodes except current selected node
+        var activeNodes = nodes.filter(node => node?.status !== NotionNode.NodeStatus.Inactive);
+        activeNodes.forEach(nodeObj => {
+                            if (nodeObj._qsUuid !== node._qsUuid)
+                                nodeObj?.updateNodeStatus(NotionNode.NodeStatus.Inactive);
+                            });
 
         // Update evaluated nodes
         // while re-evaluating, the node shouldn't be added again
         if (evaluatedNodes.indexOf(node._qsUuid) == -1) {
             evaluatedNodes = evaluatedNodes.concat(node._qsUuid);
-        }
-
-        // Update activated actions if the node is a Step node
-        if (node?.type === NLSpec.NodeType.Step) {
-            var nodeActions = Object.values(node?.nodeData?.data) ?? [];
-
-            nodeActions.forEach(action => {
-                // if the action is active and not included then add it
-                if (action.active && activatedActions.indexOf(action._qsUuid) == -1) {
-                    activatedActions = activatedActions.concat(action._qsUuid)
-                }
-
-                // else if action is not active but is already included, then it should be deleted
-                else if (!action.active && activatedActions.indexOf(action._qsUuid) >= 0) {
-                    var removeActionIndex = activatedActions.indexOf(action._qsUuid);
-                    activatedActions.splice(removeActionIndex, 1);
-                    activatedActionsChanged();
-                }
-            });
         }
 
         // find links that their inputPort is located in this node
@@ -236,7 +216,7 @@ Item {
         var nodeEntryConditionRes = true;
         node._unMetConditions = [];
         nodeConditions.forEach(nodeCondition => {
-            if (activatedActions.indexOf(nodeCondition) == -1) {
+            if (!activatedActions.includes(nodeCondition)) {
                 nodeEntryConditionRes = false
                 var action = findActionById(nodeCondition);
                 if (action.length > 0 && !node._unMetConditions.includes(action))
@@ -312,5 +292,46 @@ Item {
             }
         }
         return ""; // Action not found
+    }
+
+    // update activate actions
+    function updateActivatedActions() {
+        var nodeActions = Object.values(node?.nodeData?.data ?? ({}));
+
+        nodeActions.forEach(action => {
+            // if the action is active and not included then add it
+            if (action.active && !activatedActions.includes(action._qsUuid)) {
+                activatedActions = activatedActions.concat(action._qsUuid);
+            }
+                // else if action is not active but is already included, then it should be deleted
+                else if (!action.active && activatedActions.includes(action._qsUuid)) {
+                    var removeActionIndex = activatedActions.indexOf(action._qsUuid);
+                    activatedActions.splice(removeActionIndex, 1);
+            }
+        });
+
+        // Use in future
+        activatedActionsChanged();
+    }
+
+    //! Find the upstream node to select instead of selected node.
+    function findNodeToSelect(node: Node) : Node {
+        var nodeToSelect = node;
+        if (!checkNodeEntryCondition(nodeToSelect)) {
+            postLog("\r\n Can not select the last node.\r\n ");
+            var upstreamNodeToSelect = previousNodes[nodeToSelect._qsUuid];
+            if (upstreamNodeToSelect.length !==0) {
+                nodeToSelect = nodes.find(node => node._qsUuid === upstreamNodeToSelect);
+            }
+
+            if(!checkNodeEntryCondition(nodeToSelect)) {
+                // Select root node
+                postLog("\r\n Select the ROOT node.\r\n ");
+                nodeToSelect = nodes.find(node => node.type === NLSpec.NodeType.Root);
+                nodeToSelect?.updateNodeStatus(NotionNode.NodeStatus.Selected);
+            }
+        }
+
+        return nodeToSelect;
     }
 }
