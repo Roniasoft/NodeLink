@@ -27,6 +27,9 @@ Node {
     //! Node status
     property int status: NotionNode.NodeStatus.Inactive
 
+    //! Unmet conditions and the nodes they're related to
+    property var _unMetConditions: []
+
     /* Functions
      * ****************************************************************************************/
     function canEnter() : bool {

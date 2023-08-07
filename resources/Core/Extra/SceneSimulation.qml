@@ -57,6 +57,8 @@ Item {
     //! All links in the scene
     property var    links:              Object.values(scene?.links ?? ({}))
 
+    property var    allActions
+
     //! Zoom factor of selectede node.
     property real selectedNodeZoomFactor: 1.4
 
@@ -64,6 +66,9 @@ Item {
     * ****************************************************************************************/
 
     //! zoomToNode manage zoom to node process in simulation mode.
+    //! Edit Mode
+    property bool editEnabled: simulationEnabled === SceneSimulation.SimulationEnableType.Paused;
+
     signal zoomToNode(node: Node, targetZoomFactor: real)
 
     //! Post a message from the simulation to the simulation logger
@@ -88,7 +93,6 @@ Item {
             }
         }
     }
-
 
     /* Slots
      * ****************************************************************************************/
@@ -134,9 +138,6 @@ Item {
         } else if (simulationEnabled === SceneSimulation.SimulationEnableType.Running)
             reset();
     }
-
-    /* Functions
-     * ****************************************************************************************/
 
     //! Evaluates the next possible nodes
     function evaluate() {
@@ -205,7 +206,7 @@ Item {
 
             if (checkNodeEntryCondition(downNode)) {
                 downNode?.updateNodeStatus(NotionNode.NodeStatus.Active);
-            }  
+            }
 
         });
 
@@ -235,9 +236,12 @@ Item {
         // Data type is Action.
         var nodeConditions = node?.entryCondition?.conditions ?? [];
         var nodeEntryConditionRes = true;
+        node._unMetConditions = [];
         nodeConditions.forEach(nodeCondition => {
             if (activatedActions.indexOf(nodeCondition) == -1) {
                 nodeEntryConditionRes = false
+                if (node._unMetConditions.indexOf(findActionById(nodeCondition)) === -1)
+                    node._unMetConditions.push(findActionById(nodeCondition))
             }
         });
 
@@ -296,5 +300,18 @@ Item {
 
         // Reset simulation log
         postLog("The simulation process was reset.")
+    }
+
+    //! Returns the action with the asked ID
+    function findActionById(id) {
+        for (var nodeKey in nodes) {
+            var node = nodes[nodeKey];
+            for (var actionKey in node?.nodeData?.data) {
+                if (actionKey === id) {
+                    return node.nodeData.data[actionKey].name + ", Node Name: " + node.title;
+                }
+            }
+        }
+        return null; // Action not found
     }
 }
