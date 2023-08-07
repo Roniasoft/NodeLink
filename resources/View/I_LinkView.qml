@@ -38,10 +38,14 @@ Canvas {
     //! outPut port side
     property int        outputPortSide: link.outputPort?.portSide ?? -1
 
+    //! Link color
+    property string     linkColor: Object.keys(sceneSession.linkColor).includes(link?._qsUuid ?? "") ? sceneSession.linkColor[link._qsUuid] : link.guiConfig.color
+
     //! update painted line when change position of input and output ports
     onOutputPosChanged: canvas.requestPaint();
     onInputPosChanged:  canvas.requestPaint();
     onIsSelectedChanged: canvas.requestPaint();
+    onLinkColorChanged: canvas.requestPaint();
 
 
     /*  Object Properties
@@ -80,9 +84,9 @@ Canvas {
 
         // Draw the curve with LinkPainter
         LinkPainter.createLink(context, inputPos, link.controlPoints, isSelected,
-                                link.guiConfig.color, link.direction,
+                                linkColor, link.direction,
                                 link.guiConfig.style, link.guiConfig.type, lineWidth, arrowHeadLength,
-                               link.inputPort.portSide, outputPortSide);
+                                link.inputPort.portSide, outputPortSide);
     }
 
     /* Children

@@ -64,7 +64,17 @@ Item {
     * ****************************************************************************************/
 
     //! zoomToNode manage zoom to node process in simulation mode.
+    //! Edit Mode
+    property bool editEnabled: simulationEnabled === SceneSimulation.SimulationEnableType.Paused;
+
+    //! Zooms to the current node
     signal zoomToNode(node: Node, targetZoomFactor: real)
+
+    //! Adds a new color to link color map (red & green links)
+    signal linkColorAdd(id: string, chosenColor: string)
+
+    //! Clears the color map entirely
+    signal clearColorMap()
 
     //! Post a message from the simulation to the simulation logger
     signal postLog(simulationLog: string);
@@ -88,6 +98,7 @@ Item {
                     postLog(("\r\n Action " + action.name + (action.active ? " activated." : " inactivated.") + "\r\n"));
                     simulation.updateActivatedActions();
                     simulation.evaluate();
+                    simulation.colorChange();
                 }
             }
         }
@@ -100,6 +111,7 @@ Item {
     onNodeChanged: {
         if (simulationEnabled === SceneSimulation.SimulationEnableType.Running)
             evaluate();
+        colorChange();
     }
 
     //! Update node selection after edit mode changed, if node was removed,
@@ -127,8 +139,25 @@ Item {
             reset();
     }
 
+    onEditEnabledChanged: colorChange();
     /* Functions
      * ****************************************************************************************/
+
+    //! Changed Links colors
+    function colorChange() {
+        clearColorMap()
+        links.forEach (link => {
+            if (scene.findNode(link.inputPort._qsUuid) === node && !editEnabled) {
+                if (scene.findNode(link.outputPort._qsUuid).status === NotionNode.NodeStatus.Active
+                        || scene.findNode(link.outputPort._qsUuid).status === NotionNode.NodeStatus.Selected) {
+                    linkColorAdd(link._qsUuid, "green")
+                }
+                if (scene.findNode(link.outputPort._qsUuid).status === NotionNode.NodeStatus.Inactive) {
+                    linkColorAdd(link._qsUuid, "red")
+                }
+            }
+        });
+    }
 
     //! Evaluates the next possible nodes
     function evaluate() {
