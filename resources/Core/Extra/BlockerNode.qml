@@ -42,4 +42,39 @@ Rectangle {
         anchors.fill: parent
         hoverEnabled: true
     }
+
+    //! Why a node is not accessible
+    Text {
+        id: textBlock
+        property bool textVisible: false
+        anchors.fill: parent
+        horizontalAlignment: Qt.AlignHCenter
+        verticalAlignment: Qt.AlignVCenter
+        font.family: textVisible ?  NLStyle._fontType.roboto : NLStyle._fontType.font6Pro
+        font.weight: textVisible ? Font.Medium : 400
+        text: textVisible ? ("Entry condition is not met" + "\n" + formatConditionsText()) : "\uf06a"
+        font.pixelSize:  textVisible ? 11 : Math.min(parent.width, parent.height) / 4
+        color: "grey"
+
+        MouseArea {
+            id: mouseArea
+            anchors.fill: parent
+            hoverEnabled: true
+            onEntered: {
+                textBlock.textVisible = true;
+            }
+            onExited: {
+                textBlock.textVisible = false;
+            }
+        }
+    }
+
+    //! function to join the unMet conditions in the form of a string
+    function formatConditionsText() {
+        if (node._unMetConditions.length === 0)
+            return "";
+        else
+            return node._unMetConditions.join("\n");
+    }
+
 }

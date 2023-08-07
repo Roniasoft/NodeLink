@@ -89,7 +89,6 @@ Item {
         }
     }
 
-
     /* Slots
      * ****************************************************************************************/
 
@@ -205,7 +204,7 @@ Item {
 
             if (checkNodeEntryCondition(downNode)) {
                 downNode?.updateNodeStatus(NotionNode.NodeStatus.Active);
-            }  
+            }
 
         });
 
@@ -232,12 +231,16 @@ Item {
         if(!Object.keys(scene.nodes).includes(node?._qsUuid ?? ""))
             return false
 
-        // Data type is Action.
+        // Data type is uuids of Action (i.e., string).
         var nodeConditions = node?.entryCondition?.conditions ?? [];
         var nodeEntryConditionRes = true;
+        node._unMetConditions = [];
         nodeConditions.forEach(nodeCondition => {
             if (activatedActions.indexOf(nodeCondition) == -1) {
                 nodeEntryConditionRes = false
+                var action = findActionById(nodeCondition);
+                if (action.length > 0 && !node._unMetConditions.includes(action))
+                    node._unMetConditions.push(action)
             }
         });
 
@@ -296,5 +299,18 @@ Item {
 
         // Reset simulation log
         postLog("The simulation process was reset.")
+    }
+
+    //! Returns the action with the asked ID
+    function findActionById(id: string) : string {
+        for (var nodeKey in nodes) {
+            var node = nodes[nodeKey];
+            for (var actionKey in node?.nodeData?.data) {
+                if (actionKey === id) {
+                    return node.nodeData.data[actionKey].name + ", Node Name: " + node.title;
+                }
+            }
+        }
+        return ""; // Action not found
     }
 }
