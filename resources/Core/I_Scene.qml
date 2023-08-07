@@ -30,8 +30,6 @@ QSObject {
     //! Scene Selection Model
     property SelectionModel selectionModel: null
 
-    property bool _editEnabled: false
-
     /* Signals
      * ****************************************************************************************/
 
