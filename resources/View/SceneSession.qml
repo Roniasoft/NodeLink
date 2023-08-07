@@ -9,6 +9,9 @@ QtObject {
     //! map<port uuid: string, isVisible: bool>
     property var   portsVisibility: ({})
 
+    //! map<link uuid: string, color: string>
+    property var   linkColor: ({})
+
     //! connectingMode is true When a connection is in progress.
     property bool connectingMode: false
 

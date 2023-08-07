@@ -50,9 +50,6 @@ Item {
     //! map<current node uuid, parent node uuid>
     property var previousNodes: ({})
 
-    //! map<link uuid, actual color>
-    property var  prevColors: ({})
-
     //! All nodes in selected Scene
     //! use nodes map in Scene model
     property var    nodes:              Object.values(scene?.nodes ?? ({}))
@@ -72,7 +69,14 @@ Item {
     //! Edit Mode
     property bool editEnabled: simulationEnabled === SceneSimulation.SimulationEnableType.Paused;
 
+    //! Zooms to the current node
     signal zoomToNode(node: Node, targetZoomFactor: real)
+
+    //! Adds a new color to link color map (red & green links)
+    signal linkColorAdd(id: string, chosenColor: string)
+
+    //! Clears the color map entirely
+    signal clearColorMap()
 
     //! Post a message from the simulation to the simulation logger
     signal postLog(simulationLog: string);
@@ -148,22 +152,22 @@ Item {
      * ****************************************************************************************/
     onEditEnabledChanged: colorChange();
 
-    //! When the node is changed, the simulation needs to be re-evaluted
+
 
     //! Changed Links colors
     function colorChange() {
-        for (var key in links) {
-            if (links[key].guiConfig.color !== "red" && links[key].guiConfig.color !== "green")
-                prevColors[scene.findNode(links[key].outputPort._qsUuid)._qsUuid] = links[key].guiConfig.color
-                links[key].guiConfig.color = prevColors[scene.findNode(links[key].outputPort._qsUuid)._qsUuid]
-            if (scene.findNode(links[key].inputPort._qsUuid) === node) {
-                if ((scene.findNode(links[key].outputPort._qsUuid).status === NotionNode.NodeStatus.Active
-                        || scene.findNode(links[key].outputPort._qsUuid).status === NotionNode.NodeStatus.Selected) && !editEnabled)
-                    links[key].guiConfig.color = "green"
-                if (scene.findNode(links[key].outputPort._qsUuid).status === NotionNode.NodeStatus.Inactive && !editEnabled)
-                    links[key].guiConfig.color = "red"
+        clearColorMap()
+        links.forEach (link => {
+            if (scene.findNode(link.inputPort._qsUuid) === node && !editEnabled) {
+                if (scene.findNode(link.outputPort._qsUuid).status === NotionNode.NodeStatus.Active
+                        || scene.findNode(link.outputPort._qsUuid).status === NotionNode.NodeStatus.Selected) {
+                    linkColorAdd(link._qsUuid, "green")
+                }
+                if (scene.findNode(link.outputPort._qsUuid).status === NotionNode.NodeStatus.Inactive) {
+                    linkColorAdd(link._qsUuid, "red")
+                }
             }
-        }
+        });
     }
     //! Evaluates the next possible nodes
     function evaluate() {
