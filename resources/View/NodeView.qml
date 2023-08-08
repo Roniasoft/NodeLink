@@ -19,6 +19,8 @@ Rectangle {
 
     property bool         edit
 
+    property bool         isNodeEditable: sceneSession.isSceneEditable
+
     //! Node is selected or not
     property bool         isSelected:     scene?.selectionModel?.isSelected(modelData?._qsUuid ?? "") ?? false
 
@@ -87,7 +89,7 @@ Rectangle {
 
     //! Handle key pressed (Del: delete selected node and link)
     Keys.onDeletePressed: {
-        if(nodeView.isSelected)
+        if(nodeView.isSelected && isNodeEditable)
             deletePopup.open();
     }
 
@@ -298,7 +300,8 @@ Rectangle {
         hoverEnabled: true
         preventStealing: true
         enabled: !nodeView.edit && !sceneSession.connectingMode &&
-                 !node.guiConfig.locked && !sceneSession.isCtrlPressed
+                 !node.guiConfig.locked && !sceneSession.isCtrlPressed &&
+                 isNodeEditable
 
         // To hide cursor when is disable
         visible: enabled
@@ -332,7 +335,7 @@ Rectangle {
         //! Manage right and left click to select and
         //! show node contex menue.
         onClicked: (mouse) => {
-            if (mouse.button === Qt.RightButton) {
+            if (isNodeEditable && mouse.button === Qt.RightButton) {
                 // Ensure the isDraging is false.
                 isDraging = false;
 
@@ -891,9 +894,9 @@ Rectangle {
     MouseArea {
         anchors.fill: parent
         anchors.margins: -10
-        enabled: node.guiConfig.locked
+        enabled: node.guiConfig.locked || !isNodeEditable
         onClicked: _selectionTimer.start();
-        visible: node.guiConfig.locked
+        visible: node.guiConfig.locked || !isNodeEditable
 
         //! Manage zoom in nodeview and pass it to zoomManager in lock mode.
         onWheel: (wheel) => {

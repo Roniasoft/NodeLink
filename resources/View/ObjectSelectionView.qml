@@ -19,7 +19,7 @@ Item {
 
     /*  Object Properties
     * ****************************************************************************************/
-    visible: hasSelectedObject
+    visible: hasSelectedObject && sceneSession.isSceneEditable
     z: 1000
 
     Keys.forwardTo: parent
