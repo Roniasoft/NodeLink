@@ -4,7 +4,7 @@ import NodeLink
 /*! ***********************************************************************************************
  * I_NodesRect is an interface classs that shows nodes.
  * ************************************************************************************************/
-Rectangle {
+Item {
     id: root
 
     /* Property Declarations
@@ -16,7 +16,7 @@ Rectangle {
     /*  Object Properties
     * ****************************************************************************************/
     anchors.fill: parent
-    color: "transparent"
+    //color: "transparent"
 
     Keys.forwardTo: parent
 

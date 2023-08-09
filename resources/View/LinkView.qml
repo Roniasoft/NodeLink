@@ -16,8 +16,13 @@ I_LinkView {
     onIsSelectedChanged: {
         if(isSelected)
             forceActiveFocus();
-        else
+        else {
             link.guiConfig._isEditableDescription = false;
+
+            //! To hide color picker if selected node is changed and
+            //! remove focus on description TextArea
+            descriptionText.focus = false;
+        }
     }
 
 
@@ -107,36 +112,13 @@ I_LinkView {
     }
 
     Connections {
-        target: scene
-
-        // Send paint requset when PortsPositionsChanged
-        function onPortsPositionsChanged () {
-            linkView.requestPaint();
-        }
-    }
-
-    Connections {
         target: link.guiConfig
-
-        // Send paint requset when ColorChanged
-        function onColorChanged () {
-            linkView.requestPaint();
-        }
 
         //! Get the IsEditableDescriptionChanged signal and change
         //! focus to corresponding Item view
         function on_IsEditableDescriptionChanged () {
             if(link.guiConfig._isEditableDescription)
                 descriptionText.forceActiveFocus();
-        }
-    }
-
-    //! To hide color picker if selected node is changed and
-    //! remove focus on description TextArea
-    Connections {
-        target: linkView
-        function onIsSelectedChanged() {
-            descriptionText.focus = false;
         }
     }
 }

@@ -10,10 +10,10 @@ I_NodesRect {
 
     /* Object Properties
      * ****************************************************************************************/
-    color: "#1e1e1e"
-    border.width: 8
-    border.color: "#55FFFFFF"
-    radius: NLStyle.radiusAmount.nodeOverview
+//    color: "#1e1e1e"
+//    border.width: 8
+//    border.color: "#55FFFFFF"
+//    radius: NLStyle.radiusAmount.nodeOverview
     scale: NLStyle.overview.scale
     transformOrigin: Item.TopLeft
 
