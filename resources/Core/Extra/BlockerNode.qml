@@ -9,7 +9,7 @@ Rectangle {
 
     /* Property Declarations
     * ****************************************************************************************/
-    property Node node
+    property NotionNode node
 
     property SceneSession   sceneSession
 
@@ -52,7 +52,7 @@ Rectangle {
         verticalAlignment: Qt.AlignVCenter
         font.family: textVisible ?  NLStyle._fontType.roboto : NLStyle._fontType.font6Pro
         font.weight: textVisible ? Font.Medium : 400
-        text: textVisible ? ("Entry condition is not met" + "\n" + formatConditionsText()) : "\uf06a"
+        text: textVisible ? (formatConditionsText()) : "\uf06a"
         font.pixelSize:  textVisible ? 11 : Math.min(parent.width, parent.height) / 4
         color: "grey"
 
@@ -72,9 +72,9 @@ Rectangle {
     //! function to join the unMet conditions in the form of a string
     function formatConditionsText() {
         if (node._unMetConditions.length === 0)
-            return "";
+            return "Not accessible";
         else
-            return node._unMetConditions.join("\n");
+            return "Entry condition is not met" + "\n"  + node._unMetConditions.join("\n");
     }
 
 }

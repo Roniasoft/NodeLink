@@ -449,5 +449,5 @@ I_NodesScene {
     //! Prepare scale to set on the scene scale
     function prepareScale(scale: real) {
         flickableScale = scale;
-    }  
+    }
 }

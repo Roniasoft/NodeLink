@@ -29,9 +29,15 @@ Item {
     //! Error message
     property string errorString: ""
 
+    //! selected node in scene view, which will change the internal node
+    //! on changing when simulation is Running
+    required property NotionNode   selectedNode
+
     //! Reference node of the simulation. Next possible nodes will be
     //! determined based on this reference node.
-    required property Node   node
+    property NotionNode   node :  simulationEnabled === SceneSimulation.SimulationEnableType.Running ?
+                                      selectedNode :
+                                      simulationEnabled === SceneSimulation.SimulationEnableType.Stopped ? null : node
 
     //! Nodes Simulated
     //! array <node uuid>
@@ -104,14 +110,18 @@ Item {
 
     //! When the node is changed, the simulation needs to be re-evaluted
     onNodeChanged: {
-        if (simulationEnabled === SceneSimulation.SimulationEnableType.Running)
+        if (simulationEnabled === SceneSimulation.SimulationEnableType.Running){
             evaluate();
+
+            //! when a node changed we zoom into selected node.
+            zoomToNode(node, selectedNodeZoomFactor);
+}
     }
 
     //! Update node selection after edit mode changed, if node was removed,
     //! We ignore it in selection.
     onSimulationEnabledChanged: {
-        updateLinkColors();
+        updateLinkColors();// we can jsut clear here and update links in evaluation
         if (node && simulationEnabled === SceneSimulation.SimulationEnableType.Running) {
             //! Select only one root node.
             if (!checkSimulationCondition()) {
@@ -129,6 +139,10 @@ Item {
             scene.selectionModel.selectNode(nodeToSelect);
             if (isNeedEvaluate)
                 evaluate();
+
+
+            //! when we resume we zoom into simulation current node.
+            zoomToNode(node, selectedNodeZoomFactor);
 
         } else if (simulationEnabled === SceneSimulation.SimulationEnableType.Running)
             reset();
@@ -174,9 +188,6 @@ Item {
             evaluate();
             return;
         }
-
-        //! when a node changed and checked some conditins, we zoom into selected node.
-        zoomToNode(node, selectedNodeZoomFactor);
 
         //! InActive all nodes except current selected node
         var activeNodes = nodes.filter(node => node?.status !== NotionNode.NodeStatus.Inactive);
@@ -226,7 +237,7 @@ Item {
                            }
                        });
 
-        //! update current node ad parent node of next selected node
+        //! update current node and parent node of next selected node
         simulation.parentNode = node;
 
          updateLinkColors();

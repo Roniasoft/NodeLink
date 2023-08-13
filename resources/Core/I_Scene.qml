@@ -83,7 +83,7 @@ QSObject {
     //! Create a node with node type and its position
     //! \todo: this method should be removed
     function createCustomizeNode(nodeType : int, xPos : real, yPos : real) : string {
-        //! Create a Node with node type
+        //! Create a Node with custom node type
         var node = QSSerializer.createQSObject(NLStyle.nodeNames[nodeType], ["NodeLink"], NLCore.defaultRepo);
         node._qsRepo = NLCore.defaultRepo;
         node.type = nodeType;
