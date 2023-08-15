@@ -24,7 +24,7 @@ QSObject {
     property int            actionType: Action.ActionType.Additive
 
     //! Aciton is DONE or not
-    property bool           active:   true
+    property bool           active:   false
 
     //! ActionValue
     property ActionValue    value:      ActionValue {}
