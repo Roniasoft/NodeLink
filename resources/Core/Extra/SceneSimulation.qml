@@ -146,6 +146,14 @@ Item {
 
         } else if (simulationEnabled === SceneSimulation.SimulationEnableType.Running)
             reset();
+        else if (simulationEnabled === SceneSimulation.SimulationEnableType.Stopped) {
+            // deactivating all actions after stop to clean up
+            Object.values(scene.nodes).forEach(node => {
+                var actions = Object.values((node?.type === NLSpec.NodeType.Step) ? node?.nodeData?.data ?? ({}) : ({}))
+                for (var i = 0; i < actions.length; ++i)
+                    actions[i].active = false
+            });
+        }
     }
 
     /* Functions
