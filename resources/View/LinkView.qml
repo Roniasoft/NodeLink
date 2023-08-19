@@ -107,15 +107,6 @@ I_LinkView {
     }
 
     Connections {
-        target: scene
-
-        // Send paint requset when PortsPositionsChanged
-        function onPortsPositionsChanged () {
-            linkView.requestPaint();
-        }
-    }
-
-    Connections {
         target: link.guiConfig
 
         //! Get the IsEditableDescriptionChanged signal and change
@@ -123,15 +114,6 @@ I_LinkView {
         function on_IsEditableDescriptionChanged () {
             if(link.guiConfig._isEditableDescription)
                 descriptionText.forceActiveFocus();
-        }
-    }
-
-    //! To hide color picker if selected node is changed and
-    //! remove focus on description TextArea
-    Connections {
-        target: linkView
-        function onIsSelectedChanged() {
-            descriptionText.focus = false;
         }
     }
 }
