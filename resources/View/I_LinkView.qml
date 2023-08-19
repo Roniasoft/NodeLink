@@ -2,7 +2,6 @@ import QtQuick
 import NodeLink
 import QtQuick.Controls
 import QtQuick.Shapes
-import Qt5Compat.GraphicalEffects
 
 import "Logics/BasicLinkCalculator.js" as BasicLinkCalculator
 import "Logics/LinkPainter.js" as LinkPainter
