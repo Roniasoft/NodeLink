@@ -41,6 +41,9 @@ Canvas {
     //! Link color
     property string     linkColor: Object.keys(sceneSession.linkColorOverrideMap).includes(link?._qsUuid ?? "") ? sceneSession.linkColorOverrideMap[link._qsUuid] : link.guiConfig.color
 
+    //! Corrected controlpoints in ui state
+    property var controlPoints: []
+
     //! Canvas Dimensions
     property real topLeftX: Math.min(...link.controlPoints.map(controlpoint => controlpoint.x), inputPos.x, outputPos.x)
     property real topLeftY: Math.min(...link.controlPoints.map(controlpoint => controlpoint.y), inputPos.y, outputPos.y)
@@ -62,16 +65,8 @@ Canvas {
 
     width:  Math.abs(topLeftX - bottomRightX) + 40;
     height: Math.abs(topLeftY - bottomRightY) + 40;
-    onWidthChanged: console.log("width = ", width)
     x: topLeftX - 20
     y: topLeftY - 20
-
-    Rectangle {
-        color: "transparent"
-        border.color: "red"
-
-        anchors.fill: parent
-    }
 
     //! paint line
     onPaint: {
@@ -89,6 +84,9 @@ Canvas {
         link.controlPoints = BasicLinkCalculator.calculateControlPoints(inputPos, outputPos, link.direction,
                                                                         link.guiConfig.type, link.inputPort.portSide,
                                                                         outputPortSide, sceneSession.zoomManager.zoomFactor)
+        // Top left position vector
+        var topLeftPosition = Qt.vector2d(canvas.x, canvas.y);
+
         // Calculate position of link setting dialog.
         // Finding the middle point of the link
         // Currently we suppose that the line is a bezzier curve
@@ -98,12 +96,17 @@ Canvas {
         var minPoint1 = inputPos.plus(BasicLinkCalculator.connectionMargin(inputPort?.portSide ?? -1, zoomFactor));
         var minPoint2 = outputPos.plus(BasicLinkCalculator.connectionMargin(outputPort?.portSide ?? -1, zoomFactor));
         linkMidPoint = Calculation.getPositionByTolerance(0.5, [inputPos, minPoint1, minPoint2, outputPos]);
+        linkMidPoint = linkMidPoint.minus(topLeftPosition);
 
         var lineWidth = 2 * zoomFactor;
         var arrowHeadLength = 10 * zoomFactor;
 
+        //! update controlPoints in ui state
+        controlPoints = [];
+        link.controlPoints.forEach(controlPoint => controlPoints.push(controlPoint.minus(topLeftPosition)));
+
         // Draw the curve with LinkPainter
-        LinkPainter.createLink(context, inputPos, link.controlPoints, isSelected,
+        LinkPainter.createLink(context, inputPos.minus(topLeftPosition), controlPoints, isSelected,
                                 linkColor, link.direction,
                                 link.guiConfig.style, link.guiConfig.type, lineWidth, arrowHeadLength,
                                 link.inputPort.portSide, outputPortSide);
