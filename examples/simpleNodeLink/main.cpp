@@ -1,11 +1,17 @@
 #include <QtGui/QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQuickStyle>
+#include <QSurfaceFormat>
 
 int main(int argc, char* argv[])
 {
   QGuiApplication app(argc, argv);
   QQmlApplicationEngine engine;
+
+  // Modify the default QSurfaceFormat to enhance shape smoothness without sacrificing performance.
+  auto fmt = QSurfaceFormat::defaultFormat();
+  fmt.setSamples(8);
+  QSurfaceFormat::setDefaultFormat(fmt);
 
   // Set style into app.
   QQuickStyle::setStyle("Material");

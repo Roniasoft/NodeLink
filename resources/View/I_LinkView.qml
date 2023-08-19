@@ -2,6 +2,7 @@ import QtQuick
 import NodeLink
 import QtQuick.Controls
 import QtQuick.Shapes
+import Qt5Compat.GraphicalEffects
 
 import "Logics/BasicLinkCalculator.js" as BasicLinkCalculator
 import "Logics/LinkPainter.js" as LinkPainter
@@ -11,8 +12,8 @@ import "Logics/Calculation.js" as Calculation
  *  I_LinkView is an interface classs that shows Links (BezierCurve).
  * ************************************************************************************************/
 
-Canvas {
-    id: canvas
+Shape {
+    id: root
 
     /* Property Declarations
     * ****************************************************************************************/
@@ -41,27 +42,155 @@ Canvas {
     //! Link color
     property string     linkColor: Object.keys(sceneSession.linkColorOverrideMap).includes(link?._qsUuid ?? "") ? sceneSession.linkColorOverrideMap[link._qsUuid] : link.guiConfig.color
 
-    //! update painted line when change position of input and output ports
-    onOutputPosChanged: canvas.requestPaint();
-    onInputPosChanged:  canvas.requestPaint();
-    onIsSelectedChanged: canvas.requestPaint();
-    onLinkColorChanged: canvas.requestPaint();
+    property real zoomFactor: sceneSession.zoomManager.zoomFactor
 
+    property real lineWidth: 3 * zoomFactor * (isSelected ? 1.2 : 1.0);
+
+
+    // Applying style to the Link
+    property var stylePattern: {
+        switch (link.guiConfig.style) {
+        case NLSpec.LinkStyle.Dash: { // ِDash
+            return [5, 2];
+        }
+        case NLSpec.LinkStyle.Dot: { // Dot
+            return [1, 2];
+        }
+        default: // Solid
+            return []
+        }
+    }
+
+    //! LinkView Dimensions
+    property real topLeftX: Math.min(...link.controlPoints.map(controlpoint => controlpoint.x), inputPos.x, outputPos.x)
+    property real topLeftY: Math.min(...link.controlPoints.map(controlpoint => controlpoint.y), inputPos.y, outputPos.y)
+
+    property real bottomRightX: Math.max(...link.controlPoints.map(controlpoint => controlpoint.x), inputPos.x, outputPos.x)
+    property real bottomRightY: Math.max(...link.controlPoints.map(controlpoint => controlpoint.y), inputPos.y, outputPos.y)
+
+
+    //! update painted line when change position of input and output ports
+    onOutputPortChanged: root.requestPaint();
+    onOutputPosChanged: root.requestPaint();
+    onInputPosChanged:  root.requestPaint();
+    onIsSelectedChanged: root.requestPaint();
+    onLinkColorChanged: root.requestPaint();
 
     /*  Object Properties
     * ****************************************************************************************/
-    anchors.fill: parent
     antialiasing: true
+    Component.onCompleted: requestPaint();
+
+    width:  Math.abs(topLeftX - bottomRightX) + 20;
+    height: Math.abs(topLeftY - bottomRightY) + 20;
+    x: topLeftX - 20
+    y: topLeftY - 20
+
+    /*  Childeren
+    * ****************************************************************************************/
+
+    //! Output Arrow
+    ShapePath {
+        id: arrowOutSideShape
+
+        fillColor: (link.direction !== NLSpec.LinkDirection.Nondirectional && inputPort) ?
+                       linkColor : "transparent"
+        strokeColor: fillColor
+        capStyle: ShapePath.RoundCap
+
+        property vector2d arrowDimension: LinkPainter.arrowAngle(outputPortSide)
+        property vector2d targetPoint: outputPos.minus(Qt.vector2d(root.x, root.y))
+        property real     angle: Math.atan2(arrowDimension.y, arrowDimension.x);
+        property real     arrowHeadLength: 10 * zoomFactor * (isSelected ? 1.2 : 1.0)
+
+        startX: targetPoint.x - arrowHeadLength * Math.cos(angle - Math.PI / 6)
+        startY: targetPoint.y - arrowHeadLength * Math.sin(angle - Math.PI / 6)
+
+        PathLine {
+            x: arrowOutSideShape.targetPoint.x
+            y: arrowOutSideShape.targetPoint.y
+        }
+
+        PathLine {
+            x: arrowOutSideShape.targetPoint.x - arrowOutSideShape.arrowHeadLength * Math.cos(arrowOutSideShape.angle + Math.PI / 6)
+            y: arrowOutSideShape.targetPoint.y - arrowOutSideShape.arrowHeadLength * Math.sin(arrowOutSideShape.angle + Math.PI / 6)
+        }
+
+        PathLine {
+            x: arrowOutSideShape.startX
+            y: arrowOutSideShape.startY
+        }
+    }
+
+    //! Input Arrow
+    ShapePath {
+        id: arrowInSideShape
+
+        fillColor: (link.direction === NLSpec.LinkDirection.Bidirectional && inputPort) ?
+                       linkColor : "transparent"
+        strokeColor: fillColor
+        capStyle: ShapePath.RoundCap
+
+        property vector2d arrowDimension:  LinkPainter.arrowAngle(inputPort?.portSide ?? -1)
+        property vector2d targetPoint:      inputPos.minus(Qt.vector2d(root.x, root.y))
+        property real     angle:           Math.atan2(arrowDimension.y, arrowDimension.x);
+        property real     arrowHeadLength: 10 * zoomFactor * (isSelected ? 1.2 : 1.0)
+
+        startX: targetPoint.x - arrowHeadLength * Math.cos(angle - Math.PI / 6)
+        startY: targetPoint.y - arrowHeadLength * Math.sin(angle - Math.PI / 6)
+
+        PathLine {
+            x: arrowInSideShape.targetPoint.x
+            y: arrowInSideShape.targetPoint.y
+        }
+
+        PathLine {
+            x: arrowInSideShape.targetPoint.x - arrowInSideShape.arrowHeadLength * Math.cos(arrowInSideShape.angle + Math.PI / 6)
+            y: arrowInSideShape.targetPoint.y - arrowInSideShape.arrowHeadLength * Math.sin(arrowInSideShape.angle + Math.PI / 6)
+        }
+
+        PathLine {
+            x: arrowInSideShape.startX
+            y: arrowInSideShape.startY
+        }
+    }
+
+    //! Main curve/Line
+    ShapePath {
+        id: shapePath
+
+        strokeColor: inputPort ? linkColor : "transparent"
+        strokeWidth: lineWidth
+        fillColor: "transparent"
+        capStyle: ShapePath.RoundCap
+        strokeStyle: (link.guiConfig.style === NLSpec.LinkStyle.Solid) ?
+                         ShapePath.SolidLine :
+                         ShapePath.DashLine
+
+        dashPattern: stylePattern
+        startX: inputPos.x - root.x
+        startY: inputPos.y - root.y
+    }
+
+    // requestPaint when style AND/OR type of link changed.
+    Connections {
+        target: link.guiConfig
+
+        function onTypeChanged() {
+            root.requestPaint();
+        }
+    }
+
+    /* Functions
+  * ****************************************************************************************/
 
     //! paint line
-    onPaint: {
+    function requestPaint() {
 
-        // create the context
-        var context = canvas.getContext("2d");
+        shapePath.pathElements = [];
 
         // if null ports then return the function
-        if (inputPort === null) {
-            context.reset();
+        if (!inputPort) {
             return;
         }
 
@@ -79,38 +208,28 @@ Canvas {
         var minPoint2 = outputPos.plus(BasicLinkCalculator.connectionMargin(outputPort?.portSide ?? -1, zoomFactor));
         linkMidPoint = Calculation.getPositionByTolerance(0.5, [inputPos, minPoint1, minPoint2, outputPos]);
 
-        var lineWidth = 2 * zoomFactor;
-        var arrowHeadLength = 10 * zoomFactor;
 
-        // Draw the curve with LinkPainter
-        LinkPainter.createLink(context, inputPos, link.controlPoints, isSelected,
-                                linkColor, link.direction,
-                                link.guiConfig.style, link.guiConfig.type, lineWidth, arrowHeadLength,
-                                link.inputPort.portSide, outputPortSide);
+        var linkType = (link.guiConfig.type === NLSpec.LinkType.Bezier) ? "PathCurve" :
+                                                                          "PathLine";
+        var linkDirection = link.direction;
+
+        // Update pathElements in shapePath
+        link.controlPoints.forEach((controlPoint, index) => {
+                                       if (index === 0)
+                                            return;
+
+                                       // Create proper shape path
+                                       let pathElement = Qt.createQmlObject("import QtQuick;" + linkType + "{}", root);
+                                       if (!pathElement)
+                                            return;
+
+                                       pathElement.x = controlPoint.x - root.x;
+                                       pathElement.y = controlPoint.y - root.y;
+
+                                       // Add pathElement into pathElements of shape.
+                                       shapePath.pathElements.push(pathElement);
+                                   });
     }
 
-    /* Children
-    * ****************************************************************************************/
 
-  // requestPaint when direction of link changed.
-  Connections {
-      target: link
-
-      function onDirectionChanged() {
-          canvas.requestPaint();
-      }
-  }
-
-  // requestPaint when style AND/OR type of link changed.
-  Connections {
-      target: link.guiConfig
-
-      function onStyleChanged() {
-          canvas.requestPaint();
-      }
-
-      function onTypeChanged() {
-          canvas.requestPaint();
-      }
-  }
 }

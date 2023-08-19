@@ -41,7 +41,6 @@ Rectangle {
         delegate: LinkView {
             scene: root.scene
             sceneSession: root.sceneSession
-            isSelected: scene?.selectionModel?.isSelected(modelData?._qsUuid) ?? false
 
             inputPort: modelData.inputPort
             outputPort: modelData.outputPort
