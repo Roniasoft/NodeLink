@@ -118,11 +118,6 @@ I_LinkView {
     Connections {
         target: link.guiConfig
 
-        // Send paint requset when ColorChanged
-        function onColorChanged () {
-            linkView.requestPaint();
-        }
-
         //! Get the IsEditableDescriptionChanged signal and change
         //! focus to corresponding Item view
         function on_IsEditableDescriptionChanged () {

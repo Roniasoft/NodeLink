@@ -70,11 +70,10 @@ Shape {
 
 
     //! update painted line when change position of input and output ports
-    onOutputPortChanged: root.requestPaint();
-    onOutputPosChanged: root.requestPaint();
-    onInputPosChanged:  root.requestPaint();
+    onOutputPosChanged:  root.requestPaint();
+    onInputPosChanged:   root.requestPaint();
     onIsSelectedChanged: root.requestPaint();
-    onLinkColorChanged: root.requestPaint();
+    onLinkColorChanged:  root.requestPaint();
 
     /*  Object Properties
     * ****************************************************************************************/
