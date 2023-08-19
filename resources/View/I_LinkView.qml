@@ -41,6 +41,13 @@ Canvas {
     //! Link color
     property string     linkColor: Object.keys(sceneSession.linkColorOverrideMap).includes(link?._qsUuid ?? "") ? sceneSession.linkColorOverrideMap[link._qsUuid] : link.guiConfig.color
 
+    //! Canvas Dimensions
+    property real topLeftX: Math.min(...link.controlPoints.map(controlpoint => controlpoint.x), inputPos.x, outputPos.x)
+    property real topLeftY: Math.min(...link.controlPoints.map(controlpoint => controlpoint.y), inputPos.y, outputPos.y)
+
+    property real bottomRightX: Math.max(...link.controlPoints.map(controlpoint => controlpoint.x), inputPos.x, outputPos.x)
+    property real bottomRightY: Math.max(...link.controlPoints.map(controlpoint => controlpoint.y), inputPos.y, outputPos.y)
+
     //! update painted line when change position of input and output ports
     onOutputPosChanged: canvas.requestPaint();
     onInputPosChanged:  canvas.requestPaint();
@@ -50,8 +57,21 @@ Canvas {
 
     /*  Object Properties
     * ****************************************************************************************/
-    anchors.fill: parent
     antialiasing: true
+
+
+    width:  Math.abs(topLeftX - bottomRightX) + 40;
+    height: Math.abs(topLeftY - bottomRightY) + 40;
+    onWidthChanged: console.log("width = ", width)
+    x: topLeftX - 20
+    y: topLeftY - 20
+
+    Rectangle {
+        color: "transparent"
+        border.color: "red"
+
+        anchors.fill: parent
+    }
 
     //! paint line
     onPaint: {
