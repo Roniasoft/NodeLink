@@ -16,7 +16,6 @@ Item {
     /*  Object Properties
     * ****************************************************************************************/
     anchors.fill: parent
-    //color: "transparent"
 
     Keys.forwardTo: parent
 
@@ -41,10 +40,6 @@ Item {
         delegate: LinkView {
             scene: root.scene
             sceneSession: root.sceneSession
-            isSelected: scene?.selectionModel?.isSelected(modelData?._qsUuid) ?? false
-
-            inputPort: modelData.inputPort
-            outputPort: modelData.outputPort
             link: modelData
         }
     }

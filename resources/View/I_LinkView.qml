@@ -20,19 +20,25 @@ Canvas {
 
     property SceneSession   sceneSession
 
-    property Port           inputPort
-
-    property Port           outputPort
-
-
+    //! Main LinkView model
     property Link       link:       Link {}
 
+    //! Link input port
+    property Port       inputPort: link.inputPort
+
+    //! Link output port
+    property Port       outputPort: link.outputPort
+
+    //! Link is selected or not
     property bool       isSelected: scene?.selectionModel?.isSelected(link?._qsUuid) ?? false
 
+    //! Link input position
     property vector2d   inputPos: scene?.portsPositions[inputPort?._qsUuid] ?? Qt.vector2d(0, 0)
 
+    //! Link output position
     property vector2d   outputPos: scene?.portsPositions[outputPort?._qsUuid] ?? Qt.vector2d(0, 0)
 
+    //! linkMidPoint is the position of link description.
     property vector2d   linkMidPoint: Qt.vector2d(0, 0)
 
     //! outPut port side
@@ -41,8 +47,8 @@ Canvas {
     //! Link color
     property string     linkColor: Object.keys(sceneSession.linkColorOverrideMap).includes(link?._qsUuid ?? "") ? sceneSession.linkColorOverrideMap[link._qsUuid] : link.guiConfig.color
 
-    //! Corrected controlpoints in ui state
-    property var controlPoints: []
+    //! zoomFactor
+    property real zoomFactor: sceneSession.zoomManager.zoomFactor
 
     //! Canvas Dimensions
     property real topLeftX: Math.min(...link.controlPoints.map(controlpoint => controlpoint.x), inputPos.x, outputPos.x)
@@ -51,22 +57,28 @@ Canvas {
     property real bottomRightX: Math.max(...link.controlPoints.map(controlpoint => controlpoint.x), inputPos.x, outputPos.x)
     property real bottomRightY: Math.max(...link.controlPoints.map(controlpoint => controlpoint.y), inputPos.y, outputPos.y)
 
-    //! update painted line when change position of input and output ports
-    onOutputPosChanged: canvas.requestPaint();
-    onInputPosChanged:  canvas.requestPaint();
-    onIsSelectedChanged: canvas.requestPaint();
-    onLinkColorChanged: canvas.requestPaint();
+    //! Length of arrow
+    property real arrowHeadLength: 10 * zoomFactor;
 
+    //! Update painted line when change position of input and output ports and some another
+    //! properties changed
+    onOutputPosChanged:  preparePainter();
+    onInputPosChanged:   preparePainter();
+    onIsSelectedChanged: preparePainter();
+    onLinkColorChanged:  preparePainter();
+    onZoomFactorChanged: preparePainter();
 
     /*  Object Properties
     * ****************************************************************************************/
     antialiasing: true
 
+    // Height and width of canvas, (arrowHeadLength * 2) is the margin
+    width:  (Math.abs(topLeftX - bottomRightX) + arrowHeadLength * 2)
+    height: (Math.abs(topLeftY - bottomRightY) + arrowHeadLength * 2)
 
-    width:  Math.abs(topLeftX - bottomRightX) + 40;
-    height: Math.abs(topLeftY - bottomRightY) + 40;
-    x: topLeftX - 20
-    y: topLeftY - 20
+    // Position of canvas, arrowHeadLength is the margin
+    x: (topLeftX - arrowHeadLength)
+    y: (topLeftY - arrowHeadLength)
 
     //! paint line
     onPaint: {
@@ -75,15 +87,11 @@ Canvas {
         var context = canvas.getContext("2d");
 
         // if null ports then return the function
-        if (inputPort === null) {
+        if (!inputPort) {
             context.reset();
             return;
         }
 
-        // Calculate the control points with BasicLinkCalculator
-        link.controlPoints = BasicLinkCalculator.calculateControlPoints(inputPos, outputPos, link.direction,
-                                                                        link.guiConfig.type, link.inputPort.portSide,
-                                                                        outputPortSide, sceneSession.zoomManager.zoomFactor)
         // Top left position vector
         var topLeftPosition = Qt.vector2d(canvas.x, canvas.y);
 
@@ -92,48 +100,70 @@ Canvas {
         // Currently we suppose that the line is a bezzier curve
         // since with the LType it's not possible to find the middle point easily
         // the design needs to be revised
-        var zoomFactor = sceneSession.zoomManager.zoomFactor
+
         var minPoint1 = inputPos.plus(BasicLinkCalculator.connectionMargin(inputPort?.portSide ?? -1, zoomFactor));
         var minPoint2 = outputPos.plus(BasicLinkCalculator.connectionMargin(outputPort?.portSide ?? -1, zoomFactor));
         linkMidPoint = Calculation.getPositionByTolerance(0.5, [inputPos, minPoint1, minPoint2, outputPos]);
         linkMidPoint = linkMidPoint.minus(topLeftPosition);
 
         var lineWidth = 2 * zoomFactor;
-        var arrowHeadLength = 10 * zoomFactor;
 
-        //! update controlPoints in ui state
-        controlPoints = [];
+        //! Correcte control points in ui state
+        var controlPoints = [];
         link.controlPoints.forEach(controlPoint => controlPoints.push(controlPoint.minus(topLeftPosition)));
+
 
         // Draw the curve with LinkPainter
         LinkPainter.createLink(context, inputPos.minus(topLeftPosition), controlPoints, isSelected,
-                                linkColor, link.direction,
-                                link.guiConfig.style, link.guiConfig.type, lineWidth, arrowHeadLength,
-                                link.inputPort.portSide, outputPortSide);
+                               linkColor, link.direction,
+                               link.guiConfig.style, link.guiConfig.type, lineWidth, arrowHeadLength,
+                               link.inputPort.portSide, outputPortSide);
     }
 
     /* Children
     * ****************************************************************************************/
 
-  // requestPaint when direction of link changed.
-  Connections {
-      target: link
+    // Prepare painter when direction of link changed.
+    Connections {
+        target: link
 
-      function onDirectionChanged() {
-          canvas.requestPaint();
-      }
-  }
+        function onDirectionChanged() {
+            preparePainter();
+        }
+    }
 
-  // requestPaint when style AND/OR type of link changed.
-  Connections {
-      target: link.guiConfig
+    // Prepare painter when style AND/OR type of link changed.
+    Connections {
+        target: link.guiConfig
 
-      function onStyleChanged() {
-          canvas.requestPaint();
-      }
+        function onStyleChanged() {
+            preparePainter();
+        }
 
-      function onTypeChanged() {
-          canvas.requestPaint();
-      }
-  }
+        function onTypeChanged() {
+            preparePainter();
+        }
+    }
+
+
+    /* Functions
+  * ****************************************************************************************/
+
+    //! Prepare painter and then call painter of canvas.
+    function preparePainter() {
+
+        // Update controlPoints when inputPort is known (inputPort !== null).
+        if(inputPort) {
+            // Calculate the control points with BasicLinkCalculator
+            link.controlPoints = BasicLinkCalculator.calculateControlPoints(inputPos, outputPos, link.direction,
+                                                                            link.guiConfig.type, link.inputPort.portSide,
+                                                                            outputPortSide, zoomFactor);
+
+            // The function controlPointsChanged is invoked once following current change.
+            // link.controlPointsChanged();
+        }
+
+        // Update painter (must be reset the context when inputPort is NULL)
+        canvas.requestPaint();
+    }
 }
