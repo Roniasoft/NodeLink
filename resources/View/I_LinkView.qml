@@ -198,6 +198,10 @@ Shape {
         link.controlPoints = BasicLinkCalculator.calculateControlPoints(inputPos, outputPos, link.direction,
                                                                         link.guiConfig.type, link.inputPort.portSide,
                                                                         outputPortSide, sceneSession.zoomManager.zoomFactor)
+
+        // Top left position ot root shape
+        var topLeftPosition = Qt.vector2d(root.x, root.y);
+
         // Calculate position of link setting dialog.
         // Finding the middle point of the link
         // Currently we suppose that the line is a bezzier curve
@@ -207,6 +211,7 @@ Shape {
         var minPoint1 = inputPos.plus(BasicLinkCalculator.connectionMargin(inputPort?.portSide ?? -1, zoomFactor));
         var minPoint2 = outputPos.plus(BasicLinkCalculator.connectionMargin(outputPort?.portSide ?? -1, zoomFactor));
         linkMidPoint = Calculation.getPositionByTolerance(0.5, [inputPos, minPoint1, minPoint2, outputPos]);
+        linkMidPoint = linkMidPoint.minus(topLeftPosition);
 
 
         var linkType = (link.guiConfig.type === NLSpec.LinkType.Bezier) ? "PathCurve" :
@@ -223,8 +228,8 @@ Shape {
                                        if (!pathElement)
                                             return;
 
-                                       pathElement.x = controlPoint.x - root.x;
-                                       pathElement.y = controlPoint.y - root.y;
+                                       pathElement.x = controlPoint.x - topLeftPosition.x;
+                                       pathElement.y = controlPoint.y - topLeftPosition.y;
 
                                        // Add pathElement into pathElements of shape.
                                        shapePath.pathElements.push(pathElement);
