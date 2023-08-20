@@ -30,7 +30,7 @@ Window {
 
 
     Component.onCompleted: {
-        NLCore.defaultRepo.clearObjects();
+        NLCore.defaultRepo = NLCore.createDefaultRepo(["QtQuickStream", "NodeLink"])
         NLCore.defaultRepo.initRootObject("Scene");
         window.scene = Qt.binding(function() { return NLCore.defaultRepo.qsRootObject;});
     }
