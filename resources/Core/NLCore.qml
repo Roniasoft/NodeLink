@@ -21,7 +21,8 @@ QSCore {
 
     /* Object Properties
      * ****************************************************************************************/
-    defaultRepo: createDefaultRepo(_internal.imports);
+	  //! In nodeLink library can not create a default repo, create in into main project
+      //  defaultRepo: createDefaultRepo(_internal.imports);
 
 
     /* Functions
