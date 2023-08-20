@@ -21,7 +21,6 @@ QSCore {
 
     /* Object Properties
      * ****************************************************************************************/
-    defaultRepo: createDefaultRepo(_internal.imports);
 
 
     /* Functions

@@ -85,15 +85,12 @@ QtObject {
 
         var fileObjects = JSON.parse(sceneString);
 
+        // Update imports if necessary
+        var nodeLinkImport = "NodeLink";
+        if(!NLCore.defaultRepo._allImports.includes(nodeLinkImport))
+            NLCore.defaultRepo._localImports =  ["NodeLink"];
 
         NLCore.defaultRepo.loadRepo(fileObjects);
-
-        //One scene exist.
-        for (var prop in NLCore.defaultRepo._qsObjects) {
-            if(NLCore.defaultRepo._qsObjects[prop].qsType === "Scene") {
-                scene = NLCore.defaultRepo._qsObjects[prop];
-            }
-        }
 
         // Unblock Observers
         NLSpec.undo.blockObservers = false;
