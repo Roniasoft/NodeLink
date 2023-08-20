@@ -67,6 +67,7 @@ Canvas {
     onIsSelectedChanged: preparePainter();
     onLinkColorChanged:  preparePainter();
     onZoomFactorChanged: preparePainter();
+    onOutputPortSideChanged: preparePainter();
 
     /*  Object Properties
     * ****************************************************************************************/
