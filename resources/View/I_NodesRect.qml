@@ -4,7 +4,7 @@ import NodeLink
 /*! ***********************************************************************************************
  * I_NodesRect is an interface classs that shows nodes.
  * ************************************************************************************************/
-Rectangle {
+Item {
     id: root
 
     /* Property Declarations
@@ -16,7 +16,6 @@ Rectangle {
     /*  Object Properties
     * ****************************************************************************************/
     anchors.fill: parent
-    color: "transparent"
 
     Keys.forwardTo: parent
 
@@ -41,10 +40,6 @@ Rectangle {
         delegate: LinkView {
             scene: root.scene
             sceneSession: root.sceneSession
-            isSelected: scene?.selectionModel?.isSelected(modelData?._qsUuid) ?? false
-
-            inputPort: modelData.inputPort
-            outputPort: modelData.outputPort
             link: modelData
         }
     }
