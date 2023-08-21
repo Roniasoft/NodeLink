@@ -34,7 +34,7 @@ Item {
     }
 
     Connections {
-        target: link.guiConfig
+        target: link?.guiConfig ?? null
 
         function onDescriptionChanged() {
             root._timer.start();

@@ -87,8 +87,10 @@ QtObject {
 
         // Update imports if necessary
         var nodeLinkImport = "NodeLink";
-        if(!NLCore.defaultRepo._allImports.includes(nodeLinkImport))
-            NLCore.defaultRepo._localImports =  ["NodeLink"];
+        if(!NLCore.defaultRepo._allImports.includes(nodeLinkImport)) {
+            NLCore.defaultRepo._localImports.push(nodeLinkImport);
+            NLCore.defaultRepo._localImportsChanged();
+        }
 
         NLCore.defaultRepo.loadRepo(fileObjects);
 

@@ -45,7 +45,7 @@ Item {
     }
 
     UndoNodeGuiObserver {
-      guiConfig: root.node.guiConfig
+      guiConfig: root.node?.guiConfig ?? null
       undoStack: root.undoStack
     }
 }
