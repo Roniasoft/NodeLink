@@ -50,7 +50,7 @@ Rectangle {
         anchors.fill: parent
         horizontalAlignment: Qt.AlignHCenter
         verticalAlignment: Qt.AlignVCenter
-        font.family: textVisible ?  NLStyle._fontType.roboto : NLStyle._fontType.font6Pro
+        font.family: textVisible ?  NLStyle.fontType.roboto : NLStyle.fontType.font6Pro
         font.weight: textVisible ? Font.Medium : 400
         text: textVisible ? (formatConditionsText()) : "\uf06a"
         font.pixelSize:  textVisible ? 11 : Math.min(parent.width, parent.height) / 4

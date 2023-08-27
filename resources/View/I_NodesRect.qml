@@ -1,4 +1,6 @@
 import QtQuick
+import QtQuick.Controls
+
 import NodeLink
 
 /*! ***********************************************************************************************
@@ -9,9 +11,9 @@ Item {
 
     /* Property Declarations
     * ****************************************************************************************/
-    property Scene              scene
+    property Scene        scene
 
-    property SceneSession       sceneSession
+    property SceneSession sceneSession
 
     /*  Object Properties
     * ****************************************************************************************/

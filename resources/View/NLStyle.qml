@@ -8,11 +8,6 @@ import QtQuick
  * ************************************************************************************************/
 QtObject {
 
-    /* Property Declarations
-     * ****************************************************************************************/
-    property alias radiusAmount: _radiusAmount
-    property alias fontType:     _fontType
-
     /* Button related
      * ****************************************************************************************/
 
@@ -105,9 +100,7 @@ QtObject {
     ]
 
     //! Radius
-    readonly property QtObject _radiusAmount: QtObject {
-        id: _radiusAmount
-
+    readonly property QtObject radiusAmount: QtObject {
         readonly property double nodeOverview:   20
         readonly property double blockerNode:    10
         readonly property double confirmPopup:   10
@@ -118,9 +111,7 @@ QtObject {
     }
 
     //! Font
-    readonly property QtObject _fontType: QtObject {
-        id: _fontType
-
+    readonly property QtObject fontType: QtObject {
         readonly property string roboto:   "Roboto"
         readonly property string font6Pro: "Font Awesome 6 Pro"
     }

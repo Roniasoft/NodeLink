@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls
+
 import NodeLink
 
 /*! ***********************************************************************************************
@@ -18,7 +19,7 @@ Rectangle {
     property Scene          scene
 
     //! SceneSession
-    property SceneSession   sceneSession
+    property SceneSession   sceneSession: null
 
     //! GlobalX is set after positioning the port in the scene
     property real           globalX
@@ -35,8 +36,10 @@ Rectangle {
         scene.portsPositions[port._qsUuid] = globalPos;
         scene.portsPositionsChanged();
 
-        sceneSession.portsVisibility[port._qsUuid] = false;
-        sceneSession.portsVisibilityChanged();
+        if (sceneSession) {
+            sceneSession.portsVisibility[port._qsUuid] = false;
+            sceneSession.portsVisibilityChanged();
+        }
     }
 
     /* Object Properties
@@ -48,7 +51,7 @@ Rectangle {
     color: "#8b6cef"
     border.color: "#363636"
     scale: mouseArea.containsMouse ? 1.1 : 1
-
+    opacity: (sceneSession && (sceneSession?.portsVisibility[port._qsUuid] ?? false)) ? 1 : 0
 
     // Behavior on opacity {NumberAnimation{duration: 100}}
     Behavior on scale {NumberAnimation{}}
