@@ -41,7 +41,8 @@ InteractiveNodeView {
         if(nodeView.edit && nodeView.isNodeMinimal)
             sceneSession.zoomManager.zoomToNodeSignal(node, sceneSession.zoomManager.nodeEditZoom);
 
-        nodeView.edit ? titleTextArea.forceActiveFocus() :  nodeView.forceActiveFocus();
+        if (!nodeView.edit) 
+             nodeView.forceActiveFocus();
     }
 
     onIsSelectedChanged: {
@@ -113,6 +114,17 @@ InteractiveNodeView {
                 antialiasing: true
                 font.pointSize: 10
                 font.bold: true
+
+                //! Connections to forceActiveFocus when
+                //! nodeView.edit is true
+                Connections {
+                    target: nodeView
+
+                    function onEditChanged() {
+                        if(nodeView.edit)
+                            titleTextArea.forceActiveFocus();
+                    }
+                }
             }
         }
 
