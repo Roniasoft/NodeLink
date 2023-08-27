@@ -14,8 +14,6 @@ InteractiveNodeView {
      * ****************************************************************************************/
     property bool         edit
 
-    property bool         isNodeEditable: sceneSession.isSceneEditable
-
     //! Node is in minimal state or not (based in zoom factor)
     property bool         isNodeMinimal:  sceneSession.zoomManager.zoomFactor < sceneSession.zoomManager.minimalZoomNode
 
@@ -54,45 +52,8 @@ InteractiveNodeView {
 
     }
 
-    //! Handle key pressed (Del: delete selected node and link)
-    Keys.onDeletePressed: {
-        if (nodeView.isSelected && isNodeEditable)
-            deletePopup.open();
-    }
-
-    //! Use Key to manage shift pressed to handle multiObject selection
-    Keys.onPressed: (event)=> {
-        if (event.key === Qt.Key_Shift)
-            sceneSession.isShiftModifierPressed = true;
-    }
-
-    Keys.onReleased: (event)=> {
-        if (event.key === Qt.Key_Shift)
-            sceneSession.isShiftModifierPressed = false;
-    }
-
     /* Children
     * ****************************************************************************************/
-    //! Delete node
-    Timer {
-        id: delTimer
-        repeat: false
-        running: false
-        interval: 100
-        onTriggered: {
-            scene.deleteSelectedObjects();
-        }
-    }
-
-    //! Delete popup to confirm deletion process
-    ConfirmPopUp {
-        id: deletePopup
-        confirmText: "Are you sure you want to delete " +
-                                     (Object.keys(scene.selectionModel.selectedModel).length > 1 ?
-                                         "these items?" : "this item?");
-        sceneSession: nodeView.sceneSession
-        onAccepted: delTimer.start();
-    }
 
     contentItem: Item {
         //! Header Item

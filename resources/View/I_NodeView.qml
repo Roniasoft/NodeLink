@@ -27,6 +27,9 @@ Rectangle {
     //! Scale factor to rescale the node view.
     property real           scaleFactor:    1.0
 
+    //! A node is editable or not
+    property bool         isNodeEditable: sceneSession?.isSceneEditable ?? true
+
     //! Correct position based on zoomPoint and zoomFactor
     property vector2d       positionMapped: node.guiConfig?.position?.times(scaleFactor)
 

@@ -25,8 +25,53 @@ I_NodeView {
     z: node.guiConfig.locked ? 1 : (isSelected ? 3 : 2)
     radius: NLStyle.radiusAmount.nodeView
 
+    /* Keys
+    * ****************************************************************************************/
+
+    //! Handle key pressed (Del: delete selected node and link)
+    Keys.onDeletePressed: {
+        if (isSelected && isNodeEditable)
+            deletePopup.open();
+    }
+
+    //! Use Key to manage shift pressed to handle multiObject selection
+    Keys.onPressed: (event)=> {
+        if (event.key === Qt.Key_Shift)
+            sceneSession.isShiftModifierPressed = true;
+    }
+
+    Keys.onReleased: (event)=> {
+        if (event.key === Qt.Key_Shift)
+            sceneSession.isShiftModifierPressed = false;
+    }
+
     /* Children
     * ****************************************************************************************/
+
+    //! Delete handlers
+    //! *****************
+
+    //! Delete node
+    Timer {
+        id: delTimer
+        repeat: false
+        running: false
+        interval: 100
+        onTriggered: {
+            scene.deleteSelectedObjects();
+        }
+    }
+
+    //! Delete popup to confirm deletion process
+    ConfirmPopUp {
+        id: deletePopup
+        confirmText: "Are you sure you want to delete " +
+                                     (Object.keys(scene.selectionModel.selectedModel).length > 1 ?
+                                         "these items?" : "this item?");
+        sceneSession: root.sceneSession
+        onAccepted: delTimer.start();
+    }
+
 
     //! Resize by sides
     //! *****************
@@ -463,8 +508,8 @@ I_NodeView {
                 sceneSession: root.sceneSession
 
                 //! Mapped position based on PortView, container and zoom factor
-                property vector2d positionMapped: Qt.vector2d(topRow.x + x + NLStyle.portView.size / 2,
-                                                              topRow.y + y + NLStyle.portView.size / 2).
+                property vector2d positionMapped: Qt.vector2d(topRowPort.x + x + NLStyle.portView.size / 2,
+                                                              topRowPort.y + y + NLStyle.portView.size / 2).
                                                               times(scaleFactor)
 
                 globalX: root.x + positionMapped.x
@@ -489,8 +534,8 @@ I_NodeView {
                 sceneSession: root.sceneSession
 
                 //! Mapped position based on PortView, container and zoom factor
-                property vector2d positionMapped: Qt.vector2d(leftColumn.x + x + NLStyle.portView.size / 2,
-                                                     leftColumn.y + y + NLStyle.portView.size / 2).
+                property vector2d positionMapped: Qt.vector2d(leftColumnPort.x + x + NLStyle.portView.size / 2,
+                                                     leftColumnPort.y + y + NLStyle.portView.size / 2).
                                                      times(scaleFactor)
 
                 globalX: root.x + positionMapped.x
@@ -515,8 +560,8 @@ I_NodeView {
                 sceneSession: root.sceneSession
 
                 //! Mapped position based on PortView, container and zoom factor
-                property vector2d positionMapped: Qt.vector2d(rightColumn.x + x + NLStyle.portView.size / 2,
-                                                              rightColumn.y + y + NLStyle.portView.size / 2).
+                property vector2d positionMapped: Qt.vector2d(rightColumnPort.x + x + NLStyle.portView.size / 2,
+                                                              rightColumnPort.y + y + NLStyle.portView.size / 2).
                                                               times(scaleFactor)
 
                 globalX: root.x + positionMapped.x
@@ -541,8 +586,8 @@ I_NodeView {
                 sceneSession: root.sceneSession
 
                 //! Mapped position based on PortView, container and zoom factor
-                property vector2d positionMapped: Qt.vector2d(bottomRow.x + x + NLStyle.portView.size / 2,
-                                                              bottomRow.y + y + NLStyle.portView.size / 2).
+                property vector2d positionMapped: Qt.vector2d(bottomRowPort.x + x + NLStyle.portView.size / 2,
+                                                              bottomRowPort.y + y + NLStyle.portView.size / 2).
                                                               times(scaleFactor)
 
                 globalX: root.x + positionMapped.x
