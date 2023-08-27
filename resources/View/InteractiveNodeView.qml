@@ -28,7 +28,7 @@ I_NodeView {
     /* Children
     * ****************************************************************************************/
 
-    //! Resize with sides
+    //! Resize by sides
     //! *****************
 
     //! Top Side Mouse Area
@@ -240,7 +240,7 @@ I_NodeView {
         }
     }
 
-    //! Resize with corners
+    //! Resize by corners
     //! *****************
 
     //! Upper right sizing area
@@ -449,7 +449,7 @@ I_NodeView {
 
     //! Top Ports
     Row {
-        id: topRow
+        id: topRowPort
         anchors.top: parent.top
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.margins: -(NLStyle.portView.size + NLStyle.portView.borderSize - root.border.width) / 2 // we should use the size/2 of port from global style file
@@ -475,7 +475,7 @@ I_NodeView {
 
     //! Left Ports
     Column {
-        id: leftColumn
+        id: leftColumnPort
         anchors.left: parent.left
         anchors.verticalCenter: parent.verticalCenter
         anchors.margins: -(NLStyle.portView.size + NLStyle.portView.borderSize - root.border.width) / 2 // we should use the size/2 of port from global style file
@@ -501,7 +501,7 @@ I_NodeView {
 
     //! Right Ports
     Column {
-        id: rightColumn
+        id: rightColumnPort
         anchors.right: parent.right
         anchors.verticalCenter: parent.verticalCenter
         anchors.margins: -(NLStyle.portView.size + NLStyle.portView.borderSize - root.border.width) / 2 // we should use the size/2 of port from global style file
@@ -527,7 +527,7 @@ I_NodeView {
 
     //! Bottom Ports
     Row {
-        id: bottomRow
+        id: bottomRowPort
         anchors.bottom: parent.bottom
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.margins: -(NLStyle.portView.size + NLStyle.portView.borderSize - root.border.width) / 2 // we should use the size/2 of port from global style file
@@ -550,6 +550,4 @@ I_NodeView {
             }
         }
     }
-
-
 }
