@@ -56,6 +56,7 @@ InteractiveNodeView {
     /* Children
     * ****************************************************************************************/
 
+    //! contentItem, All things that are shown in a nodeView.
     contentItem: Item {
         //! Header Item
         Item {
