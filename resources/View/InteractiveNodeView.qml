@@ -15,13 +15,20 @@ I_NodeView {
     //! A node is resizeable or not
     property bool isResizable: true
 
+
+    //! SceneSession
+    property SceneSession   sceneSession:   null
+
+    //! A node is editable or not
+    property bool         isNodeEditable: sceneSession?.isSceneEditable ?? true
+
     /* Object Properties
     * ****************************************************************************************/
 
     color: Qt.darker(node.guiConfig.color, 10)
-    border.color: node.guiConfig.locked ? "gray" : Qt.lighter(node.guiConfig.color, isSelected ? 1.2 : 1)
-    border.width: (isSelected ? 3 : 2)
-    opacity: isSelected ? 1 : 0.8
+    border.color: node.guiConfig.locked ? NLStyle.node.borderLockColor : Qt.lighter(node.guiConfig.color, isSelected ? 1.2 : 1)
+    border.width: (isSelected ? (NLStyle.node.borderWidth + 1) : NLStyle.node.borderWidth)
+    opacity: isSelected ? NLStyle.node.selectedOpacity : NLStyle.node.defaultOpacity
     z: node.guiConfig.locked ? 1 : (isSelected ? 3 : 2)
     radius: NLStyle.radiusAmount.nodeView
 

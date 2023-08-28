@@ -34,10 +34,16 @@ QtObject {
 
     //! Defualt Node parameters.
     readonly property QtObject node: QtObject {
-        property real   width:  200
-        property real   height: 150
-        property real   opacity: 1.0
-        property string color:  "pink"
+        property real   width:              200
+        property real   height:             150
+        property real   opacity:            1.0
+        property real   defaultOpacity:     0.8
+        property real   selectedOpacity:    0.8
+
+        property int    borderWidth:        2
+
+        property string color:              "pink"
+        property string borderLockColor:    "gray"
     }
 
     property bool snapEnabled: false

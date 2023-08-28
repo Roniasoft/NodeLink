@@ -87,8 +87,6 @@ Menu {
         node._qsRepo = NLCore.defaultRepo;
         node.type = nodeType;
 
-        var position = Qt.vector2d(contextMenu.x, contextMenu.y);
-
         // Correct position with zoompoint and zoom factor into real position.
         var positionMapped = nodePosition?.times(1 / sceneSession.zoomManager.zoomFactor)
 

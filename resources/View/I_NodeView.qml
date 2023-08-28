@@ -19,16 +19,11 @@ Rectangle {
     //! Scene is the main model containing information about all nodes/links
     property Scene scene
 
-    property SceneSession   sceneSession:   null
-
     //! Node Contents
     property Component      contentItem:    null
 
     //! Scale factor to rescale the node view.
     property real           scaleFactor:    1.0
-
-    //! A node is editable or not
-    property bool         isNodeEditable: sceneSession?.isSceneEditable ?? true
 
     //! Correct position based on zoomPoint and zoomFactor
     property vector2d       positionMapped: node.guiConfig?.position?.times(scaleFactor)
@@ -51,9 +46,9 @@ Rectangle {
     antialiasing: true
 
     color: Qt.darker(node.guiConfig.color, 10)
-    border.color: node.guiConfig.locked ? "gray" : node.guiConfig.color
-    border.width: 2
-    opacity: 0.8
+    border.color: node.guiConfig.locked ? NLStyle.node.borderLockColor : node.guiConfig.color
+    border.width: NLStyle.node.borderWidth
+    opacity: NLStyle.node.defaultOpacity
     z: node.guiConfig.locked ? 1 : 2
 
     Behavior on color {ColorAnimation {duration:100}}
