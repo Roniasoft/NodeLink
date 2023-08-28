@@ -8,11 +8,6 @@ import QtQuick
  * ************************************************************************************************/
 QtObject {
 
-    /* Property Declarations
-     * ****************************************************************************************/
-    property alias radiusAmount: _radiusAmount
-    property alias fontType:     _fontType
-
     /* Button related
      * ****************************************************************************************/
 
@@ -39,10 +34,16 @@ QtObject {
 
     //! Defualt Node parameters.
     readonly property QtObject node: QtObject {
-        property real   width:  200
-        property real   height: 150
-        property real   opacity: 1.0
-        property string color:  "pink"
+        property real   width:              200
+        property real   height:             150
+        property real   opacity:            1.0
+        property real   defaultOpacity:     0.8
+        property real   selectedOpacity:    0.8
+
+        property int    borderWidth:        2
+
+        property string color:              "pink"
+        property string borderLockColor:    "gray"
     }
 
     property bool snapEnabled: false
@@ -105,9 +106,7 @@ QtObject {
     ]
 
     //! Radius
-    readonly property QtObject _radiusAmount: QtObject {
-        id: _radiusAmount
-
+    readonly property QtObject radiusAmount: QtObject {
         readonly property double nodeOverview:   20
         readonly property double blockerNode:    10
         readonly property double confirmPopup:   10
@@ -118,9 +117,7 @@ QtObject {
     }
 
     //! Font
-    readonly property QtObject _fontType: QtObject {
-        id: _fontType
-
+    readonly property QtObject fontType: QtObject {
         readonly property string roboto:   "Roboto"
         readonly property string font6Pro: "Font Awesome 6 Pro"
     }

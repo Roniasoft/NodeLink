@@ -101,7 +101,8 @@ LinkView {
                     // Update node position
                     var gMouse = mapToItem(parent, mouse.x, mouse.y);
                     contextMenu.nodePosition = calculateNodePosition(Qt.vector2d(gMouse.x, gMouse.y),
-                                                                     link.inputPort.portSide);
+                                                                     link.inputPort.portSide,
+                                                                     sceneSession.zoomManager.zoomFactor);
                     contextMenu.popup(gMouse.x, gMouse.y);
                     sceneSession.connectingMode = false;
             }
@@ -273,7 +274,7 @@ LinkView {
 
         //! Calculate node position based on contextmenu position,
         //! inputPortSide and defualt node width and height
-        function calculateNodePosition(mousePoint: vector2d, inputPortSide: int) : vector2d {
+        function calculateNodePosition(mousePoint: vector2d, inputPortSide: int, zoomFactor: real) : vector2d {
                 var correctionFactor = Qt.vector2d(0, 0);
                 switch (inputPortSide)  {
                     case (NLSpec.PortPositionSide.Top): {
@@ -293,7 +294,7 @@ LinkView {
                     } break;
                 }
 
-                return mousePoint.minus(correctionFactor);
+                return mousePoint.minus(correctionFactor.times(zoomFactor));
         }
     }
 }
