@@ -25,7 +25,6 @@ I_LinkView {
         }
     }
 
-
     //! Handle key pressed (Del: delete selected node and link)
     Keys.onDeletePressed: {
         if(linkView.isSelected)

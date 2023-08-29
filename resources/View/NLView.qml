@@ -26,13 +26,21 @@ Item {
     }
 
     //! Overview Rect
-    NodesOverview {
+    OverviewNodesScene {
         id: overView
-        visible: NLStyle.overview.visible
+//        visible: NLStyle.overview.visible
+        visible: true
         scene: view.scene
         sceneSession: view.sceneSession
-        x: view.width - overView.width * scale - 20
-        y: view.height - overView.height * scale - 20
+        width: 300
+        height: 300
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        anchors.margins: 20
+
+
+//        x: view.width - overView.width * scale - 20
+//        y: view.height - overView.height * scale - 20
     }
 
     //! Side Menu

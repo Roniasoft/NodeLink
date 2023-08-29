@@ -16,7 +16,7 @@ Canvas {
 
     /* Property Declarations
     * ****************************************************************************************/
-    property I_Scene        scene
+    property Scene          scene
 
     property SceneSession   sceneSession
 
@@ -48,7 +48,7 @@ Canvas {
     property string     linkColor: Object.keys(sceneSession.linkColorOverrideMap).includes(link?._qsUuid ?? "") ? sceneSession.linkColorOverrideMap[link._qsUuid] : link.guiConfig.color
 
     //! zoomFactor
-    property real zoomFactor: sceneSession.zoomManager.zoomFactor
+    property real zoomFactor: 1
 
     //! Canvas Dimensions
     property real topLeftX: Math.min(...link.controlPoints.map(controlpoint => controlpoint.x), inputPos.x, outputPos.x)
@@ -57,6 +57,10 @@ Canvas {
     property real bottomRightX: Math.max(...link.controlPoints.map(controlpoint => controlpoint.x), inputPos.x, outputPos.x)
     property real bottomRightY: Math.max(...link.controlPoints.map(controlpoint => controlpoint.y), inputPos.y, outputPos.y)
 
+    property real          topLeftXroot
+    property real          topLeftYroot
+    property real scaleFactorWidth
+    property real scaleFactorHeight
     //! Length of arrow
     property real arrowHeadLength: 10 * zoomFactor;
 
@@ -68,6 +72,18 @@ Canvas {
     onLinkColorChanged:  preparePainter();
     onZoomFactorChanged: preparePainter();
     onOutputPortSideChanged: preparePainter();
+    onTopLeftXrootChanged: preparePainter();
+
+//    onXChanged: {
+//        console.log("x is: ",link.controlPoints.map(controlpoint => controlpoint.x), "input: ",inputPos.x, "output: ",outputPos.x
+//                    ,"input port: ",inputPort,outputPort,link
+//                    ,"x is:", x
+//                    )
+//    }
+//    onTopLeftXChanged: {
+//        console.log("hey",topLeftX)
+//    }
+
 
 
     /*  Object Properties
@@ -75,12 +91,17 @@ Canvas {
     antialiasing: true
 
     // Height and width of canvas, (arrowHeadLength * 2) is the margin
-    width:  (Math.abs(topLeftX - bottomRightX) + arrowHeadLength * 2)
-    height: (Math.abs(topLeftY - bottomRightY) + arrowHeadLength * 2)
+    width:  (Math.abs(topLeftX - bottomRightX) + arrowHeadLength * 2) * scaleFactorWidth
+    height: (Math.abs(topLeftY - bottomRightY) + arrowHeadLength * 2) * scaleFactorHeight
 
     // Position of canvas, arrowHeadLength is the margin
-    x: (topLeftX - arrowHeadLength)
-    y: (topLeftY - arrowHeadLength)
+    x: ((topLeftX - arrowHeadLength) - topLeftXroot) * scaleFactorWidth
+    y: ((topLeftY - arrowHeadLength) - topLeftYroot) * scaleFactorHeight
+
+//    Rectangle {
+//        anchors.fill: parent
+//        color:" blue"
+//    }
 
     //! paint line
     onPaint: {
@@ -112,17 +133,32 @@ Canvas {
 
         //! Correcte control points in ui state
         var controlPoints = [];
-        link.controlPoints.forEach(controlPoint => controlPoints.push(controlPoint.minus(topLeftPosition)));
 
-        console.log("actual: ",context, inputPos.minus(topLeftPosition), isSelected,
-                    linkColor, link.direction,
-                    link.guiConfig.style, link.guiConfig.type, lineWidth, arrowHeadLength,
-                    link.inputPort.portSide, outputPortSide)
+        var inputPosx = (inputPos.x  - topLeftXroot) * scaleFactorWidth
+        var inputPosy = (inputPos.y  - topLeftYroot) * scaleFactorHeight
+        var inputPos1 = Qt.vector2d(inputPosx,inputPosy)
+
+//        var outputPosx = (outputPos.x  - topLeftXroot) * scaleFactorWidth
+//        var outputPosy = (outputPos.y  - topLeftYroot) * scaleFactorHeight
+//        canvas.outputPos = Qt.vector2d(outputPosx,controlPointy)
+
+        link.controlPoints.forEach(controlPoint => {
+                                        var controlPointx = (controlPoint.x  - topLeftXroot) * scaleFactorWidth -100
+                                        var controlPointy = (controlPoint.y  - topLeftYroot) * scaleFactorHeight - 100
+                                        var controlPoint1 = Qt.vector2d(controlPointx,controlPointy)
+                                        controlPoints.push(controlPoint1)
+                                    });
+
+        console.log("overview: ",controlPoints,topLeftPosition,scaleFactorHeight,scaleFactorWidth)
+
         // Draw the curve with LinkPainter
-        LinkPainter.createLink(context, inputPos.minus(topLeftPosition), controlPoints, isSelected,
+        LinkPainter.createLink(context, inputPos1, controlPoints, isSelected,
                                linkColor, link.direction,
                                link.guiConfig.style, link.guiConfig.type, lineWidth, arrowHeadLength,
                                link.inputPort.portSide, outputPortSide);
+
+
+
     }
 
     /* Children
@@ -160,9 +196,10 @@ Canvas {
         // Update controlPoints when inputPort is known (inputPort !== null).
         if(inputPort) {
             // Calculate the control points with BasicLinkCalculator
-            link.controlPoints = BasicLinkCalculator.calculateControlPoints(inputPos, outputPos, link.direction,
+
+            link.controlPoints = BasicLinkCalculator.calculateControlPoints(inputPos , outputPos, link.direction,
                                                                             link.guiConfig.type, link.inputPort.portSide,
-                                                                            outputPortSide, zoomFactor);
+                                                                            outputPortSide, Math.min(scaleFactorHeight,scaleFactorWidth));
 
             // The function controlPointsChanged is invoked once following current change.
             // link.controlPointsChanged();

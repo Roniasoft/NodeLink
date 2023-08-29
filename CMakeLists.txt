@@ -141,6 +141,10 @@ qt_add_qml_module(NodeLink
         resources/View/I_NodesRect.qml
         resources/View/I_NodeView.qml
         resources/View/InteractiveNodeView.qml
+        resources/View/OverviewNodeView.qml
+        resources/View/OverviewNodesScene.qml
+        resources/View/OverviewNodesRect.qml
+        resources/View/OverviewLinkView.qml
         resources/View/NodesScene.qml
         resources/View/NodesOverview.qml
         resources/View/LinkView.qml

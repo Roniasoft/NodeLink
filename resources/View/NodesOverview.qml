@@ -3,7 +3,7 @@ import QtQuick
 /*! ***********************************************************************************************
  *
  * ************************************************************************************************/
-I_NodesRect {
+OverviewNodesRect {
 
     /* Property Declarations
     * ****************************************************************************************/
@@ -14,8 +14,8 @@ I_NodesRect {
 //    border.width: 8
 //    border.color: "#55FFFFFF"
 //    radius: NLStyle.radiusAmount.nodeOverview
-    scale: NLStyle.overview.scale
-    transformOrigin: Item.TopLeft
+
+
 
     /* Children
     * ****************************************************************************************/
