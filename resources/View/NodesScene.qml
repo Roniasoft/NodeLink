@@ -430,11 +430,11 @@ I_NodesScene {
 
         //! update content dimentions
         var canWidthChange = sceneSession.contentWidth * flickableScale >= flickable.width;
-        var isNotRight =  (sceneSession.contentWidth - flickable.contentX - flickable.width) > 0
+        var isNotRight =  (sceneSession.contentWidth * flickableScale - flickable.contentX - flickable.width) > 0
         sceneSession.contentWidth  *= (canWidthChange && isNotRight )? flickableScale : 1;
 
         var canHeightChange = sceneSession.contentHeight * flickableScale >= flickable.height;
-        var isNotBottom = (sceneSession.contentHeight - flickable.contentY - flickable.height) > 0
+        var isNotBottom = (sceneSession.contentHeight * flickableScale - flickable.contentY - flickable.height) > 0
 
         sceneSession.contentHeight *= (canHeightChange && isNotBottom) ? flickableScale : 1;
 
