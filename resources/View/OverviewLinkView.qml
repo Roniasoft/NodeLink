@@ -62,7 +62,7 @@ Canvas {
     property real scaleFactorWidth
     property real scaleFactorHeight
     //! Length of arrow
-    property real arrowHeadLength: 10 * zoomFactor;
+    property real arrowHeadLength: 10 * scaleFactorWidth;
 
     //! Update painted line when change position of input and output ports and some another
     //! properties changed
@@ -129,7 +129,7 @@ Canvas {
         linkMidPoint = Calculation.getPositionByTolerance(0.5, [inputPos, minPoint1, minPoint2, outputPos]);
         linkMidPoint = linkMidPoint.minus(topLeftPosition);
 
-        var lineWidth = 2 * zoomFactor;
+        var lineWidth = 2 * scaleFactorWidth;
 
         //! Correcte control points in ui state
         var controlPoints = [];

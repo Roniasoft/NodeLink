@@ -13,7 +13,7 @@ Item {
 
     property SceneSession       sceneSession
 
-    property real topLeftX: Math.min(...Object.values(scene.nodes).map(node => node.guiConfig.position.x))
+    property real topLeftX: Math.min(...Object.values(scene.nodes).map(node => node.guiConfig.position.x ))
     property real topLeftY: Math.min(...Object.values(scene.nodes).map(node => node.guiConfig.position.y))
 
     property real bottomRightX: Math.max(...Object.values(scene.nodes).map(node => node.guiConfig.position.x + node.guiConfig.width) )
@@ -59,9 +59,6 @@ Item {
             topLeftYroot: root.topLeftY
             scaleFactorHeight: Math.min(root.scaleFactorHeight, root.scaleFactorWidth)
             scaleFactorWidth: Math.min(root.scaleFactorHeight, root.scaleFactorWidth)
-//            onLinkChanged: {
-//                console.log(link)
-//            }
         }
     }
 
