@@ -134,8 +134,8 @@ Canvas {
         //! Correcte control points in ui state
         var controlPoints = [];
 
-        var inputPosx = (inputPos.x  - topLeftXroot) * scaleFactorWidth
-        var inputPosy = (inputPos.y  - topLeftYroot) * scaleFactorHeight
+        var inputPosx = (inputPos.x  - (topLeftX - arrowHeadLength)) * scaleFactorWidth
+        var inputPosy = (inputPos.y  - (topLeftY - arrowHeadLength)) * scaleFactorHeight
         var inputPos1 = Qt.vector2d(inputPosx,inputPosy)
 
 //        var outputPosx = (outputPos.x  - topLeftXroot) * scaleFactorWidth
@@ -143,13 +143,13 @@ Canvas {
 //        canvas.outputPos = Qt.vector2d(outputPosx,controlPointy)
 
         link.controlPoints.forEach(controlPoint => {
-                                        var controlPointx = (controlPoint.x  - topLeftXroot) * scaleFactorWidth -100
-                                        var controlPointy = (controlPoint.y  - topLeftYroot) * scaleFactorHeight - 100
+                                        var controlPointx = (controlPoint.x  - (topLeftX - arrowHeadLength)) * scaleFactorWidth
+                                        var controlPointy = (controlPoint.y  - (topLeftY - arrowHeadLength)) * scaleFactorHeight
                                         var controlPoint1 = Qt.vector2d(controlPointx,controlPointy)
                                         controlPoints.push(controlPoint1)
                                     });
 
-        console.log("overview: ",controlPoints,topLeftPosition,scaleFactorHeight,scaleFactorWidth)
+        console.log("overview: ",controlPoints,topLeftPosition,canvas.x,outputPortSide)
 
         // Draw the curve with LinkPainter
         LinkPainter.createLink(context, inputPos1, controlPoints, isSelected,

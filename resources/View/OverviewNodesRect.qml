@@ -41,8 +41,9 @@ Item {
             sceneSession: root.sceneSession
             topLeftX: root.topLeftX
             topLeftY: root.topLeftY
-            scaleFactorHeight: root.scaleFactorHeight
-            scaleFactorWidth: root.scaleFactorWidth
+            scaleFactorHeight: Math.min(root.scaleFactorHeight, root.scaleFactorWidth)
+            scaleFactorWidth: Math.min(root.scaleFactorHeight, root.scaleFactorWidth)
+
         }
     }
 
@@ -56,8 +57,8 @@ Item {
             link: modelData
             topLeftXroot: root.topLeftX
             topLeftYroot: root.topLeftY
-            scaleFactorHeight: root.scaleFactorHeight
-            scaleFactorWidth: root.scaleFactorWidth
+            scaleFactorHeight: Math.min(root.scaleFactorHeight, root.scaleFactorWidth)
+            scaleFactorWidth: Math.min(root.scaleFactorHeight, root.scaleFactorWidth)
 //            onLinkChanged: {
 //                console.log(link)
 //            }
@@ -87,10 +88,5 @@ Item {
         function onLinkRemoved(link: Link) {
             linkRepeater.removeElement(link)
         }
-    }
-    Rectangle {
-        anchors.fill: parent
-        color: "transparent"
-        border.color: "blue"
     }
 }
