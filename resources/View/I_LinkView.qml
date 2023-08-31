@@ -69,7 +69,6 @@ Canvas {
     onZoomFactorChanged: preparePainter();
     onOutputPortSideChanged: preparePainter();
 
-
     /*  Object Properties
     * ****************************************************************************************/
     antialiasing: true
@@ -114,10 +113,7 @@ Canvas {
         var controlPoints = [];
         link.controlPoints.forEach(controlPoint => controlPoints.push(controlPoint.minus(topLeftPosition)));
 
-        console.log("actual: ",context, inputPos.minus(topLeftPosition), isSelected,
-                    linkColor, link.direction,
-                    link.guiConfig.style, link.guiConfig.type, lineWidth, arrowHeadLength,
-                    link.inputPort.portSide, outputPortSide)
+
         // Draw the curve with LinkPainter
         LinkPainter.createLink(context, inputPos.minus(topLeftPosition), controlPoints, isSelected,
                                linkColor, link.direction,
