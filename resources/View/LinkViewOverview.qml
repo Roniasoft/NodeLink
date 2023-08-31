@@ -57,12 +57,14 @@ Canvas {
     property real bottomRightX: Math.max(...link.controlPoints.map(controlpoint => controlpoint.x), inputPos.x, outputPos.x)
     property real bottomRightY: Math.max(...link.controlPoints.map(controlpoint => controlpoint.y), inputPos.y, outputPos.y)
 
+    property vector2d     nodeRectTopLeft
     property real          topLeftXroot
     property real          topLeftYroot
-    property real scaleFactorWidth
-    property real scaleFactorHeight
+//    property real scaleFactorWidth
+//    property real scaleFactorHeight
+    property real         customScaleFactor
     //! Length of arrow
-    property real arrowHeadLength: 10 * scaleFactorWidth;
+    property real arrowHeadLength: 10 * customScaleFactor;
 
     //! Update painted line when change position of input and output ports and some another
     //! properties changed
@@ -72,7 +74,7 @@ Canvas {
     onLinkColorChanged:  preparePainter();
     onZoomFactorChanged: preparePainter();
     onOutputPortSideChanged: preparePainter();
-    onTopLeftXrootChanged: preparePainter();
+//    onTopLeftXrootChanged: preparePainter();
 
 //    onXChanged: {
 //        console.log("x is: ",link.controlPoints.map(controlpoint => controlpoint.x), "input: ",inputPos.x, "output: ",outputPos.x
@@ -91,12 +93,12 @@ Canvas {
     antialiasing: true
 
     // Height and width of canvas, (arrowHeadLength * 2) is the margin
-    width:  (Math.abs(topLeftX - bottomRightX) + arrowHeadLength * 2) * scaleFactorWidth
-    height: (Math.abs(topLeftY - bottomRightY) + arrowHeadLength * 2) * scaleFactorHeight
+    width:  (Math.abs(topLeftX - bottomRightX) + arrowHeadLength * 2) * customScaleFactor
+    height: (Math.abs(topLeftY - bottomRightY) + arrowHeadLength * 2) * customScaleFactor
 
     // Position of canvas, arrowHeadLength is the margin
-    x: ((topLeftX - arrowHeadLength) - topLeftXroot) * scaleFactorWidth
-    y: ((topLeftY - arrowHeadLength) - topLeftYroot) * scaleFactorHeight
+    x: ((topLeftX - arrowHeadLength) - nodeRectTopLeft.x) * customScaleFactor
+    y: ((topLeftY - arrowHeadLength) - nodeRectTopLeft.y) * customScaleFactor
 
 //    Rectangle {
 //        anchors.fill: parent
@@ -129,27 +131,22 @@ Canvas {
         linkMidPoint = Calculation.getPositionByTolerance(0.5, [inputPos, minPoint1, minPoint2, outputPos]);
         linkMidPoint = linkMidPoint.minus(topLeftPosition);
 
-        var lineWidth = 2 * scaleFactorWidth;
+        var lineWidth = 2 * customScaleFactor;
 
         //! Correcte control points in ui state
         var controlPoints = [];
 
-        var inputPosx = (inputPos.x  - (topLeftX - arrowHeadLength)) * scaleFactorWidth
-        var inputPosy = (inputPos.y  - (topLeftY - arrowHeadLength)) * scaleFactorHeight
+        var inputPosx = (inputPos.x  - (topLeftX - arrowHeadLength)) * customScaleFactor
+        var inputPosy = (inputPos.y  - (topLeftY - arrowHeadLength)) * customScaleFactor
         var inputPos1 = Qt.vector2d(inputPosx,inputPosy)
 
-//        var outputPosx = (outputPos.x  - topLeftXroot) * scaleFactorWidth
-//        var outputPosy = (outputPos.y  - topLeftYroot) * scaleFactorHeight
-//        canvas.outputPos = Qt.vector2d(outputPosx,controlPointy)
 
         link.controlPoints.forEach(controlPoint => {
-                                        var controlPointx = (controlPoint.x  - (topLeftX - arrowHeadLength)) * scaleFactorWidth
-                                        var controlPointy = (controlPoint.y  - (topLeftY - arrowHeadLength)) * scaleFactorHeight
+                                        var controlPointx = (controlPoint.x  - (topLeftX - arrowHeadLength)) * customScaleFactor
+                                        var controlPointy = (controlPoint.y  - (topLeftY - arrowHeadLength)) * customScaleFactor
                                         var controlPoint1 = Qt.vector2d(controlPointx,controlPointy)
                                         controlPoints.push(controlPoint1)
                                     });
-
-        console.log("overview: ",controlPoints,topLeftPosition,canvas.x,outputPortSide)
 
         // Draw the curve with LinkPainter
         LinkPainter.createLink(context, inputPos1, controlPoints, isSelected,
@@ -199,7 +196,7 @@ Canvas {
 
             link.controlPoints = BasicLinkCalculator.calculateControlPoints(inputPos , outputPos, link.direction,
                                                                             link.guiConfig.type, link.inputPort.portSide,
-                                                                            outputPortSide, Math.min(scaleFactorHeight,scaleFactorWidth));
+                                                                            outputPortSide, customScaleFactor);
 
             // The function controlPointsChanged is invoked once following current change.
             // link.controlPointsChanged();

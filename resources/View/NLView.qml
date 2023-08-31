@@ -26,7 +26,7 @@ Item {
     }
 
     //! Overview Rect
-    OverviewNodesScene {
+    NodesSceneOverview {
         id: overView
 //        visible: NLStyle.overview.visible
         visible: true
