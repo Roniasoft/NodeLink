@@ -36,11 +36,15 @@ Item {
 
         MouseArea {
             anchors.fill: parent
-            onClicked: {
+            onClicked: (mouse) =>  {
+                //! When mouse is clicked, the diff between clicked area and the red rectangle position is calculated
+                // and then mapped to the scene
                 var diffX = (mouse.x - visibleAreaRedRect.x) / visibleAreaRedRect.customScaleFactor
                 var diffY = (mouse.y - visibleAreaRedRect.y) / visibleAreaRedRect.customScaleFactor
-                nodesScene.contentX += diffX
-                nodesScene.contentY += diffY
+                var halfWidthBefore = nodesScene.width / 2
+                var halfHeightBefore = nodesScene.height / 2
+                nodesScene.contentX += diffX - halfWidthBefore
+                nodesScene.contentY += diffY - halfHeightBefore
             }
         }
 
@@ -72,7 +76,7 @@ Item {
 
                 property real    prevX
                 property real    prevY
-                property bool   isDraging:  false
+                property bool    isDraging:  false
 
                 anchors.fill: parent
                 hoverEnabled: true
@@ -89,6 +93,8 @@ Item {
 
                 onPositionChanged: (mouse) => {
                     if (isDraging) {
+                        //! When mouse is dragged, the diff between pressed mouse and current position is calculated
+                        // and then mapped to the scene
                         var diffX = (prevX - mouse.x)
                         var diffY = (prevY - mouse.y)
                         var startingPointInSceneX = (prevX / visibleAreaRedRect.customScaleFactor)  + visibleAreaRedRect.nodeRectTopLeft.x
