@@ -13,6 +13,6 @@ I_NodeData {
      * ****************************************************************************************/
 
     //! Two output data
-    property var inputFirst
-    property var inputSecond
+    property var inputFirst: null
+    property var inputSecond: null
 }

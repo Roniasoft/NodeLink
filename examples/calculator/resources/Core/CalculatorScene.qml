@@ -46,11 +46,7 @@ I_Scene {
 
         if (link === undefined) {
             createLink(portA, portB);
-
-
-
-
-
+            updateData();
         }
     }
 
@@ -98,26 +94,65 @@ I_Scene {
     }
 
     function updateData() {
+        console.log("Start-------------")
+        Object.values(nodes).forEach(node => {
+            switch (node.type) {
+                case CSpecs.NodeType.Additive:
+                case CSpecs.NodeType.Multiplier:
+                case CSpecs.NodeType.Subtraction:
+                case CSpecs.NodeType.Division:
+                     {
+                        node.nodeData.data = null;
+                        node.nodeData.inputFirst = null;
+                        node.nodeData.inputSecond = null;
+
+
+                     } break;
+
+                case CSpecs.NodeType.Result: {
+                          node.nodeData.data = null;
+                } break;
+
+                default: {
+                }
+
+         }
+        });
+
         Object.values(links).forEach(link => {
-                                         var portA = link.inputPort._qsUuid;
-                                         var portB = link.outputPort._qsUuid;
+            var portA = link.inputPort._qsUuid;
+            var portB = link.outputPort._qsUuid;
 
-                                         var nodeA = findNodeId(portA);
-                                         var nodeB = findNodeId(portB);
+            var nodeA = findNode(portA);
+            var nodeB = findNode(portB);
 
-                                         switch (nodeB.type) {
-                                            case CSpecs.NodeType.Operation: {
+                 console.log("In NodeB A ",nodeB.type, nodeB.title, nodeA.title)
+            switch (nodeB.type) {
+                case CSpecs.NodeType.Additive:
+                case CSpecs.NodeType.Multiplier:
+                case CSpecs.NodeType.Subtraction:
+                case CSpecs.NodeType.Division:
+                     {
+                         if (!nodeB.nodeData.inputFirst)
+                         nodeB.nodeData.inputFirst = nodeA.nodeData.data;
+                         else if (!nodeB.nodeData.inputSecond)
+                         nodeB.nodeData.inputSecond = nodeA.nodeData.data;
 
-                                            } break;
+                             console.log(nodeB.nodeData.inputSecond + nodeB.nodeData.inputFirst)
+                         nodeB.updataData();
 
-                                            case CSpecs.NodeType.Result: {
 
-                                            } break;
+                     } break;
 
-                                            case CSpecs.NodeType.Source: {
+                case CSpecs.NodeType.Result: {
+                         nodeB.nodeData.data = nodeA.nodeData.data;
+                } break;
 
-                                            } break;
-                                         }
-                                     });
+                default: {
+                }
+            }
+        });
+
+                                 console.log("-------------");
     }
 }

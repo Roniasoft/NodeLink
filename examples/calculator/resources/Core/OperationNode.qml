@@ -15,17 +15,6 @@ Node {
 
     Component.onCompleted: addPorts();
 
-    property Connections connections: Connections {
-        target: nodeData
-
-        function onInputFirstChanged() {
-
-        }
-
-        function onInputSecondChanged() {
-
-        }
-    }
 
     /* Functions
      * ****************************************************************************************/
@@ -52,26 +41,35 @@ Node {
 
 
     function updataData() {
+        console.log("operationType = ",operationType, nodeData.inputSecond, nodeData.inputFirst)
+        if (!nodeData.inputFirst || !nodeData.inputSecond) {
+            nodeData.data = null;
+            return;
+        }
+
+        var input1 = parseFloat(nodeData.inputFirst);
+        var input2 = parseFloat(nodeData.inputSecond)
+
         switch (operationType) {
         case CSpecs.OperationType.Additive: {
-            nodeData.data = nodeData.inputFirst + nodeData.inputSecond;
+            nodeData.data = input1 + input2;
         } break;
 
         case CSpecs.OperationType.Multiplier: {
-            nodeData.data = nodeData.inputFirst - nodeData.inputSecond;
+            nodeData.data = input1 * input2;
         } break;
 
         case CSpecs.OperationType.Subtraction: {
-            nodeData.data = nodeData.inputFirst * nodeData.inputSecond;
+            nodeData.data = input1 - input2;
         } break;
 
         case CSpecs.OperationType.Division: {
-            if(nodeData.inputSecond === 0) {
+            if(input2 === 0) {
                 nodeData.data = null;
 
                 return;
             }
-            nodeData.data = nodeData.inputFirst + nodeData.inputSecond;
+            nodeData.data = input1 / input2;
         } break;
         }
     }

@@ -97,12 +97,15 @@ NodeView {
             visible: !mainContentItem.iconOnly
             placeholderText: qsTr("Number")
             color: "white"
-            text: node.nodeData?.data ?? ""
+            text: node.nodeData?.data
             readOnly: !nodeView.edit || (node.type === CSpecs.NodeType.Result)
             wrapMode:TextEdit.WrapAnywhere
             onTextChanged: {
-                if (node && (node.nodeData?.data ?? "") !== text)
+                if (node && (node.nodeData?.data ?? "") !== text) {
                     node.nodeData.data = text;
+                    if (node.type === CSpecs.NodeType.Source)
+                        scene.updateData();
+                }
 
             }
             smooth: true
