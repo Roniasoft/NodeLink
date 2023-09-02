@@ -68,8 +68,9 @@ qt_add_library(NodeLink STATIC)
 set_source_files_properties(
     resources/Core/NLCore.qml
     resources/Core/NLSpec.qml
-    resources/View/NLStyle.qml
     resources/Core/Undo/HashCompareString.qml
+    resources/Core/NLNodeRegistry.qml
+    resources/View/NLStyle.qml
 
     PROPERTIES
         QT_QML_SINGLETON_TYPE True
@@ -107,6 +108,7 @@ qt_add_qml_module(NodeLink
         resources/Core/LinkGUIConfig.qml
         resources/Core/I_NodeData.qml
         resources/Core/NodeData.qml
+        resources/Core/NLNodeRegistry.qml
 
         resources/Core/Undo/UndoCore.qml
         resources/Core/Undo/UndoStack.qml

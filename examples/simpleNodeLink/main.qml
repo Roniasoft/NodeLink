@@ -1,8 +1,9 @@
 import QtQuick
-import NodeLink
 import QtQuickStream
 import QtQuick.Dialogs
-import QtQuick.Controls 2.12
+import QtQuick.Controls
+
+import NodeLink
 
 /*! ***********************************************************************************************
  * MainWindow of NodeLink example
@@ -15,6 +16,8 @@ Window {
      * ****************************************************************************************/
 
     property Scene scene: null
+
+
 
     /* Object Properties
      * ****************************************************************************************/
@@ -30,6 +33,43 @@ Window {
 
 
     Component.onCompleted: {
+
+        //! Registr node types and related properties.
+        NLNodeRegistry.imports = ["NodeLink"]
+        NLNodeRegistry.defaultNode = NLSpec.NodeType.General
+        NLNodeRegistry.nodeTypes = [
+                                      NLSpec.NodeType.General    = "GeneralNode",
+                                      NLSpec.NodeType.Root       = "RootNode",
+                                      NLSpec.NodeType.Step       = "StepNode",
+                                      NLSpec.NodeType.Transition = "TransitionNode",
+                                      NLSpec.NodeType.Macro      = "MacroNode"
+                                      ];
+
+        NLNodeRegistry.nodeNames = [
+                                      NLSpec.NodeType.General      = "General",
+                                      NLSpec.NodeType.Root         = "Root",
+                                      NLSpec.NodeType.Step         = "Step",
+                                      NLSpec.NodeType.Transition   = "Transition",
+                                      NLSpec.NodeType.Macro        = "Macro"
+                                      ];
+
+        NLNodeRegistry.nodeIcons = [
+                                      NLSpec.NodeType.General    = "\ue4e2",
+                                      NLSpec.NodeType.Root       = "\uf04b",
+                                      NLSpec.NodeType.Step       = "\uf54b",
+                                      NLSpec.NodeType.Transition = "\ue57f",
+                                      NLSpec.NodeType.Macro      = "\uf2db"
+                                      ];
+
+        NLNodeRegistry.nodeColors = [
+                                      NLSpec.NodeType.General      = "#444",
+                                      NLSpec.NodeType.Root         = "#333",
+                                      NLSpec.NodeType.Step         = "#3D9798",
+                                      NLSpec.NodeType.Transition   = "#625192",
+                                      NLSpec.NodeType.Macro        = "#9D9E57"
+                                      ];
+
+        console.log("NLNodeRegistry.nodeNames", Object.keys(NLNodeRegistry.nodeNames))
         NLCore.defaultRepo = NLCore.createDefaultRepo(["QtQuickStream", "NodeLink"])
         NLCore.defaultRepo.initRootObject("Scene");
         window.scene = Qt.binding(function() { return NLCore.defaultRepo.qsRootObject;});
