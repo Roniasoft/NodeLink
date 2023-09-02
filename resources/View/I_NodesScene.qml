@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls
+
 import NodeLink
 import QtQuickStream
 
@@ -12,7 +13,7 @@ Flickable {
     /* Property Declarations
     * ****************************************************************************************/
     //! Scene is the main model containing information about all nodes/links
-    property Scene          scene:          null
+    property I_Scene        scene:          null
 
     //! Scene session contains information about scene states (UI related)
     property SceneSession   sceneSession:   null

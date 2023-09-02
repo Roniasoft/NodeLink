@@ -14,10 +14,10 @@ Rectangle {
     /* Property Declarations
     * ****************************************************************************************/
     //! Current node
-    property Node  node
+    property Node     node
 
     //! Scene is the main model containing information about all nodes/links
-    property Scene scene
+    property I_Scene  scene
 
     //! Node Contents
     property Component      contentItem:    null
@@ -31,6 +31,7 @@ Rectangle {
     /* Object Properties
     * ****************************************************************************************/
 
+    visible: node && scene
     //! NodeView scales relative to top left
     transform: Scale {
         xScale: scaleFactor
@@ -45,11 +46,11 @@ Rectangle {
     smooth: true
     antialiasing: true
 
-    color: Qt.darker(node.guiConfig.color, 10)
-    border.color: node.guiConfig.locked ? NLStyle.node.borderLockColor : node.guiConfig.color
+    color: Qt.darker(node?.guiConfig?.color ?? "transparent", 10)
+    border.color: (node?.guiConfig?.locked ?? true) ? NLStyle.node.borderLockColor : node.guiConfig.color
     border.width: NLStyle.node.borderWidth
     opacity: NLStyle.node.defaultOpacity
-    z: node.guiConfig.locked ? 1 : 2
+    z: (node?.guiConfig?.locked ?? false) ? 1 : 2
 
     Behavior on color {ColorAnimation {duration:100}}
     Behavior on border.color {ColorAnimation {duration:100}}

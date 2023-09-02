@@ -13,7 +13,7 @@ Item {
     /* Property Declarations
     * ****************************************************************************************/
     //! Scene is the main model containing information about all nodes/links
-    property Scene          scene
+    property I_Scene        scene
 
     //! Scene session contains information about scene states (UI related)
     property SceneSession   sceneSession

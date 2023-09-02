@@ -9,7 +9,7 @@ import NodeLink
 Item {
     id: sideMenu1
 
-    property Scene        scene
+    property I_Scene      scene
     property SceneSession sceneSession
 
     /* Children

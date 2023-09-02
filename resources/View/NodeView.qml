@@ -20,7 +20,7 @@ InteractiveNodeView {
     /* Object Properties
      * ****************************************************************************************/
     opacity: isSelected ? 1 : isNodeMinimal ? 0.6 : 0.8
-    scaleFactor: sceneSession.zoomManager.zoomFactor
+    scaleFactor: sceneSession?.zoomManager.zoomFactor ?? 1.0
 
     /* Slots
      * ****************************************************************************************/
@@ -76,7 +76,7 @@ InteractiveNodeView {
                 font.pixelSize: 20
                 anchors.left: parent.left
                 anchors.verticalCenter: parent.verticalCenter
-                text: NLStyle.nodeIcons[node.type]
+                text: NLNodeRegistry.nodeIcons[node.type]
                 color: node.guiConfig.color
                 font.weight: 400
             }
@@ -222,7 +222,7 @@ InteractiveNodeView {
                 font.family: NLStyle.fontType.font6Pro
                 font.pixelSize: 60
                 anchors.centerIn: parent
-                text: NLStyle.nodeIcons[node.type]
+                text: NLNodeRegistry.nodeIcons[node.type]
                 color: node.guiConfig.color
                 font.weight: 400
                 visible: nodeView.isNodeMinimal
@@ -399,10 +399,10 @@ InteractiveNodeView {
     //! Handle dimension change
     function dimensionChanged() {
         if(nodeView.isSelected)
-            scene.selectionModel.selectedObjectChanged();
+            scene?.selectionModel?.selectedObjectChanged();
         else {
-            scene.selectionModel.clearAllExcept(node._qsUuid)
-            scene.selectionModel.selectNode(node)
+            scene?.selectionModel?.clearAllExcept(node._qsUuid)
+            scene?.selectionModel?.selectNode(node)
         }
     }
 }

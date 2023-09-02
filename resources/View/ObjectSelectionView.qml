@@ -11,7 +11,7 @@ Item {
 
     /* Property Declarations
     * ****************************************************************************************/
-    property Scene          scene
+    property I_Scene        scene
     property SceneSession   sceneSession
     property SelectionModel selectionModel: scene.selectionModel
 
