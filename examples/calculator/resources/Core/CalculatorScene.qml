@@ -45,7 +45,12 @@ I_Scene {
                                              conObj.outputPort._qsUuid === portB);
 
         if (link === undefined) {
-            createLink(portA, portB)
+            createLink(portA, portB);
+
+
+
+
+
         }
     }
 
@@ -92,7 +97,27 @@ I_Scene {
         return true;
     }
 
-    function updateNodeData() {
+    function updateData() {
+        Object.values(links).forEach(link => {
+                                         var portA = link.inputPort._qsUuid;
+                                         var portB = link.outputPort._qsUuid;
 
+                                         var nodeA = findNodeId(portA);
+                                         var nodeB = findNodeId(portB);
+
+                                         switch (nodeB.type) {
+                                            case CSpecs.NodeType.Operation: {
+
+                                            } break;
+
+                                            case CSpecs.NodeType.Result: {
+
+                                            } break;
+
+                                            case CSpecs.NodeType.Source: {
+
+                                            } break;
+                                         }
+                                     });
     }
 }

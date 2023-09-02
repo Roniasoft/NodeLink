@@ -4,13 +4,31 @@ import NodeLink
 
 Node {
 
+    /* Property Declarations
+     * ****************************************************************************************/
+
     property int operationType: CSpecs.OperationType.Additive
 
     type: CSpecs.NodeType.Operation
 
-    nodeData: I_NodeData {}
+    nodeData: OperationNodeData {}
 
     Component.onCompleted: addPorts();
+
+    property Connections connections: Connections {
+        target: nodeData
+
+        function onInputFirstChanged() {
+
+        }
+
+        function onInputSecondChanged() {
+
+        }
+    }
+
+    /* Functions
+     * ****************************************************************************************/
 
     //! Create ports for oeration nodes
     function addPorts () {
@@ -33,5 +51,29 @@ Node {
     }
 
 
+    function updataData() {
+        switch (operationType) {
+        case CSpecs.OperationType.Additive: {
+            nodeData.data = nodeData.inputFirst + nodeData.inputSecond;
+        } break;
+
+        case CSpecs.OperationType.Multiplier: {
+            nodeData.data = nodeData.inputFirst - nodeData.inputSecond;
+        } break;
+
+        case CSpecs.OperationType.Subtraction: {
+            nodeData.data = nodeData.inputFirst * nodeData.inputSecond;
+        } break;
+
+        case CSpecs.OperationType.Division: {
+            if(nodeData.inputSecond === 0) {
+                nodeData.data = null;
+
+                return;
+            }
+            nodeData.data = nodeData.inputFirst + nodeData.inputSecond;
+        } break;
+        }
+    }
 
 }
