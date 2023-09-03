@@ -36,7 +36,7 @@ Window {
         // Registre nodes in NodeLink
         NLNodeRegistry.imports = ["Calculator"]
 
-        NLNodeRegistry.defaultNode = CSpecs.NodeType.Additive
+        NLNodeRegistry.defaultNode = CSpecs.NodeType.Source
         NLNodeRegistry.nodeTypes = [
                     CSpecs.NodeType.Source      = "SourceNode",
                     CSpecs.NodeType.Additive    = "AdditiveNode",

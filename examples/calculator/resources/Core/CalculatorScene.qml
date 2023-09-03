@@ -146,7 +146,6 @@ I_Scene {
         });
 
         Object.values(links).forEach(link => {
-                                         console.log(link._qsUuid)
             var portA = link.inputPort._qsUuid;
             var portB = link.outputPort._qsUuid;
 

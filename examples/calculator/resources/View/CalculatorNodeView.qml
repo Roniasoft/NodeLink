@@ -104,7 +104,12 @@ NodeView {
             visible: !mainContentItem.iconOnly
             placeholderText: qsTr("Number")
             color: "white"
-            text: node?.nodeData?.data
+            text: {
+                if (node.type === CSpecs.NodeType.Result)
+                    return node?.nodeData?.data
+
+                return "";
+            }
             readOnly: !nodeView.edit || (node.type === CSpecs.NodeType.Result)
             wrapMode:TextEdit.WrapAnywhere
             onTextChanged: {
@@ -113,7 +118,6 @@ NodeView {
                     if (node.type === CSpecs.NodeType.Source)
                         scene.updateData();
                 }
-
             }
             smooth: true
             antialiasing: true

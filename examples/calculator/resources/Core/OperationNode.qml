@@ -22,7 +22,7 @@ Node {
 
 
     guiConfig.width: 100
-    guiConfig.height: 80
+    guiConfig.height: 70
 
     Component.onCompleted: addPorts();
 
@@ -37,9 +37,11 @@ Node {
 
         _port1.portType = NLSpec.PortType.Input
         _port1.portSide = NLSpec.PortPositionSide.Left
+        _port1.enable   = false;
 
         _port2.portType = NLSpec.PortType.Input
         _port2.portSide = NLSpec.PortPositionSide.Left
+        _port2.enable   = false;
 
         _port3.portType = NLSpec.PortType.Output
         _port3.portSide = NLSpec.PortPositionSide.Right
