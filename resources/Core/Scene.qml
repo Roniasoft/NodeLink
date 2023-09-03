@@ -30,7 +30,6 @@ I_Scene {
     //            node.guiConfig.position.y = Math.random() * 1000;
     //            node.guiConfig.color = Qt.rgba(Math.random(), Math.random(), Math.random(), 1)
     //            addNode(node);
-    //            node.addPortByHardCode();
     //        }
     //        _timer.start();
     //    }

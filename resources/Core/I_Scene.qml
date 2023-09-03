@@ -75,7 +75,6 @@ QSObject {
 
         scene.selectionModel.clear();
         scene.selectionModel.selectNode(node);
-
         node.onPortAdded.connect(onPortAdded);
         return node;
     }
@@ -130,17 +129,18 @@ QSObject {
 
     //! duplicator (third button)
     function cloneNode(nodeUUId: string) {
-        var node = NLCore.createNode();
-        addNode(node);
+        var baseNode = nodes[nodeUUId];
+        var nodeUuid = createSpecificNode(NLNodeRegistry.imports, baseNode.type,
+                                      NLNodeRegistry.nodeTypes[baseNode.type],
+                                      baseNode.guiConfig.color,
+                                      baseNode.title, baseNode.guiConfig.position.x + 50,
+                                      baseNode.guiConfig.position.y + 50);
 
-        node.guiConfig.position.x = nodes[nodeUUId].guiConfig.position.x + 50
-        node.guiConfig.position.y = nodes[nodeUUId].guiConfig.position.y + 50
-        node.guiConfig.color = nodes[nodeUUId].guiConfig.color
-        node.guiConfig.height = nodes[nodeUUId].guiConfig.height
-        node.guiConfig.width = nodes[nodeUUId].guiConfig.width
-        node.title = nodes[nodeUUId].title
-        node.addPortByHardCode();
-        selectionModel.selectNode(node);
+        var node = nodes[nodeUUId];
+
+        node.guiConfig.height = baseNode.guiConfig.height
+        node.guiConfig.width = baseNode.guiConfig.width
+        node.nodeData = baseNode.nodeData
     }
 
     //! On port added

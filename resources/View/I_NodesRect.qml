@@ -48,14 +48,6 @@ Item {
 
         //! nodeRepeater updated when a node added
         function onNodeAdded(nodeObj: Node) {
-//            let nodeViewObj = Qt.createQmlObject(nodeViewUrl, root)
-
-//            nodeViewObj.scene = root.scene;
-//            nodeViewObj.sceneSession = root.sceneSession;
-//            nodeViewObj.node = nodeObj;
-//            _nodeViewMap[nodeObj._qsUuid] = nodeViewObj;
-
-            console.log(nodeViewComponent.errorString())
             const incubator = nodeViewComponent.incubateObject(parent, {
                                                            scene: root.scene,
                                                            sceneSession: root.sceneSession,
