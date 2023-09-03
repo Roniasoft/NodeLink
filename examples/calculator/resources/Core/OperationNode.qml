@@ -41,7 +41,6 @@ Node {
 
 
     function updataData() {
-        console.log("operationType = ",operationType, nodeData.inputSecond, nodeData.inputFirst)
         if (!nodeData.inputFirst || !nodeData.inputSecond) {
             nodeData.data = null;
             return;

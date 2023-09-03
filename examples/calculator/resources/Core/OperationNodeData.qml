@@ -12,7 +12,7 @@ I_NodeData {
     /* Property Declarations
      * ****************************************************************************************/
 
-    //! Two output data
-    property var inputFirst: null
+    //! Two input data
+    property var inputFirst:  null
     property var inputSecond: null
 }

@@ -21,6 +21,19 @@ I_Scene {
         scene: scene
     }
 
+    //! update node data when a link removed, node removed and link added.
+    onLinkRemoved: _upateDataTimer.start();
+    onNodeRemoved: _upateDataTimer.start();
+    onLinkAdded:   updateData();
+
+    property Timer _upateDataTimer: Timer {
+        repeat: false
+        running: false
+        interval: 1
+
+        onTriggered: scene.updateData();
+    }
+
     /* Functions
      * ****************************************************************************************/
 
@@ -44,10 +57,8 @@ I_Scene {
                                              conObj.inputPort._qsUuid === portA &&
                                              conObj.outputPort._qsUuid === portB);
 
-        if (link === undefined) {
+        if (link === undefined)
             createLink(portA, portB);
-            updateData();
-        }
     }
 
     //! The ability to create a link is detected in the canLinkNodes function.
@@ -55,6 +66,8 @@ I_Scene {
     //!     - A link must be established between two specific links
     //!     - Link can not be duplicate
     //!     - A node cannot establish a link with itself
+    //!     - An output port can connect to input ports
+    //!     - Only one link can connected to input port.
     function canLinkNodes(portA : string, portB : string): bool {
 
         //! Sanity check
@@ -93,8 +106,13 @@ I_Scene {
         return true;
     }
 
+    //! Updata node data with connected links
     function updateData() {
-        console.log("Start-------------")
+
+        // Use notReadyLinks to detect links that be updated in future.
+        var notReadyLinks = [];
+
+        // initalize node data
         Object.values(nodes).forEach(node => {
             switch (node.type) {
                 case CSpecs.NodeType.Additive:
@@ -120,39 +138,60 @@ I_Scene {
         });
 
         Object.values(links).forEach(link => {
+                                         console.log(link._qsUuid)
             var portA = link.inputPort._qsUuid;
             var portB = link.outputPort._qsUuid;
 
-            var nodeA = findNode(portA);
-            var nodeB = findNode(portB);
+            var upstreamNode   = findNode(portA);
+            var downStreamNode = findNode(portB);
 
-                 console.log("In NodeB A ",nodeB.type, nodeB.title, nodeA.title)
-            switch (nodeB.type) {
-                case CSpecs.NodeType.Additive:
-                case CSpecs.NodeType.Multiplier:
-                case CSpecs.NodeType.Subtraction:
-                case CSpecs.NodeType.Division:
-                     {
-                         if (!nodeB.nodeData.inputFirst)
-                         nodeB.nodeData.inputFirst = nodeA.nodeData.data;
-                         else if (!nodeB.nodeData.inputSecond)
-                         nodeB.nodeData.inputSecond = nodeA.nodeData.data;
-
-                             console.log(nodeB.nodeData.inputSecond + nodeB.nodeData.inputFirst)
-                         nodeB.updataData();
-
-
-                     } break;
-
-                case CSpecs.NodeType.Result: {
-                         nodeB.nodeData.data = nodeA.nodeData.data;
-                } break;
-
-                default: {
-                }
+            if (!upstreamNode.nodeData.data) {
+                notReadyLinks.push(link)
+                return;
             }
+
+            upadateNodeData(upstreamNode, downStreamNode);
+
         });
 
-                                 console.log("-------------");
+        notReadyLinks.forEach(link => {
+            var portA = link.inputPort._qsUuid;
+            var portB = link.outputPort._qsUuid;
+
+            // Find nodes
+            var upstreamNode   = findNode(portA);
+            var downStreamNode = findNode(portB);
+
+            upadateNodeData(upstreamNode, downStreamNode);
+        });
+    }
+
+    //! Update node data
+    function upadateNodeData(upstreamNode: Node, downStreamNode: Node) {
+        switch (downStreamNode.type) {
+            // Update operation nodes data
+            case CSpecs.NodeType.Additive:
+            case CSpecs.NodeType.Multiplier:
+            case CSpecs.NodeType.Subtraction:
+            case CSpecs.NodeType.Division:
+                 {
+                     if (!downStreamNode.nodeData.inputFirst)
+                     downStreamNode.nodeData.inputFirst = upstreamNode.nodeData.data;
+                     else if (!downStreamNode.nodeData.inputSecond)
+                     downStreamNode.nodeData.inputSecond = upstreamNode.nodeData.data;
+
+                     // Update downStreamNode data with specefic operation
+                     downStreamNode.updataData();
+
+
+                 } break;
+
+            case CSpecs.NodeType.Result: {
+                     downStreamNode.nodeData.data = upstreamNode.nodeData.data;
+            } break;
+
+            default: {
+            }
+        }
     }
 }
