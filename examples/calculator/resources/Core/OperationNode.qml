@@ -20,8 +20,11 @@ Node {
 
     nodeData: OperationNodeData {}
 
-    Component.onCompleted: addPorts();
 
+    guiConfig.width: 100
+    guiConfig.height: 80
+
+    Component.onCompleted: addPorts();
 
     /* Functions
      * ****************************************************************************************/
