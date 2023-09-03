@@ -64,6 +64,9 @@ Rectangle {
         propagateComposedEvents: true
 
         onPressed: mouse => {
+            if (!port.enable)
+                return;
+
             selectionFunction(port._qsUuid);
             sceneSession.connectingMode = true;
             //Set mouse.accepeted to false to pass mouse events to last active parent
