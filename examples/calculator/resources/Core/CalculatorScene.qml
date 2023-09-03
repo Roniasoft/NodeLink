@@ -103,6 +103,14 @@ I_Scene {
             return false;
         }
 
+        // A node can be connect to another at one direction
+        var sameReverseLinks = Object.values(links).filter(link =>
+            findNodeId(link.outputPort._qsUuid) === nodeA &&
+            findNodeId(link.inputPort._qsUuid) === nodeB);
+
+        if (sameReverseLinks.length > 0)
+            return false;
+
         return true;
     }
 
@@ -145,8 +153,21 @@ I_Scene {
             var upstreamNode   = findNode(portA);
             var downStreamNode = findNode(portB);
 
-            if (!upstreamNode.nodeData.data) {
-                notReadyLinks.push(link)
+
+            // Find nodes with valid data that connected to upstreamNode
+            var upstreamNodeLinks = Object.values(links).filter(linkObj => {
+                                                                    var node = findNode(linkObj.outputPort._qsUuid);
+                                                                    var inputNode = findNode(linkObj.inputPort._qsUuid);
+                                                                    if (node._qsUuid === upstreamNode._qsUuid) {
+                                                                        if(inputNode.nodeData.data)
+                                                                        return linkObj
+                                                                    }
+                                                                });
+
+            if (!upstreamNode.nodeData.data &&
+                upstreamNode.type !== CSpecs.NodeType.Source) {
+                if (upstreamNodeLinks.length > 1)
+                    notReadyLinks.push(link);
                 return;
             }
 
@@ -154,16 +175,27 @@ I_Scene {
 
         });
 
-        notReadyLinks.forEach(link => {
-            var portA = link.inputPort._qsUuid;
-            var portB = link.outputPort._qsUuid;
+        while (notReadyLinks.length > 0) {
+            notReadyLinks.forEach((link, index ) => {
+                                      var portA = link.inputPort._qsUuid;
+                                      var portB = link.outputPort._qsUuid;
 
-            // Find nodes
-            var upstreamNode   = findNode(portA);
-            var downStreamNode = findNode(portB);
+                                      // Find nodes
+                                      var upstreamNode   = findNode(portA);
+                                      var downStreamNode = findNode(portB);
 
-            upadateNodeData(upstreamNode, downStreamNode);
-        });
+                                      var upstreamNodeLinks = Object.values(links).filter(linkObj => findNodeId(linkObj.outputPort._qsUuid) === upstreamNode._qsUuid);
+
+                                      //! remove link from notReadyLinks when
+                                      //! upstreamNode.nodeData.data is not null
+                                      if (upstreamNode.nodeData.data) {
+                                          notReadyLinks.splice(index, 1);
+                                      }
+
+                                      // update node data
+                                      upadateNodeData(upstreamNode, downStreamNode);
+                                  });
+        }
     }
 
     //! Update node data
