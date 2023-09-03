@@ -2,12 +2,19 @@ import QtQuick
 
 import NodeLink
 
+/*! ***********************************************************************************************
+ * OperationNode is a model that manage operation nodes in calculator.
+ * ************************************************************************************************/
+
 Node {
 
     /* Property Declarations
      * ****************************************************************************************/
 
     property int operationType: CSpecs.OperationType.Additive
+
+    /* Object Properties
+    * ****************************************************************************************/
 
     type: CSpecs.NodeType.Operation
 
@@ -38,39 +45,4 @@ Node {
         addPort(_port2);
         addPort(_port3);
     }
-
-
-    function updataData() {
-        if (!nodeData.inputFirst || !nodeData.inputSecond) {
-            nodeData.data = null;
-            return;
-        }
-
-        var input1 = parseFloat(nodeData.inputFirst);
-        var input2 = parseFloat(nodeData.inputSecond)
-
-        switch (operationType) {
-        case CSpecs.OperationType.Additive: {
-            nodeData.data = input1 + input2;
-        } break;
-
-        case CSpecs.OperationType.Multiplier: {
-            nodeData.data = input1 * input2;
-        } break;
-
-        case CSpecs.OperationType.Subtraction: {
-            nodeData.data = input1 - input2;
-        } break;
-
-        case CSpecs.OperationType.Division: {
-            if(input2 === 0) {
-                nodeData.data = null;
-
-                return;
-            }
-            nodeData.data = input1 / input2;
-        } break;
-        }
-    }
-
 }

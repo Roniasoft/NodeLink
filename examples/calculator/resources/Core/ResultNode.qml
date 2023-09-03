@@ -8,10 +8,16 @@ import NodeLink
 
 Node {
 
+    /* Object Properties
+    * ****************************************************************************************/
+
     type: CSpecs.NodeType.Result
     nodeData: I_NodeData {}
 
     Component.onCompleted: addPorts();
+
+    /* Functions
+     * ****************************************************************************************/
 
     //! Create ports for oeration nodes
     function addPorts () {

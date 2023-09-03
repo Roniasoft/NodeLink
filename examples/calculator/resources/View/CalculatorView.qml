@@ -5,6 +5,10 @@ import NodeLink
 import QtQuickStream
 import Calculator
 
+/*! ***********************************************************************************************
+ * CalculatorView manage and show all objects in calcultor.
+ * ************************************************************************************************/
+
 Item {
     id: view
 

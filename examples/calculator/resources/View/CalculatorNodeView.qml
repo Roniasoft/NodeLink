@@ -4,8 +4,15 @@ import QtQuick.Controls
 import NodeLink
 import Calculator
 
+/*! ***********************************************************************************************
+ * CalculatorNodeView is nodeView to show nodeView calculator.
+ * ************************************************************************************************/
+
 NodeView {
     id: nodeView
+
+    /* Object Properties
+    * ****************************************************************************************/
 
     contentItem: Item {
         id: mainContentItem

@@ -33,6 +33,7 @@ Window {
 
 
     Component.onCompleted: {
+        // Registre nodes in NodeLink
         NLNodeRegistry.imports = ["Calculator"]
 
         NLNodeRegistry.defaultNode = CSpecs.NodeType.Additive
@@ -72,6 +73,7 @@ Window {
                     CSpecs.NodeType.Result      = "#444",
                 ];
 
+        // Create root object
         NLCore.defaultRepo = NLCore.createDefaultRepo(["QtQuickStream", "Calculator"])
         NLCore.defaultRepo.initRootObject("CalculatorScene");
         window.scene = Qt.binding(function() { return NLCore.defaultRepo.qsRootObject;});
@@ -88,6 +90,7 @@ Window {
     /* Children
      * ****************************************************************************************/
 
+    //! CalculatorView
     CalculatorView {
         id: view
         scene: window.scene

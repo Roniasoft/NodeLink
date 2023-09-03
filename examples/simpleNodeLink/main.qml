@@ -69,7 +69,6 @@ Window {
                                       NLSpec.NodeType.Macro        = "#9D9E57"
                                       ];
 
-        console.log("NLNodeRegistry.nodeNames", Object.keys(NLNodeRegistry.nodeNames))
         NLCore.defaultRepo = NLCore.createDefaultRepo(["QtQuickStream", "NodeLink"])
         NLCore.defaultRepo.initRootObject("Scene");
         window.scene = Qt.binding(function() { return NLCore.defaultRepo.qsRootObject;});
