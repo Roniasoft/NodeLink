@@ -66,6 +66,7 @@ Canvas {
     //! Length of arrow
     property real         arrowHeadLength: 10 * customScaleFactor;
 
+
     //! Update painted line when change position of input and output ports and some another
     //! properties changed
     onOutputPosChanged:  preparePainter();
@@ -80,12 +81,17 @@ Canvas {
     antialiasing: true
 
     // Height and width of canvas, (arrowHeadLength * 2) is the margin
-    width:  (Math.abs(topLeftX - bottomRightX) + arrowHeadLength * 2) * customScaleFactor
-    height: (Math.abs(topLeftY - bottomRightY) + arrowHeadLength * 2) * customScaleFactor
+    width:  (Math.abs(topLeftX - bottomRightX) + arrowHeadLength * 2) * customScaleFactor / zoomFactor
+    height: (Math.abs(topLeftY - bottomRightY) + arrowHeadLength * 2) * customScaleFactor / zoomFactor
 
     // Position of canvas, arrowHeadLength is the margin
-    x: ((topLeftX - arrowHeadLength) - nodeRectTopLeft.x) * customScaleFactor
-    y: ((topLeftY - arrowHeadLength) - nodeRectTopLeft.y) * customScaleFactor
+    x: ((topLeftX - arrowHeadLength) - nodeRectTopLeft.x) * customScaleFactor / zoomFactor
+    y: ((topLeftY - arrowHeadLength) - nodeRectTopLeft.y) * customScaleFactor / zoomFactor
+
+//    Rectangle {
+//        anchors.fill: parent
+//        color: "blue"
+//    }
 
     //! paint line
     onPaint: {
@@ -100,8 +106,8 @@ Canvas {
 
         // Top left position vector
         var topLeftPosition = Qt.vector2d(canvas.x, canvas.y);
-        var minPoint1 = inputPos.plus(BasicLinkCalculator.connectionMargin(inputPort?.portSide ?? -1, zoomFactor));
-        var minPoint2 = outputPos.plus(BasicLinkCalculator.connectionMargin(outputPort?.portSide ?? -1, zoomFactor));
+        var minPoint1 = inputPos.plus(BasicLinkCalculator.connectionMargin(inputPort?.portSide ?? -1));
+        var minPoint2 = outputPos.plus(BasicLinkCalculator.connectionMargin(outputPort?.portSide ?? -1));
         linkMidPoint = Calculation.getPositionByTolerance(0.5, [inputPos, minPoint1, minPoint2, outputPos]);
         linkMidPoint = linkMidPoint.minus(topLeftPosition);
 
@@ -110,14 +116,14 @@ Canvas {
         //! Correcte control points in ui state
         var controlPoints = [];
 
-        var inputPosx = (inputPos.x  - (topLeftX - arrowHeadLength)) * customScaleFactor
-        var inputPosy = (inputPos.y  - (topLeftY - arrowHeadLength)) * customScaleFactor
+        var inputPosx = (inputPos.x  - (topLeftX - arrowHeadLength)) * customScaleFactor / zoomFactor
+        var inputPosy = (inputPos.y  - (topLeftY - arrowHeadLength)) * customScaleFactor / zoomFactor
         var inputPos1 = Qt.vector2d(inputPosx,inputPosy)
 
 
         link.controlPoints.forEach(controlPoint => {
-                                        var controlPointx = (controlPoint.x  - (topLeftX - arrowHeadLength)) * customScaleFactor
-                                        var controlPointy = (controlPoint.y  - (topLeftY - arrowHeadLength)) * customScaleFactor
+                                        var controlPointx = (controlPoint.x  - (topLeftX - arrowHeadLength)) * customScaleFactor / zoomFactor
+                                        var controlPointy = (controlPoint.y  - (topLeftY - arrowHeadLength)) * customScaleFactor / zoomFactor
                                         var controlPoint1 = Qt.vector2d(controlPointx,controlPointy)
                                         controlPoints.push(controlPoint1)
                                     });

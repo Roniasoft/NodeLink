@@ -60,8 +60,9 @@ Item {
             scene: root.scene
             sceneSession: root.sceneSession
             link: modelData
-            nodeRectTopLeft: root.nodeRectTopLeft
+            nodeRectTopLeft: root.nodeRectTopLeft.times(sceneSession.zoomManager.zoomFactor)
             customScaleFactor: root.customScaleFactor
+            zoomFactor: sceneSession.zoomManager.zoomFactor
         }
     }
 
