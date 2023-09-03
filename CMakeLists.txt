@@ -11,8 +11,7 @@ project(NodeLink VERSION 1.0 LANGUAGES CXX)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set (QML_IMPORT_PATH ${CMAKE_CURRENT_SOURCE_DIR})
-
+list (APPEND QML_IMPORT_PATH ${CMAKE_CURRENT_SOURCE_DIR})
 
 #message(${QML_IMPORT_PATH})
 #Turns on default settings for development of NodeLink
@@ -68,8 +67,9 @@ qt_add_library(NodeLink STATIC)
 set_source_files_properties(
     resources/Core/NLCore.qml
     resources/Core/NLSpec.qml
-    resources/View/NLStyle.qml
     resources/Core/Undo/HashCompareString.qml
+    resources/Core/NLNodeRegistry.qml
+    resources/View/NLStyle.qml
 
     PROPERTIES
         QT_QML_SINGLETON_TYPE True
@@ -107,6 +107,7 @@ qt_add_qml_module(NodeLink
         resources/Core/LinkGUIConfig.qml
         resources/Core/I_NodeData.qml
         resources/Core/NodeData.qml
+        resources/Core/NLNodeRegistry.qml
 
         resources/Core/Undo/UndoCore.qml
         resources/Core/Undo/UndoStack.qml
@@ -207,8 +208,6 @@ set_target_properties(NodeLink PROPERTIES
 install(TARGETS NodeLink
     BUNDLE DESTINATION .
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
-
-set(QML_IMPORT_PATH ${QT_QML_OUTPUT_DIRECTORY} CACHE STRING "QtCreator QML Modules Lookup")
 
 if(${BUILD_EXAMPLES})
   add_subdirectory(examples)

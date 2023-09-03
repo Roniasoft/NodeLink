@@ -14,7 +14,7 @@ Rectangle {
 
     /* Property Declarations
      * ****************************************************************************************/
-    required property Scene         scene
+    required property I_Scene       scene
     required property SceneSession  sceneSession
 
     //! Selected model (Node AND/OR links)

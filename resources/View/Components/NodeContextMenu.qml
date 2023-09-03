@@ -11,8 +11,8 @@ Menu {
 
     /* Property Declarations
      * ****************************************************************************************/
-    required property Scene scene
-    required property Node  node
+    required property I_Scene scene
+    required property Node    node
 
     property SceneSession   sceneSession: null
 

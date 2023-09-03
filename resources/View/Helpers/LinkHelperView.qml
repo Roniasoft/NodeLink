@@ -164,7 +164,7 @@ LinkView {
 
             Object.values(scene.nodes).find(node => {
                     if (node._qsUuid === nodeUuid) {
-                        foundedPortId = node.findPortByPortSide(portSide)._qsUuid;
+                        foundedPortId = node.findPortByPortSide(portSide)?._qsUuid ?? "";
                     }
                 });
 

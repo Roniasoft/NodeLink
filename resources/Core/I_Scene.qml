@@ -75,24 +75,26 @@ QSObject {
 
         scene.selectionModel.clear();
         scene.selectionModel.selectNode(node);
-
         node.onPortAdded.connect(onPortAdded);
         return node;
     }
 
+
     //! Create a node with node type and its position
     //! \todo: this method should be removed
-    function createCustomizeNode(nodeType : int, xPos : real, yPos : real) : string {
+    function createSpecificNode(imports, nodeType : int,
+                                nodeTypeName: string, nodeColor: string,
+                                title: string,
+                                xPos : real, yPos : real) : string {
         //! Create a Node with custom node type
-        var node = QSSerializer.createQSObject(NLStyle.nodeNames[nodeType], ["NodeLink"], NLCore.defaultRepo);
+        var node = QSSerializer.createQSObject(nodeTypeName, imports, NLCore.defaultRepo);
         node._qsRepo = NLCore.defaultRepo;
         node.type = nodeType;
         node.guiConfig.position.x = xPos;
         node.guiConfig.position.y = yPos;
-        node.guiConfig.color = NLStyle.nodeColors[nodeType]//Qt.rgba(Math.random(), Math.random(), Math.random(), 1)
-        node.title = NLStyle.objectTypesString[nodeType] + "_" + (Object.values(scene.nodes).filter(node => node.type === nodeType).length + 1)
+        node.guiConfig.color = nodeColor;
+        node.title = title;
         scene.addNode(node)
-        node.addPortByHardCode();
 
         return node._qsUuid;
     }
@@ -127,17 +129,18 @@ QSObject {
 
     //! duplicator (third button)
     function cloneNode(nodeUUId: string) {
-        var node = NLCore.createNode();
-        addNode(node);
+        var baseNode = nodes[nodeUUId];
+        var nodeUuid = createSpecificNode(NLNodeRegistry.imports, baseNode.type,
+                                      NLNodeRegistry.nodeTypes[baseNode.type],
+                                      baseNode.guiConfig.color,
+                                      baseNode.title, baseNode.guiConfig.position.x + 50,
+                                      baseNode.guiConfig.position.y + 50);
 
-        node.guiConfig.position.x = nodes[nodeUUId].guiConfig.position.x + 50
-        node.guiConfig.position.y = nodes[nodeUUId].guiConfig.position.y + 50
-        node.guiConfig.color = nodes[nodeUUId].guiConfig.color
-        node.guiConfig.height = nodes[nodeUUId].guiConfig.height
-        node.guiConfig.width = nodes[nodeUUId].guiConfig.width
-        node.title = nodes[nodeUUId].title
-        node.addPortByHardCode();
-        selectionModel.selectNode(node);
+        var node = nodes[nodeUUId];
+
+        node.guiConfig.height = baseNode.guiConfig.height
+        node.guiConfig.width = baseNode.guiConfig.width
+        node.nodeData = baseNode.nodeData
     }
 
     //! On port added
@@ -149,17 +152,8 @@ QSObject {
     }
 
     //! Link two nodes (via their ports) - portA is the upstream and portB the downstream one
-    function linkNodes(portA : string, portB : string) {
-        if (!canLinkNodes(portA, portB)) {
-            console.error("[Scene] Cannot link Nodes ");
-            return;
-        }
+    function createLink(portA : string, portB : string) {
 
-        let link = Object.values(links).find(conObj =>
-                                     conObj.inputPort._qsUuid === portA &&
-                                     conObj.outputPort._qsUuid === portB);
-
-        if (link === undefined) {
             let obj = NLCore.createLink();
             obj.inputPort  = findPort(portA);
             obj.outputPort = findPort(portB);
@@ -168,7 +162,6 @@ QSObject {
 
             // Add link into UI
             linkAdded(obj);
-        }
     }
 
     //! Unlink two ports
@@ -184,36 +177,6 @@ QSObject {
                 }
         });
         linksChanged();
-    }
-
-    //! The ability to create a link is detected in the canLinkNodes function.
-    //! Rols:
-    //!     - A link must be established between two specific links
-    //!     - Link can not be duplicate
-    //!     - A node cannot establish a link with itself
-    function canLinkNodes(portA : string, portB : string): bool {
-
-        //! Sanity check
-        if (portA.length === 0 || portB.length === 0)
-            return false;
-
-        // Find exist links with portA as input port and portB as output port.
-        var sameLinks = Object.values(links).filter(link =>
-            HashCompareString.compareStringModels(link.inputPort._qsUuid, portA) &&
-            HashCompareString.compareStringModels(link.outputPort._qsUuid, portB));
-
-        if (sameLinks.length > 0)
-            return false;
-
-        // A node cannot establish a link with itself
-        var nodeA = findNodeId(portA);
-        var nodeB = findNodeId(portB);
-        if (HashCompareString.compareStringModels(nodeA, nodeB)
-                    || nodeA.length === 0 || nodeB.length === 0) {
-            return false;
-        }
-
-        return true;
     }
 
     //! Finds the node according given portId

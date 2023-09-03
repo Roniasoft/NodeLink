@@ -11,7 +11,7 @@ QtObject {
     /* Button related
      * ****************************************************************************************/
 
-    /* Port
+    /* Properties
      * ****************************************************************************************/
     readonly property QtObject portView: QtObject {
         property int size:          18
