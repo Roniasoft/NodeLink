@@ -38,6 +38,14 @@ QtObject {
     property real contentWidth : NLStyle.scene.defaultContentWidth
     property real contentHeight: NLStyle.scene.defaultContentHeight
 
+    //! ContentX and contentY of flickable in ui session
+    property real contentX: NLStyle.scene.defaultContentX
+    property real contentY: NLStyle.scene.defaultContentY
+
+    //! ContentX and contentY of flickable in ui session
+    property real sceneViewWidth
+    property real sceneViewHeigh
+
     //! Is scene editable or not
     property bool isSceneEditable: true
 

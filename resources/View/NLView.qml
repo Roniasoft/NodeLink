@@ -13,8 +13,6 @@ Item {
 
     property SceneSession   sceneSession:   SceneSession {}
 
-    property alias          nodesScene:     nodesScene
-
     /* Children
     * ****************************************************************************************/
 
@@ -32,8 +30,9 @@ Item {
         visible: true
         scene: view.scene
         sceneSession: view.sceneSession
-        width: 300
-        height: 300
+        overviewWidth: 300
+        overviewHeight: 300
+
         anchors.right: parent.right
         anchors.bottom: parent.bottom
         anchors.margins: 20

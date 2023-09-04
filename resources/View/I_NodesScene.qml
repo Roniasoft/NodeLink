@@ -32,8 +32,33 @@ Flickable {
     anchors.fill: parent
     contentWidth: sceneSession.contentWidth
     contentHeight: sceneSession.contentHeight
-    contentX: NLStyle.scene.defaultContentX
-    contentY: NLStyle.scene.defaultContentY
+    contentX: sceneSession.contentX
+    contentY: sceneSession.contentY
+
+    //! Update contentX
+    onContentXChanged: {
+        if (sceneSession.contentX !== contentX)
+            sceneSession.contentX = contentX;
+    }
+
+    //! Update contentY
+    onContentYChanged: {
+        if (sceneSession.contentY !== contentY)
+            sceneSession.contentY = contentY;
+    }
+
+    //! Update width
+    onWidthChanged: {
+        if (sceneSession.sceneViewWidth !== width)
+            sceneSession.sceneViewWidth = width;
+    }
+
+    //! Update height
+    onHeightChanged: {
+        if (sceneSession.sceneViewHeigh !== height)
+            sceneSession.sceneViewHeigh = height;
+    }
+
     focus: true
 
     FontLoader {
