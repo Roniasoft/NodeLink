@@ -1,6 +1,7 @@
 import QtQuick
 import NodeLink
 import QtQuick.Controls
+import QtQuick.Controls.Universal
 
 /*! ***********************************************************************************************
  * LinkView use I_LinkView (BezierCurve) to manages link children.

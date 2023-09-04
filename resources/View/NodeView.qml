@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import QtQuick.Controls.Universal
 
 import NodeLink
 
@@ -21,6 +22,8 @@ InteractiveNodeView {
      * ****************************************************************************************/
     opacity: isSelected ? 1 : isNodeMinimal ? 0.6 : 0.8
     scaleFactor: sceneSession?.zoomManager.zoomFactor ?? 1.0
+    Universal.theme: Universal.Dark
+    Universal.accent: Universal.Steel
 
     /* Slots
      * ****************************************************************************************/
@@ -99,6 +102,7 @@ InteractiveNodeView {
                 selectByMouse: true
                 text: node.title
                 verticalAlignment: Text.AlignVCenter
+                color: "white"
                 onTextChanged: {
                     if (node && node.title !== text)
                         node.title = text;
@@ -116,6 +120,10 @@ InteractiveNodeView {
                 font.pointSize: 10
                 font.bold: true
 
+                background: Rectangle {
+                    color: "transparent"
+                    border.width: 0
+                }
                 //! Connections to forceActiveFocus when
                 //! nodeView.edit is true
                 Connections {
