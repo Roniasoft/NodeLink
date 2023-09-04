@@ -55,8 +55,8 @@ Flickable {
 
     //! Update height
     onHeightChanged: {
-        if (sceneSession.sceneViewHeigh !== height)
-            sceneSession.sceneViewHeigh = height;
+        if (sceneSession.sceneViewHeight !== height)
+            sceneSession.sceneViewHeight = height;
     }
 
     focus: true

@@ -44,7 +44,7 @@ QtObject {
 
     //! ContentX and contentY of flickable in ui session
     property real sceneViewWidth
-    property real sceneViewHeigh
+    property real sceneViewHeight
 
     //! Is scene editable or not
     property bool isSceneEditable: true

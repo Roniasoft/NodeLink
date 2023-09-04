@@ -97,7 +97,7 @@ Item {
         x: (sceneSession.contentX - nodeRectTopLeft.x) * customScaleFactor
         y: (sceneSession.contentY - nodeRectTopLeft.y) * customScaleFactor
         width: (sceneSession.contentX + sceneSession.sceneViewWidth - nodeRectTopLeft.x) * customScaleFactor - x
-        height: (sceneSession.contentY + sceneSession.sceneViewHeigh - nodeRectTopLeft.y) * customScaleFactor - y
+        height: (sceneSession.contentY + sceneSession.sceneViewHeight - nodeRectTopLeft.y) * customScaleFactor - y
         z: 3
 
         MouseArea {
@@ -123,14 +123,21 @@ Item {
                 if (isDraging) {
                     //! When mouse is dragged, the diff between pressed mouse and current position is calculated
                     // and then mapped to the scene
-                    var diffX = (prevX - mouse.x)
-                    var diffY = (prevY - mouse.y)
-                    var startingPointInSceneX = (prevX / visibleAreaRedRect.customScaleFactor)  + visibleAreaRedRect.nodeRectTopLeft.x
-                    var startingPointInSceneY = (prevY / visibleAreaRedRect.customScaleFactor)  + visibleAreaRedRect.nodeRectTopLeft.y
-                    var endingPointInSceneX = (mouse.x / visibleAreaRedRect.customScaleFactor)  + visibleAreaRedRect.nodeRectTopLeft.x
-                    var endingPointInSceneY = (mouse.y / visibleAreaRedRect.customScaleFactor)  + visibleAreaRedRect.nodeRectTopLeft.y
-                    sceneSession.contentX += endingPointInSceneX - startingPointInSceneX
-                    sceneSession.contentY += endingPointInSceneY - startingPointInSceneY
+                    var startingPointInSceneX = (prevX / visibleAreaRedRect.customScaleFactor);
+                    var startingPointInSceneY = (prevY / visibleAreaRedRect.customScaleFactor);
+                    var endingPointInSceneX = (mouse.x / visibleAreaRedRect.customScaleFactor);
+                    var endingPointInSceneY = (mouse.y / visibleAreaRedRect.customScaleFactor);
+
+                    var contentX = sceneSession.contentX + endingPointInSceneX - startingPointInSceneX;
+                    // Check the maximum value of contentX
+                    if (contentX < (sceneSession.contentWidth - sceneSession.sceneViewWidth))
+                        sceneSession.contentX = Math.max(0, contentX);
+
+                    var contentY = sceneSession.contentY + endingPointInSceneY - startingPointInSceneY;
+
+                    // Check the maximum value of contentY
+                    if (contentY < (sceneSession.contentHeight - sceneSession.sceneViewHeight))
+                        sceneSession.contentY = Math.max(0, contentY);
                 }
             }
         }
