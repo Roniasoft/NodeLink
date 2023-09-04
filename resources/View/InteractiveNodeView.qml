@@ -15,10 +15,6 @@ I_NodeView {
     //! A node is resizeable or not
     property bool isResizable: true
 
-
-    //! SceneSession
-    property SceneSession   sceneSession:   null
-
     //! A node is editable or not
     property bool         isNodeEditable: sceneSession?.isSceneEditable ?? true
 

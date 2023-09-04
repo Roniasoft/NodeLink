@@ -12,10 +12,10 @@ I_NodeView {
     /* Property Declarations
      * ****************************************************************************************/
     //! Node is selected or not
-    property bool         isSelected:     scene?.selectionModel?.isSelected(modelData?._qsUuid ?? "") ?? false
+    property bool         isSelected:        scene?.selectionModel?.isSelected(node?._qsUuid ?? "") ?? false
 
     //! Node Rect Top Left Position
-    property vector2d     nodeRectTopLeft: extraProperties.nodeRectTopLeft
+    property vector2d     nodeRectTopLeft:   extraProperties.nodeRectTopLeft
 
     //! Scale Factor used for scene -> overview mapping
     property real         customScaleFactor: extraProperties.customScaleFactor

@@ -243,6 +243,7 @@ I_NodesScene {
         id: foregroundLoader
         anchors.fill: parent
         sourceComponent: foreground
+        z: 10
     }
 
     //! Manage zoom in flickable and zoomManager.

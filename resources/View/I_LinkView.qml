@@ -20,6 +20,9 @@ Canvas {
 
     property SceneSession   sceneSession
 
+    //! extraProperties has all extra properties.
+    property QtObject extraProperties
+
     //! Main LinkView model
     property Link       link:       Link {}
 
@@ -81,7 +84,7 @@ Canvas {
     x: (topLeftX - arrowHeadLength)
     y: (topLeftY - arrowHeadLength)
 
-    //! paint line
+    //! paint Link
     onPaint: {
 
         // create the context
