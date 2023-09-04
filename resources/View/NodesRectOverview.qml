@@ -4,14 +4,11 @@ import NodeLink
 /*! ***********************************************************************************************
  * Ui for Overview Node Rect
  * ************************************************************************************************/
-Item {
+I_NodesRect {
     id: root
 
     /* Property Declarations
     * ****************************************************************************************/
-    property Scene        scene
-
-    property SceneSession sceneSession
 
     //! Overview width, used for calculatin scale for mapping scene -> overview
     property int          overviewWidth
@@ -37,57 +34,12 @@ Item {
     width: (nodeRectBottomRight.x- nodeRectTopLeft.x) * customScaleFactor
     height: (nodeRectBottomRight.y - nodeRectTopLeft.y) * customScaleFactor
 
-    /*  Children
-    * ****************************************************************************************/
-    //! Nodes
-    NLRepeater {
-        id: nodeRepeater
+    nodeViewUrl: "NodeViewOverview.qml"
+    linkViewUrl: "LinkViewOverview.qml"
 
-        delegate: NodeViewOverview {
-            id: nodeView
-            node: modelData
-            scene: root.scene
-            nodeRectTopLeft: root.nodeRectTopLeft
-            customScaleFactor: root.customScaleFactor
-        }
-    }
-
-    //! Links
-    NLRepeater {
-        id: linkRepeater
-
-        delegate: LinkViewOverview {
-            scene: root.scene
-            sceneSession: root.sceneSession
-            link: modelData
-            nodeRectTopLeft: root.nodeRectTopLeft.times(sceneSession.zoomManager.zoomFactor)
-            customScaleFactor: root.customScaleFactor
-            zoomFactor: sceneSession.zoomManager.zoomFactor
-        }
-    }
-
-    //! Connection to manage node model changes.
-    Connections {
-        target: scene
-
-        //! nodeRepeater updated when a node added
-        function onNodeAdded(node: Node) {
-            nodeRepeater.addElement(node);
-        }
-
-        //! nodeRepeater updated when a node Removed
-        function onNodeRemoved(node: Node) {
-            nodeRepeater.removeElement(node)
-        }
-
-        //! linkRepeater updated when a link added
-        function onLinkAdded(link: Link) {
-            linkRepeater.addElement(link);
-        }
-
-        //! linkRepeater updated when a link Removed
-        function onLinkRemoved(link: Link) {
-            linkRepeater.removeElement(link)
-        }
+    extraProperties: QtObject {
+        property vector2d nodeRectTopLeft:   root.nodeRectTopLeft
+        property vector2d linkRectTopLeft:   root.nodeRectTopLeft.times(sceneSession.zoomManager.zoomFactor)
+        property real     customScaleFactor: root.customScaleFactor
     }
 }

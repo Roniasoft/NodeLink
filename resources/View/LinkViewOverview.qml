@@ -11,74 +11,22 @@ import "Logics/Calculation.js" as Calculation
  *  Link view for overview
  * ************************************************************************************************/
 
-Canvas {
+I_LinkView {
     id: canvas
 
     /* Property Declarations
     * ****************************************************************************************/
-    property Scene        scene
-
-    property SceneSession sceneSession
-
-    //! Main LinkView model
-    property Link         link:       Link {}
-
-    //! Link input port
-    property Port         inputPort: link.inputPort
-
-    //! Link output port
-    property Port         outputPort: link.outputPort
-
-    //! Link is selected or not
-    property bool         isSelected: scene?.selectionModel?.isSelected(link?._qsUuid) ?? false
-
-    //! Link input position
-    property vector2d     inputPos: scene?.portsPositions[inputPort?._qsUuid] ?? Qt.vector2d(0, 0)
-
-    //! Link output position
-    property vector2d     outputPos: scene?.portsPositions[outputPort?._qsUuid] ?? Qt.vector2d(0, 0)
-
-    //! linkMidPoint is the position of link description.
-    property vector2d     linkMidPoint: Qt.vector2d(0, 0)
-
-    //! outPut port side
-    property int          outputPortSide: link.outputPort?.portSide ?? -1
-
-    //! Link color
-    property string       linkColor: Object.keys(sceneSession.linkColorOverrideMap).includes(link?._qsUuid ?? "") ? sceneSession.linkColorOverrideMap[link._qsUuid] : link.guiConfig.color
-
-    //! zoomFactor
-    property real         zoomFactor: 1
-
-    //! Canvas Dimensions
-    property real         topLeftX: Math.min(...link.controlPoints.map(controlpoint => controlpoint.x), inputPos.x, outputPos.x)
-    property real         topLeftY: Math.min(...link.controlPoints.map(controlpoint => controlpoint.y), inputPos.y, outputPos.y)
-
-    property real         bottomRightX: Math.max(...link.controlPoints.map(controlpoint => controlpoint.x), inputPos.x, outputPos.x)
-    property real         bottomRightY: Math.max(...link.controlPoints.map(controlpoint => controlpoint.y), inputPos.y, outputPos.y)
 
     //! Top Left position of node rect (pos of the node in the top left corner)
-    property vector2d     nodeRectTopLeft
+    property vector2d     nodeRectTopLeft: extraProperties.linkRectTopLeft
 
     //! Scale used for mapping scene -> overview. Min is used to avoid complication in link drawings
-    property real         customScaleFactor
+    property real         customScaleFactor: extraProperties.customScaleFactor
 
-    //! Length of arrow
-    property real         arrowHeadLength: 10 * customScaleFactor;
-
-
-    //! Update painted line when change position of input and output ports and some another
-    //! properties changed
-    onOutputPosChanged:  preparePainter();
-    onInputPosChanged:   preparePainter();
-    onIsSelectedChanged: preparePainter();
-    onLinkColorChanged:  preparePainter();
-    onZoomFactorChanged: preparePainter();
-    onOutputPortSideChanged: preparePainter();
+    property var mapControlPoints: []
 
     /*  Object Properties
     * ****************************************************************************************/
-    antialiasing: true
 
     // Height and width of canvas, (arrowHeadLength * 2) is the margin
     width:  (Math.abs(topLeftX - bottomRightX) + arrowHeadLength * 2) * customScaleFactor / zoomFactor
@@ -88,12 +36,9 @@ Canvas {
     x: ((topLeftX - arrowHeadLength) - nodeRectTopLeft.x) * customScaleFactor / zoomFactor
     y: ((topLeftY - arrowHeadLength) - nodeRectTopLeft.y) * customScaleFactor / zoomFactor
 
-//    Rectangle {
-//        anchors.fill: parent
-//        color: "blue"
-//    }
+    arrowHeadLength: 10 * customScaleFactor;
 
-    //! paint line
+    //! paint Link
     onPaint: {
 
         // create the context
@@ -113,54 +58,24 @@ Canvas {
 
         var lineWidth = 2 * customScaleFactor;
 
-        //! Correcte control points in ui state
-        var controlPoints = [];
-
         var inputPosx = (inputPos.x  - (topLeftX - arrowHeadLength)) * customScaleFactor / zoomFactor
         var inputPosy = (inputPos.y  - (topLeftY - arrowHeadLength)) * customScaleFactor / zoomFactor
-        var inputPos1 = Qt.vector2d(inputPosx,inputPosy)
+        var mapInputPos = Qt.vector2d(inputPosx,inputPosy);
 
-
-        link.controlPoints.forEach(controlPoint => {
-                                        var controlPointx = (controlPoint.x  - (topLeftX - arrowHeadLength)) * customScaleFactor / zoomFactor
-                                        var controlPointy = (controlPoint.y  - (topLeftY - arrowHeadLength)) * customScaleFactor / zoomFactor
-                                        var controlPoint1 = Qt.vector2d(controlPointx,controlPointy)
-                                        controlPoints.push(controlPoint1)
+        var controlPoints = [];
+        mapControlPoints.forEach(controlPoint => {
+                                        var mapControlPointx = (controlPoint.x  - (topLeftX - arrowHeadLength)) * customScaleFactor / zoomFactor
+                                        var mapControlPointy = (controlPoint.y  - (topLeftY - arrowHeadLength)) * customScaleFactor / zoomFactor
+                                        var mapControlPoint  = Qt.vector2d(mapControlPointx, mapControlPointy)
+                                        controlPoints.push(mapControlPoint)
                                     });
 
         // Draw the curve with LinkPainter
-        LinkPainter.createLink(context, inputPos1, controlPoints, isSelected,
+        LinkPainter.createLink(context, mapInputPos, controlPoints, isSelected,
                                linkColor, link.direction,
                                link.guiConfig.style, link.guiConfig.type, lineWidth, arrowHeadLength,
                                link.inputPort.portSide, outputPortSide);
-
     }
-
-    /* Children
-    * ****************************************************************************************/
-
-    // Prepare painter when direction of link changed.
-    Connections {
-        target: link
-
-        function onDirectionChanged() {
-            preparePainter();
-        }
-    }
-
-    // Prepare painter when style AND/OR type of link changed.
-    Connections {
-        target: link.guiConfig
-
-        function onStyleChanged() {
-            preparePainter();
-        }
-
-        function onTypeChanged() {
-            preparePainter();
-        }
-    }
-
 
     /* Functions
     * ****************************************************************************************/
@@ -168,7 +83,7 @@ Canvas {
     //! Prepare painter and then call painter of canvas.
     function preparePainter() {
         if(inputPort) {
-            link.controlPoints = BasicLinkCalculator.calculateControlPoints(inputPos , outputPos, link.direction,
+            mapControlPoints = BasicLinkCalculator.calculateControlPoints(inputPos , outputPos, link.direction,
                                                                             link.guiConfig.type, link.inputPort.portSide,
                                                                             outputPortSide, customScaleFactor);
         }
