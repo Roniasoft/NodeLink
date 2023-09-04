@@ -23,4 +23,9 @@ QSObject {
 
     //! Port is enable or not
     property bool enable: true
+
+    //! An internal property to specified position of port.
+    property QtObject _guiConfig: QtObject {
+        property vector2d position
+    }
 }

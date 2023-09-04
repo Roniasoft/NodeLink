@@ -23,10 +23,6 @@ QSObject {
     //! map <UUID, Link>
     property var            links:          ({})
 
-    //! Port positions (global)
-    //! map <port uuid: string, global pos: vector2d>
-    property var            portsPositions: ({})
-
     //! Scene Selection Model
     property SelectionModel selectionModel: null
 
@@ -106,8 +102,6 @@ QSObject {
 
         //! delete the node ports from the portsPosition map
         Object.keys(nodes[nodeUUId].ports).forEach(portId => {
-            // delete from portsPositions
-            delete portsPositions[portId];
 
             // delete related links
             Object.entries(links).forEach(([key, value]) => {
@@ -122,7 +116,6 @@ QSObject {
 
         delete nodes[nodeUUId];
 
-        portsPositionsChanged();
         linksChanged();
         nodesChanged();
     }
@@ -145,10 +138,6 @@ QSObject {
 
     //! On port added
     function onPortAdded(portUUId : string) {
-
-        // Add an empty position index
-        portsPositions[portUUId] = Qt.vector2d(0, 0);;
-        portsPositionsChanged();
     }
 
     //! Link two nodes (via their ports) - portA is the upstream and portB the downstream one

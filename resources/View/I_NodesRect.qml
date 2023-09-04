@@ -36,6 +36,7 @@ Item {
     /*  Object Properties
     * ****************************************************************************************/
     anchors.fill: parent
+    z: 3
 
     Keys.forwardTo: parent
 

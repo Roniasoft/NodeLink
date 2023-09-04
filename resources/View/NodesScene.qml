@@ -204,8 +204,8 @@ I_NodesScene {
         function findLink(gMouse): Link {
             let foundLink = null;
             Object.values(scene.links).forEach(obj => {
-                var inputPos  = scene?.portsPositions[obj.inputPort?._qsUuid] ?? Qt.vector2d(0, 0)
-                var outputPos = scene?.portsPositions[obj.outputPort?._qsUuid] ?? Qt.vector2d(0, 0)
+                var inputPos  = obj.inputPort?._guiConfig.position ?? Qt.vector2d(0, 0)
+                var outputPos = obj.outputPort?._guiConfig.position ?? Qt.vector2d(0, 0)
                 if (Calculation.isPointOnLink(gMouse.x, gMouse.y, 15, obj.controlPoints, obj.guiConfig.type)) {
                     foundLink = obj;
                 }
