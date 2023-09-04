@@ -40,6 +40,7 @@ QtObject {
         property real   defaultOpacity:     0.8
         property real   selectedOpacity:    0.8
 
+        property int    overviewFontSize:   60
         property int    borderWidth:        2
 
         property string color:              "pink"

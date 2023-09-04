@@ -35,7 +35,6 @@ I_NodeView {
     * ****************************************************************************************/
     //! Minimal nodeview
     contentItem: Rectangle {
-        id: minimalRectangle
         anchors.fill: parent
         anchors.margins: 10
         color: "#282828"
@@ -44,7 +43,7 @@ I_NodeView {
         //! Text Icon
         Text {
             font.family: NLStyle.fontType.font6Pro
-            font.pixelSize: 60 * customScaleFactor
+            font.pixelSize: NLStyle.node.overviewFontSize * customScaleFactor
             anchors.centerIn: parent
             text: NLStyle.nodeIcons[node.type]
             color: node.guiConfig.locked ? "gray" : node.guiConfig.color

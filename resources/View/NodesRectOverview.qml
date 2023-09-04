@@ -1,4 +1,5 @@
 import QtQuick
+
 import NodeLink
 
 /*! ***********************************************************************************************
@@ -34,6 +35,7 @@ I_NodesRect {
     width: (nodeRectBottomRight.x- nodeRectTopLeft.x) * customScaleFactor
     height: (nodeRectBottomRight.y - nodeRectTopLeft.y) * customScaleFactor
 
+    //! Registre nodeView and LinkView classes.
     nodeViewUrl: "NodeViewOverview.qml"
     linkViewUrl: "LinkViewOverview.qml"
 

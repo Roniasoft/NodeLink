@@ -1,7 +1,7 @@
 import QtQuick
-import NodeLink
 import QtQuick.Controls
-import QtQuick.Shapes
+
+import NodeLink
 
 import "Logics/BasicLinkCalculator.js" as BasicLinkCalculator
 import "Logics/LinkPainter.js" as LinkPainter
@@ -18,7 +18,7 @@ I_LinkView {
     * ****************************************************************************************/
 
     //! Top Left position of node rect (pos of the node in the top left corner)
-    property vector2d     nodeRectTopLeft: extraProperties.linkRectTopLeft
+    property vector2d     nodeRectTopLeft:   extraProperties.linkRectTopLeft
 
     //! Scale used for mapping scene -> overview. Min is used to avoid complication in link drawings
     property real         customScaleFactor: extraProperties.customScaleFactor
