@@ -19,6 +19,12 @@ Rectangle {
     //! Scene is the main model containing information about all nodes/links
     property I_Scene  scene
 
+    //! SceneSession
+    property SceneSession   sceneSession:   null
+
+    //! extraProperties has all extra properties.
+    property QtObject       extraProperties
+
     //! Node Contents
     property Component      contentItem:    null
 
