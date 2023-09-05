@@ -13,6 +13,8 @@ Item {
 
     property SceneSession   sceneSession:   SceneSession {}
 
+    property alias          nodesScene:     nodesScene
+
     /* Children
     * ****************************************************************************************/
 
@@ -37,8 +39,6 @@ Item {
         anchors.bottom: parent.bottom
         anchors.margins: 20
         clip: true
-
-
     }
 
     //! Side Menu

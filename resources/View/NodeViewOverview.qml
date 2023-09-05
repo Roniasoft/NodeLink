@@ -36,7 +36,7 @@ I_NodeView {
     //! Minimal nodeview
     contentItem: Rectangle {
         anchors.fill: parent
-        anchors.margins: 10
+        anchors.margins: 10 * customScaleFactor
         color: "#282828"
         radius: NLStyle.radiusAmount.nodeView * customScaleFactor
 

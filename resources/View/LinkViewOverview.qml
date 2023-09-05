@@ -18,7 +18,7 @@ I_LinkView {
     * ****************************************************************************************/
 
     //! Top Left position of node rect (pos of the node in the top left corner)
-    property vector2d     nodeRectTopLeft:   extraProperties.linkRectTopLeft
+    property vector2d     nodeRectTopLeft:   extraProperties.nodeRectTopLeft
 
     //! Scale used for mapping scene -> overview. Min is used to avoid complication in link drawings
     property real         customScaleFactor: extraProperties.customScaleFactor
@@ -33,8 +33,8 @@ I_LinkView {
     height: (Math.abs(topLeftY - bottomRightY) + arrowHeadLength * 2) * customScaleFactor / zoomFactor
 
     // Position of canvas, arrowHeadLength is the margin
-    x: ((topLeftX - arrowHeadLength) - nodeRectTopLeft.x) * customScaleFactor / zoomFactor
-    y: ((topLeftY - arrowHeadLength) - nodeRectTopLeft.y) * customScaleFactor / zoomFactor
+    x: ((topLeftX - arrowHeadLength) / zoomFactor  - nodeRectTopLeft.x) * customScaleFactor
+    y: ((topLeftY - arrowHeadLength) / zoomFactor - nodeRectTopLeft.y) * customScaleFactor
 
     arrowHeadLength: 10 * customScaleFactor;
 

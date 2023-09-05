@@ -28,7 +28,6 @@ I_NodesRect {
 
     extraProperties: QtObject {
         property vector2d nodeRectTopLeft:   root.nodeRectTopLeft
-        property vector2d linkRectTopLeft:   root.nodeRectTopLeft.times(sceneSession.zoomManager.zoomFactor)
         property real     customScaleFactor: root.overviewScaleFactor
     }
 }
