@@ -37,14 +37,29 @@ Flickable {
 
     //! Update contentX
     onContentXChanged: {
-        if (sceneSession.contentX !== contentX)
-            sceneSession.contentX = contentX;
+        updateContentsDimentions.start();
     }
 
     //! Update contentY
     onContentYChanged: {
-        if (sceneSession.contentY !== contentY)
-            sceneSession.contentY = contentY;
+        updateContentsDimentions.start();
+    }
+
+    //!  Timer to update flicable content at the end of flick.
+    Timer {
+        id: updateContentsDimentions
+
+        running: false
+        repeat: false
+        interval: 500
+
+        onTriggered: {
+            if (sceneSession.contentX !== contentX)
+                sceneSession.contentX = contentX;
+
+            if (sceneSession.contentY !== contentY)
+                sceneSession.contentY = contentY;
+        }
     }
 
     //! Update width
