@@ -27,13 +27,59 @@ Flickable {
     //! Scene Foreground
     property Component      foreground:     null
 
+    //! isFlickStarted, set true when a flick process started.
+    property bool isFlickStarted: false
+
     /* Object Properties
     * ****************************************************************************************/
     anchors.fill: parent
     contentWidth: sceneSession.contentWidth
     contentHeight: sceneSession.contentHeight
-    contentX: NLStyle.scene.defaultContentX
-    contentY: NLStyle.scene.defaultContentY
+    contentX: sceneSession.contentX
+    contentY: sceneSession.contentY
+
+    // Update contentY when changed by user (No flick process)
+    onContentXChanged: {
+        if (!isFlickStarted && sceneSession.contentX !== contentX)
+            sceneSession.contentX = contentX;
+    }
+
+    // Update contentY when changed by user (No flick process)
+    onContentYChanged: {
+        if (!isFlickStarted && sceneSession.contentY !== contentY)
+            sceneSession.contentY = contentY;
+    }
+
+    //! Indicate start flick process.
+    onFlickStarted: {
+        isFlickStarted = true;
+    }
+
+    //! onMovementEnded to handle movments with flick.
+    onMovementEnded: {
+        if (!isFlickStarted)
+            return;
+        if (sceneSession.contentX !== contentX)
+            sceneSession.contentX = contentX;
+
+        if (sceneSession.contentY !== contentY)
+            sceneSession.contentY = contentY;
+
+        isFlickStarted = false
+    }
+
+    //! Update width
+    onWidthChanged: {
+        if (sceneSession.sceneViewWidth !== width)
+            sceneSession.sceneViewWidth = width;
+    }
+
+    //! Update height
+    onHeightChanged: {
+        if (sceneSession.sceneViewHeight !== height)
+            sceneSession.sceneViewHeight = height;
+    }
+
     focus: true
 
     FontLoader {

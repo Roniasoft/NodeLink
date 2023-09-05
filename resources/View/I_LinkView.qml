@@ -20,6 +20,10 @@ Canvas {
 
     property SceneSession   sceneSession
 
+    //! viewProperties encompasses all view properties that are not included
+    //! in either the scene or the scene session.
+    property QtObject   viewProperties: null
+
     //! Main LinkView model
     property Link       link:       Link {}
 
@@ -81,7 +85,7 @@ Canvas {
     x: (topLeftX - arrowHeadLength)
     y: (topLeftY - arrowHeadLength)
 
-    //! paint line
+    //! paint Link
     onPaint: {
 
         // create the context

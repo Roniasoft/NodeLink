@@ -28,11 +28,18 @@ Item {
     //! Overview Rect
     NodesOverview {
         id: overView
-        visible: NLStyle.overview.visible
+
+        visible: sceneSession.visibleOverview
+
         scene: view.scene
         sceneSession: view.sceneSession
-        x: view.width - overView.width * scale - 20
-        y: view.height - overView.height * scale - 20
+        overviewWidth: NLStyle.overview.width
+        overviewHeight: NLStyle.overview.height
+
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        anchors.margins: 20
+        clip: true
     }
 
     //! Side Menu

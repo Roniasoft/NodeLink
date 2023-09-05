@@ -108,7 +108,7 @@ Item {
         }
     }
 
-    //! Snap/Grid Settings
+    //! Snap/Grid/Overview Settings
     SideMenuButtonGroup {
 
         id: buttonGroup3
@@ -136,14 +136,23 @@ Item {
                 visible: parent.hovered
             }
         }
+
+        //! Show/hide the overview
         SideMenuButton {
-            text: "\uf518"
+            text: "\uf065"
             position: "bottom"
             Layout.preferredHeight: 34
             Layout.preferredWidth: 34
+
+            checkable: true
+            checked: sceneSession.visibleOverview
+
             NLToolTip{
+                text: ((sceneSession.visibleOverview ? "Hide " : "Show ") +"the overview")
                 visible: parent.hovered
             }
+
+            onClicked: sceneSession.visibleOverview = !sceneSession.visibleOverview
         }
     }
 

@@ -19,9 +19,8 @@ QtObject {
     }
 
     readonly property QtObject overview: QtObject {
-        property real scale:          0.15
-        //! The current OverView is corrupted, must be updated based on plan.
-        property bool visible:        false
+        property real width: 300
+        property real height: 300
     }
 
     //! Defualt Scene contents dimension.
@@ -40,6 +39,7 @@ QtObject {
         property real   defaultOpacity:     0.8
         property real   selectedOpacity:    0.8
 
+        property int    overviewFontSize:   60
         property int    borderWidth:        2
 
         property string color:              "pink"

@@ -15,6 +15,9 @@ Item {
 
     property SceneSession sceneSession
 
+    //! viewProperties encompasses all view properties that are not included in either the scene or the scene session.
+    property QtObject viewProperties: null
+
     //! Default Link and Node views
     property string nodeViewUrl: "NodeView.qml"
     property string linkViewUrl: "LinkView.qml"
@@ -49,22 +52,13 @@ Item {
 
         //! nodeRepeater updated when a node added
         function onNodeAdded(nodeObj: Node) {
-            const incubator = nodeViewComponent.incubateObject(parent, {
+            const objView = nodeViewComponent.createObject(parent, {
                                                            scene: root.scene,
                                                            sceneSession: root.sceneSession,
-                                                           node: nodeObj
+                                                           node: nodeObj,
+                                                           viewProperties: root.viewProperties
                                                        });
-            if (incubator.status !== Component.Ready) {
-                incubator.onStatusChanged = function(status) {
-                    if (status === Component.Ready) {
-                            _nodeViewMap[nodeObj._qsUuid] = incubator.object;
-                    }
-                };
-            } else {
-                _nodeViewMap[nodeObj._qsUuid] = incubator.object;
-
-                // Object is ready immediately
-            }
+            _nodeViewMap[nodeObj._qsUuid] = objView;
         }
 
         //! nodeRepeater updated when a node Removed
@@ -82,21 +76,14 @@ Item {
 
         //! linkRepeater updated when a link added
         function onLinkAdded(linkObj: Link) {
-            const incubator = linkViewComponent.incubateObject(parent, {
-                                                           link: linkObj,
-                                                           scene: root.scene,
-                                                           sceneSession: root.sceneSession
-                                                       });
-            if (incubator.status !== Component.Ready) {
-                incubator.onStatusChanged = function(status) {
-                    if (status === Component.Ready) {
-                            _linkViewMap[linkObj._qsUuid] = incubator.object;
-                    }
-                };
-            } else {
-                // Object is ready immediately
-                _linkViewMap[linkObj._qsUuid] = incubator.object;
-            }
+            const objView = linkViewComponent.createObject(parent, {
+                                                                 link: linkObj,
+                                                                 scene: root.scene,
+                                                                 sceneSession: root.sceneSession,
+                                                                 viewProperties: root.viewProperties
+                                                             });
+            // Object is ready immediately
+            _linkViewMap[linkObj._qsUuid] = objView;
         }
 
         //! linkRepeater updated when a link Removed
