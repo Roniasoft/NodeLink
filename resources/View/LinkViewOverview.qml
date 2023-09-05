@@ -23,8 +23,6 @@ I_LinkView {
     //! Scale used for mapping scene -> overview. Min is used to avoid complication in link drawings
     property real         overviewScaleFactor: viewProperties.overviewScaleFactor
 
-    property var mapControlPoints: []
-
     /*  Object Properties
     * ****************************************************************************************/
 
@@ -62,31 +60,18 @@ I_LinkView {
         var inputPosy = (inputPos.y  - (topLeftY - arrowHeadLength)) * overviewScaleFactor / zoomFactor
         var mapInputPos = Qt.vector2d(inputPosx,inputPosy);
 
-        var controlPoints = [];
-        mapControlPoints.forEach(controlPoint => {
+        var mapControlPoints = [];
+        link.controlPoints.forEach(controlPoint => {
                                         var mapControlPointx = (controlPoint.x  - (topLeftX - arrowHeadLength)) * overviewScaleFactor / zoomFactor
                                         var mapControlPointy = (controlPoint.y  - (topLeftY - arrowHeadLength)) * overviewScaleFactor / zoomFactor
                                         var mapControlPoint  = Qt.vector2d(mapControlPointx, mapControlPointy)
-                                        controlPoints.push(mapControlPoint)
+                                        mapControlPoints.push(mapControlPoint)
                                     });
 
         // Draw the curve with LinkPainter
-        LinkPainter.createLink(context, mapInputPos, controlPoints, isSelected,
+        LinkPainter.createLink(context, mapInputPos, mapControlPoints, isSelected,
                                linkColor, link.direction,
                                link.guiConfig.style, link.guiConfig.type, lineWidth, arrowHeadLength,
                                link.inputPort.portSide, outputPortSide);
-    }
-
-    /* Functions
-    * ****************************************************************************************/
-
-    //! Prepare painter and then call painter of canvas.
-    function preparePainter() {
-        if(inputPort) {
-            mapControlPoints = BasicLinkCalculator.calculateControlPoints(inputPos , outputPos, link.direction,
-                                                                            link.guiConfig.type, link.inputPort.portSide,
-                                                                            outputPortSide, overviewScaleFactor);
-        }
-        canvas.requestPaint();
     }
 }
