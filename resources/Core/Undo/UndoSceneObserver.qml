@@ -42,11 +42,6 @@ Item {
         function onLinksChanged() {
             root._timer.start();
         }
-
-        function onPortsPositionsChanged() {
-//            root._timer.start();
-        }
-
     }
 
     //! Node Loggers

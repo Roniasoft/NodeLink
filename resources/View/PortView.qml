@@ -33,8 +33,7 @@ Rectangle {
     //! Whenever GlobalPos is changed, we should update the
     //!  related maps in scene/sceneSession
     onGlobalPosChanged: {
-        scene.portsPositions[port._qsUuid] = globalPos;
-        scene.portsPositionsChanged();
+        port._position = globalPos;
 
         if (sceneSession) {
             sceneSession.portsVisibility[port._qsUuid] = false;

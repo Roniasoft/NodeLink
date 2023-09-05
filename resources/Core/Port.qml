@@ -23,4 +23,7 @@ QSObject {
 
     //! Port is enable or not
     property bool enable: true
+
+    //! _position is a vector2d to calculated with global position of port in UI and just cache it.
+    property vector2d _position
 }
