@@ -28,9 +28,6 @@ Item {
     property vector2d     nodeRectTopLeft: Qt.vector2d(Math.min(...Object.values(scene.nodes).map(node => node.guiConfig.position.x ), NLStyle.scene.defaultContentX),
                                                        Math.min(...Object.values(scene.nodes).map(node => node.guiConfig.position.y), NLStyle.scene.defaultContentY))
 
-     //! Mapped nodeRectTopLeft with user view
-    property vector2d     mappedNodeRectTopLeft: nodeRectTopLeft;
-
     //! Bottom Right position of node rect (pos of the node in the bottom right corner)
     property vector2d     nodeRectBottomRight: Qt.vector2d(Math.max(...Object.values(scene.nodes).map(node => node.guiConfig.position.x + node.guiConfig.width), NLStyle.scene.defaultContentX + 1000),
                                                            Math.max(...Object.values(scene.nodes).map(node => node.guiConfig.position.y + node.guiConfig.height), NLStyle.scene.defaultContentY + 1000))
@@ -65,7 +62,7 @@ Item {
         scene: root.scene
         sceneSession: root.sceneSession
 
-        nodeRectTopLeft:  root.mappedNodeRectTopLeft
+        nodeRectTopLeft:  root.nodeRectTopLeft
         overviewScaleFactor: root.overviewScaleFactor
 
         MouseArea {
@@ -89,7 +86,7 @@ Item {
         id: userViewRect
 
         //! Top Left position of node rect (pos of the node in the top left corner)
-        property vector2d     nodeRectTopLeft: root.mappedNodeRectTopLeft.times(sceneSession.zoomManager.zoomFactor)
+        property vector2d     nodeRectTopLeft: root.nodeRectTopLeft.times(sceneSession.zoomManager.zoomFactor)
 
         //! Scale used for mapping scene -> overview. Min is used to avoid complication in link drawings
         property real         customScaleFactor: root.overviewScaleFactor / (root.overviewScaleFactor > 1 ? 1 : sceneSession.zoomManager.zoomFactor)

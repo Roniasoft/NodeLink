@@ -20,8 +20,9 @@ Canvas {
 
     property SceneSession   sceneSession
 
-    //! extraProperties has all extra properties.
-    property QtObject extraProperties
+    //! viewProperties encompasses all view properties that are not included
+    //! in either the scene or the scene session.
+    property QtObject   viewProperties: null
 
     //! Main LinkView model
     property Link       link:       Link {}

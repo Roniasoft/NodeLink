@@ -15,8 +15,8 @@ Item {
 
     property SceneSession sceneSession
 
-    //! extraProperties has all extra properties.
-    property QtObject extraProperties: QtObject {}
+    //! viewProperties encompasses all view properties that are not included in either the scene or the scene session.
+    property QtObject viewProperties: null
 
     //! Default Link and Node views
     property string nodeViewUrl: "NodeView.qml"
@@ -55,7 +55,7 @@ Item {
                                                            scene: root.scene,
                                                            sceneSession: root.sceneSession,
                                                            node: nodeObj,
-                                                           extraProperties: root.extraProperties
+                                                           viewProperties: root.viewProperties
                                                        });
             _nodeViewMap[nodeObj._qsUuid] = objView;
         }
@@ -79,7 +79,7 @@ Item {
                                                                  link: linkObj,
                                                                  scene: root.scene,
                                                                  sceneSession: root.sceneSession,
-                                                                 extraProperties: root.extraProperties
+                                                                 viewProperties: root.viewProperties
                                                              });
             // Object is ready immediately
             _linkViewMap[linkObj._qsUuid] = objView;

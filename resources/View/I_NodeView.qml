@@ -22,8 +22,9 @@ Rectangle {
     //! SceneSession
     property SceneSession   sceneSession:   null
 
-    //! extraProperties has all extra properties.
-    property QtObject       extraProperties
+    //! viewProperties encompasses all view properties that are not included
+    //! in either the scene or the scene session.
+    property QtObject       viewProperties: null
 
     //! Node Contents
     property Component      contentItem:    null

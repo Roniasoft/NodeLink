@@ -18,10 +18,10 @@ I_LinkView {
     * ****************************************************************************************/
 
     //! Top Left position of node rect (pos of the node in the top left corner)
-    property vector2d     nodeRectTopLeft:   extraProperties.nodeRectTopLeft
+    property vector2d     nodeRectTopLeft:     viewProperties.nodeRectTopLeft
 
     //! Scale used for mapping scene -> overview. Min is used to avoid complication in link drawings
-    property real         customScaleFactor: extraProperties.customScaleFactor
+    property real         overviewScaleFactor: viewProperties.overviewScaleFactor
 
     property var mapControlPoints: []
 
@@ -29,14 +29,14 @@ I_LinkView {
     * ****************************************************************************************/
 
     // Height and width of canvas, (arrowHeadLength * 2) is the margin
-    width:  (Math.abs(topLeftX - bottomRightX) + arrowHeadLength * 2) * customScaleFactor / zoomFactor
-    height: (Math.abs(topLeftY - bottomRightY) + arrowHeadLength * 2) * customScaleFactor / zoomFactor
+    width:  (Math.abs(topLeftX - bottomRightX) + arrowHeadLength * 2) * overviewScaleFactor / zoomFactor
+    height: (Math.abs(topLeftY - bottomRightY) + arrowHeadLength * 2) * overviewScaleFactor / zoomFactor
 
     // Position of canvas, arrowHeadLength is the margin
-    x: ((topLeftX - arrowHeadLength) / zoomFactor  - nodeRectTopLeft.x) * customScaleFactor
-    y: ((topLeftY - arrowHeadLength) / zoomFactor - nodeRectTopLeft.y) * customScaleFactor
+    x: ((topLeftX - arrowHeadLength) / zoomFactor  - nodeRectTopLeft.x) * overviewScaleFactor
+    y: ((topLeftY - arrowHeadLength) / zoomFactor - nodeRectTopLeft.y) * overviewScaleFactor
 
-    arrowHeadLength: 10 * customScaleFactor;
+    arrowHeadLength: 10 * overviewScaleFactor;
 
     //! paint Link
     onPaint: {
@@ -56,16 +56,16 @@ I_LinkView {
         linkMidPoint = Calculation.getPositionByTolerance(0.5, [inputPos, minPoint1, minPoint2, outputPos]);
         linkMidPoint = linkMidPoint.minus(topLeftPosition);
 
-        var lineWidth = 2 * customScaleFactor;
+        var lineWidth = 2 * overviewScaleFactor;
 
-        var inputPosx = (inputPos.x  - (topLeftX - arrowHeadLength)) * customScaleFactor / zoomFactor
-        var inputPosy = (inputPos.y  - (topLeftY - arrowHeadLength)) * customScaleFactor / zoomFactor
+        var inputPosx = (inputPos.x  - (topLeftX - arrowHeadLength)) * overviewScaleFactor / zoomFactor
+        var inputPosy = (inputPos.y  - (topLeftY - arrowHeadLength)) * overviewScaleFactor / zoomFactor
         var mapInputPos = Qt.vector2d(inputPosx,inputPosy);
 
         var controlPoints = [];
         mapControlPoints.forEach(controlPoint => {
-                                        var mapControlPointx = (controlPoint.x  - (topLeftX - arrowHeadLength)) * customScaleFactor / zoomFactor
-                                        var mapControlPointy = (controlPoint.y  - (topLeftY - arrowHeadLength)) * customScaleFactor / zoomFactor
+                                        var mapControlPointx = (controlPoint.x  - (topLeftX - arrowHeadLength)) * overviewScaleFactor / zoomFactor
+                                        var mapControlPointy = (controlPoint.y  - (topLeftY - arrowHeadLength)) * overviewScaleFactor / zoomFactor
                                         var mapControlPoint  = Qt.vector2d(mapControlPointx, mapControlPointy)
                                         controlPoints.push(mapControlPoint)
                                     });
@@ -85,7 +85,7 @@ I_LinkView {
         if(inputPort) {
             mapControlPoints = BasicLinkCalculator.calculateControlPoints(inputPos , outputPos, link.direction,
                                                                             link.guiConfig.type, link.inputPort.portSide,
-                                                                            outputPortSide, customScaleFactor);
+                                                                            outputPortSide, overviewScaleFactor);
         }
         canvas.requestPaint();
     }
