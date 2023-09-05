@@ -72,7 +72,7 @@ LinkView {
             // Update outputPos to paint line with new position.
             if (outputPortId.length > 0) {
                 // find the detected port position to link it as a TEMP LINK
-                root.outputPos = scene.findPort(outputPortId)._guiConfig.position;
+                root.outputPos = scene.findPort(outputPortId)._position;
                 // Find port side based on the found output port
                 root.outputPortSide = scene.findPort(outputPortId)?.portSide ??
                                    findPortSide(link.inputPort.portSide)
@@ -174,20 +174,20 @@ LinkView {
         //! Find nearest port with mouse position and port position
         function findPortInRect (mousePoint : point, searchMargin : int) : string {
             var gMouse = mapToItem(parent, Qt.point(mousePoint.x, mousePoint.y));
-            let findedKey = "";
+            let foundKey = "";
 
             Object.values(scene.nodes).forEach (node => {
 
                 Object.entries(node.ports).forEach(([key, value]) => {
-                    var portPosition = value._guiConfig.position;
+                    var portPosition = value._position;
                     if((portPosition.x - searchMargin) <= gMouse.x &&  gMouse.x <= (portPosition.x + searchMargin)) {
                         if((portPosition.y - searchMargin) <= gMouse.y && gMouse.y <= (portPosition.y + searchMargin))
-                        findedKey = key;
+                        foundKey = key;
                     }
                 });
             });
 
-            return findedKey;
+            return foundKey;
         }
 
         //! Finds nodes in proximity of search margin, calls findClosestPortInNodes and returns the closest port Id
@@ -237,7 +237,7 @@ LinkView {
 
             // Find closest port
             ports.forEach(port => {
-                    var portPosition = port._guiConfig.position;
+                    var portPosition = port._position;
                     var distance = calculateManhattanDistance(gMouse, portPosition);
 
                     if (distance < minDistance) {

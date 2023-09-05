@@ -222,7 +222,7 @@ QSObject {
         var rBRightX = rBLeftX + containerItem.width;
         var rBBottomY = rBTopY + containerItem.height;
 
-        var findedObj = Object.values(nodes).filter(node => {
+        var foundObj = Object.values(nodes).filter(node => {
             // Key points of Node to generate line equations and it's limits.
             var position = node.guiConfig.position
 
@@ -260,7 +260,7 @@ QSObject {
                 return node;
         });
 
-        return findedObj;
+        return foundObj;
     }
 
 }

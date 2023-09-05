@@ -190,10 +190,10 @@ Item {
             return;
 
         var isNodeFirstObj = firstObj.objectType === NLSpec.ObjectType.Node;
-        var portPosVecOut = isNodeFirstObj ? Qt.vector2d(0, 0) : firstObj?.outputPort?._guiConfig.position
+        var portPosVecOut = isNodeFirstObj ? Qt.vector2d(0, 0) : firstObj?.outputPort?._position
 
         var position = isNodeFirstObj ? firstObj.guiConfig?.position?.times(sceneSession.zoomManager.zoomFactor) :
-                                        firstObj?.inputPort?._guiConfig.position;
+                                        firstObj?.inputPort?._position;
         var leftX = (isNodeFirstObj ? position.x : (position.x < portPosVecOut.x) ? position.x : portPosVecOut.x);
         var topY = (isNodeFirstObj ? position.y : (position.y < portPosVecOut.y) ? position.y : portPosVecOut.y);
 
@@ -231,8 +231,8 @@ Item {
                                                                            }
 
                                                                       } else if(obj.objectType === NLSpec.ObjectType.Link) {
-                                                                          var portPosVecIn = obj?.inputPort?._guiConfig.position
-                                                                          portPosVecOut = obj?.outputPort?._guiConfig.position
+                                                                          var portPosVecIn = obj?.inputPort?._position
+                                                                          portPosVecOut = obj?.outputPort?._position
 
                                                                           // Find left, right, top and bottom positions.
                                                                           // they are depend on inputPort and outputPort position (temporary).
