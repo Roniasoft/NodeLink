@@ -16,15 +16,11 @@ I_NodesRect {
     //! Top Left position of node rect (pos of the node in the top left corner)
     property vector2d     nodeRectTopLeft
 
-    //! Bottom Right position of node rect (pos of the node in the bottom right corner)
-    property vector2d     nodeRectBottomRight
-
     //! Scale used for mapping scene -> overview. Min is used to avoid complication in link drawings
-    property real         customScaleFactor: 1.0
+    property real         overviewScaleFactor: 1.0
+
     /*  Object Properties
     * ****************************************************************************************/
-    width: (nodeRectBottomRight.x- nodeRectTopLeft.x) * customScaleFactor
-    height: (nodeRectBottomRight.y - nodeRectTopLeft.y) * customScaleFactor
 
     //! Registre nodeView and LinkView classes.
     nodeViewUrl: "NodeViewOverview.qml"
@@ -33,6 +29,6 @@ I_NodesRect {
     extraProperties: QtObject {
         property vector2d nodeRectTopLeft:   root.nodeRectTopLeft
         property vector2d linkRectTopLeft:   root.nodeRectTopLeft.times(sceneSession.zoomManager.zoomFactor)
-        property real     customScaleFactor: root.customScaleFactor
+        property real     customScaleFactor: root.overviewScaleFactor
     }
 }

@@ -28,15 +28,26 @@ Item {
     property vector2d     nodeRectTopLeft: Qt.vector2d(Math.min(...Object.values(scene.nodes).map(node => node.guiConfig.position.x )),
                                                        Math.min(...Object.values(scene.nodes).map(node => node.guiConfig.position.y)))
 
+    //! User view
+    property vector2d     viewDimensions: Qt.vector2d(sceneSession.sceneViewWidth  * sceneSession.zoomManager.zoomFactor,
+                                                  sceneSession.sceneViewHeight * sceneSession.zoomManager.zoomFactor)
+
+    //! Mapped nodeRectTopLeft with user view
+    property vector2d     mappedNodeRectTopLeft: nodeRectTopLeft.minus(viewDimensions)
+
     //! Bottom Right position of node rect (pos of the node in the bottom right corner)
     property vector2d     nodeRectBottomRight: Qt.vector2d(Math.max(...Object.values(scene.nodes).map(node => node.guiConfig.position.x + node.guiConfig.width)),
                                                            Math.max(...Object.values(scene.nodes).map(node => node.guiConfig.position.y + node.guiConfig.height)))
 
+    //! Overview scale in x direction
+    property real         overviewXScaleFactor: overviewWidth / (nodeRectBottomRight.x - nodeRectTopLeft.x + viewDimensions.x)
+
+    //! Overview scale in y direction
+    property real         overviewYScaleFactor: overviewHeight / (nodeRectBottomRight.y - nodeRectTopLeft.y + viewDimensions.y)
+
     //! Scale used for mapping scene -> overview. Min is used to avoid complication in link drawings
-    property real         customScaleFactor: Math.min(overviewWidth / (nodeRectBottomRight.x - nodeRectTopLeft.x) > 1 ?
-                                                      1 : overviewWidth / (nodeRectBottomRight.x - nodeRectTopLeft.x),
-                                                      overviewHeight / (nodeRectBottomRight.y - nodeRectTopLeft.y) > 1 ?
-                                                      1 : overviewHeight / (nodeRectBottomRight.y - nodeRectTopLeft.y))
+    property real         overviewScaleFactor:  Math.min( overviewXScaleFactor > 1 ? 1 : overviewXScaleFactor,
+                                                       overviewYScaleFactor > 1 ? 1 : overviewYScaleFactor)
 
 
     /* Object Properties
@@ -55,51 +66,47 @@ Item {
     }
 
     NodesRectOverview {
-        anchors.fill: parent
         scene: root.scene
         sceneSession: root.sceneSession
 
-        nodeRectTopLeft:  root.nodeRectTopLeft
-        nodeRectBottomRight: root.nodeRectBottomRight
-        customScaleFactor: root.customScaleFactor
+        nodeRectTopLeft:  root.mappedNodeRectTopLeft
+        overviewScaleFactor: root.overviewScaleFactor
 
         MouseArea {
             anchors.fill: parent
+
             onClicked: (mouse) =>  {
                 //! When mouse is clicked, the diff between clicked area and the red rectangle position is calculated
                 // and then mapped to the scene
-                var diffX = (mouse.x - visibleAreaRedRect.x) / visibleAreaRedRect.customScaleFactor
-                var diffY = (mouse.y - visibleAreaRedRect.y) / visibleAreaRedRect.customScaleFactor
-                var halfWidthBefore = sceneSession.width / 2
-                var halfHeightBefore = sceneSession.height / 2
+                var diffX = (mouse.x - userViewRect.x) / userViewRect.customScaleFactor
+                var diffY = (mouse.y - userViewRect.y) / userViewRect.customScaleFactor
+                var halfWidthBefore = sceneSession.sceneViewWidth / 2
+                var halfHeightBefore = sceneSession.sceneViewHeight / 2
                 sceneSession.contentX += diffX - halfWidthBefore
                 sceneSession.contentY += diffY - halfHeightBefore
             }
         }
-
     }
 
     //! A rectangle to change
     Rectangle {
-        id: visibleAreaRedRect
+        id: userViewRect
 
         //! Top Left position of node rect (pos of the node in the top left corner)
-        property vector2d     nodeRectTopLeft: root.nodeRectTopLeft.times(sceneSession.zoomManager.zoomFactor)
-
-        //! Bottom Right position of node rect (pos of the node in the bottom right corner)
-        property vector2d     nodeRectBottomRight: root.nodeRectBottomRight.times(sceneSession.zoomManager.zoomFactor)
+        property vector2d     nodeRectTopLeft: root.mappedNodeRectTopLeft.times(sceneSession.zoomManager.zoomFactor)
 
         //! Scale used for mapping scene -> overview. Min is used to avoid complication in link drawings
-        property real         customScaleFactor: root.customScaleFactor / (root.customScaleFactor > 1 ? 1 : sceneSession.zoomManager.zoomFactor)
+        property real         customScaleFactor: root.overviewScaleFactor / (root.overviewScaleFactor > 1 ? 1 : sceneSession.zoomManager.zoomFactor)
 
         color: "transparent"
         border.color: "red"
         x: (sceneSession.contentX - nodeRectTopLeft.x) * customScaleFactor
         y: (sceneSession.contentY - nodeRectTopLeft.y) * customScaleFactor
-        width: (sceneSession.contentX + sceneSession.sceneViewWidth - nodeRectTopLeft.x) * customScaleFactor - x
-        height: (sceneSession.contentY + sceneSession.sceneViewHeight - nodeRectTopLeft.y) * customScaleFactor - y
+        width: sceneSession.sceneViewWidth * customScaleFactor
+        height: sceneSession.sceneViewHeight * customScaleFactor
         z: 3
 
+        //! MouseArea to handle position change of user view
         MouseArea {
 
             property real    prevX
@@ -123,10 +130,10 @@ Item {
                 if (isDraging) {
                     //! When mouse is dragged, the diff between pressed mouse and current position is calculated
                     // and then mapped to the scene
-                    var startingPointInSceneX = (prevX / visibleAreaRedRect.customScaleFactor);
-                    var startingPointInSceneY = (prevY / visibleAreaRedRect.customScaleFactor);
-                    var endingPointInSceneX = (mouse.x / visibleAreaRedRect.customScaleFactor);
-                    var endingPointInSceneY = (mouse.y / visibleAreaRedRect.customScaleFactor);
+                    var startingPointInSceneX = (prevX / userViewRect.customScaleFactor);
+                    var startingPointInSceneY = (prevY / userViewRect.customScaleFactor);
+                    var endingPointInSceneX = (mouse.x / userViewRect.customScaleFactor);
+                    var endingPointInSceneY = (mouse.y / userViewRect.customScaleFactor);
 
                     var contentX = sceneSession.contentX + endingPointInSceneX - startingPointInSceneX;
                     // Check the maximum value of contentX

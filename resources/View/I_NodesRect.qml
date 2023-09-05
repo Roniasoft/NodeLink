@@ -57,7 +57,7 @@ Item {
                                                            node: nodeObj,
                                                            extraProperties: root.extraProperties
                                                        });
-            _nodeViewMap[nodeObj._qsUuid] = objView.object;
+            _nodeViewMap[nodeObj._qsUuid] = objView;
         }
 
         //! nodeRepeater updated when a node Removed
@@ -82,7 +82,7 @@ Item {
                                                                  extraProperties: root.extraProperties
                                                              });
             // Object is ready immediately
-            _linkViewMap[linkObj._qsUuid] = objView.object;
+            _linkViewMap[linkObj._qsUuid] = objView;
         }
 
         //! linkRepeater updated when a link Removed
