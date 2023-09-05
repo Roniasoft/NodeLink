@@ -58,6 +58,7 @@ Item {
         color: "#20262d"
     }
 
+    //! NodesRectOverview (nodes and links)
     NodesRectOverview {
         scene: root.scene
         sceneSession: root.sceneSession
@@ -81,7 +82,7 @@ Item {
         }
     }
 
-    //! A rectangle to change
+    //! User view rectangle to handle position change of user view
     Rectangle {
         id: userViewRect
 
