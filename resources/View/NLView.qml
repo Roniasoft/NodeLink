@@ -28,8 +28,9 @@ Item {
     //! Overview Rect
     NodesOverview {
         id: overView
-//        visible: NLStyle.overview.visible
-        visible: true
+
+        visible: sceneSession.visibleOverview
+
         scene: view.scene
         sceneSession: view.sceneSession
         overviewWidth: 300

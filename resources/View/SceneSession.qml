@@ -46,6 +46,9 @@ QtObject {
     property real sceneViewWidth
     property real sceneViewHeight
 
+    //! Show and hide the overview
+    property bool visibleOverview: true
+
     //! Is scene editable or not
     property bool isSceneEditable: true
 
