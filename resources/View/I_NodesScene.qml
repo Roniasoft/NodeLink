@@ -27,6 +27,9 @@ Flickable {
     //! Scene Foreground
     property Component      foreground:     null
 
+    //! isFlickStarted
+    property bool isFlickStarted: false
+
     /* Object Properties
     * ****************************************************************************************/
     anchors.fill: parent
@@ -37,29 +40,32 @@ Flickable {
 
     //! Update contentX
     onContentXChanged: {
-        updateContentsDimentions.start();
+        if (!isFlickStarted && sceneSession.contentX !== contentX)
+            sceneSession.contentX = contentX;
     }
 
     //! Update contentY
     onContentYChanged: {
-        updateContentsDimentions.start();
+
+        if (!isFlickStarted && sceneSession.contentY !== contentY)
+            sceneSession.contentY = contentY;
     }
 
-    //!  Timer to update flicable content at the end of flick.
-    Timer {
-        id: updateContentsDimentions
+    onFlickStarted: {
+        isFlickStarted = true;
+    }
 
-        running: false
-        repeat: false
-        interval: 500
+    onMovementEnded: {
+        if (!isFlickStarted)
+            return;
+        if (sceneSession.contentX !== contentX)
+            sceneSession.contentX = contentX;
 
-        onTriggered: {
-            if (sceneSession.contentX !== contentX)
-                sceneSession.contentX = contentX;
+        if (sceneSession.contentY !== contentY)
+            sceneSession.contentY = contentY;
 
-            if (sceneSession.contentY !== contentY)
-                sceneSession.contentY = contentY;
-        }
+        isFlickStarted = false
+
     }
 
     //! Update width
