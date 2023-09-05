@@ -27,7 +27,7 @@ Flickable {
     //! Scene Foreground
     property Component      foreground:     null
 
-    //! isFlickStarted
+    //! isFlickStarted, set true when a flick process started.
     property bool isFlickStarted: false
 
     /* Object Properties
@@ -38,23 +38,24 @@ Flickable {
     contentX: sceneSession.contentX
     contentY: sceneSession.contentY
 
-    //! Update contentX
+    // Update contentY when changed by user (No flick process)
     onContentXChanged: {
         if (!isFlickStarted && sceneSession.contentX !== contentX)
             sceneSession.contentX = contentX;
     }
 
-    //! Update contentY
+    // Update contentY when changed by user (No flick process)
     onContentYChanged: {
-
         if (!isFlickStarted && sceneSession.contentY !== contentY)
             sceneSession.contentY = contentY;
     }
 
+    //! Indicate start flick process.
     onFlickStarted: {
         isFlickStarted = true;
     }
 
+    //! onMovementEnded to handle movments with flick.
     onMovementEnded: {
         if (!isFlickStarted)
             return;
@@ -65,7 +66,6 @@ Flickable {
             sceneSession.contentY = contentY;
 
         isFlickStarted = false
-
     }
 
     //! Update width
