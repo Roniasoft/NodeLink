@@ -33,8 +33,8 @@ Item {
 
         scene: view.scene
         sceneSession: view.sceneSession
-        overviewWidth: 300
-        overviewHeight: 300
+        overviewWidth: NLStyle.overview.width
+        overviewHeight: NLStyle.overview.height
 
         anchors.right: parent.right
         anchors.bottom: parent.bottom
