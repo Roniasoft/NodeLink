@@ -148,6 +148,7 @@ Item {
             checked: sceneSession.visibleOverview
 
             NLToolTip{
+                text: ((sceneSession.visibleOverview ? "Hide " : "Show ") +"the overview")
                 visible: parent.hovered
             }
 
