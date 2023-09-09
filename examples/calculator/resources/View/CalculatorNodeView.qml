@@ -91,7 +91,7 @@ NodeView {
         }
 
         // Description Text
-        TextField {
+        NLTextField {
             id: textArea
 
             anchors.top: titleItem.bottom

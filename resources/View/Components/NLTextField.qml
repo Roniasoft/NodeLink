@@ -4,28 +4,28 @@ import QtQuick.Templates as T
 import QtQuick.Controls.Universal 2.12
 
 /*! ***********************************************************************************************
- * NLTextArea is a custome TextArea for NodeLink to be compatible with Qt 6.5
+ * NLTextField is a custome TextField for NodeLink to be compatible with Qt 6.5
  * ************************************************************************************************/
-T.TextArea {
+T.TextField {
     id: control
 
     /*  Object Properties
     * ****************************************************************************************/
-    implicitWidth: Math.max(contentWidth + leftPadding + rightPadding,
-                            implicitBackgroundWidth + leftInset + rightInset,
-                            placeholder.implicitWidth + leftPadding + rightPadding)
-    implicitHeight: Math.max(contentHeight + topPadding + bottomPadding,
-                             implicitBackgroundHeight + topInset + bottomInset,
+    implicitWidth: implicitBackgroundWidth + leftInset + rightInset
+                   || Math.max(contentWidth, placeholder.implicitWidth) + leftPadding + rightPadding
+    implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset,
+                             contentHeight + topPadding + bottomPadding,
                              placeholder.implicitHeight + topPadding + bottomPadding)
 
     padding: 6
     leftPadding: padding + 4
 
     color: control.palette.text
-    //! placeholderTextColor is the actual text color with a 0.5 opacity (alpha is set to 0.5)
-    placeholderTextColor: Qt.hsla(control.color.hslHue, control.color.hslSaturation, control.color.hslLightness, 0.5)
     selectionColor: control.palette.highlight
     selectedTextColor: control.palette.highlightedText
+    //! placeholderTextColor is the actual text color with a 0.5 opacity (alpha is set to 0.5)
+    placeholderTextColor: Qt.hsla(control.color.hslHue, control.color.hslSaturation, control.color.hslLightness, 0.5)
+    verticalAlignment: TextInput.AlignVCenter
 
     background: Rectangle {
         color: "transparent"
@@ -48,4 +48,6 @@ T.TextArea {
         elide: Text.ElideRight
         renderType: control.renderType
     }
+
+
 }
