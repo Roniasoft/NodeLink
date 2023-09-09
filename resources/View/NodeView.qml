@@ -82,7 +82,7 @@ InteractiveNodeView {
             }
 
             //! Title Text
-            TextArea {
+            NLTextArea {
                 id: titleTextArea
 
                 anchors.right: parent.right
@@ -96,6 +96,7 @@ InteractiveNodeView {
                 readOnly: !nodeView.edit
                 focus: false
                 placeholderText: qsTr("Enter title")
+                color: "white"
                 selectByMouse: true
                 text: node.title
                 verticalAlignment: Text.AlignVCenter
@@ -158,7 +159,7 @@ InteractiveNodeView {
             ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
 
             // Description Text
-            TextArea {
+            NLTextArea {
                 id: textArea
 
                 focus: false

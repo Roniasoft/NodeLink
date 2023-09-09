@@ -57,7 +57,7 @@ I_LinkView {
     }
 
     // Description view
-    TextArea {
+    NLTextArea {
         id: descriptionText
         x: linkMidPoint.x
         y: linkMidPoint.y

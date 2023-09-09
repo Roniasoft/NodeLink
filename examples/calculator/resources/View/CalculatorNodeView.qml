@@ -42,7 +42,7 @@ NodeView {
             }
 
             //! Title Text
-            TextArea {
+            NLTextArea {
                 id: titleTextArea
 
                 anchors.right: parent.right
@@ -56,6 +56,7 @@ NodeView {
                 readOnly: !nodeView.edit
                 focus: false
                 placeholderText: qsTr("Enter title")
+                color: "white"
                 selectByMouse: true
                 text: node.title
                 verticalAlignment: Text.AlignVCenter
