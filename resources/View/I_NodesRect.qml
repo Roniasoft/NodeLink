@@ -39,7 +39,9 @@ Item {
     /*  Object Properties
     * ****************************************************************************************/
     anchors.fill: parent
-    z: 3
+
+    //! Z factor to manage node view (maximum in NodeView is 3) and another layers order, maximum is 4
+    z: 4
 
     Keys.forwardTo: parent
 

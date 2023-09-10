@@ -25,6 +25,8 @@ I_NodeView {
     border.color: node.guiConfig.locked ? NLStyle.node.borderLockColor : Qt.lighter(node.guiConfig.color, isSelected ? 1.2 : 1)
     border.width: (isSelected ? (NLStyle.node.borderWidth + 1) : NLStyle.node.borderWidth)
     opacity: isSelected ? NLStyle.node.selectedOpacity : NLStyle.node.defaultOpacity
+
+    // Z factor to manage node view order, maximum is 3
     z: node.guiConfig.locked ? 1 : (isSelected ? 3 : 2)
     radius: NLStyle.radiusAmount.nodeView
 

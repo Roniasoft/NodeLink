@@ -25,14 +25,6 @@ InteractiveNodeView {
     /* Slots
      * ****************************************************************************************/
 
-    //! When node is selected, width, height, x, and y
-    //! changed must be sent into rubber band
-    onWidthChanged:  dimensionChanged();
-    onHeightChanged: dimensionChanged();
-
-    onXChanged: dimensionChanged();
-    onYChanged: dimensionChanged();
-
     onEditChanged: {
 
         // When Node is editting and zoomFactor is less than minimalZoomNode,
@@ -390,6 +382,24 @@ InteractiveNodeView {
         function onSelectedModelChanged() {
             if(!scene.selectionModel.isSelected(node._qsUuid))
                 nodeView.edit = false;
+        }
+    }
+
+    //! When node is selected, width, height, x, and y
+    //! changed must be sent into rubber bandd.
+    Connections {
+        target: node.guiConfig
+
+        function onPositionChanged() {
+            dimensionChanged();
+        }
+
+        function onWidthChanged() {
+            dimensionChanged();
+        }
+
+        function onHeightChanged() {
+            dimensionChanged();
         }
     }
 
