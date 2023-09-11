@@ -42,7 +42,7 @@ NodeView {
             }
 
             //! Title Text
-            TextArea {
+            NLTextArea {
                 id: titleTextArea
 
                 anchors.right: parent.right
@@ -56,6 +56,7 @@ NodeView {
                 readOnly: !nodeView.edit
                 focus: false
                 placeholderText: qsTr("Enter title")
+                color: NLStyle.primaryTextColor
                 selectByMouse: true
                 text: node.title
                 verticalAlignment: Text.AlignVCenter
@@ -90,7 +91,7 @@ NodeView {
         }
 
         // Description Text
-        TextField {
+        NLTextField {
             id: textArea
 
             anchors.top: titleItem.bottom
@@ -103,7 +104,7 @@ NodeView {
             focus: false
             visible: !mainContentItem.iconOnly
             placeholderText: qsTr("Number")
-            color: "white"
+            color: NLStyle.primaryTextColor
             text: {
                 if (node.type === CSpecs.NodeType.Result)
                     return node?.nodeData?.data

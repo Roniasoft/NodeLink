@@ -57,7 +57,7 @@ I_LinkView {
     }
 
     // Description view
-    TextArea {
+    NLTextArea {
         id: descriptionText
         x: linkMidPoint.x
         y: linkMidPoint.y
@@ -66,7 +66,7 @@ I_LinkView {
         visible: link.guiConfig.description.length > 0 || link.guiConfig._isEditableDescription
 
 
-        color: "white"
+        color: NLStyle.primaryTextColor
         font.family: NLStyle.fontType.roboto
         font.pointSize: 14
         focus: link.guiConfig._isEditableDescription

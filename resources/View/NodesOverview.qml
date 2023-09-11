@@ -93,7 +93,7 @@ Item {
         property real         customScaleFactor: root.overviewScaleFactor / (root.overviewScaleFactor > 1 ? 1 : sceneSession.zoomManager.zoomFactor)
 
         color: "transparent"
-        border.color: Material.accent
+        border.color: NLStyle.primaryColor
         x: (sceneSession.contentX - nodeRectTopLeft.x) * customScaleFactor
         y: (sceneSession.contentY - nodeRectTopLeft.y) * customScaleFactor
         width: sceneSession.sceneViewWidth * customScaleFactor

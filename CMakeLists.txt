@@ -119,6 +119,8 @@ qt_add_qml_module(NodeLink
 
         resources/View/Components/ColorPicker/ColorItem.qml
         resources/View/Components/ColorPicker/ColorPicker.qml
+        resources/View/Components/NLTextArea.qml
+        resources/View/Components/NLTextField.qml
         resources/View/Components/NLToolButton.qml
         resources/View/Components/ConfirmPopUp.qml
         resources/View/Components/SideMenuButtonGroup.qml

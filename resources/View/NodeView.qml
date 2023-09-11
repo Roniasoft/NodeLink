@@ -74,7 +74,7 @@ InteractiveNodeView {
             }
 
             //! Title Text
-            TextArea {
+            NLTextArea {
                 id: titleTextArea
 
                 anchors.right: parent.right
@@ -88,6 +88,7 @@ InteractiveNodeView {
                 readOnly: !nodeView.edit
                 focus: false
                 placeholderText: qsTr("Enter title")
+                color: NLStyle.primaryTextColor
                 selectByMouse: true
                 text: node.title
                 verticalAlignment: Text.AlignVCenter
@@ -150,12 +151,12 @@ InteractiveNodeView {
             ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
 
             // Description Text
-            TextArea {
+            NLTextArea {
                 id: textArea
 
                 focus: false
                 placeholderText: qsTr("Enter description")
-                color: "white"
+                color: NLStyle.primaryTextColor
                 text: node.guiConfig.description
                 readOnly: !nodeView.edit
                 wrapMode:TextEdit.WrapAnywhere

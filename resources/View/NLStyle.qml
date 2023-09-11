@@ -13,6 +13,10 @@ QtObject {
 
     /* Properties
      * ****************************************************************************************/
+    readonly property string primaryColor:     "#4890e2"
+
+    readonly property string primaryTextColor: "white"
+
     readonly property QtObject portView: QtObject {
         property int size:          18
         property int borderSize:    2
