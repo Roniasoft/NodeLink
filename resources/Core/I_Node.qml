@@ -21,6 +21,9 @@ QSObject {
     //! Emit clone signal in clone or copy a node
     signal clone(baseNode: I_Node);
 
+    /* Slots
+     * ****************************************************************************************/
+
     //! Manage the cloning of nodes, enabling each subclass to copy its own properties.
     onClone: function (baseNode)  {
 

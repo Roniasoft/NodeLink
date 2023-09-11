@@ -129,11 +129,22 @@ NodeView {
             onPressed: (event) => {
                            if (event.button === Qt.RightButton) {
                                nodeView.edit = false;
-//                               nodeMouseArea.clicked(event);
                            }
                        }
             background: Rectangle {
                 color: "transparent";
+            }
+
+            //! Connection to handle predefiend data in source node.
+            Connections {
+                target: node.nodeData
+                enabled: (node.type === CSpecs.NodeType.Source)
+
+                function onDataChanged() {
+                    if (node.nodeData.data !== textArea.text)
+                        textArea.text = node.nodeData.data;
+                }
+
             }
         }
 
