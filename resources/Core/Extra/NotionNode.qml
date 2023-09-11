@@ -30,6 +30,18 @@ Node {
     //! Unmet conditions and the nodes they're related to
     property var _unMetConditions: []
 
+
+    /* Slots
+     * ****************************************************************************************/
+
+    onClone: function (baseNode)  {
+
+        // Copy direct properties in root.
+        status = baseNode.status;
+
+        root.entryCondition?.setProperties(baseNode.entryCondition);
+    }
+
     /* Functions
      * ****************************************************************************************/
 
@@ -74,4 +86,18 @@ Node {
             return root.status === status;
     }
 
+    //! Override functin
+    //! Copy a baseNode into root
+    //! Only the not internal properties ("_") copy.
+//    function clone (baseNode : NotionNode)  {
+
+//        // Copy direct properties in root.
+
+////        status = baseNode.status;
+//        root.setProperties(baseNode)
+////        root.guiConfig.setProperties(baseNode.guiConfig);
+////        root.nodeData?.setProperties(baseNode.nodeData);
+////        root.entryCondition?.setProperties(baseNode.entryCondition);
+
+//    }
 }

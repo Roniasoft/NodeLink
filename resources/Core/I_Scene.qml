@@ -121,19 +121,22 @@ QSObject {
     }
 
     //! duplicator (third button)
-    function cloneNode(nodeUUId: string) {
-        var baseNode = nodes[nodeUUId];
-        var nodeUuid = createSpecificNode(NLNodeRegistry.imports, baseNode.type,
+    function cloneNode(nodeUuid: string) {
+        var baseNode = nodes[nodeUuid];
+        var newNodeUuid = createSpecificNode(NLNodeRegistry.imports, baseNode.type,
                                       NLNodeRegistry.nodeTypes[baseNode.type],
                                       baseNode.guiConfig.color,
                                       baseNode.title, baseNode.guiConfig.position.x + 50,
                                       baseNode.guiConfig.position.y + 50);
 
-        var node = nodes[nodeUUId];
+        var node = nodes[newNodeUuid];
 
-        node.guiConfig.height = baseNode.guiConfig.height
-        node.guiConfig.width = baseNode.guiConfig.width
-        node.nodeData = baseNode.nodeData
+        node.clone(baseNode);
+
+
+        // Customize cloned node.
+        node.guiConfig.position.x += 50;
+        node.guiConfig.position.y += 50;
     }
 
     //! On port added
