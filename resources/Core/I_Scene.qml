@@ -26,6 +26,9 @@ QSObject {
     //! Scene Selection Model
     property SelectionModel selectionModel: null
 
+    //! Scene Session (UI related, added for undo view  changes)
+    property SceneSession   sceneSession:   SceneSession {}
+
     /* Signals
      * ****************************************************************************************/
 

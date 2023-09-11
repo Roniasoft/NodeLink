@@ -1,10 +1,11 @@
 import QtQuick
 import NodeLink
+import QtQuickStream
 
 /*! ***********************************************************************************************
  *
  * ************************************************************************************************/
-QtObject {
+QSObject {
 
     //! map<port uuid: string, isVisible: bool>
     property var   portsVisibility: ({})

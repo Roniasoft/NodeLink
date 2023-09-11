@@ -11,7 +11,7 @@ Item {
     * ****************************************************************************************/
     property Scene          scene
 
-    property SceneSession   sceneSession:   SceneSession {}
+    property SceneSession   sceneSession:   scene.sceneSession
 
     property alias          nodesScene:     nodesScene
 
