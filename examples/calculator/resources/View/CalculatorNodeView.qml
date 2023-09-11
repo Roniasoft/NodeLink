@@ -56,7 +56,7 @@ NodeView {
                 readOnly: !nodeView.edit
                 focus: false
                 placeholderText: qsTr("Enter title")
-                color: "white"
+                color: NLStyle.primaryTextColor
                 selectByMouse: true
                 text: node.title
                 verticalAlignment: Text.AlignVCenter
@@ -104,7 +104,7 @@ NodeView {
             focus: false
             visible: !mainContentItem.iconOnly
             placeholderText: qsTr("Number")
-            color: "white"
+            color: NLStyle.primaryTextColor
             text: {
                 if (node.type === CSpecs.NodeType.Result)
                     return node?.nodeData?.data
