@@ -19,6 +19,13 @@ Node {
 
     Component.onCompleted: addPorts();
 
+    //! Override function
+    //! Handle clone node operation
+    //! Empty the nodeData.data
+    onCloneFrom: function (baseNode)  {
+        nodeData.data = null;
+    }
+
     /* Functions
      * ****************************************************************************************/
 
