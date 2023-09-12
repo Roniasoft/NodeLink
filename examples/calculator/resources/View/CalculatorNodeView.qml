@@ -109,9 +109,10 @@ NodeView {
             wrapMode:TextEdit.WrapAnywhere
             onTextChanged: {
                 if (node && (node.nodeData?.data ?? "") !== text) {
-                    node.nodeData.data = text;
-                    if (node.type === CSpecs.NodeType.Source)
+                    if (node.type === CSpecs.NodeType.Source) {
+                        node.nodeData.data = text;
                         scene.updateData();
+                    }
                 }
             }
             smooth: true
