@@ -29,6 +29,6 @@ QSObject {
 
         // Copy direct properties in root.
         objectType = baseNode.objectType;
-        root.nodeData?.setProperties(baseNode.nodeData);
+        nodeData?.setProperties(baseNode.nodeData);
     }
 }
