@@ -68,7 +68,6 @@ NodeView {
                 onPressed: (event) => {
                                if (event.button === Qt.RightButton) {
                                    nodeView.edit = false
-                                   nodeMouseArea.clicked(event)
                                }
                            }
 
@@ -105,19 +104,15 @@ NodeView {
             visible: !mainContentItem.iconOnly
             placeholderText: qsTr("Number")
             color: NLStyle.primaryTextColor
-            text: {
-                if (node.type === CSpecs.NodeType.Result)
-                    return node?.nodeData?.data
-
-                return "";
-            }
+            text: node?.nodeData?.data
             readOnly: !nodeView.edit || (node.type === CSpecs.NodeType.Result)
             wrapMode:TextEdit.WrapAnywhere
             onTextChanged: {
                 if (node && (node.nodeData?.data ?? "") !== text) {
-                    node.nodeData.data = text;
-                    if (node.type === CSpecs.NodeType.Source)
+                    if (node.type === CSpecs.NodeType.Source) {
+                        node.nodeData.data = text;
                         scene.updateData();
+                    }
                 }
             }
             smooth: true
@@ -129,12 +124,12 @@ NodeView {
             onPressed: (event) => {
                            if (event.button === Qt.RightButton) {
                                nodeView.edit = false;
-//                               nodeMouseArea.clicked(event);
                            }
                        }
             background: Rectangle {
                 color: "transparent";
             }
+
         }
 
         //! Minimal nodeview in low zoomFactor: forgrond

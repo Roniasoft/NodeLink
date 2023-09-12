@@ -30,6 +30,20 @@ Node {
     //! Unmet conditions and the nodes they're related to
     property var _unMetConditions: []
 
+
+    /* Slots
+     * ****************************************************************************************/
+
+    //! Override function
+    onCloneFrom: function (baseNode)  {
+
+        // Copy direct properties in root.
+        status = baseNode.status;
+
+        // Update root entry condition with baseNode
+        root.entryCondition?.setProperties(baseNode.entryCondition);
+    }
+
     /* Functions
      * ****************************************************************************************/
 
@@ -73,5 +87,4 @@ Node {
     function checkNodeStatus(status: int) : bool {
             return root.status === status;
     }
-
 }

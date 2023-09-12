@@ -13,4 +13,22 @@ QSObject {
 
     //! NodeData
     property I_NodeData     nodeData:       null
+
+    /* Signals
+       * ****************************************************************************************/
+
+    //! Emit clone signal in clone or copy a node
+    signal cloneFrom(baseNode: I_Node);
+
+    /* Slots
+     * ****************************************************************************************/
+
+    //! Override function
+    //! Manage the cloning of nodes, enabling each subclass to copy its own properties.
+    onCloneFrom: function (baseNode)  {
+
+        // Copy direct properties in root.
+        objectType = baseNode.objectType;
+        nodeData?.setProperties(baseNode.nodeData);
+    }
 }

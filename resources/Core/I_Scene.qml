@@ -121,19 +121,23 @@ QSObject {
     }
 
     //! duplicator (third button)
-    function cloneNode(nodeUUId: string) {
-        var baseNode = nodes[nodeUUId];
-        var nodeUuid = createSpecificNode(NLNodeRegistry.imports, baseNode.type,
-                                      NLNodeRegistry.nodeTypes[baseNode.type],
-                                      baseNode.guiConfig.color,
-                                      baseNode.title, baseNode.guiConfig.position.x + 50,
-                                      baseNode.guiConfig.position.y + 50);
+    function cloneNode(nodeUuid: string) {
+        var baseNode = nodes[nodeUuid];
 
-        var node = nodes[nodeUUId];
+        // Create node
+        var node = QSSerializer.createQSObject(NLNodeRegistry.nodeTypes[baseNode.type],
+                                               NLNodeRegistry.imports, NLCore.defaultRepo);
+        node._qsRepo = NLCore.defaultRepo;
 
-        node.guiConfig.height = baseNode.guiConfig.height
-        node.guiConfig.width = baseNode.guiConfig.width
-        node.nodeData = baseNode.nodeData
+        // Clone node
+        node.cloneFrom(baseNode);
+
+        // Customize cloned node position.
+        node.guiConfig.position.x += 50;
+        node.guiConfig.position.y += 50;
+
+        // Add node into nodes array to updata ui
+        addNode(node);
     }
 
     //! On port added

@@ -31,6 +31,20 @@ I_Node  {
     * ****************************************************************************************/
     objectType: NLSpec.ObjectType.Node
 
+    /* Slots
+     * ****************************************************************************************/
+
+    //! Override function
+    //! Handle clone node operation
+    onCloneFrom: function (baseNode)  {
+
+        // Copy direct properties in root.
+        title = baseNode.title;
+        type  = baseNode.type;
+
+        root.guiConfig?.setProperties(baseNode.guiConfig);
+    }
+
     /* Signals
      * ****************************************************************************************/
     signal portAdded(var portId);
