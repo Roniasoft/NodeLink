@@ -34,8 +34,9 @@ I_Node  {
     /* Slots
      * ****************************************************************************************/
 
+    //! Override function
     //! Handle clone node operation
-    onClone: function (baseNode)  {
+    onCloneFrom: function (baseNode)  {
 
         // Copy direct properties in root.
         title = baseNode.title;

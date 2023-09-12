@@ -34,11 +34,13 @@ Node {
     /* Slots
      * ****************************************************************************************/
 
-    onClone: function (baseNode)  {
+    //! Override function
+    onCloneFrom: function (baseNode)  {
 
         // Copy direct properties in root.
         status = baseNode.status;
 
+        // Update root entry condition with baseNode
         root.entryCondition?.setProperties(baseNode.entryCondition);
     }
 
@@ -85,19 +87,4 @@ Node {
     function checkNodeStatus(status: int) : bool {
             return root.status === status;
     }
-
-    //! Override functin
-    //! Copy a baseNode into root
-    //! Only the not internal properties ("_") copy.
-//    function clone (baseNode : NotionNode)  {
-
-//        // Copy direct properties in root.
-
-////        status = baseNode.status;
-//        root.setProperties(baseNode)
-////        root.guiConfig.setProperties(baseNode.guiConfig);
-////        root.nodeData?.setProperties(baseNode.nodeData);
-////        root.entryCondition?.setProperties(baseNode.entryCondition);
-
-//    }
 }
