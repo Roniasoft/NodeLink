@@ -1,7 +1,6 @@
 import QtQuick
 import QtQuick.Controls
-import QtQuick.Dialogs
-import QtQuick.Layouts
+
 import NodeLink
 import QtQuickStream
 
@@ -117,9 +116,9 @@ I_NodesScene {
                     zoomStepTimes = zoomStepTimes === 0 ? 1 : zoomStepTimes;
 
                     if (flickableScale > 1.0)
-                        sceneSession.zoomManager.zoomIn();
+                        sceneSession.zoomManager.zoomIn(zoomStepTimes);
                     else if (flickableScale < 1.0)
-                        sceneSession.zoomManager.zoomOut();
+                        sceneSession.zoomManager.zoomOut(zoomStepTimes);
 
                     updateFlickableDimension();
                     scaleBehaviorAnimation.enabled = false;
@@ -362,14 +361,14 @@ I_NodesScene {
 
             fcontentWidth = Math.max(...Object.values(scene?.nodes ?? ({})).
                                      map(node => ((node.guiConfig.position.x + node.guiConfig.width) *
-                                                  sceneSession.zoomManager.zoomFactor)), fcontentWidth);
+                                                  zoomFactor)), fcontentWidth);
 
             //! Maximum contentWidth is 8000, greater than 8000, the app was slow.
             scene.sceneGuiConfig.contentWidth = Math.max(fcontentWidth, scene.sceneGuiConfig.contentWidth);
 
             fcontentHeight = Math.max(...Object.values(scene?.nodes ?? ({})).
                                       map(node => ((node.guiConfig.position.y + node.guiConfig.height) *
-                                                   sceneSession.zoomManager.zoomFactor)), fcontentHeight);
+                                                   zoomFactor)), fcontentHeight);
 
             scene.sceneGuiConfig.contentHeight = Math.max(fcontentHeight, scene.sceneGuiConfig.contentHeight);
 
@@ -428,8 +427,8 @@ I_NodesScene {
             scene.sceneGuiConfig.contentHeight = NLStyle.scene.defaultContentHeight;
 
             //! Change contents to initial value
-            scene.sceneGuiConfig.contentX = 1500;
-            scene.sceneGuiConfig.contentY = 1500;
+            scene.sceneGuiConfig.contentX = NLStyle.scene.defaultContentX;
+            scene.sceneGuiConfig.contentY = NLStyle.scene.defaultContentY;
 
 
             sceneSession.zoomManager.customZoom(zoomFactor);

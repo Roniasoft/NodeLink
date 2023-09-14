@@ -11,16 +11,16 @@ QtObject {
      * ****************************************************************************************/
 
     //! Maximum zoom value
-    property real maximumZoom   :   2.5
+    property real maximumZoom    : 2.5
 
     //! Minimum zoom value
-    property real minimumZoom   : 0.35
+    property real minimumZoom    : 0.35
 
     //! Zoom factor, control the zoom
-    property real zoomFactor    : 1.0
+    property real zoomFactor     : 1.0
 
     //! step of zoom in/out
-    property real zoomStep      : 0.3
+    property real zoomStep       : 0.3
 
     //! In minimalZoomNode, node show a minimal Rectangle without header and description
     property real minimalZoomNode: 0.6
@@ -60,17 +60,18 @@ QtObject {
     /* Functions
      * ****************************************************************************************/
     //! ZoomIn method
-    function zoomIn() {
+    function zoomIn(numberSteps = 1) {
+
         if(canZoomIn())
-                zoomFactor *= (1 + zoomInStep());
+                zoomFactor *= (1 + zoomInStep(numberSteps));
 
         focusToScene();
     }
 
     //! ZoomOut method
-    function zoomOut() {
+    function zoomOut(numberSteps = 1) {
         if(canZoomOut())
-                zoomFactor /= (1 + zoomOutStep());
+                zoomFactor /= (1 + zoomOutStep(numberSteps));
 
         focusToScene();
     }
@@ -96,34 +97,34 @@ QtObject {
     }
 
     //! Can zoom In ...
-    function canZoomIn() : bool {
+    function canZoomIn(numberSteps = 1) : bool {
         return zoomFactor - maximumZoom < 0.001;
     }
 
     //! Can zoom Out ...
-    function canZoomOut() : bool {
+    function canZoomOut(numberSteps = 1) : bool {
         return zoomFactor - minimumZoom > 0.001;
     }
 
     //! Zoom in step
-    function zoomInStep() : real {
+    function zoomInStep(numberSteps = 1) : real {
                 if(canZoomIn()) {
-                    if(zoomFactor * (1 + zoomStep) >= maximumZoom)
+                    if (zoomFactor * (1 + zoomStep * numberSteps) >= maximumZoom)
                         return Math.abs(maximumZoom - zoomFactor) / zoomFactor;
                     else
-                        return zoomStep;
+                        return zoomStep * numberSteps;
                 }
 
                 return 0.0;
     }
 
     //! Zoom out step
-    function zoomOutStep() : real {
+    function zoomOutStep(numberSteps = 1) : real {
                 if(canZoomOut()) {
-                    if(zoomFactor / (1 + zoomStep) <= minimumZoom)
+                    if (zoomFactor / (1 + zoomStep * numberSteps) <= minimumZoom)
                         return Math.abs(zoomFactor - minimumZoom) / minimumZoom;
                     else
-                        return zoomStep;
+                        return zoomStep * numberSteps;
                 }
 
                 return 0.0;
