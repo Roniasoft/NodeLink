@@ -23,6 +23,12 @@ I_NodesScene {
     property vector3d    zoomPoint:      Qt.vector3d(0, 0, 0)
     property vector2d    worldZoomPoint: Qt.vector2d(0, 0)
 
+    //! enableContentsBehavior controls contents behavior
+    property bool enableContentsBehavior: false
+
+    //! Aggregate wheel angle to manage zoom process.
+    property real        zoomOnWheel:    0.0
+
     /* Object Properties
     * ****************************************************************************************/
 
@@ -70,9 +76,35 @@ I_NodesScene {
     /* Children
     * ****************************************************************************************/
 
+    //! Behavior on contentX
+       Behavior on contentX  {
+           enabled: enableContentsBehavior
+           NumberAnimation {
+               easing.type: Easing.InOutQuad
+               duration: 20
+               onRunningChanged: {
+                   if(!running)
+                       enableContentsBehavior = false;
+               }
+           }
+       }
+
+       //! Behavior on contentY
+       Behavior on contentY {
+           enabled: enableContentsBehavior
+           NumberAnimation {
+               easing.type: Easing.InOutQuad
+               duration: 20
+               onRunningChanged: {
+                   if(!running)
+                       enableContentsBehavior = false;
+                   }
+               }
+           }
+
     //! Behavior on scaleX
     Behavior on flickableScale {
-        id: scaleBehavior
+        id: scaleBehaviorAnimation
 
         NumberAnimation {
             duration: 200
@@ -80,16 +112,21 @@ I_NodesScene {
 
             onRunningChanged: {
                 if(!running) {
+                    var zoomStepTimes = zoomOnWheel / 120;
+                    zoomStepTimes = Math.abs(zoomStepTimes) > 4 ? 4 : Math.abs(zoomStepTimes);
+                    zoomStepTimes = zoomStepTimes === 0 ? 1 : zoomStepTimes;
+
                     if(flickableScale > 1.0)
                         sceneSession.zoomManager.zoomIn();
                     else if (flickableScale < 1.0)
                         sceneSession.zoomManager.zoomOut();
 
                     updateFlickableDimension();
-                    scaleBehavior.enabled = false;
+                    scaleBehaviorAnimation.enabled = false;
                     zoomPoint = Qt.vector3d(0, 0, 0);
                     flickableScale = 1.00;
-                    scaleBehavior.enabled = true;
+                    zoomOnWheel = 0.0;
+                    scaleBehaviorAnimation.enabled = true;
                 }
             }
         }
@@ -103,6 +140,25 @@ I_NodesScene {
           yScale: flickableScale
 
        }
+
+    //! Timer to aggregate zoom process with wheel.
+    Timer {
+        id: zoomWheelTimer
+        running: false
+        repeat: false
+
+        interval: 250
+
+        onTriggered: {
+            var zoomStepTimes = zoomOnWheel / 120;
+            zoomStepTimes = Math.abs(zoomStepTimes) > 4 ? 4 : Math.abs(zoomStepTimes);
+            if (zoomOnWheel > 0)
+                prepareScale(1 + sceneSession.zoomManager.zoomInStep(zoomStepTimes));
+            else if (zoomOnWheel < 0)
+                prepareScale(1 / (1 + sceneSession.zoomManager.zoomOutStep(zoomStepTimes)));
+
+        }
+    }
 
     //! Delete selected objects
     Timer {
@@ -145,13 +201,14 @@ I_NodesScene {
                      if(!sceneSession.isShiftModifierPressed)
                         return;
 
-                     zoomPoint      = Qt.vector3d(wheel.x - scene.sceneGuiConfig.contentX, wheel.y - scene.sceneGuiConfig.contentY, 0);
-                     worldZoomPoint = Qt.vector2d(wheel.x, wheel.y);
+                     if (zoomOnWheel === 0) {
+                         zoomPoint      = Qt.vector3d(wheel.x - scene.sceneGuiConfig.contentX,
+                                                      wheel.y - scene.sceneGuiConfig.contentY, 0);
+                         worldZoomPoint = Qt.vector2d(wheel.x, wheel.y);
+                     }
 
-                     if(wheel.angleDelta.y > 0)
-                            prepareScale(1 + sceneSession.zoomManager.zoomInStep());
-                     else if (wheel.angleDelta.y < 0)
-                            prepareScale(1 / (1 + sceneSession.zoomManager.zoomOutStep()));
+                     zoomOnWheel += wheel.angleDelta.y;
+                     zoomWheelTimer.start();
                  }
 
         //! We should toggle line selection with mouse press event
@@ -348,12 +405,15 @@ I_NodesScene {
         //! Manage zoom from nodeView.
         function onZoomNodeSignal(zoomPointScaled: vector2d, wheelAngle: int) {
 
-            flickable.zoomPoint      = Qt.vector3d(zoomPointScaled.x - scene.sceneGuiConfig.contentX, zoomPointScaled.y - scene.sceneGuiConfig.contentY, 0);
-            flickable.worldZoomPoint = Qt.vector2d(zoomPointScaled.x, zoomPointScaled.y);
-            if(wheelAngle > 0)
-                   prepareScale(1 + sceneSession.zoomManager.zoomInStep());
-            else if (wheelAngle < 0)
-                   prepareScale(1 / (1 + sceneSession.zoomManager.zoomOutStep()))
+            if (zoomOnWheel === 0) {
+                flickable.zoomPoint      = Qt.vector3d(zoomPointScaled.x - scene.sceneGuiConfig.contentX,
+                                                       zoomPointScaled.y - scene.sceneGuiConfig.contentY, 0);
+                flickable.worldZoomPoint = Qt.vector2d(zoomPointScaled.x, zoomPointScaled.y);
+            }
+
+            //! Update wheel angle value and start a timer that handle zoom process.
+            zoomOnWheel += wheelAngle;
+            zoomWheelTimer.start();
         }
 
         //! Set focus on NodesScene after zoom In/Out
@@ -449,6 +509,7 @@ I_NodesScene {
 
     //! Prepare scale to set on the scene scale
     function prepareScale(scale: real) {
+        //scaleBehaviorAnimation.duration = 30 * Math.abs(1 - scale) / sceneSession.zoomManager.zoomStep;
         flickableScale = scale;
     }
 }
