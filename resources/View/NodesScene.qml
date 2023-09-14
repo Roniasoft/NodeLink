@@ -41,7 +41,7 @@ I_NodesScene {
 
     //! Handle key pressed (Del: delete selected node and link)
     Keys.onDeletePressed: {
-        if(sceneSession.isSceneEditable && Object.keys(scene.selectionModel.selectedModel).length > 0) {
+        if (sceneSession.isSceneEditable && Object.keys(scene.selectionModel.selectedModel).length > 0) {
             deletePopup.open();
         }
     }
@@ -50,7 +50,7 @@ I_NodesScene {
     Keys.onPressed: (event)=> {
         if (event.key === Qt.Key_Shift)
             sceneSession.isShiftModifierPressed = true;
-        if(event.key === Qt.Key_Control)
+        if (event.key === Qt.Key_Control)
             sceneSession.isCtrlPressed = true;
 
     }
@@ -58,7 +58,7 @@ I_NodesScene {
     Keys.onReleased: (event)=> {
         if (event.key === Qt.Key_Shift)
            sceneSession.isShiftModifierPressed = false;
-        if(event.key === Qt.Key_Control)
+        if (event.key === Qt.Key_Control)
              sceneSession.isCtrlPressed = false;
     }
 
@@ -83,7 +83,7 @@ I_NodesScene {
                easing.type: Easing.InOutQuad
                duration: 20
                onRunningChanged: {
-                   if(!running)
+                   if (!running)
                        enableContentsBehavior = false;
                }
            }
@@ -96,7 +96,7 @@ I_NodesScene {
                easing.type: Easing.InOutQuad
                duration: 20
                onRunningChanged: {
-                   if(!running)
+                   if (!running)
                        enableContentsBehavior = false;
                    }
                }
@@ -111,12 +111,12 @@ I_NodesScene {
             easing.type: Easing.Linear
 
             onRunningChanged: {
-                if(!running) {
+                if (!running) {
                     var zoomStepTimes = zoomOnWheel / 120;
                     zoomStepTimes = Math.abs(zoomStepTimes) > 4 ? 4 : Math.abs(zoomStepTimes);
                     zoomStepTimes = zoomStepTimes === 0 ? 1 : zoomStepTimes;
 
-                    if(flickableScale > 1.0)
+                    if (flickableScale > 1.0)
                         sceneSession.zoomManager.zoomIn();
                     else if (flickableScale < 1.0)
                         sceneSession.zoomManager.zoomOut();
@@ -198,8 +198,8 @@ I_NodesScene {
         propagateComposedEvents: true
 
         onWheel: (wheel) => {
-                     if(!sceneSession.isShiftModifierPressed)
-                        return;
+                    if (!sceneSession.isShiftModifierPressed)
+                       return;
 
                      if (zoomOnWheel === 0) {
                          zoomPoint      = Qt.vector3d(wheel.x - scene.sceneGuiConfig.contentX,
@@ -207,8 +207,8 @@ I_NodesScene {
                          worldZoomPoint = Qt.vector2d(wheel.x, wheel.y);
                      }
 
-                     zoomOnWheel += wheel.angleDelta.y;
-                     zoomWheelTimer.start();
+                    zoomOnWheel += wheel.angleDelta.y;
+                    zoomWheelTimer.start();
                  }
 
         //! We should toggle line selection with mouse press event
@@ -220,11 +220,11 @@ I_NodesScene {
             if (mouse.button === Qt.LeftButton) {
                 var gMouse = mapToItem(contentLoader.item, Qt.point(mouse.x, mouse.y));
                 var link = findLink(gMouse);
-                if(link === null)
+                if (link === null)
                      return;
 
                 // Select current node
-                if(scene.selectionModel.isSelected(link?._qsUuid) &&
+                if (scene.selectionModel.isSelected(link?._qsUuid) &&
                    sceneSession.isShiftModifierPressed)
                      scene.selectionModel.remove(link._qsUuid);
                 else
@@ -236,7 +236,7 @@ I_NodesScene {
         }
         onDoubleClicked: (mouse) => {
             //! Do nothing when user double clicks the on rubber band.
-            if(sceneSession.isMouseInRubberBand)
+            if (sceneSession.isMouseInRubberBand)
                 return;
 
             scene.selectionModel.clear();
@@ -310,7 +310,7 @@ I_NodesScene {
         //! Emit from side menu, Do zoomIn process
         function onZoomToFitSignal () {
             var nodesLength = Object.values(scene.nodes).length;
-            if(nodesLength < 1)
+            if (nodesLength < 1)
                 return;
 
             //! Calculte Left, Right, Top, and Bottom of node container to fit into view.
@@ -380,7 +380,7 @@ I_NodesScene {
 
         //! Emit from side menu, Do zoomIn process
         function onZoomInSignal() {
-            if(!sceneSession.zoomManager.canZoomIn())
+            if (!sceneSession.zoomManager.canZoomIn())
                 return;
 
             zoomPoint      = Qt.vector3d(flickable.width / 2, flickable.height / 2, 0);
