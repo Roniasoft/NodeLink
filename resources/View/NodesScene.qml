@@ -22,9 +22,6 @@ I_NodesScene {
     property vector3d    zoomPoint:      Qt.vector3d(0, 0, 0)
     property vector2d    worldZoomPoint: Qt.vector2d(0, 0)
 
-    //! enableContentsBehavior controls contents behavior
-    property bool enableContentsBehavior: false
-
     //! Aggregate wheel angle to manage zoom process.
     property real        zoomOnWheel:    0.0
 
@@ -76,30 +73,32 @@ I_NodesScene {
     * ****************************************************************************************/
 
     //! Behavior on contentX
-       Behavior on contentX  {
-           enabled: enableContentsBehavior
-           NumberAnimation {
-               easing.type: Easing.InOutQuad
-               duration: 20
-               onRunningChanged: {
-                   if (!running)
-                       enableContentsBehavior = false;
-               }
-           }
-       }
+    Behavior on contentX  {
+        enabled: enableContentsBehavior
+        NumberAnimation {
+            easing.type: Easing.InOutQuad
+            duration: 50
+            onRunningChanged: {
+                if (!running) {
+                    enableContentsBehavior = false;
+                }
+            }
+        }
+    }
 
-       //! Behavior on contentY
-       Behavior on contentY {
-           enabled: enableContentsBehavior
-           NumberAnimation {
-               easing.type: Easing.InOutQuad
-               duration: 20
-               onRunningChanged: {
-                   if (!running)
-                       enableContentsBehavior = false;
-                   }
-               }
-           }
+    //! Behavior on contentY
+    Behavior on contentY {
+        enabled: enableContentsBehavior
+        NumberAnimation {
+            easing.type: Easing.InOutQuad
+            duration: 50
+            onRunningChanged: {
+                if (!running) {
+                    enableContentsBehavior = false;
+                }
+            }
+        }
+    }
 
     //! Behavior on scaleX
     Behavior on flickableScale {
@@ -371,6 +370,9 @@ I_NodesScene {
                                                    zoomFactor)), fcontentHeight);
 
             scene.sceneGuiConfig.contentHeight = Math.max(fcontentHeight, scene.sceneGuiConfig.contentHeight);
+
+
+            enableContentsBehavior = true;
 
             // Adjust the content position to zoom to the mouse point
             scene.sceneGuiConfig.contentX = Math.max(0, fcontentX);
