@@ -27,8 +27,10 @@ Flickable {
     //! Scene Foreground
     property Component      foreground:     null
 
-    //! isFlickStarted, set true when a flick process started.
-    property bool isFlickStarted: false
+    //! When contents (contentX and contentY) change with a behavior,
+    //! content changed signals must be blocked.
+    //! use enableContentsBehavior property to block them when is necessary.
+    property bool           enableContentsBehavior:  false
 
     /* Object Properties
     * ****************************************************************************************/
@@ -40,7 +42,7 @@ Flickable {
 
     // Update contentY when changed by user (No flick process)
     onContentXChanged: {
-        if (!isFlickStarted && (scene.sceneGuiConfig.contentX - contentX) !== 0) {
+        if (!flicking && (scene.sceneGuiConfig.contentX - contentX) !== 0) {
 
             var isExtendWidthNeed = contentX + root.width > scene.sceneGuiConfig.contentWidth;
 
@@ -70,7 +72,7 @@ Flickable {
 
     // Update contentY when changed by user (No flick process)
     onContentYChanged: {
-        if (!isFlickStarted && (scene.sceneGuiConfig.contentY - contentY) !== 0) {
+        if (!flicking && (scene.sceneGuiConfig.contentY - contentY) !== 0) {
 
             var isExtendHeightNeed = contentY + root.height > scene.sceneGuiConfig.contentHeight;
 
@@ -96,35 +98,25 @@ Flickable {
         }
     }
 
-
-    //! Indicate start flick process.
-    onFlickStarted: {
-        isFlickStarted = true;
-    }
-
     //! onMovementEnded to handle movments with flick.
-    onMovementEnded: {
-        if (!isFlickStarted)
-            return;
-        if (scene.sceneGuiConfig.contentX !== contentX)
-            scene.sceneGuiConfig.contentX = contentX;
+    onFlickEnded: {
+        if ((sceneSession.contentX - contentX) !== 0)
+            sceneSession.contentX = contentX;
 
-        if (scene.sceneGuiConfig.contentY !== contentY)
-            scene.sceneGuiConfig.contentY = contentY;
-
-        isFlickStarted = false
+        if ((sceneSession.contentY - contentY) !== 0)
+            sceneSession.contentY = contentY;
     }
 
     //! Update width
     onWidthChanged: {
-        if (scene.sceneGuiConfig.sceneViewWidth !== width)
-            scene.sceneGuiConfig.sceneViewWidth = width;
+        if ((sceneSession.sceneViewWidth - width) !== 0)
+            sceneSession.sceneViewWidth = width;
     }
 
     //! Update height
     onHeightChanged: {
-        if (scene.sceneGuiConfig.sceneViewHeight !== height)
-            scene.sceneGuiConfig.sceneViewHeight = height;
+        if ((sceneSession.sceneViewHeight - height) !== 0)
+            sceneSession.sceneViewHeight = height;
     }
 
     focus: true
@@ -135,6 +127,4 @@ Flickable {
     FontLoader {
         source: "qrc:/NodeLink/resources/fonts/Font Awesome 6 Pro-Solid-900.otf"
     }
-
-
 }
