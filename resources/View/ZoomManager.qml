@@ -29,6 +29,12 @@ QtObject {
     //! zoom in node edit mode (When a node is in minimal mode)
     property real nodeEditZoom   : 2.0
 
+    //! Maximum zoom steps with wheel
+    property int maximumZoomSteps: 4
+
+    //! Each wheelStep is one step in zoom process
+    property int wheelStep       : 120
+
 //    ! Behavior on zoomFactor change
 //    Behavior on zoomFactor {NumberAnimation{duration: 100}}
 
@@ -51,9 +57,6 @@ QtObject {
     //! Set focus to scene.
     signal focusToScene();
 
-    //! Use this when zoomFactor changed very fast.
-    signal startAnimated();
-
     //! reset zoom with efect on flicable
     signal resetZoomSignal(zoomFactor : real);
 
@@ -61,18 +64,18 @@ QtObject {
     /* Functions
      * ****************************************************************************************/
     //! ZoomIn method
-    function zoomIn(numberSteps = 1) {
+    function zoomIn(wheelData = wheelStep) {
 
-        if(canZoomIn())
-                zoomFactor *= (1 + zoomInStep(numberSteps));
+        if (canZoomIn())
+            zoomFactor *= (1 + zoomInStep(wheelData));
 
         focusToScene();
     }
 
     //! ZoomOut method
-    function zoomOut(numberSteps = 1) {
+    function zoomOut(wheelData = wheelStep) {
         if(canZoomOut())
-                zoomFactor /= (1 + zoomOutStep(numberSteps));
+                zoomFactor /= (1 + zoomOutStep(wheelData));
 
         focusToScene();
     }
@@ -80,54 +83,66 @@ QtObject {
     //! Fit scene with proper zoom factor
     function zoomToFit() {
         zoomToFitSignal();
-        startAnimated();
         focusToScene();
     }
 
     //! Undo zoom method
     function undoZoom() {
-        startAnimated();
         focusToScene();
     }
 
     //! Custum zoom method with zoom factor and center point
     function customZoom(zoom : real) {
         zoomFactor = zoom;
-        startAnimated();
         focusToScene();
     }
 
     //! Can zoom In ...
-    function canZoomIn(numberSteps = 1) : bool {
+    function canZoomIn() : bool {
         return zoomFactor - maximumZoom < 0.001;
     }
 
     //! Can zoom Out ...
-    function canZoomOut(numberSteps = 1) : bool {
+    function canZoomOut() : bool {
         return zoomFactor - minimumZoom > 0.001;
     }
 
     //! Zoom in step
-    function zoomInStep(numberSteps = 1) : real {
-                if(canZoomIn()) {
-                    if (zoomFactor * (1 + zoomStep * numberSteps) >= maximumZoom)
-                        return Math.abs(maximumZoom - zoomFactor) / zoomFactor;
-                    else
-                        return zoomStep * numberSteps;
-                }
+    function zoomInStep(wheelData = wheelStep) : real {
+        var zoomStepCount = zoomSteps(wheelData);
 
-                return 0.0;
+        if(canZoomIn()) {
+            if (zoomFactor * (1 + zoomStep * zoomStepCount) >= maximumZoom)
+                return Math.abs(maximumZoom - zoomFactor) / zoomFactor;
+            else
+                return zoomStep * zoomStepCount;
+        }
+
+        return 0.0;
     }
 
     //! Zoom out step
-    function zoomOutStep(numberSteps = 1) : real {
-                if(canZoomOut()) {
-                    if (zoomFactor / (1 + zoomStep * numberSteps) <= minimumZoom)
-                        return Math.abs(zoomFactor - minimumZoom) / minimumZoom;
-                    else
-                        return zoomStep * numberSteps;
-                }
+    function zoomOutStep(wheelData = wheelStep) : real {
+        var zoomStepCount = zoomSteps(wheelData);
 
-                return 0.0;
+        if(canZoomOut()) {
+            if (zoomFactor / (1 + zoomStep * zoomStepCount) <= minimumZoom)
+                return Math.abs(zoomFactor - minimumZoom) / minimumZoom;
+            else
+                return zoomStep * zoomStepCount;
+        }
+
+        return 0.0;
+    }
+
+    //! Calculate zoom steps with wheelData.
+    function zoomSteps(wheelData = wheelStep) : int {
+        var zoomStepCount = Math.abs(wheelData) / 120;
+        zoomStepCount = zoomStepCount > maximumZoomSteps ?
+                    maximumZoomSteps : zoomStepCount;
+
+        zoomStepCount = zoomStepCount === 0 ? 1 : zoomStepCount;
+
+        return zoomStepCount;
     }
 }

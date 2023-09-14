@@ -110,14 +110,10 @@ I_NodesScene {
 
             onRunningChanged: {
                 if (!running) {
-                    var zoomStepTimes = zoomOnWheel / 120;
-                    zoomStepTimes = Math.abs(zoomStepTimes) > 4 ? 4 : Math.abs(zoomStepTimes);
-                    zoomStepTimes = zoomStepTimes === 0 ? 1 : zoomStepTimes;
-
                     if (flickableScale > 1.0)
-                        sceneSession.zoomManager.zoomIn(zoomStepTimes);
+                        sceneSession.zoomManager.zoomIn(zoomOnWheel);
                     else if (flickableScale < 1.0)
-                        sceneSession.zoomManager.zoomOut(zoomStepTimes);
+                        sceneSession.zoomManager.zoomOut(zoomOnWheel);
 
                     updateFlickableDimension();
                     scaleBehaviorAnimation.enabled = false;
@@ -148,12 +144,10 @@ I_NodesScene {
         interval: 250
 
         onTriggered: {
-            var zoomStepTimes = zoomOnWheel / 120;
-            zoomStepTimes = Math.abs(zoomStepTimes) > 4 ? 4 : Math.abs(zoomStepTimes);
             if (zoomOnWheel > 0)
-                prepareScale(1 + sceneSession.zoomManager.zoomInStep(zoomStepTimes));
+                prepareScale(1 + sceneSession.zoomManager.zoomInStep(zoomOnWheel));
             else if (zoomOnWheel < 0)
-                prepareScale(1 / (1 + sceneSession.zoomManager.zoomOutStep(zoomStepTimes)));
+                prepareScale(1 / (1 + sceneSession.zoomManager.zoomOutStep(zoomOnWheel)));
 
         }
     }
