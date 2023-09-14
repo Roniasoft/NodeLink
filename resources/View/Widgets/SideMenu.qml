@@ -89,6 +89,9 @@ Item {
 
             onClicked: {
                 scene._undoCore.undoStack.undo();
+
+                // Set the focus within the scene
+                sceneSession.sceneForceFocus();
             }
         }
         SideMenuButton {
@@ -104,6 +107,9 @@ Item {
 
             onClicked: {
                 scene._undoCore.undoStack.redo();
+
+                // Set the focus within the scene
+                sceneSession.sceneForceFocus();
             }
         }
     }
@@ -152,7 +158,13 @@ Item {
                 visible: parent.hovered
             }
 
-            onClicked: sceneSession.visibleOverview = !sceneSession.visibleOverview
+            onClicked: {
+                sceneSession.visibleOverview = !sceneSession.visibleOverview
+
+                // Set the focus within the scene
+                sceneSession.sceneForceFocus();
+            }
+
         }
     }
 
@@ -169,6 +181,11 @@ Item {
             NLToolTip{
                 visible: parent.hovered
                 text: "Help"
+            }
+
+            onClicked:  {
+                // Set the focus within the scene
+                sceneSession.sceneForceFocus();
             }
         }
     }
