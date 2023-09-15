@@ -29,6 +29,8 @@ QtObject {
 
     //! Defualt Scene contents dimension.
     readonly property QtObject scene: QtObject {
+        property real maximumContentWidth:  8000
+        property real maximumContentHeight: 8000
         property real defaultContentWidth:  4000
         property real defaultContentHeight: 4000
         property real defaultContentX:      1500

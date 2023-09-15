@@ -40,15 +40,61 @@ Flickable {
 
     // Update contentY when changed by user (No flick process)
     onContentXChanged: {
-        if (!isFlickStarted && sceneSession.contentX !== contentX)
-            sceneSession.contentX = contentX;
+        if (!isFlickStarted && sceneSession.contentX !== contentX) {
+
+            var isExtendWidthNeed = contentX + root.width > sceneSession.contentWidth;
+            var tcontentX = contentX;
+
+            if (isExtendWidthNeed) {
+                // The addWidth needed to add into current flickable width.
+                // if width is extended by Node (node creation or movments),
+                // we ignore the maximum value and add the addWidth into flickable width.
+                var addWidth = contentX + root.width - sceneSession.contentWidth;
+                if (sceneSession.contentWidth + addWidth < NLStyle.scene.maximumContentWidth ||
+                        sceneSession.contentWidth > NLStyle.scene.maximumContentWidth) {
+                    sceneSession.contentWidth += addWidth;
+
+                } else {
+                    // Maximum value of contentWidth
+                    sceneSession.contentWidth = NLStyle.scene.maximumContentWidth;
+
+                    // Maximum value of contentX
+                    tcontentX = sceneSession.contentWidth - root.width;
+                }
+            }
+
+            sceneSession.contentX = tcontentX;
+        }
     }
 
     // Update contentY when changed by user (No flick process)
     onContentYChanged: {
-        if (!isFlickStarted && sceneSession.contentY !== contentY)
-            sceneSession.contentY = contentY;
+        if (!isFlickStarted && sceneSession.contentY !== contentY) {
+
+            var isExtendHeightNeed = contentX + root.height > sceneSession.contentHeight;
+             var tcontentY = contentY;
+
+            if (isExtendHeightNeed) {
+                // The addHeight needed to add into current flickable height.
+                // if width is extended by Node (node creation or movments),
+                // we ignore the maximum value and add the addHeight into flickable height.
+                var addHeight = contentX + root.height - sceneSession.contentHeight;
+
+                if (sceneSession.contentHeight + addHeight < NLStyle.scene.maximumContentHeight ||
+                        sceneSession.contentHeight > NLStyle.scene.maximumContentHeight) {
+                    sceneSession.contentHeight += addHeight;
+                    tcontentY = contentY;
+
+                } else {
+                    sceneSession.contentHeight = NLStyle.scene.maximumContentHeight;
+                    tcontentY = sceneSession.contentHeight - root.height;
+                }
+            }
+
+            sceneSession.contentY = tcontentY;
+        }
     }
+
 
     //! Indicate start flick process.
     onFlickStarted: {
