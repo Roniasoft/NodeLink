@@ -130,7 +130,7 @@ Item {
             onCheckedChanged: NLStyle.snapEnabled = snapGrid.checked
             NLToolTip{
                 visible: parent.hovered
-                text: "Snap tp grid"
+                text: "Snap to grid"
             }
         }
         SideMenuButton {
