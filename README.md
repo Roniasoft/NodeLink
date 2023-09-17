@@ -33,7 +33,6 @@ Current State (v1.0.0 alpha)
 The main features are as follows:
 
 - Use QtQuickStream to save and load NodeLink projects: QtQuickStream is a library for QtObjects that provides automatic serialization and deserialization of objects.    In the context of NodeLink, this means that you can easily save your project to a file and load it later, without having to manually write code to save and load        each individual object.
--
 - Drawing basic node/link features: NodeLink allows you to create nodes and links between them. Nodes are the basic building blocks of your project, and can represent   anything from data points to complex algorithms. Links are connections between nodes, and can represent relationships or dependencies between them.
 - Drawing links in different types and styles: In addition to basic links, NodeLink allows you to create links of different types and styles. For example, you could     have straight lines, curved lines, or arrows. You can also customize the color, and other visual properties of your links.
 
@@ -47,6 +46,13 @@ The main features are as follows:
 
 - Undo/Redo using QtQuickStream library: The undo/redo functionality allows you to undo and redo changes you make to your project. This is especially useful if you make a mistake or want to go back to a previous version of your project. NodeLink uses the QtQuickStream library to implement undo/redo, which makes it easy to save and restore your project state.
 
+Calculator
+==================
+To see the calculator example, choose the correct example in Qt Creator:
+
+
+
+
 Building
 ========
 
@@ -54,7 +60,7 @@ Linux
 -----
 ```
   git clone git@github.com:Roniasoft/NodeLink.git
-  cd RoniaKit
+  cd NodeLink
   mkdir build
   cd build
   cmake ..
@@ -98,7 +104,7 @@ Contribution
 Citing
 ======
 
-RONIA AB, RoniaKit, (2023), GitHub repository, https://github.com/Roniasoft/RoniaKit
+RONIA AB, NodeLink, (2023), GitHub repository, https://github.com/Roniasoft/NodeLink
 
 BibTeX::
 
