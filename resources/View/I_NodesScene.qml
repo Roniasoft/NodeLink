@@ -40,10 +40,12 @@ Flickable {
 
     // Update contentY when changed by user (No flick process)
     onContentXChanged: {
-        if (!isFlickStarted && sceneSession.contentX !== contentX) {
+        if (!isFlickStarted && (sceneSession.contentX - contentX) !== 0) {
 
             var isExtendWidthNeed = contentX + root.width > sceneSession.contentWidth;
-            var tcontentX = contentX;
+
+            // Ignore the negative value.
+            var tcontentX = Math.max(0, contentX);
 
             if (isExtendWidthNeed) {
                 // The addWidth needed to add into current flickable width.
@@ -69,10 +71,12 @@ Flickable {
 
     // Update contentY when changed by user (No flick process)
     onContentYChanged: {
-        if (!isFlickStarted && sceneSession.contentY !== contentY) {
+        if (!isFlickStarted && (sceneSession.contentY - contentY) !== 0) {
 
             var isExtendHeightNeed = contentX + root.height > sceneSession.contentHeight;
-             var tcontentY = contentY;
+
+            // Ignore the negative value.
+             var tcontentY = Math.max(0, contentY);
 
             if (isExtendHeightNeed) {
                 // The addHeight needed to add into current flickable height.
