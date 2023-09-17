@@ -49,8 +49,10 @@ The main features are as follows:
 Calculator
 ==================
 To see the calculator example, choose the correct example in Qt Creator:
+![steps](https://github.com/Roniasoft/NodeLink/assets/58881862/6538f8d9-e890-4b85-b1fe-51945bceadc2)
 
 
+![calculator example](https://github.com/Roniasoft/NodeLink/assets/58881862/59c24843-5228-4a99-beca-6fbade052908)
 
 
 Building
