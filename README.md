@@ -3,7 +3,10 @@
 Introduction
 ============
 
-NodeLink is a versatile library that utilizes the capabilities of Qt Quick to allow for the creation of custom node editors which can be used for a wide range of applications. Its primary purpose is to facilitate the development of node editors and support the communication between these editors via “links”. This library allows for the visualization and manipulation of complex graphs while also providing the flexibility for customization and integration with other software. Ultimately, NodeLink serves as a powerful tool for developers who need to create intuitive and user-friendly interfaces for their applications. 
+* NodeLink is a versatile library that utilizes the capabilities of Qt Quick to allow for the creation of custom node editors which can be used for a wide range of applications.
+* Its primary purpose is to facilitate the development of node editors and support the communication between these editors via “links”. 
+* This library allows for the visualization and manipulation of complex graphs while also providing the flexibility for customization and integration with other software. 
+* Ultimately, NodeLink serves as a powerful tool for developers who need to create intuitive and user-friendly interfaces for their applications. 
 
 
 Usage
@@ -27,7 +30,7 @@ Dependencies
 * CMake 3.8
 
 
-Current State (v1.0.0 alpha)
+Current State (v0.9.0)
 ==================
 
 The main features are as follows:
