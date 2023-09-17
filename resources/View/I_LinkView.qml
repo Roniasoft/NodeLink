@@ -37,10 +37,10 @@ Canvas {
     property bool       isSelected: scene?.selectionModel?.isSelected(link?._qsUuid) ?? false
 
     //! Link input position
-    property vector2d   inputPos: inputPort?._position ?? Qt.vector2d(0, 0)
+    property vector2d   inputPos: inputPort?._position ?? Qt.vector2d(-1, -1)
 
     //! Link output position
-    property vector2d   outputPos: outputPort?._position ?? Qt.vector2d(0, 0)
+    property vector2d   outputPos: outputPort?._position ?? Qt.vector2d(-1, -1)
 
     //! linkMidPoint is the position of link description.
     property vector2d   linkMidPoint: Qt.vector2d(0, 0)
@@ -91,8 +91,8 @@ Canvas {
         // create the context
         var context = canvas.getContext("2d");
 
-        // if null ports then return the function
-        if (!inputPort) {
+        // if null ports OR not initialized (inputPos.x < 0) then return the function
+        if (!inputPort || inputPos.x < 0 ) {
             context.reset();
             return;
         }
