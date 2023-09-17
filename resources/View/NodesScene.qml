@@ -77,7 +77,7 @@ I_NodesScene {
         enabled: enableContentsBehavior
         NumberAnimation {
             easing.type: Easing.InOutQuad
-            duration: 50
+            duration: 250
             onRunningChanged: {
                 if (!running) {
                     enableContentsBehavior = false;
@@ -91,7 +91,7 @@ I_NodesScene {
         enabled: enableContentsBehavior
         NumberAnimation {
             easing.type: Easing.InOutQuad
-            duration: 50
+            duration: 250
             onRunningChanged: {
                 if (!running) {
                     enableContentsBehavior = false;
@@ -366,11 +366,25 @@ I_NodesScene {
             scene.sceneGuiConfig.contentHeight = Math.max(fcontentHeight, scene.sceneGuiConfig.contentHeight);
 
 
+            // Ignore negative values
+            fcontentX = Math.max(0, fcontentX);
+            fcontentY = Math.max(0, fcontentY);
+
+            // Calculate Non-animated
+            var contentXChanges = (sceneSession.contentX - fcontentX) * 0.70;
+            var contentYChanges = (sceneSession.contentY - fcontentY) * 0.70;
+
+
+            // Set Non-animated changes.
+            sceneSession.contentX = Math.max(0, fcontentX + contentXChanges);
+            sceneSession.contentY = Math.max(0, fcontentY + contentYChanges);
+
+            // Start animation on contents
             enableContentsBehavior = true;
 
             // Adjust the content position to zoom to the mouse point
-            scene.sceneGuiConfig.contentX = Math.max(0, fcontentX);
-            scene.sceneGuiConfig.contentY = Math.max(0, fcontentY);
+            sceneGuiConfig.contentX = fcontentX;
+            sceneGuiConfig.contentY = fcontentY;
         }
 
         //! Emit from side menu, Do zoomIn process
