@@ -69,7 +69,8 @@ Menu {
 
 
         node.guiConfig.color = NLNodeRegistry.nodeColors[nodeType];
-        node.title = NLNodeRegistry.nodeNames[nodeType] + "_" + (Object.values(scene.nodes).filter(node => node.type === nodeType).length + 1)
+        node.title = NLNodeRegistry.nodeNames[nodeType] + "_" + (Object.values(scene.nodes).filter(nodeObj => (nodeObj.type - nodeType) === 0).length + 1)
+
         scene.addNode(node)
 
         return node._qsUuid;
