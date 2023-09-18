@@ -73,7 +73,7 @@ Flickable {
     onContentYChanged: {
         if (!isFlickStarted && (sceneSession.contentY - contentY) !== 0) {
 
-            var isExtendHeightNeed = contentX + root.height > sceneSession.contentHeight;
+            var isExtendHeightNeed = contentY+ root.height > sceneSession.contentHeight;
 
             // Ignore the negative value.
              var tcontentY = Math.max(0, contentY);
