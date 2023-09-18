@@ -26,6 +26,8 @@ QSObject {
     //! Scene Selection Model
     property SelectionModel selectionModel: null
 
+    property SceneGuiConfig sceneGuiConfig: SceneGuiConfig {}
+
     /* Signals
      * ****************************************************************************************/
 

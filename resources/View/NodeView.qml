@@ -248,7 +248,7 @@ InteractiveNodeView {
                      //! active zoom with shift modifier.
                      if(sceneSession.isShiftModifierPressed) {
                          var zoomPoint = Qt.vector2d(wheel.x + nodeView.x, wheel.y + nodeView.y);
-                         sceneSession.zoomManager.zoomNodeSignal(zoomPoint, wheel.angleDelta.y);
+                         scene.sceneGuiConfig.zoomManager.zoomNodeSignal(zoomPoint, wheel.angleDelta.y);
                      }
                  }
 
@@ -315,11 +315,11 @@ InteractiveNodeView {
                    (node.guiConfig.position.y < 0 && deltaY < 0))
                                  isDraging = false;
 
-                 if (node.guiConfig.position.x + node.guiConfig.width > sceneSession.contentWidth && deltaX > 0)
-                                 sceneSession.contentWidth += deltaX;
+                 if (node.guiConfig.position.x + node.guiConfig.width > scene.sceneGuiConfig.contentWidth && deltaX > 0)
+                                 scene.sceneGuiConfig.contentWidth += deltaX;
 
-                 if(node.guiConfig.position.y + node.guiConfig.height > sceneSession.contentHeight && deltaY > 0)
-                                 sceneSession.contentHeight += deltaY;
+                 if(node.guiConfig.position.y + node.guiConfig.height > scene.sceneGuiConfig.contentHeight && deltaY > 0)
+                                 scene.sceneGuiConfig.contentHeight += deltaY;
             }
         }
 
