@@ -42,6 +42,13 @@ The main features are as follows:
 - Save/Load
 - Snapping
 
+Help Needed
+==================
+- Zoom performance
+
+Any suggestions are welcome!
+
+
 Calculator
 ==================
 To see the calculator example, choose the correct example in Qt Creator:
@@ -62,7 +69,6 @@ Linux
   mkdir build
   cd build
   cmake ..
-  make -j && make install
   make -j && make install
 ```
 
