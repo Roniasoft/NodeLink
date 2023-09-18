@@ -80,7 +80,7 @@ Flickable {
 
             if (isExtendHeightNeed) {
                 // The addHeight needed to add into current flickable height.
-                // if width is extended by Node (node creation or movments),
+                // if height is extended by Node (node creation or movements),
                 // we ignore the maximum value and add the addHeight into flickable height.
                 var addHeight = contentX + root.height - sceneSession.contentHeight;
 
