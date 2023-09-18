@@ -49,7 +49,7 @@ Flickable {
 
             if (isExtendWidthNeed) {
                 // The addWidth needed to add into current flickable width.
-                // if width is extended by Node (node creation or movments),
+                // if width is extended by Node (node creation or movements),
                 // we ignore the maximum value and add the addWidth into flickable width.
                 var addWidth = contentX + root.width - sceneSession.contentWidth;
                 if (sceneSession.contentWidth + addWidth < NLStyle.scene.maximumContentWidth ||
