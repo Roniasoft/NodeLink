@@ -27,8 +27,8 @@ HashCompareStringCPP::HashCompareStringCPP(QObject *parent)
 bool HashCompareStringCPP::compareStringModels(QString strModelFirst, QString strModelSecound)
 {
     QCryptographicHash::Algorithm algorithm = QCryptographicHash::Md5;
-    QByteArray modelFirst   = QCryptographicHash::hash(strModelFirst.toStdString(),   algorithm);
-    QByteArray modelSecound = QCryptographicHash::hash(strModelSecound.toStdString(), algorithm);
+    QByteArray modelFirst = QCryptographicHash::hash(strModelFirst.toLocal8Bit(), algorithm);
+    QByteArray modelSecound = QCryptographicHash::hash(strModelSecound.toLocal8Bit(), algorithm);
 
     return (modelFirst.compare(modelSecound) == 0);
 }
