@@ -52,5 +52,33 @@ Item {
         anchors.topMargin: 50
     }
 
+    //! Connection to set zoom after undo
+    Connections {
+        target: scene.sceneGuiConfig
+
+        function onZoomFactorChanged () {
+            if (sceneSession.zoomManager.zoomFactor !== scene.sceneGuiConfig.zoomFactor)
+                sceneSession.zoomManager.customZoom(scene.sceneGuiConfig.zoomFactor)
+        }
+    }
+
+    //! Connection to set sceneGuiConfig to the user requested zoomFactor
+    Connections {
+        target: sceneSession.zoomManager
+
+        function onZoomFactorChanged () {
+            scene.sceneGuiConfig.zoomFactor = sceneSession.zoomManager.zoomFactor
+
+        }
+    }
+
+    //! Zoom needs to be set the first time scene is loaded
+    Component.onCompleted: {
+        if (scene._qsRepo._isLoading)
+            sceneSession.zoomManager.customZoom(scene.sceneGuiConfig.zoomFactor)
+        else
+            scene.sceneGuiConfig.zoomFactor = sceneSession.zoomManager.zoomFactor
+    }
+
 
 }

@@ -74,10 +74,10 @@ Item {
                 // and then mapped to the scene
                 var diffX = (mouse.x - userViewRect.x) / userViewRect.customScaleFactor
                 var diffY = (mouse.y - userViewRect.y) / userViewRect.customScaleFactor
-                var halfWidthBefore = sceneSession.sceneViewWidth / 2
-                var halfHeightBefore = sceneSession.sceneViewHeight / 2
-                sceneSession.contentX += diffX - halfWidthBefore
-                sceneSession.contentY += diffY - halfHeightBefore
+                var halfWidthBefore = scene.sceneGuiConfig.sceneViewWidth / 2
+                var halfHeightBefore = scene.sceneGuiConfig.sceneViewHeight / 2
+                scene.sceneGuiConfig.contentX += diffX - halfWidthBefore
+                scene.sceneGuiConfig.contentY += diffY - halfHeightBefore
             }
         }
     }
@@ -94,10 +94,10 @@ Item {
 
         color: "transparent"
         border.color: NLStyle.primaryColor
-        x: (sceneSession.contentX - nodeRectTopLeft.x) * customScaleFactor
-        y: (sceneSession.contentY - nodeRectTopLeft.y) * customScaleFactor
-        width: sceneSession.sceneViewWidth * customScaleFactor
-        height: sceneSession.sceneViewHeight * customScaleFactor
+        x: (scene.sceneGuiConfig.contentX - nodeRectTopLeft.x) * customScaleFactor
+        y: (scene.sceneGuiConfig.contentY - nodeRectTopLeft.y) * customScaleFactor
+        width: scene.sceneGuiConfig.sceneViewWidth * customScaleFactor
+        height: scene.sceneGuiConfig.sceneViewHeight * customScaleFactor
         z: 3
 
         //! MouseArea to handle position change of user view
@@ -129,16 +129,16 @@ Item {
                     var endingPointInSceneX = (mouse.x / userViewRect.customScaleFactor);
                     var endingPointInSceneY = (mouse.y / userViewRect.customScaleFactor);
 
-                    var contentX = sceneSession.contentX + endingPointInSceneX - startingPointInSceneX;
+                    var contentX = scene.sceneGuiConfig.contentX + endingPointInSceneX - startingPointInSceneX;
                     // Check the maximum value of contentX
-                    if (contentX < (sceneSession.contentWidth - sceneSession.sceneViewWidth))
-                        sceneSession.contentX = Math.max(0, contentX);
+                    if (contentX < (scene.sceneGuiConfig.contentWidth - scene.sceneGuiConfig.sceneViewWidth))
+                        scene.sceneGuiConfig.contentX = Math.max(0, contentX);
 
-                    var contentY = sceneSession.contentY + endingPointInSceneY - startingPointInSceneY;
+                    var contentY = scene.sceneGuiConfig.contentY + endingPointInSceneY - startingPointInSceneY;
 
                     // Check the maximum value of contentY
-                    if (contentY < (sceneSession.contentHeight - sceneSession.sceneViewHeight))
-                        sceneSession.contentY = Math.max(0, contentY);
+                    if (contentY < (scene.sceneGuiConfig.contentHeight - scene.sceneGuiConfig.sceneViewHeight))
+                        scene.sceneGuiConfig.contentY = Math.max(0, contentY);
                 }
             }
         }

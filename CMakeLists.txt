@@ -100,6 +100,7 @@ qt_add_qml_module(NodeLink
         resources/Core/Extra/SimulationForeground.qml
         resources/Core/Extra/BlockerNode.qml
         resources/Core/Scene.qml
+        resources/Core/SceneGuiConfig.qml
         resources/Core/I_Scene.qml
         resources/Core/SelectionModel.qml
         resources/Core/NodeGuiConfig.qml

@@ -125,11 +125,11 @@ Item {
                         sceneSession.isRubberBandMoving = false;
 
                     //! Extend contentWidth and contentWidth when is necessary
-                    if (obj.guiConfig.position.x + obj.guiConfig.width > sceneSession.contentWidth && deltaX > 0)
-                        sceneSession.contentWidth += deltaX;
+                    if (obj.guiConfig.position.x + obj.guiConfig.width > scene.sceneGuiConfig.contentWidth && deltaX > 0)
+                        scene.sceneGuiConfig.contentWidth += deltaX;
 
-                    if(obj.guiConfig.position.y + obj.guiConfig.height > sceneSession.contentHeight && deltaY > 0)
-                        sceneSession.contentHeight += deltaY;
+                    if(obj.guiConfig.position.y + obj.guiConfig.height > scene.sceneGuiConfig.contentHeight && deltaY > 0)
+                        scene.sceneGuiConfig.contentHeight += deltaY;
 
                     }
                 });

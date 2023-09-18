@@ -2,7 +2,7 @@ import QtQuick
 import NodeLink
 
 /*! ***********************************************************************************************
- *
+ * Scene Session, to store certain visual properties (not saved)
  * ************************************************************************************************/
 QtObject {
 
@@ -33,19 +33,6 @@ QtObject {
 
 	//! Zoom manager
     property ZoomManager zoomManager: ZoomManager {}
-
-    //! width and height of flickable in ui session
-    property real contentWidth : NLStyle.scene.defaultContentWidth
-    property real contentHeight: NLStyle.scene.defaultContentHeight
-
-    //! ContentX and contentY of flickable in ui session
-    property real contentX: NLStyle.scene.defaultContentX
-    property real contentY: NLStyle.scene.defaultContentY
-
-    //! ContentX and contentY of flickable in ui session
-    property real sceneViewWidth
-    property real sceneViewHeight
-
     //! Show and hide the overview
     property bool visibleOverview: true
 
