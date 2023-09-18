@@ -248,7 +248,7 @@ InteractiveNodeView {
                      //! active zoom with shift modifier.
                      if(sceneSession.isShiftModifierPressed) {
                          var zoomPoint = Qt.vector2d(wheel.x + nodeView.x, wheel.y + nodeView.y);
-                         scene.sceneGuiConfig.zoomManager.zoomNodeSignal(zoomPoint, wheel.angleDelta.y);
+                         sceneSession.zoomManager.zoomNodeSignal(zoomPoint, wheel.angleDelta.y);
                      }
                  }
 
