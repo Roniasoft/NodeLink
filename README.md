@@ -80,11 +80,6 @@ Qt Creator
 3. `Build -> Build All`
 4. Click the button `Run`
 
-Help Needed
-===========
-
-Any suggestions are welcome!
-
 Contribution
 ============
 
