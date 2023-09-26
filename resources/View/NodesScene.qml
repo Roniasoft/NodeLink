@@ -25,9 +25,6 @@ I_NodesScene {
     //! Aggregate wheel angle to manage zoom process.
     property real        zoomOnWheel:    0.0
 
-    //! Duration of contentX and contentY behaviors
-    property real contentBehaviorDuration: 200
-
     /* Object Properties
     * ****************************************************************************************/
 
@@ -80,7 +77,7 @@ I_NodesScene {
         enabled: enableContentsBehavior
         NumberAnimation {
             easing.type: Easing.InOutQuad
-            duration: contentBehaviorDuration
+            duration: 250
             onRunningChanged: {
                 if (!running) {
                     enableContentsBehavior = false;
@@ -94,7 +91,7 @@ I_NodesScene {
         enabled: enableContentsBehavior
         NumberAnimation {
             easing.type: Easing.InOutQuad
-            duration: contentBehaviorDuration
+            duration: 250
             onRunningChanged: {
                 if (!running) {
                     enableContentsBehavior = false;
@@ -342,8 +339,6 @@ I_NodesScene {
                                       scene.sceneGuiConfig.contentY + flickable.height / 2);
 
             var isZoomFactorChanged = sceneSession.zoomManager.zoomFactor !== zoomFactor;
-            //! update zoom factor
-            sceneSession.zoomManager.customZoom(zoomFactor)
 
             //! update content dimentions
             var fcontentWidth  = NLStyle.scene.defaultContentWidth  * zoomFactor
@@ -374,24 +369,28 @@ I_NodesScene {
             fcontentX = Math.max(0, fcontentX);
             fcontentY = Math.max(0, fcontentY);
 
-            // Calculate Non-animated
-            var contentXChanges = (sceneSession.contentX - fcontentX) * 0.70;
-            var contentYChanges = (sceneSession.contentY - fcontentY) * 0.70;
+            if (fcontentX === sceneSession.contentX && fcontentY === sceneSession.contentY)
+                return;
 
-            var realContentXChanges = (sceneSession.contentX * (isZoomFactorChanged ? zoomFactor : 1) - fcontentX);
-            var realContentYChanges = (sceneSession.contentY * (isZoomFactorChanged ? zoomFactor : 1) - fcontentY);
+            // Detect horizontal and vertical center of view.
+            var horizontalCenter = sceneSession.contentX  + flickable.width / 2 ;
+            var verticalCenter   = sceneSession.contentY  + flickable.height / 2 ;
+
+            // Nodes rect is in left/right and top/buttom
+            var isNodeInTop  = leftX * sceneSession.zoomManager.zoomFactor < horizontalCenter;
+            var isNodeInLeft = topY  * sceneSession.zoomManager.zoomFactor < verticalCenter;
+
+
+            //! update zoom factor
+            sceneSession.zoomManager.customZoom(zoomFactor)
 
 
             // Set Non-animated changes.
-            sceneSession.contentX = Math.max(0, fcontentX + contentXChanges);
-            sceneSession.contentY = Math.max(0, fcontentY + contentYChanges);
+            sceneSession.contentX = Math.max(0, fcontentX + (isNodeInTop ? 1 : -1)  * flickable.width / 2);
+            sceneSession.contentY = Math.max(0, fcontentY + (isNodeInLeft ? 1 : -1) * flickable.height / 2);
 
             // Start animation on contents
-            if (Math.abs(realContentXChanges) > flickable.width * (isZoomFactorChanged ? zoomFactor : 1) ||
-                    Math.abs(realContentYChanges) > flickable.height * (isZoomFactorChanged ? zoomFactor : 1)) {
-                contentBehaviorDuration = 200;
-                enableContentsBehavior = true;
-            }
+            enableContentsBehavior = true;
 
             // Adjust the content position to zoom to the mouse point
             sceneGuiConfig.contentX = fcontentX;
@@ -460,6 +459,13 @@ I_NodesScene {
             var origin  = Qt.vector2d(node.guiConfig.position.x + node.guiConfig.width / 2,
                                          node.guiConfig.position.y + node.guiConfig.height / 2);
 
+            var horizontalCenter = sceneSession.contentX + flickable.width / 2;
+            var verticalCenter = sceneSession.contentY + flickable.height / 2;
+
+            var zoomFactor = sceneSession.zoomManager.zoomFactor;
+            var isNodeInTop = origin.x * zoomFactor < horizontalCenter;
+            var isNodeInLeft = origin.y * zoomFactor < verticalCenter;
+
             //! Prepare positions with targetZoomFactor.
             origin =  origin.times(targetZoomFactor)
 
@@ -480,13 +486,11 @@ I_NodesScene {
 
 
             // Set Non-animated changes.
-            sceneSession.contentX = Math.max(0, fcontentX + contentXChanges * 0.9);
-            sceneSession.contentY = Math.max(0, fcontentY + contentYChanges * 0.9);
+            sceneSession.contentX = Math.max(0, isNodeInTop ? origin.x : (origin.x - flickable.width));
+            sceneSession.contentY = Math.max(0, isNodeInLeft ? origin.y : (origin.y - flickable.height));
 
             // Start animation on contents
-            contentBehaviorDuration = 50;
             enableContentsBehavior = true;
-
 
             // Adjust the content position to zoom to the mouse point
             scene.sceneGuiConfig.contentX = Math.max(0, fcontentX);
