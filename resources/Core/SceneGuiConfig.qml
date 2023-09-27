@@ -9,7 +9,7 @@ QSObject {
     /* Property Properties
      * ****************************************************************************************/
     //! Zoom factor
-    property real zoomFactor
+    property real zoomFactor : 1.0
 
     //! width and height of flickable in ui session
     property real contentWidth : NLStyle.scene.defaultContentWidth
