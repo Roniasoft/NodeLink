@@ -17,6 +17,10 @@ Item {
     //! Scene session contains information about scene states (UI related)
     property SceneSession   sceneSession
 
+    //! SceneGuiConfig to store/retrieve the visual properties of scene
+    property SceneGuiConfig sceneGuiConfig: scene.sceneGuiConfig
+
+
     //! Overview width, used for calculatin scale for mapping scene -> overview
     property int          overviewWidth
 
@@ -74,10 +78,10 @@ Item {
                 // and then mapped to the scene
                 var diffX = (mouse.x - userViewRect.x) / userViewRect.customScaleFactor
                 var diffY = (mouse.y - userViewRect.y) / userViewRect.customScaleFactor
-                var halfWidthBefore = scene.sceneGuiConfig.sceneViewWidth / 2
-                var halfHeightBefore = scene.sceneGuiConfig.sceneViewHeight / 2
-                scene.sceneGuiConfig.contentX += diffX - halfWidthBefore
-                scene.sceneGuiConfig.contentY += diffY - halfHeightBefore
+                var halfWidthBefore = sceneGuiConfig.sceneViewWidth / 2
+                var halfHeightBefore = sceneGuiConfig.sceneViewHeight / 2
+                sceneGuiConfig.contentX += diffX - halfWidthBefore
+                sceneGuiConfig.contentY += diffY - halfHeightBefore
             }
         }
     }
@@ -94,10 +98,10 @@ Item {
 
         color: "transparent"
         border.color: NLStyle.primaryColor
-        x: (scene.sceneGuiConfig.contentX - nodeRectTopLeft.x) * customScaleFactor
-        y: (scene.sceneGuiConfig.contentY - nodeRectTopLeft.y) * customScaleFactor
-        width: scene.sceneGuiConfig.sceneViewWidth * customScaleFactor
-        height: scene.sceneGuiConfig.sceneViewHeight * customScaleFactor
+        x: (sceneGuiConfig?.contentX - nodeRectTopLeft.x) * customScaleFactor
+        y: (sceneGuiConfig?.contentY - nodeRectTopLeft.y) * customScaleFactor
+        width: sceneGuiConfig?.sceneViewWidth * customScaleFactor
+        height: sceneGuiConfig?.sceneViewHeight * customScaleFactor
         z: 3
 
         //! MouseArea to handle position change of user view
@@ -129,16 +133,16 @@ Item {
                     var endingPointInSceneX = (mouse.x / userViewRect.customScaleFactor);
                     var endingPointInSceneY = (mouse.y / userViewRect.customScaleFactor);
 
-                    var contentX = scene.sceneGuiConfig.contentX + endingPointInSceneX - startingPointInSceneX;
+                    var contentX = sceneGuiConfig.contentX + endingPointInSceneX - startingPointInSceneX;
                     // Check the maximum value of contentX
-                    if (contentX < (scene.sceneGuiConfig.contentWidth - scene.sceneGuiConfig.sceneViewWidth))
-                        scene.sceneGuiConfig.contentX = Math.max(0, contentX);
+                    if (contentX < (sceneGuiConfig.contentWidth - sceneGuiConfig.sceneViewWidth))
+                        sceneGuiConfig.contentX = Math.max(0, contentX);
 
-                    var contentY = scene.sceneGuiConfig.contentY + endingPointInSceneY - startingPointInSceneY;
+                    var contentY = sceneGuiConfig.contentY + endingPointInSceneY - startingPointInSceneY;
 
                     // Check the maximum value of contentY
-                    if (contentY < (scene.sceneGuiConfig.contentHeight - scene.sceneGuiConfig.sceneViewHeight))
-                        scene.sceneGuiConfig.contentY = Math.max(0, contentY);
+                    if (contentY < (sceneGuiConfig.contentHeight - sceneGuiConfig.sceneViewHeight))
+                        sceneGuiConfig.contentY = Math.max(0, contentY);
                 }
             }
         }
