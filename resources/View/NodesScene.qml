@@ -374,20 +374,24 @@ I_NodesScene {
 
             // Detect horizontal and vertical center of view.
             var horizontalCenter = sceneSession.contentX  + flickable.width / 2 ;
-            var verticalCenter   = sceneSession.contentY  + flickable.height / 2 ;
+            var verticalCenter   = sceneSession.contentY  + flickable.height / 2;
 
             // Nodes rect is in left/right and top/buttom
             var isNodeInTop  = leftX * sceneSession.zoomManager.zoomFactor < horizontalCenter;
             var isNodeInLeft = topY  * sceneSession.zoomManager.zoomFactor < verticalCenter;
 
-
             //! update zoom factor
-            sceneSession.zoomManager.customZoom(zoomFactor)
+            sceneSession.zoomManager.customZoom(zoomFactor);
 
+            var xDistance = Math.abs(sceneSession.contentX - fcontentX);
+            var yDistance = Math.abs(sceneSession.contentY - fcontentY);
 
             // Set Non-animated changes.
-            sceneSession.contentX = Math.max(0, fcontentX + (isNodeInTop ? 1 : -1)  * flickable.width / 2);
-            sceneSession.contentY = Math.max(0, fcontentY + (isNodeInLeft ? 1 : -1) * flickable.height / 2);
+            if (xDistance > flickable.width / zoomFactor)
+                sceneSession.contentX = Math.max(0, fcontentX + (isNodeInTop ? 1 : -1)  * flickable.width / 2);
+
+            if (yDistance > flickable.height / zoomFactor)
+                sceneSession.contentY = Math.max(0, fcontentY + (isNodeInLeft ? 1 : -1) * flickable.height / 2);
 
             // Start animation on contents
             enableContentsBehavior = true;
