@@ -27,6 +27,9 @@ Flickable {
     //! Scene Foreground
     property Component      foreground:     null
 
+    //! SceneGuiConfig to store/retrieve the visual properties of scene
+    property SceneGuiConfig sceneGuiConfig: scene.sceneGuiConfig
+
     //! When contents (contentX and contentY) change with a behavior,
     //! content changed signals must be blocked.
     //! use enableContentsBehavior property to block them when is necessary.
@@ -35,16 +38,19 @@ Flickable {
     /* Object Properties
     * ****************************************************************************************/
     anchors.fill: parent
-    contentWidth: scene.sceneGuiConfig.contentWidth
-    contentHeight: scene.sceneGuiConfig.contentHeight
-    contentX: scene.sceneGuiConfig.contentX
-    contentY: scene.sceneGuiConfig.contentY
+    contentWidth: sceneGuiConfig.contentWidth
+    contentHeight: sceneGuiConfig.contentHeight
+    contentX: sceneGuiConfig.contentX
+    contentY: sceneGuiConfig.contentY
 
     // Update contentY when changed by user (No flick process)
     onContentXChanged: {
-        if (!flicking && (scene.sceneGuiConfig.contentX - contentX) !== 0) {
+        if (enableContentsBehavior)
+            return;
 
-            var isExtendWidthNeed = contentX + root.width > scene.sceneGuiConfig.contentWidth;
+        if (!flicking && (sceneGuiConfig.contentX - contentX) !== 0) {
+
+            var isExtendWidthNeed = contentX + root.width > sceneGuiConfig.contentWidth;
 
             // Ignore the negative value.
             var tcontentX = Math.max(0, contentX);
@@ -53,28 +59,31 @@ Flickable {
                 // The addWidth needed to add into current flickable width.
                 // if width is extended by Node (node creation or movements),
                 // we ignore the maximum value and add the addWidth into flickable width.
-                var addWidth = contentX + root.width - scene.sceneGuiConfig.contentWidth;
-                if (scene.sceneGuiConfig.contentWidth + addWidth < NLStyle.scene.maximumContentWidth) {
-                    scene.sceneGuiConfig.contentWidth += addWidth;
+                var addWidth = contentX + root.width - sceneGuiConfig.contentWidth;
+                if (sceneGuiConfig.contentWidth + addWidth < NLStyle.scene.maximumContentWidth) {
+                    sceneGuiConfig.contentWidth += addWidth;
 
                 } else {
                     // Maximum value of contentWidth
-                    scene.sceneGuiConfig.contentWidth = NLStyle.scene.maximumContentWidth;
+                    sceneGuiConfig.contentWidth = NLStyle.scene.maximumContentWidth;
 
                     // Maximum value of contentX
-                    tcontentX = scene.sceneGuiConfig.contentWidth - root.width;
+                    tcontentX = sceneGuiConfig.contentWidth - root.width;
                 }
             }
 
-            scene.sceneGuiConfig.contentX = tcontentX;
+            sceneGuiConfig.contentX = tcontentX;
         }
     }
 
     // Update contentY when changed by user (No flick process)
     onContentYChanged: {
-        if (!flicking && (scene.sceneGuiConfig.contentY - contentY) !== 0) {
+        if (enableContentsBehavior)
+            return;
 
-            var isExtendHeightNeed = contentY + root.height > scene.sceneGuiConfig.contentHeight;
+        if (!flicking && (sceneGuiConfig.contentY - contentY) !== 0) {
+
+            var isExtendHeightNeed = contentY + root.height > sceneGuiConfig.contentHeight;
 
             // Ignore the negative value.
              var tcontentY = Math.max(0, contentY);
@@ -83,40 +92,40 @@ Flickable {
                 // The addHeight needed to add into current flickable height.
                 // if height is extended by Node (node creation or movements),
                 // we ignore the maximum value and add the addHeight into flickable height.
-                var addHeight = contentY + root.height - scene.sceneGuiConfig.contentHeight;
+                var addHeight = contentY + root.height - sceneGuiConfig.contentHeight;
 
-                if (scene.sceneGuiConfig.contentHeight + addHeight < NLStyle.scene.maximumContentHeight) {
-                    scene.sceneGuiConfig.contentHeight += addHeight;
+                if (sceneGuiConfig.contentHeight + addHeight < NLStyle.scene.maximumContentHeight) {
+                    sceneGuiConfig.contentHeight += addHeight;
 
                 } else {
-                    scene.sceneGuiConfig.contentHeight = NLStyle.scene.maximumContentHeight;
-                    tcontentY = scene.sceneGuiConfig.contentHeight - root.height;
+                    sceneGuiConfig.contentHeight = NLStyle.scene.maximumContentHeight;
+                    tcontentY = sceneGuiConfig.contentHeight - root.height;
                 }
             }
 
-            scene.sceneGuiConfig.contentY = tcontentY;
+            sceneGuiConfig.contentY = tcontentY;
         }
     }
 
     //! onMovementEnded to handle movments with flick.
     onFlickEnded: {
-        if ((sceneSession.contentX - contentX) !== 0)
-            sceneSession.contentX = contentX;
+        if ((sceneGuiConfig.contentX - contentX) !== 0)
+            sceneGuiConfig.contentX = contentX;
 
-        if ((sceneSession.contentY - contentY) !== 0)
-            sceneSession.contentY = contentY;
+        if ((sceneGuiConfig.contentY - contentY) !== 0)
+            sceneGuiConfig.contentY = contentY;
     }
 
     //! Update width
     onWidthChanged: {
-        if ((sceneSession.sceneViewWidth - width) !== 0)
-            sceneSession.sceneViewWidth = width;
+        if (sceneGuiConfig && (sceneGuiConfig.sceneViewWidth - width) !== 0)
+            sceneGuiConfig.sceneViewWidth = width;
     }
 
     //! Update height
     onHeightChanged: {
-        if ((sceneSession.sceneViewHeight - height) !== 0)
-            sceneSession.sceneViewHeight = height;
+        if (sceneGuiConfig && (sceneGuiConfig.sceneViewHeight - height) !== 0)
+            sceneGuiConfig.sceneViewHeight = height;
     }
 
     focus: true
