@@ -31,42 +31,41 @@ Window {
     Material.theme: Material.Dark
     Material.accent: "#4890e2"
 
-
     Component.onCompleted: {
 
         //! Registr node types and related properties.
         NLNodeRegistry.imports = ["NodeLink"]
-        NLNodeRegistry.defaultNode = NLSpec.NodeType.General
+        NLNodeRegistry.defaultNode = SNLSpecs.NodeType.General
         NLNodeRegistry.nodeTypes = [
-                                      NLSpec.NodeType.General    = "GeneralNode",
-                                      NLSpec.NodeType.Root       = "RootNode",
-                                      NLSpec.NodeType.Step       = "StepNode",
-                                      NLSpec.NodeType.Transition = "TransitionNode",
-                                      NLSpec.NodeType.Macro      = "MacroNode"
+                                      SNLSpecs.NodeType.General    = "GeneralNode",
+                                      SNLSpecs.NodeType.Root       = "RootNode",
+                                      SNLSpecs.NodeType.Step       = "StepNode",
+                                      SNLSpecs.NodeType.Transition = "TransitionNode",
+                                      SNLSpecs.NodeType.Macro      = "MacroNode"
                                       ];
 
         NLNodeRegistry.nodeNames = [
-                                      NLSpec.NodeType.General      = "General",
-                                      NLSpec.NodeType.Root         = "Root",
-                                      NLSpec.NodeType.Step         = "Step",
-                                      NLSpec.NodeType.Transition   = "Transition",
-                                      NLSpec.NodeType.Macro        = "Macro"
+                                      SNLSpecs.NodeType.General      = "General",
+                                      SNLSpecs.NodeType.Root         = "Root",
+                                      SNLSpecs.NodeType.Step         = "Step",
+                                      SNLSpecs.NodeType.Transition   = "Transition",
+                                      SNLSpecs.NodeType.Macro        = "Macro"
                                       ];
 
         NLNodeRegistry.nodeIcons = [
-                                      NLSpec.NodeType.General    = "\ue4e2",
-                                      NLSpec.NodeType.Root       = "\uf04b",
-                                      NLSpec.NodeType.Step       = "\uf54b",
-                                      NLSpec.NodeType.Transition = "\ue57f",
-                                      NLSpec.NodeType.Macro      = "\uf2db"
+                                      SNLSpecs.NodeType.General    = "\ue4e2",
+                                      SNLSpecs.NodeType.Root       = "\uf04b",
+                                      SNLSpecs.NodeType.Step       = "\uf54b",
+                                      SNLSpecs.NodeType.Transition = "\ue57f",
+                                      SNLSpecs.NodeType.Macro      = "\uf2db"
                                       ];
 
         NLNodeRegistry.nodeColors = [
-                                      NLSpec.NodeType.General      = "#444",
-                                      NLSpec.NodeType.Root         = "#333",
-                                      NLSpec.NodeType.Step         = "#3D9798",
-                                      NLSpec.NodeType.Transition   = "#625192",
-                                      NLSpec.NodeType.Macro        = "#9D9E57"
+                                      SNLSpecs.NodeType.General      = "#444",
+                                      SNLSpecs.NodeType.Root         = "#333",
+                                      SNLSpecs.NodeType.Step         = "#3D9798",
+                                      SNLSpecs.NodeType.Transition   = "#625192",
+                                      SNLSpecs.NodeType.Macro        = "#9D9E57"
                                       ];
 
         NLCore.defaultRepo = NLCore.createDefaultRepo(["QtQuickStream", "NodeLink"])

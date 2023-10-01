@@ -111,6 +111,8 @@ QtObject {
         "Unknown"             // Unknown
     ]
 
+    readonly property string unknown: "Unknown"
+
     //! Radius
     readonly property QtObject radiusAmount: QtObject {
         readonly property double nodeOverview:   20

@@ -21,7 +21,7 @@ I_Node  {
     property string         title:      "<No Title>"
 
     //! Node Type
-    property int            type:       NLSpec.NodeType.General
+    property int            type: 0
 
     //! Port list
     //! map<uuid, Port>

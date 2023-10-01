@@ -15,6 +15,14 @@ set(QT_QML_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/qml)
 # Creates and finalizes an application target of a platform-specific type
 qt_add_executable(simpleNodeLink main.cpp)
 
+# Extra QML File properties
+set_source_files_properties(
+    SNLSpecs.qml
+
+    PROPERTIES
+        QT_QML_SINGLETON_TYPE True
+)
+
 # This command defines a QML module that can consist of C++ sources, .qml files, or both.
 qt_add_qml_module(simpleNodeLink
     URI "simpleNodeLink"
@@ -22,6 +30,7 @@ qt_add_qml_module(simpleNodeLink
 
    QML_FILES
     main.qml
+    SNLSpecs.qml
 
    SOURCES
 
