@@ -85,20 +85,7 @@ qt_add_qml_module(NodeLink
         resources/Core/I_Node.qml
         resources/Core/Node.qml
         resources/Core/Port.qml
-        resources/Core/Extra/I_EntryCondition.qml
-        resources/Core/Extra/GeneralNode.qml
-        resources/Core/Extra/RootNode.qml
-        resources/Core/Extra/StepNode.qml
-        resources/Core/Extra/MacroNode.qml
-        resources/Core/Extra/TransitionNode.qml
-        resources/Core/Extra/StepNodeData.qml
-        resources/Core/Extra/Action.qml
-        resources/Core/Extra/ActionValue.qml
-        resources/Core/Extra/NotionNode.qml
-        resources/Core/Extra/TransitionNodeData.qml
-        resources/Core/Extra/SceneSimulation.qml
-        resources/Core/Extra/SimulationForeground.qml
-        resources/Core/Extra/BlockerNode.qml
+
         resources/Core/Scene.qml
         resources/Core/SceneGuiConfig.qml
         resources/Core/I_Scene.qml
@@ -175,7 +162,6 @@ qt_add_qml_module(NodeLink
         resources/fonts/Font\ Awesome\ 6\ Pro-Regular-400.otf
         resources/fonts/Font\ Awesome\ 6\ Pro-Solid-900.otf
         resources/Images/GridPoint.svg
-
 )
 	
 include_directories(include/NodeLink/Core)
