@@ -7,7 +7,7 @@ import NodeLink
  *
  * ************************************************************************************************/
 I_Scene {
-    id: scene
+    id: root
 
 
     /* Property Properties
@@ -17,7 +17,7 @@ I_Scene {
 
     //! Undo Core
     property UndoCore       _undoCore:       UndoCore {
-        scene: scene
+        scene: root
     }
 
     /* Children
@@ -52,7 +52,7 @@ I_Scene {
     //! Override this function in your scene
     //! Create a node with node type and its position
     function createCustomizeNode(nodeType : int, xPos : real, yPos : real) : string {
-        var title = NLNodeRegistry.nodeNames[nodeType] + "_" + (Object.values(scene.nodes).filter(node => node.type === nodeType).length + 1);
+        var title = NLNodeRegistry.nodeNames[nodeType] + "_" + (Object.values(root.nodes).filter(node => node.type === nodeType).length + 1);
         return createSpecificNode(NLNodeRegistry.imports, nodeType,
                                   NLNodeRegistry.nodeTypes[nodeType],
                                   NLNodeRegistry.nodeColors[nodeType],
