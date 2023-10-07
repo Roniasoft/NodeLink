@@ -11,6 +11,10 @@ QtObject {
     //! Map <uuid, model(Node And/Or Link)>
     property var selectedModel: ({})
 
+    //! Uuids of all exist objects in scene.
+    property var existObjects: []
+
+    onExistObjectsChanged: checkSelectedObjects();
 
     /* Signals
      * ****************************************************************************************/
@@ -19,6 +23,15 @@ QtObject {
 
     /* Functions
      * ****************************************************************************************/
+
+    //! Check all selected objects when necessary, i.e undo/redo
+    function checkSelectedObjects () {
+        Object.keys(selectedModel).forEach(uuid => {
+                                 if (!existObjects.includes(uuid))
+                                        remove(uuid);
+                             });
+    }
+
     //! Clear all objects from selection model
     function clear() {
         // delete all objects

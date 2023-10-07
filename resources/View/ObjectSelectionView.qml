@@ -15,7 +15,7 @@ Item {
     property SceneSession   sceneSession
     property SelectionModel selectionModel: scene.selectionModel
 
-    property bool           hasSelectedObject: Object.values(scene.selectionModel.selectedModel).length > 0
+    property bool           hasSelectedObject: Object.values(selectionModel.selectedModel).length > 0
 
     /*  Object Properties
     * ****************************************************************************************/
@@ -115,12 +115,12 @@ Item {
                 // Start movement process
                 Object.values(scene.selectionModel.selectedModel).forEach(obj => {
                     // Ignore Link objects
-                    if(obj?.objectType === NLSpec.ObjectType.Node) {
+                    if (obj?.objectType === NLSpec.ObjectType.Node) {
                         obj.guiConfig.position.x += deltaX;
                         obj.guiConfig.position.y += deltaY;
                     obj.guiConfig.positionChanged();
 
-                    if((obj.guiConfig.position.x < 0  && deltaX < 0) ||
+                    if ((obj.guiConfig.position.x < 0  && deltaX < 0) ||
                        (obj.guiConfig.position.y < 0 && deltaY < 0))
                         sceneSession.isRubberBandMoving = false;
 
@@ -186,7 +186,7 @@ Item {
     //! calculate X, Y, width and height of rubber band
     function calculateDimensions() {
         var firstObj = Object.values(scene.selectionModel.selectedModel)[0];
-        if(firstObj === undefined)
+        if (firstObj === undefined)
             return;
 
         var isNodeFirstObj = firstObj.objectType === NLSpec.ObjectType.Node;
@@ -203,7 +203,7 @@ Item {
                                        (position.y > portPosVecOut.y) ? position.y : portPosVecOut.y);
 
         Object.values(scene.selectionModel.selectedModel).forEach(obj => {
-                                                                      if(obj.objectType === NLSpec.ObjectType.Node) {
+                                                                      if (obj.objectType === NLSpec.ObjectType.Node) {
 
                                                                           // Find left, right, top and bottom positions.
                                                                           // they are depend on inputPort and outputPort position (temporary).
@@ -215,22 +215,22 @@ Item {
                                                                           var tempBottomY =pos.y + obj.guiConfig.height * sceneSession.zoomManager.zoomFactor;
 
 
-                                                                          if(tempLeftX < leftX) {
+                                                                          if (tempLeftX < leftX) {
                                                                               leftX = tempLeftX;
                                                                           }
-                                                                          if(tempTopY < topY) {
+                                                                          if (tempTopY < topY) {
                                                                               topY = tempTopY;
                                                                           }
 
-                                                                          if(rightX < tempRightX) {
+                                                                          if (rightX < tempRightX) {
                                                                               rightX = tempRightX;
                                                                           }
 
-                                                                          if(bottomY < tempBottomY) {
+                                                                          if (bottomY < tempBottomY) {
                                                                               bottomY = tempBottomY;
                                                                            }
 
-                                                                      } else if(obj.objectType === NLSpec.ObjectType.Link) {
+                                                                      } else if (obj.objectType === NLSpec.ObjectType.Link) {
                                                                           var portPosVecIn = obj?.inputPort?._position
                                                                           portPosVecOut = obj?.outputPort?._position
 
@@ -242,16 +242,16 @@ Item {
                                                                           tempBottomY = (portPosVecIn.y > portPosVecOut.y) ? portPosVecIn.y : portPosVecOut.y;
 
                                                                           // Set temp value into it's real variable.
-                                                                          if(tempLeftX < leftX)
+                                                                          if (tempLeftX < leftX)
                                                                              leftX = tempLeftX;
 
-                                                                          if(tempTopY < topY)
+                                                                          if (tempTopY < topY)
                                                                              topY = tempTopY;
 
-                                                                          if(tempRightX > rightX)
+                                                                          if (tempRightX > rightX)
                                                                              rightX = tempRightX;
 
-                                                                          if(tempBottomY > bottomY)
+                                                                          if (tempBottomY > bottomY)
                                                                              bottomY = tempBottomY;
 
                                                                       }

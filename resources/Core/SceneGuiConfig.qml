@@ -1,4 +1,5 @@
 import QtQuick
+
 import NodeLink
 import QtQuickStream
 
@@ -11,7 +12,7 @@ QSObject {
     //! Zoom factor
     property real zoomFactor : 1.0
 
-    //! width and height of flickable in ui session
+    //! Width and height of flickable in ui session
     property real contentWidth : NLStyle.scene.defaultContentWidth
     property real contentHeight: NLStyle.scene.defaultContentHeight
 
@@ -19,7 +20,7 @@ QSObject {
     property real contentX: NLStyle.scene.defaultContentX
     property real contentY: NLStyle.scene.defaultContentY
 
-    //! ContentX and contentY of flickable in ui session
+    //! Scene view width and height of flickable in ui session
     property real sceneViewWidth
     property real sceneViewHeight
 }

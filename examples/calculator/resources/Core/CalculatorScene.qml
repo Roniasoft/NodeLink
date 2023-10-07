@@ -14,7 +14,9 @@ I_Scene {
     /* Property Properties
      * ****************************************************************************************/
     //! Scene Selection Model
-    selectionModel: SelectionModel {}
+    selectionModel: SelectionModel {
+            existObjects: [...Object.keys(nodes), ...Object.keys(links)]
+        }
 
     //! Undo Core
     property UndoCore       _undoCore:       UndoCore {
