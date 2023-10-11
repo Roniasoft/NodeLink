@@ -120,6 +120,7 @@ qt_add_qml_module(NodeLink
         resources/View/Components/HorizontalScrollBar.qml
         resources/View/Components/NLMenuItem.qml
         resources/View/Components/NLRepeater.qml
+        resources/View/Components/AiPopUp.qml
         resources/View/NLView.qml
         resources/View/SceneSession.qml
         resources/View/NLStyle.qml

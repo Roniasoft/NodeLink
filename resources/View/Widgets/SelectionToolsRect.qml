@@ -54,6 +54,34 @@ Rectangle {
         property bool selectedANodeOnly: selectedNode.length === 1 && selectedLink.length === 0
         property bool selectedALinkOnly: selectedLink.length === 1 && selectedNode.length === 0
 
+
+        NLToolButton {
+            id: aiHelpButton
+            text: "\ue0c6"
+            visible: layout.selectedANodeOnly
+            Layout.preferredHeight: 30
+            Layout.preferredWidth: 30
+            Layout.topMargin: 2
+            Layout.bottomMargin: 2
+            onClicked: aiPopup.open();
+            AiPopUp {
+                id: aiPopup
+                sceneSession: toolsItem.sceneSession
+                Connections {
+                    target: aiPopup
+
+                    onInsertWholeText: {
+                        layout.selectedObject.guiConfig.description = aiPopup.wholeText
+                        console.log("1",aiPopup.wholeText);
+                    }
+                    onInsertSelectedText: {
+                        layout.selectedObject.guiConfig.description = aiPopup.selectedText
+                        console.log("2",aiPopup.selectedText);
+                    }
+                }
+
+            }
+        }
         //! Node/Link: Color change
         NLToolButton {
             id: colorButton1
