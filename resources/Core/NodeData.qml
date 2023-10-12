@@ -1,6 +1,6 @@
-import QtQuick 2.15
+import QtQuick
+
 import NodeLink
-import QtQuickStream
 
 I_NodeData {
 

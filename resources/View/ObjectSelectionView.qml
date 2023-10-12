@@ -149,7 +149,7 @@ Item {
 
     //! Connection to calculate rubber band Dimensions when necessary.
     Connections {
-        target: scene.selectionModel
+        target: scene?.selectionModel ?? null
 
         function onSelectedModelChanged() {
             calculateDimensions();

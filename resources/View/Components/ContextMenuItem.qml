@@ -14,7 +14,7 @@ MenuItem {
 
     property string name: "General Node"
 
-    property var iconStr: NLStyle.nodeIcons[NLSpec.NodeType.General]
+    property string iconStr: ""
 
     /* Object Properties
      * ****************************************************************************************/

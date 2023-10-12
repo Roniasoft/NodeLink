@@ -22,6 +22,7 @@ ToolButton {
     contentItem: Text {
         text: toolButton.text
         font: toolButton.font
+        textFormat: Text.MarkdownText
         opacity: enabled ? 1.0 : 0.3
         color: "#75FFFFFF"//control.down ? "#17a81a" : "#21be2b"
         horizontalAlignment: Text.AlignHCenter

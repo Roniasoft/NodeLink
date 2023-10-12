@@ -31,4 +31,12 @@ QtObject {
     //! Set a node type to create it in defaul modes
     property int defaultNode: 0
 
+    //! Node view url
+    //! Use 'qrc:/' format for registration.
+    property string nodeView: "NodeView.qml"
+
+    //! Link view url
+    //! Use 'qrc:/' format for registration.
+    property string linkView: "LinkView.qml"
+
 }

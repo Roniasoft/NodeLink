@@ -18,18 +18,6 @@ QtObject {
         Unknown = 99
     }
 
-    //! Type of node.
-    enum NodeType {
-        General     = 0,
-        Root        = 1,
-        Step        = 2,
-        Transition  = 3,
-        Macro       = 4,
-        Link        = 5,
-
-        Unknown     = 6
-    }
-
     //! Location of port on the node sides
     enum PortPositionSide {
         Top     = 0,

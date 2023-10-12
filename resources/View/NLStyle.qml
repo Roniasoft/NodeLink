@@ -47,9 +47,12 @@ QtObject {
 
         property int    overviewFontSize:   60
         property int    borderWidth:        2
+        property int    fontSizeTitle:      10
+        property int    fontSize:           9
 
         property string color:              "pink"
         property string borderLockColor:    "gray"
+
     }
 
     property bool snapEnabled: false
@@ -110,6 +113,8 @@ QtObject {
 
         "Unknown"             // Unknown
     ]
+
+    readonly property string unknown: "Unknown"
 
     //! Radius
     readonly property QtObject radiusAmount: QtObject {

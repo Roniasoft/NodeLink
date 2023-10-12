@@ -13,7 +13,7 @@ int main(int argc, char* argv[])
   //Import all items into QML engine.
   engine.addImportPath(":/");
 
-  const QUrl url(u"qrc:/simpleNodeLink/main.qml"_qs);
+  const QUrl url(u"qrc:/SimpleNodeLink/main.qml"_qs);
   QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
                    &app, [url](QObject *obj, const QUrl &objUrl) {
       if (!obj && url == objUrl)

@@ -106,7 +106,7 @@ InteractiveNodeView {
 
                 smooth: true
                 antialiasing: true
-                font.pointSize: 10
+                font.pointSize: NLStyle.node.fontSizeTitle
                 font.bold: true
 
                 //! Connections to forceActiveFocus when
@@ -167,7 +167,7 @@ InteractiveNodeView {
                 smooth: true
                 antialiasing: true
                 font.bold: true
-                font.pointSize: 9
+                font.pointSize: NLStyle.node.fontSize
 
                 onPressed: (event) => {
                                if (event.button === Qt.RightButton) {

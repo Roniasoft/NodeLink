@@ -13,27 +13,28 @@ set (QML_IMPORT_PATH ${CMAKE_BINARY_DIR}/qml/NodeLink/resources/View)
 set(QT_QML_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/qml)
 
 # Creates and finalizes an application target of a platform-specific type
-qt_add_executable(simpleNodeLink main.cpp)
+qt_add_executable(SimpleNodeLink main.cpp)
 
 # This command defines a QML module that can consist of C++ sources, .qml files, or both.
-qt_add_qml_module(simpleNodeLink
-    URI "simpleNodeLink"
+qt_add_qml_module(SimpleNodeLink
+    URI "SimpleNodeLink"
     VERSION 1.0
 
    QML_FILES
     main.qml
+    NodeExample.qml
 
    SOURCES
 
 )
 
-target_include_directories(simpleNodeLink PUBLIC
+target_include_directories(SimpleNodeLink PUBLIC
     Qt${QT_VERSION_MAJOR}::QuickControls2)
 
-target_compile_definitions(simpleNodeLink
+target_compile_definitions(SimpleNodeLink
     PRIVATE $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:QT_QML_DEBUG>)
 
-target_link_libraries(simpleNodeLink PRIVATE
+target_link_libraries(SimpleNodeLink PRIVATE
     Qt${QT_VERSION_MAJOR}::Core
     Qt${QT_VERSION_MAJOR}::Gui
     Qt${QT_VERSION_MAJOR}::QuickControls2

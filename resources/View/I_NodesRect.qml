@@ -19,8 +19,8 @@ Item {
     property QtObject viewProperties: null
 
     //! Default Link and Node views
-    property string nodeViewUrl: "NodeView.qml"
-    property string linkViewUrl: "LinkView.qml"
+    property string nodeViewUrl: NLNodeRegistry.nodeView
+    property string linkViewUrl: NLNodeRegistry.linkView
 
 
     //! NodeView map as an internal map
