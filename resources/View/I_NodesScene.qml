@@ -117,13 +117,13 @@ Flickable {
 
     //! Update width
     onWidthChanged: {
-        if (scene.sceneGuiConfig.sceneViewWidth !== width)
+        if (scene && scene.sceneGuiConfig.sceneViewWidth !== width)
             scene.sceneGuiConfig.sceneViewWidth = width;
     }
 
     //! Update height
     onHeightChanged: {
-        if (scene.sceneGuiConfig.sceneViewHeight !== height)
+        if (scene && scene.sceneGuiConfig.sceneViewHeight !== height)
             scene.sceneGuiConfig.sceneViewHeight = height;
     }
 

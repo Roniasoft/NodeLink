@@ -54,7 +54,7 @@ Item {
 
     //! Connection to set zoom after undo
     Connections {
-        target: scene.sceneGuiConfig
+        target: scene?.sceneGuiConfig ?? null
 
         function onZoomFactorChanged () {
             if (sceneSession.zoomManager.zoomFactor !== scene.sceneGuiConfig.zoomFactor)

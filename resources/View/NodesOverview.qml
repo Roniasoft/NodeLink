@@ -94,10 +94,10 @@ Item {
 
         color: "transparent"
         border.color: NLStyle.primaryColor
-        x: (scene.sceneGuiConfig.contentX - nodeRectTopLeft.x) * customScaleFactor
-        y: (scene.sceneGuiConfig.contentY - nodeRectTopLeft.y) * customScaleFactor
-        width: scene.sceneGuiConfig.sceneViewWidth * customScaleFactor
-        height: scene.sceneGuiConfig.sceneViewHeight * customScaleFactor
+        x: (scene?.sceneGuiConfig?.contentX - nodeRectTopLeft.x) ?? 0 * customScaleFactor
+        y: (scene?.sceneGuiConfig?.contentY - nodeRectTopLeft.y) ?? 0 * customScaleFactor
+        width: (scene?.sceneGuiConfig?.sceneViewWidth ?? 0) * customScaleFactor
+        height: (scene?.sceneGuiConfig?.sceneViewHeight ?? 0) * customScaleFactor
         z: 3
 
         //! MouseArea to handle position change of user view
