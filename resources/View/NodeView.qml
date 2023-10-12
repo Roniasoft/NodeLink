@@ -24,6 +24,15 @@ InteractiveNodeView {
 
     /* Slots
      * ****************************************************************************************/
+    signal mainMouseAreaClicked(event: var);
+
+    /* Slots
+     * ****************************************************************************************/
+
+    onMainMouseAreaClicked: event => {
+                                nodeMouseArea.clicked(event);
+                            }
+
 
     onEditChanged: {
 
