@@ -377,6 +377,9 @@ I_NodesScene {
 
         //! Manage zoom to node signal
         function onZoomToNodeSignal(node: Node, targetZoomFactor: real) {
+            if (!node)
+                return;
+
             var origin  = Qt.vector2d(node.guiConfig.position.x + node.guiConfig.width / 2,
                                          node.guiConfig.position.y + node.guiConfig.height / 2);
 
