@@ -30,7 +30,11 @@ InteractiveNodeView {
      * ****************************************************************************************/
 
     onMainMouseAreaClicked: event => {
-                                nodeMouseArea.clicked(event);
+                                // Sanity check
+                                if (event.button === Qt.RightButton) {
+                                    edit = false;
+                                    nodeMouseArea.clicked(event);
+                                }
                             }
 
 
