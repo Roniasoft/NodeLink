@@ -49,7 +49,7 @@ I_LinkView {
         id: deletePopup
 
         confirmText: "Are you sure you want to delete " +
-                                     (Object.keys(scene.selectionModel.selectedModel).length > 1 ?
+                                     (Object.keys(scene?.selectionModel?.selectedModel ?? ({})).length > 1 ?
                                          "these items?" : "this item?");
 
         sceneSession: linkView.sceneSession
@@ -73,8 +73,8 @@ I_LinkView {
 
         //! Scale with zoomFactor
         transform: Scale {
-            xScale: sceneSession.zoomManager.zoomFactor
-            yScale: sceneSession.zoomManager.zoomFactor
+            xScale: sceneSession?.zoomManager?.zoomFactor ?? 1.0
+            yScale: sceneSession?.zoomManager?.zoomFactor ?? 1.0
         }
 
         onTextChanged: {

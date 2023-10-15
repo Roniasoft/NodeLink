@@ -27,7 +27,7 @@ I_NodesScene {
     * ****************************************************************************************/
 
     anchors.fill: parent
-    interactive: !sceneSession.isCtrlPressed
+    interactive: sceneSession && !sceneSession.isCtrlPressed
 
     /* Children
     * ****************************************************************************************/
@@ -119,7 +119,7 @@ I_NodesScene {
     ConfirmPopUp {
         id: deletePopup
         confirmText: "Are you sure you want to delete " +
-                     (Object.keys(scene.selectionModel.selectedModel).length > 1 ?
+                     (Object.keys(scene?.selectionModel?.selectedModel ?? ({})).length > 1 ?
                          "these items?" : "this item?");
         sceneSession: flickable.sceneSession
         onAccepted: delTimer.start();
@@ -135,7 +135,7 @@ I_NodesScene {
     MouseArea {
         anchors.fill: parent
         acceptedButtons: Qt.LeftButton | Qt.RightButton
-        enabled: !sceneSession.connectingMode &&
+        enabled: sceneSession && !sceneSession.connectingMode &&
                  !sceneSession.isRubberBandMoving &&
                  !sceneSession.isCtrlPressed
 
@@ -248,7 +248,7 @@ I_NodesScene {
 
     //! Manage zoom in flickable and zoomManager.
     Connections {
-        target: sceneSession.zoomManager
+        target: sceneSession?.zoomManager ?? null
 
         //! Emit from side menu, Do zoomIn process
         function onZoomToFitSignal () {

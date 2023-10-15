@@ -81,7 +81,7 @@ Item {
             position: "top"
             Layout.preferredHeight: 34
             Layout.preferredWidth: 34
-            enabled: scene._undoCore.undoStack.isValidUndo
+            enabled: scene?._undoCore?.undoStack.isValidUndo ?? false
             NLToolTip{
                 visible: parent.hovered
                 text: "Undo"
@@ -96,7 +96,7 @@ Item {
             position: "bottom"
             Layout.preferredHeight: 34
             Layout.preferredWidth: 34
-            enabled: scene._undoCore.undoStack.isValidRedo
+            enabled: scene?._undoCore?.undoStack.isValidRedo ?? false
             NLToolTip{
                 visible: parent.hovered
                 text: "Redo"
@@ -145,10 +145,10 @@ Item {
             Layout.preferredWidth: 34
 
             checkable: true
-            checked: sceneSession.visibleOverview
+            checked: sceneSession && sceneSession.visibleOverview
 
             NLToolTip{
-                text: ((sceneSession.visibleOverview ? "Hide " : "Show ") +"the overview")
+                text: (((sceneSession?.visibleOverview ?? false) ? "Hide " : "Show ") +"the overview")
                 visible: parent.hovered
             }
 

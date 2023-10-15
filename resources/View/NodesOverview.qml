@@ -23,20 +23,23 @@ Item {
     //! Overview height, used for calculatin scale for mapping scene -> overview
     property int          overviewHeight
 
+    //! Show controller (userViewRect)
+    property bool         showController:  true
+
 
     //! Top Left position of node rect (pos of the node in the top left corner)
-    property vector2d     nodeRectTopLeft: Qt.vector2d(Math.min(...Object.values(scene.nodes).map(node => node.guiConfig.position.x ), NLStyle.scene.defaultContentX),
-                                                       Math.min(...Object.values(scene.nodes).map(node => node.guiConfig.position.y), NLStyle.scene.defaultContentY))
+    property vector2d     nodeRectTopLeft: Qt.vector2d(Math.min(...Object.values(scene?.nodes ?? ({})).map(node => node.guiConfig.position.x ), NLStyle.scene.defaultContentX),
+                                                       Math.min(...Object.values(scene?.nodes ?? ({})).map(node => node.guiConfig.position.y), NLStyle.scene.defaultContentY))
 
     //! Bottom Right position of node rect (pos of the node in the bottom right corner)
-    property vector2d     nodeRectBottomRight: Qt.vector2d(Math.max(...Object.values(scene.nodes).map(node => node.guiConfig.position.x + node.guiConfig.width), NLStyle.scene.defaultContentX + 1000),
-                                                           Math.max(...Object.values(scene.nodes).map(node => node.guiConfig.position.y + node.guiConfig.height), NLStyle.scene.defaultContentY + 1000))
+    property vector2d     nodeRectBottomRight: Qt.vector2d(Math.max(...Object.values(scene?.nodes ?? ({})).map(node => node.guiConfig.position.x + node.guiConfig.width), NLStyle.scene.defaultContentX + 1000),
+                                                           Math.max(...Object.values(scene?.nodes ?? ({})).map(node => node.guiConfig.position.y + node.guiConfig.height), NLStyle.scene.defaultContentY + 1000))
 
     //! Overview scale in x direction
-    property real         overviewXScaleFactor: overviewWidth / (nodeRectBottomRight.x - nodeRectTopLeft.x)
+    property real         overviewXScaleFactor: width / (nodeRectBottomRight.x - nodeRectTopLeft.x)
 
     //! Overview scale in y direction
-    property real         overviewYScaleFactor: overviewHeight / (nodeRectBottomRight.y - nodeRectTopLeft.y)
+    property real         overviewYScaleFactor: height / (nodeRectBottomRight.y - nodeRectTopLeft.y)
 
     //! Scale used for mapping scene -> overview. Min is used to avoid complication in link drawings
     property real         overviewScaleFactor:  Math.min( overviewXScaleFactor > 1 ? 1 : overviewXScaleFactor,
@@ -48,6 +51,7 @@ Item {
 
     width: overviewWidth
     height: overviewHeight
+    visible: sceneSession?.visibleOverview ?? false
 
     /* Children
     * ****************************************************************************************/
@@ -76,8 +80,8 @@ Item {
                 var diffY = (mouse.y - userViewRect.y) / userViewRect.customScaleFactor
                 var halfWidthBefore = scene.sceneGuiConfig.sceneViewWidth / 2
                 var halfHeightBefore = scene.sceneGuiConfig.sceneViewHeight / 2
-                scene.sceneGuiConfig.contentX += diffX - halfWidthBefore
-                scene.sceneGuiConfig.contentY += diffY - halfHeightBefore
+                scene.sceneGuiConfig.contentX = Math.max(0, scene.sceneGuiConfig.contentX + diffX - halfWidthBefore);
+                scene.sceneGuiConfig.contentY = Math.max(0, scene.sceneGuiConfig.contentY + diffY - halfHeightBefore);
             }
         }
     }
@@ -87,16 +91,17 @@ Item {
         id: userViewRect
 
         //! Top Left position of node rect (pos of the node in the top left corner)
-        property vector2d     nodeRectTopLeft: root.nodeRectTopLeft.times(sceneSession.zoomManager.zoomFactor)
+        property vector2d     nodeRectTopLeft: root.nodeRectTopLeft.times(sceneSession?.zoomManager?.zoomFactor ?? 1.0)
 
         //! Scale used for mapping scene -> overview. Min is used to avoid complication in link drawings
-        property real         customScaleFactor: root.overviewScaleFactor / (root.overviewScaleFactor > 1 ? 1 : sceneSession.zoomManager.zoomFactor)
+        property real         customScaleFactor: root.overviewScaleFactor / (root.overviewScaleFactor > 1 ? 1 : (sceneSession?.zoomManager?.zoomFactor ?? 1.0))
 
+        visible: showController
         color: "transparent"
         border.color: NLStyle.primaryColor
-        x: (scene?.sceneGuiConfig?.contentX - nodeRectTopLeft.x) ?? 0 * customScaleFactor
-        y: (scene?.sceneGuiConfig?.contentY - nodeRectTopLeft.y) ?? 0 * customScaleFactor
-        width: (scene?.sceneGuiConfig?.sceneViewWidth ?? 0) * customScaleFactor
+        x: ((scene?.sceneGuiConfig?.contentX - nodeRectTopLeft.x) ?? 0) * customScaleFactor
+        y: ((scene?.sceneGuiConfig?.contentY - nodeRectTopLeft.y) ?? 0) * customScaleFactor
+        width:  (scene?.sceneGuiConfig?.sceneViewWidth ?? 0) * customScaleFactor
         height: (scene?.sceneGuiConfig?.sceneViewHeight ?? 0) * customScaleFactor
         z: 3
 

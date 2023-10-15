@@ -33,10 +33,10 @@ Flickable {
     /* Object Properties
     * ****************************************************************************************/
     anchors.fill: parent
-    contentWidth: scene.sceneGuiConfig.contentWidth
-    contentHeight: scene.sceneGuiConfig.contentHeight
-    contentX: scene.sceneGuiConfig.contentX
-    contentY: scene.sceneGuiConfig.contentY
+    contentWidth: scene?.sceneGuiConfig?.contentWidth ?? 0
+    contentHeight: scene?.sceneGuiConfig?.contentHeight ?? 0
+    contentX: scene?.sceneGuiConfig?.contentX ?? 0
+    contentY: scene?.sceneGuiConfig?.contentY ?? 0
 
     // Update contentY when changed by user (No flick process)
     onContentXChanged: {
@@ -124,6 +124,19 @@ Flickable {
     //! Update height
     onHeightChanged: {
         if (scene && scene.sceneGuiConfig.sceneViewHeight !== height)
+            scene.sceneGuiConfig.sceneViewHeight = height;
+    }
+
+	//! Update sceneGuiConfig properties (specifically, sceneViewWidth and sceneViewHeight)
+    //! following a scene change from null to a defined object.
+    onSceneChanged: {
+        if (!scene)
+            return;
+
+        if (scene.sceneGuiConfig.sceneViewWidth !== width)
+            scene.sceneGuiConfig.sceneViewWidth = width;
+
+        if (scene.sceneGuiConfig.sceneViewHeight !== height)
             scene.sceneGuiConfig.sceneViewHeight = height;
     }
 

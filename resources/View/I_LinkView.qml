@@ -49,10 +49,10 @@ Canvas {
     property int        outputPortSide: link.outputPort?.portSide ?? -1
 
     //! Link color
-    property string     linkColor: Object.keys(sceneSession.linkColorOverrideMap).includes(link?._qsUuid ?? "") ? sceneSession.linkColorOverrideMap[link._qsUuid] : link.guiConfig.color
+    property string     linkColor: Object.keys(sceneSession?.linkColorOverrideMap ?? ({})).includes(link?._qsUuid ?? "") ? sceneSession.linkColorOverrideMap[link._qsUuid] : link.guiConfig.color
 
     //! zoomFactor
-    property real zoomFactor: sceneSession.zoomManager.zoomFactor
+    property real zoomFactor: sceneSession?.zoomManager?.zoomFactor ?? 1.0
 
     //! Canvas Dimensions
     property real topLeftX: Math.min(...link.controlPoints.map(controlpoint => controlpoint.x), inputPos.x, outputPos.x)
