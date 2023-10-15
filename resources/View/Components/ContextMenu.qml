@@ -47,16 +47,24 @@ Menu {
 
         delegate: ContextMenuItem {
             name: NLNodeRegistry.nodeNames[modelData]
+            enabled: !(scene?.bannedNodes.includes(Number(modelData)) ?? true)
             iconStr: NLNodeRegistry.nodeIcons[modelData]
             onClicked: {    // \todo: move this implementation out of primitive comp.
-                var nodeUuid = contextMenu.createNode(modelData);
-                nodeAdded(nodeUuid);
+                var nodeUuid = contextMenu.createNode(Number(modelData));
+                if (nodeUuid)
+                    nodeAdded(nodeUuid);
             }
         }
     }
 
     //! Create a node with node type and its position
-    function createNode(nodeType : int) : string{
+    function createNode(nodeType : int) : string {
+
+        if (scene.bannedNodes.includes(nodeType)) {
+            console.info("The current node type (Node type: " + nodeType + ") cannot be created.");
+            return null;
+        }
+
         var node = QSSerializer.createQSObject(NLNodeRegistry.nodeTypes[nodeType],
                                                NLNodeRegistry.imports, NLCore.defaultRepo);
         node._qsRepo = NLCore.defaultRepo;
