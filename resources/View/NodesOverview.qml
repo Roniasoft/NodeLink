@@ -26,6 +26,8 @@ Item {
     //! Show controller (userViewRect)
     property bool         showController:  true
 
+    //! OverView background color
+    property string backColor: "#20262d"
 
     //! Top Left position of node rect (pos of the node in the top left corner)
     property vector2d     nodeRectTopLeft: Qt.vector2d(Math.min(...Object.values(scene?.nodes ?? ({})).map(node => node.guiConfig.position.x ), NLStyle.scene.defaultContentX),
@@ -59,7 +61,7 @@ Item {
     Rectangle {
         id: backgroundRect
         anchors.fill: parent
-        color: "#20262d"
+        color: backColor
     }
 
     //! NodesRectOverview (nodes and links)
