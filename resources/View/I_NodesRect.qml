@@ -53,6 +53,9 @@ Item {
 
         //! nodeRepeater updated when a node added
         function onNodeAdded(nodeObj: Node) {
+            if (Object.keys(_nodeViewMap).includes(nodeObj._qsUuid))
+                return;
+
             const objView = nodeViewComponent.createObject(parent, {
                                                            scene: root.scene,
                                                            sceneSession: root.sceneSession,
@@ -77,6 +80,9 @@ Item {
 
         //! linkRepeater updated when a link added
         function onLinkAdded(linkObj: Link) {
+            if (Object.keys(_linkViewMap).includes(linkObj._qsUuid))
+                return;
+
             const objView = linkViewComponent.createObject(parent, {
                                                                  link: linkObj,
                                                                  scene: root.scene,
