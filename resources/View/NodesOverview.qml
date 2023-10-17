@@ -75,9 +75,15 @@ Item {
         MouseArea {
             anchors.fill: parent
 
+            //! Handle unexpected behaviors by capturing both left and right buttons.
+            acceptedButtons: Qt.LeftButton | Qt.RightButton
+
             enabled: interactive
 
             onClicked: (mouse) =>  {
+                if (mouse.button === Qt.RightButton)
+                    return;
+
                 //! When mouse is clicked, the diff between clicked area and the red rectangle position is calculated
                 // and then mapped to the scene
                 var diffX = (mouse.x - userViewRect.x) / userViewRect.customScaleFactor
@@ -116,10 +122,16 @@ Item {
             property real    prevY
             property bool    isDraging:  false
 
+            //! Handle unexpected behaviors by capturing both left and right buttons.
+            acceptedButtons: Qt.LeftButton | Qt.RightButton
+
             anchors.fill: parent
             hoverEnabled: true
 
             onPressed: (mouse) => {
+                if (mouse.button === Qt.RightButton)
+                    return;
+
                 isDraging = true;
                 prevX = mouse.x;
                 prevY = mouse.y;
@@ -130,6 +142,9 @@ Item {
             }
 
             onPositionChanged: (mouse) => {
+                if (mouse.button === Qt.RightButton)
+                    return;
+
                 if (isDraging) {
                     //! When mouse is dragged, the diff between pressed mouse and current position is calculated
                     // and then mapped to the scene
