@@ -43,11 +43,10 @@ Menu {
      * ****************************************************************************************/
 
     Repeater {
-        model:  Object.keys(NLNodeRegistry.nodeTypes)
+        model:  Object.keys(NLNodeRegistry.nodeTypes).filter(nodeType => !scene?.bannedNodes.includes(Number(nodeType)))
 
         delegate: ContextMenuItem {
             name: NLNodeRegistry.nodeNames[modelData]
-            enabled: !(scene?.bannedNodes.includes(Number(modelData)) ?? true)
             iconStr: NLNodeRegistry.nodeIcons[modelData]
             onClicked: {    // \todo: move this implementation out of primitive comp.
                 var nodeUuid = contextMenu.createNode(Number(modelData));

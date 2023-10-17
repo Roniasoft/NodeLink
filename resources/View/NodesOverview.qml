@@ -24,10 +24,10 @@ Item {
     property int          overviewHeight
 
     //! Show controller (userViewRect)
-    property bool         showController:  true
+    property bool         interactive:  true
 
     //! OverView background color
-    property string backColor: "#20262d"
+    property string backColor:          "#20262d"
 
     //! Top Left position of node rect (pos of the node in the top left corner)
     property vector2d     nodeRectTopLeft: Qt.vector2d(Math.min(...Object.values(scene?.nodes ?? ({})).map(node => node.guiConfig.position.x ), NLStyle.scene.defaultContentX),
@@ -75,6 +75,8 @@ Item {
         MouseArea {
             anchors.fill: parent
 
+            enabled: interactive
+
             onClicked: (mouse) =>  {
                 //! When mouse is clicked, the diff between clicked area and the red rectangle position is calculated
                 // and then mapped to the scene
@@ -98,7 +100,7 @@ Item {
         //! Scale used for mapping scene -> overview. Min is used to avoid complication in link drawings
         property real         customScaleFactor: root.overviewScaleFactor / (root.overviewScaleFactor > 1 ? 1 : (sceneSession?.zoomManager?.zoomFactor ?? 1.0))
 
-        visible: showController
+        visible: interactive
         color: "transparent"
         border.color: NLStyle.primaryColor
         x: ((scene?.sceneGuiConfig?.contentX - nodeRectTopLeft.x) ?? 0) * customScaleFactor
