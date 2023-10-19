@@ -24,7 +24,7 @@ Item {
     anchors.fill: parent
 
     // upper layer in app
-    z: sceneSession.connectingMode ? -1 : 0
+    z: (sceneSession?.connectingMode ?? false) ? -1 : 0
 
     /* Children
     * ****************************************************************************************/

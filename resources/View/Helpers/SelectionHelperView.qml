@@ -29,7 +29,7 @@ Item {
     Item {
         id: selectionRubberBandItem
 
-        visible: sceneSession.rubberBandSelectionMode
+        visible: sceneSession?.rubberBandSelectionMode ?? false
         //! Rubber band border with different opacity
         Rectangle {
             anchors.fill: parent
@@ -56,7 +56,7 @@ Item {
 
         acceptedButtons: Qt.LeftButton | Qt.RightButton
 
-        enabled: sceneSession.isCtrlPressed
+        enabled: sceneSession?.isCtrlPressed ?? false
         hoverEnabled: true
         preventStealing: true
 

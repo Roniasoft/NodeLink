@@ -21,7 +21,7 @@ LinkView {
     MouseArea {
         id: mouseArea
         anchors.fill: parent
-        enabled: sceneSession.connectingMode
+        enabled: sceneSession?.connectingMode ?? false
         hoverEnabled: true
         preventStealing: true
 

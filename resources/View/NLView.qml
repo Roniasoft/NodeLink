@@ -29,8 +29,6 @@ Item {
     NodesOverview {
         id: overView
 
-        visible: sceneSession.visibleOverview
-
         scene: view.scene
         sceneSession: view.sceneSession
         overviewWidth: NLStyle.overview.width
@@ -64,7 +62,7 @@ Item {
 
     //! Connection to set sceneGuiConfig to the user requested zoomFactor
     Connections {
-        target: sceneSession.zoomManager
+        target: sceneSession?.zoomManager ?? null
 
         function onZoomFactorChanged () {
             scene.sceneGuiConfig.zoomFactor = sceneSession.zoomManager.zoomFactor
@@ -74,9 +72,9 @@ Item {
 
     //! Zoom needs to be set the first time scene is loaded
     Component.onCompleted: {
-        if (scene._qsRepo._isLoading)
+        if (scene && scene._qsRepo._isLoading)
             sceneSession.zoomManager.customZoom(scene.sceneGuiConfig.zoomFactor)
-        else
+        else if (scene && sceneSession)
             scene.sceneGuiConfig.zoomFactor = sceneSession.zoomManager.zoomFactor
     }
 

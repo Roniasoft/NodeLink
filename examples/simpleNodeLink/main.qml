@@ -17,7 +17,13 @@ Window {
 
     property Scene scene: null
 
+    //! nodeRegistry: Use nodeRegistry in the main scene (we need one object)
+    property NLNodeRegistry nodeRegistry:      NLNodeRegistry {
+        _qsRepo: NLCore.defaultRepo
 
+        imports: ["SimpleNodeLink"];
+        defaultNode: 0
+    }
 
     /* Object Properties
      * ****************************************************************************************/
@@ -31,31 +37,22 @@ Window {
     Material.theme: Material.Dark
     Material.accent: "#4890e2"
 
+
     Component.onCompleted: {
+        // Prepare nodeRegistry
+        var nodeType = 0;
+        nodeRegistry.nodeTypes[nodeType]  = "NodeExample";
+        nodeRegistry.nodeNames[nodeType]  = "NodeExample";
+        nodeRegistry.nodeIcons[nodeType]  = "\ue4e2";
+        nodeRegistry.nodeColors[nodeType] = "#444";
 
-        //! Registr node types and related properties.
-        NLNodeRegistry.imports = ["SimpleNodeLink"];
-        var nodeID = 0;
-        NLNodeRegistry.defaultNode = nodeID;
-        NLNodeRegistry.nodeTypes = [
-                                      nodeID = "NodeExample"
-                                      ];
-
-        NLNodeRegistry.nodeNames = [
-                                      nodeID = "NodeExample"
-                                      ];
-
-        NLNodeRegistry.nodeIcons = [
-                                      nodeID = "\ue4e2"
-                                      ];
-
-        NLNodeRegistry.nodeColors = [
-                                      nodeID = "#444"
-                                      ];
 
         NLCore.defaultRepo = NLCore.createDefaultRepo(["QtQuickStream", "NodeLink"])
         NLCore.defaultRepo.initRootObject("Scene");
+
+        //Set registry to scene
         window.scene = Qt.binding(function() { return NLCore.defaultRepo.qsRootObject;});
+        window.scene.nodeRegistry = Qt.binding(function() { return window.nodeRegistry});
     }
 
     /* Children

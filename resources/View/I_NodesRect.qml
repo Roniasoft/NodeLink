@@ -19,8 +19,8 @@ Item {
     property QtObject viewProperties: null
 
     //! Default Link and Node views
-    property string nodeViewUrl: NLNodeRegistry.nodeView
-    property string linkViewUrl: NLNodeRegistry.linkView
+    property string nodeViewUrl: scene?.nodeRegistry?.nodeView ?? ""
+    property string linkViewUrl: scene?.nodeRegistry?.linkView ?? ""
 
 
     //! NodeView map as an internal map
@@ -53,6 +53,9 @@ Item {
 
         //! nodeRepeater updated when a node added
         function onNodeAdded(nodeObj: Node) {
+            if (Object.keys(_nodeViewMap).includes(nodeObj._qsUuid))
+                return;
+
             const objView = nodeViewComponent.createObject(parent, {
                                                            scene: root.scene,
                                                            sceneSession: root.sceneSession,
@@ -77,6 +80,9 @@ Item {
 
         //! linkRepeater updated when a link added
         function onLinkAdded(linkObj: Link) {
+            if (Object.keys(_linkViewMap).includes(linkObj._qsUuid))
+                return;
+
             const objView = linkViewComponent.createObject(parent, {
                                                                  link: linkObj,
                                                                  scene: root.scene,

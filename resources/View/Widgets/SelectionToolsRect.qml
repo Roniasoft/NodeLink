@@ -18,7 +18,7 @@ Rectangle {
     required property SceneSession  sceneSession
 
     //! Selected model (Node AND/OR links)
-    property SelectionModel selectionModel: scene.selectionModel
+    property SelectionModel selectionModel: scene?.selectionModel ?? null
 
     //! Find all selected nodes
     property var selectedNode: Object.values(selectionModel?.selectedModel ?? ({})).filter(obj => obj?.objectType === NLSpec.ObjectType.Node)
@@ -46,7 +46,7 @@ Rectangle {
         spacing: 3
 
         //! To display a representative property of links
-        property var selectedObject: Object.values(selectionModel.selectedModel)?.find((obj, index) => index === 0);
+        property var selectedObject: Object.values(selectionModel?.selectedModel ?? ({}))?.find((obj, index) => index === 0);
 
         property bool selectedNodeOnly: selectedNode.length > 0 && selectedLink.length === 0
         property bool selectedLinkOnly: selectedLink.length > 0 && selectedNode.length === 0
@@ -360,7 +360,7 @@ Rectangle {
 
                 sceneSession: toolsItem.sceneSession
                 confirmText: "Are you sure you want to delete " +
-                             (Object.keys(selectionModel.selectedModel).length > 1 ?
+                             (Object.keys(selectionModel?.selectedModel ?? ({})).length > 1 ?
                                  "these items?" : "this item?");
                 onAccepted: delTimer.start();
             }

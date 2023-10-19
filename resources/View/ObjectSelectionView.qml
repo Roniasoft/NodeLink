@@ -13,9 +13,9 @@ Item {
     * ****************************************************************************************/
     property I_Scene        scene
     property SceneSession   sceneSession
-    property SelectionModel selectionModel: scene.selectionModel
+    property SelectionModel selectionModel: scene?.selectionModel ?? null
 
-    property bool           hasSelectedObject: Object.values(selectionModel.selectedModel).length > 0
+    property bool           hasSelectedObject: Object.values(selectionModel?.selectedModel ?? ({})).length > 0
 
     /*  Object Properties
     * ****************************************************************************************/
@@ -42,11 +42,11 @@ Item {
         id: rubberBand
 
         anchors.fill: parent
-        color: Object.values(scene.selectionModel.selectedModel).length> 1 ? "#8F30FA" :
+        color: Object.values(scene?.selectionModel?.selectedModel ?? ({})).length> 1 ? "#8F30FA" :
                                                                              "transparent"
         opacity: 0.2
 
-        visible: Object.values(scene.selectionModel.selectedModel).length > 1
+        visible: Object.values(scene?.selectionModel?.selectedModel ?? ({})).length > 1
    }
 
     //! selected object tool rect
@@ -73,8 +73,8 @@ Item {
         onContainsMouseChanged: sceneSession.isMouseInRubberBand = containsMouse
 
         //! Enable when select more than one Item and shift not pressed.
-        enabled: !sceneSession.isShiftModifierPressed &&
-                 Object.keys(selectionModel.selectedModel).length > 1
+        enabled: sceneSession && !sceneSession.isShiftModifierPressed &&
+                 Object.keys(selectionModel?.selectedModel ?? ({})).length > 1
 
         hoverEnabled: rubberBandMouseArea.containsMouse
         preventStealing: true
@@ -162,7 +162,7 @@ Item {
 
     //! Connection to calculate rubber band Dimensions when zoomFactorChanged.
     Connections {
-        target: sceneSession.zoomManager
+        target: sceneSession?.zoomManager ?? null
 
         function onZoomFactorChanged() {
             _timerUpdateDimention.start();
