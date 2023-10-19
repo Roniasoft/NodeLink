@@ -54,7 +54,7 @@ I_Scene {
     //! Override this function in your scene
     //! Create a node with node type and its position
     function createCustomizeNode(nodeType : int, xPos : real, yPos : real) : string {
-        var qsType = scene.nodeRegistry.nodeTypes[nodeType];
+        var qsType = root.nodeRegistry.nodeTypes[nodeType];
         if (!qsType) {
             console.info("The current node type (Node type: " + nodeType + ") cannot be created.");
             return null;
