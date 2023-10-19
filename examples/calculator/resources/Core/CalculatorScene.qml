@@ -21,7 +21,7 @@ I_Scene {
         imports: ["Calculator"]
 
         defaultNode: CSpecs.NodeType.Source
-        nodeTypes :[
+        nodeTypes : [
             CSpecs.NodeType.Source      = "SourceNode",
             CSpecs.NodeType.Additive    = "AdditiveNode",
             CSpecs.NodeType.Multiplier  = "MultiplierNode",
