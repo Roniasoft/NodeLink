@@ -13,6 +13,51 @@ I_Scene {
 
     /* Property Properties
      * ****************************************************************************************/
+
+    //! nodeRegistry
+    nodeRegistry:      NLNodeRegistry {
+        _qsRepo:  scene._qsRepo
+
+        imports: ["Calculator"]
+
+        defaultNode: CSpecs.NodeType.Source
+        nodeTypes :[
+            CSpecs.NodeType.Source      = "SourceNode",
+            CSpecs.NodeType.Additive    = "AdditiveNode",
+            CSpecs.NodeType.Multiplier  = "MultiplierNode",
+            CSpecs.NodeType.Subtraction = "SubtractionNode",
+            CSpecs.NodeType.Division    = "DivisionNode",
+            CSpecs.NodeType.Result      = "ResultNode"
+        ];
+
+        nodeNames: [
+            CSpecs.NodeType.Source      = "Source",
+            CSpecs.NodeType.Additive    = "Additive",
+            CSpecs.NodeType.Multiplier  = "Multiplier",
+            CSpecs.NodeType.Subtraction = "Subtraction",
+            CSpecs.NodeType.Division    = "Division",
+            CSpecs.NodeType.Result      = "Result"
+        ];
+
+        nodeIcons: [
+            CSpecs.NodeType.Source      = "\ue4e2",
+            CSpecs.NodeType.Additive    = "+",
+            CSpecs.NodeType.Multiplier  = "\uf00d",
+            CSpecs.NodeType.Subtraction = "-",
+            CSpecs.NodeType.Division    = "/",
+            CSpecs.NodeType.Result      = "\uf11b",
+        ];
+
+        nodeColors: [
+            CSpecs.NodeType.Source     = "#444",
+            CSpecs.NodeType.Additive    = "#444",
+            CSpecs.NodeType.Multiplier  = "#444",
+            CSpecs.NodeType.Subtraction = "#444",
+            CSpecs.NodeType.Division    = "#444",
+            CSpecs.NodeType.Result      = "#444",
+        ];
+    }
+
     //! Scene Selection Model
     selectionModel: SelectionModel {
             existObjects: [...Object.keys(nodes), ...Object.keys(links)]
@@ -41,10 +86,10 @@ I_Scene {
 
     //! Create a node with node type and its position
     function createCustomizeNode(nodeType : int, xPos : real, yPos : real) : string {
-        var title = NLNodeRegistry.nodeNames[nodeType] + "_" + (Object.values(scene.nodes).filter(node => node.type === nodeType).length + 1);
-        return createSpecificNode(NLNodeRegistry.imports, nodeType,
-                                  NLNodeRegistry.nodeTypes[nodeType],
-                                  NLNodeRegistry.nodeColors[nodeType],
+        var title = nodeRegistry.nodeNames[nodeType] + "_" + (Object.values(scene.nodes).filter(node => node.type === nodeType).length + 1);
+        return createSpecificNode(nodeRegistry.imports, nodeType,
+                                  nodeRegistry.nodeTypes[nodeType],
+                                  nodeRegistry.nodeColors[nodeType],
                                   title, xPos, yPos);
     }
 

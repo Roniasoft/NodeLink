@@ -33,45 +33,6 @@ Window {
 
 
     Component.onCompleted: {
-        // Registre nodes in NodeLink
-        NLNodeRegistry.imports = ["Calculator"]
-
-        NLNodeRegistry.defaultNode = CSpecs.NodeType.Source
-        NLNodeRegistry.nodeTypes = [
-                    CSpecs.NodeType.Source      = "SourceNode",
-                    CSpecs.NodeType.Additive    = "AdditiveNode",
-                    CSpecs.NodeType.Multiplier  = "MultiplierNode",
-                    CSpecs.NodeType.Subtraction = "SubtractionNode",
-                    CSpecs.NodeType.Division    = "DivisionNode",
-                    CSpecs.NodeType.Result      = "ResultNode"
-                ];
-
-        NLNodeRegistry.nodeNames = [
-                    CSpecs.NodeType.Source      = "Source",
-                    CSpecs.NodeType.Additive    = "Additive",
-                    CSpecs.NodeType.Multiplier  = "Multiplier",
-                    CSpecs.NodeType.Subtraction = "Subtraction",
-                    CSpecs.NodeType.Division    = "Division",
-                    CSpecs.NodeType.Result      = "Result"
-                ];
-
-        NLNodeRegistry.nodeIcons = [
-                    CSpecs.NodeType.Source      = "\ue4e2",
-                    CSpecs.NodeType.Additive    = "+",
-                    CSpecs.NodeType.Multiplier  = "\uf00d",
-                    CSpecs.NodeType.Subtraction = "-",
-                    CSpecs.NodeType.Division    = "/",
-                    CSpecs.NodeType.Result      = "\uf11b",
-                ];
-
-        NLNodeRegistry.nodeColors = [
-                    CSpecs.NodeType.Source     = "#444",
-                    CSpecs.NodeType.Additive    = "#444",
-                    CSpecs.NodeType.Multiplier  = "#444",
-                    CSpecs.NodeType.Subtraction = "#444",
-                    CSpecs.NodeType.Division    = "#444",
-                    CSpecs.NodeType.Result      = "#444",
-                ];
 
         // Create root object
         NLCore.defaultRepo = NLCore.createDefaultRepo(["QtQuickStream", "Calculator"])
