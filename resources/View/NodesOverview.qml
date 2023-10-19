@@ -18,9 +18,13 @@ Item {
     property SceneSession   sceneSession
 
     //! Overview width, used for calculatin scale for mapping scene -> overview
+    //! When use anchors, can not use overviewWidth property
+    //! anchors update the width and height directly
     property int          overviewWidth
 
     //! Overview height, used for calculatin scale for mapping scene -> overview
+    //! When use anchors, can not use overviewHeight property
+    //! anchors update the width and height directly
     property int          overviewHeight
 
     //! Show controller (userViewRect)
@@ -90,8 +94,8 @@ Item {
                 var diffY = (mouse.y - userViewRect.y) / userViewRect.customScaleFactor
                 var halfWidthBefore = scene.sceneGuiConfig.sceneViewWidth / 2
                 var halfHeightBefore = scene.sceneGuiConfig.sceneViewHeight / 2
-                scene.sceneGuiConfig.contentX = Math.max(0, scene.sceneGuiConfig.contentX + diffX - halfWidthBefore);
-                scene.sceneGuiConfig.contentY = Math.max(0, scene.sceneGuiConfig.contentY + diffY - halfHeightBefore);
+                scene.sceneGuiConfig.contentX = scene.sceneGuiConfig.contentX + diffX - halfWidthBefore;
+                scene.sceneGuiConfig.contentY = scene.sceneGuiConfig.contentY + diffY - halfHeightBefore;
             }
         }
     }
