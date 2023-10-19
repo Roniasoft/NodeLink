@@ -68,7 +68,6 @@ set_source_files_properties(
     resources/Core/NLCore.qml
     resources/Core/NLSpec.qml
     resources/Core/Undo/HashCompareString.qml
-    resources/Core/NLNodeRegistry.qml
     resources/View/NLStyle.qml
 
     PROPERTIES

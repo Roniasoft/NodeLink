@@ -43,11 +43,11 @@ Menu {
      * ****************************************************************************************/
 
     Repeater {
-        model:  Object.keys(NLNodeRegistry.nodeTypes).filter(nodeType => !scene?.bannedNodes.includes(Number(nodeType)))
+        model:  Object.keys(scene.nodeRegistry?.nodeTypes ?? ({}))
 
         delegate: ContextMenuItem {
-            name: NLNodeRegistry.nodeNames[modelData]
-            iconStr: NLNodeRegistry.nodeIcons[modelData]
+            name: scene.nodeRegistry.nodeNames[modelData]
+            iconStr: scene.nodeRegistry.nodeIcons[modelData]
             onClicked: {    // \todo: move this implementation out of primitive comp.
                 var nodeUuid = contextMenu.createNode(Number(modelData));
                 if (nodeUuid)
@@ -59,13 +59,13 @@ Menu {
     //! Create a node with node type and its position
     function createNode(nodeType : int) : string {
 
-        if (scene.bannedNodes.includes(nodeType)) {
+        var qsType = scene.nodeRegistry.nodeTypes[nodeType];
+        if (!qsType) {
             console.info("The current node type (Node type: " + nodeType + ") cannot be created.");
             return null;
         }
 
-        var node = QSSerializer.createQSObject(NLNodeRegistry.nodeTypes[nodeType],
-                                               NLNodeRegistry.imports, NLCore.defaultRepo);
+        var node = QSSerializer.createQSObject(qsType, scene.nodeRegistry.imports, NLCore.defaultRepo);
         node._qsRepo = NLCore.defaultRepo;
         node.type = nodeType;
 
@@ -75,8 +75,8 @@ Menu {
         node.guiConfig.position = positionMapped;
 
 
-        node.guiConfig.color = NLNodeRegistry.nodeColors[nodeType];
-        node.title = NLNodeRegistry.nodeNames[nodeType] + "_" + (Object.values(scene.nodes).filter(nodeObj => (nodeObj.type - nodeType) === 0).length + 1)
+        node.guiConfig.color = scene.nodeRegistry.nodeColors[nodeType];
+        node.title = scene.nodeRegistry.nodeNames[nodeType] + "_" + (Object.values(scene.nodes).filter(nodeObj => (nodeObj.type - nodeType) === 0).length + 1)
 
         scene.addNode(node)
 

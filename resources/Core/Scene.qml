@@ -10,13 +10,6 @@ import NodeLink
 I_Scene {
     id: root
 
-    /* Property Declarations
-     * ****************************************************************************************/
-
-    //! bannedNodes includes all node types that can not create in this scene.
-    //! node types need to be registered in NLNodeRegistry.
-    property var bannedNodes: []
-
     /* Property Properties
      * ****************************************************************************************/
     //! Scene Selection Model
@@ -61,15 +54,15 @@ I_Scene {
     //! Override this function in your scene
     //! Create a node with node type and its position
     function createCustomizeNode(nodeType : int, xPos : real, yPos : real) : string {
-        if (bannedNodes.includes(nodeType)) {
+        var qsType = scene.nodeRegistry.nodeTypes[nodeType];
+        if (!qsType) {
             console.info("The current node type (Node type: " + nodeType + ") cannot be created.");
-            return;
+            return null;
         }
 
-        var title = NLNodeRegistry.nodeNames[nodeType] + "_" + (Object.values(root.nodes).filter(node => node.type === nodeType).length + 1);
-        return createSpecificNode(NLNodeRegistry.imports, nodeType,
-                                  NLNodeRegistry.nodeTypes[nodeType],
-                                  NLNodeRegistry.nodeColors[nodeType],
+        var title = nodeRegistry.nodeNames[nodeType] + "_" + (Object.values(root.nodes).filter(node => node.type === nodeType).length + 1);
+        return createSpecificNode(nodeRegistry.imports, nodeType, qsType,
+                                  nodeRegistry.nodeColors[nodeType],
                                   title, xPos, yPos);
     }
 
@@ -120,11 +113,4 @@ I_Scene {
 
         return true;
     }
-
-    //! Ban a noed type (Node types that can not create in this scene)
-    function bannedNodeType(nodeType : int) {
-//        bannedNodes.includes
-        bannedNodes.push(nodeType);
-    }
-
 }

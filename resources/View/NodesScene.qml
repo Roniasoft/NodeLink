@@ -189,7 +189,7 @@ I_NodesScene {
                 // Correct position with zoom factor into real position.
                 var positionMapped = position?.times(1 / sceneSession.zoomManager.zoomFactor)
 
-                scene.createCustomizeNode(NLNodeRegistry.defaultNode, positionMapped.x, positionMapped.y);
+                scene.createCustomizeNode(scene.nodeRegistry.defaultNode, positionMapped.x, positionMapped.y);
             }
         }
 

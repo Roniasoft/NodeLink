@@ -81,7 +81,7 @@ InteractiveNodeView {
                 font.pixelSize: 20
                 anchors.left: parent.left
                 anchors.verticalCenter: parent.verticalCenter
-                text: NLNodeRegistry.nodeIcons[node.type]
+                text: scene.nodeRegistry.nodeIcons[node.type]
                 color: node.guiConfig.color
                 font.weight: 400
             }
@@ -228,7 +228,7 @@ InteractiveNodeView {
                 font.family: NLStyle.fontType.font6Pro
                 font.pixelSize: 60
                 anchors.centerIn: parent
-                text: NLNodeRegistry.nodeIcons[node.type]
+                text: scene.nodeRegistry.nodeIcons[node.type]
                 color: node.guiConfig.color
                 font.weight: 400
                 visible: nodeView.isNodeMinimal

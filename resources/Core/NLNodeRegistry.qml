@@ -1,11 +1,10 @@
-pragma Singleton
-
 import QtQuick
 import QtQuick.Controls
 
 import NodeLink
+import QtQuickStream
 
-QtObject {
+QSObject {
 
     /* Properties
      * ****************************************************************************************/

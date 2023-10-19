@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls
+
 import NodeLink
 import QtQuickStream
 
@@ -30,6 +31,9 @@ QSObject {
     property SceneGuiConfig sceneGuiConfig: SceneGuiConfig {
         _qsRepo: scene._qsRepo
     }
+
+    //! Each scene requires its own NodeRegistry.
+    property NLNodeRegistry nodeRegistry: null
 
     /* Signals
      * ****************************************************************************************/
@@ -130,8 +134,8 @@ QSObject {
         var baseNode = nodes[nodeUuid];
 
         // Create node
-        var node = QSSerializer.createQSObject(NLNodeRegistry.nodeTypes[baseNode.type],
-                                               NLNodeRegistry.imports, NLCore.defaultRepo);
+        var node = QSSerializer.createQSObject(nodeRegistry.nodeTypes[baseNode.type],
+                                               nodeRegistry.imports, NLCore.defaultRepo);
         node._qsRepo = NLCore.defaultRepo;
 
         // Clone node

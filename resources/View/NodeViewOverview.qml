@@ -45,7 +45,7 @@ I_NodeView {
             font.family: NLStyle.fontType.font6Pro
             font.pixelSize: NLStyle.node.overviewFontSize * overviewScaleFactor
             anchors.centerIn: parent
-            text: NLNodeRegistry.nodeIcons[node.type]
+            text: scene.nodeRegistry.nodeIcons[node.type]
             color: node.guiConfig.locked ? "gray" : node.guiConfig.color
             font.weight: 400
         }
