@@ -56,10 +56,10 @@ Rectangle {
 
         //! Custom Tool  buttons
         Repeater {
-            model: sceneSession.selectionTools.filter(selectionTool => ((selectionTool.type === NLSpec.SelectionToolObjectType.All) ||
-                                                                         (layout.selectedANodeOnly ? (selectionTool.type === NLSpec.SelectionToolObjectType.Node) :
-                                                                                                      (selectionTool.type === NLSpec.SelectionToolObjectType.Link))
-                                                                         ));
+            model: (sceneSession?.selectionToolButtons ?? []).filter(selectionTool => ((selectionTool.type === NLSpec.SelectionToolObjectType.All) ||
+                                                                                       (layout.selectedANodeOnly ? (selectionTool.type === NLSpec.SelectionToolObjectType.Node) :
+                                                                                                                   (selectionTool.type === NLSpec.SelectionToolObjectType.Link))
+                                                                                       ));
 
             delegate: NLToolButton {
                 text: modelData.icon
@@ -70,34 +70,6 @@ Rectangle {
                 onClicked: {
                     modelData.clicked(layout.selectedObject);
                 }
-            }
-        }
-
-        NLToolButton {
-            id: aiHelpButton
-            text: "\ue0c6"
-            visible: layout.selectedANodeOnly
-            Layout.preferredHeight: 30
-            Layout.preferredWidth: 30
-            Layout.topMargin: 2
-            Layout.bottomMargin: 2
-            onClicked: aiPopup.open();
-            AiPopUp {
-                id: aiPopup
-                sceneSession: toolsItem.sceneSession
-                Connections {
-                    target: aiPopup
-
-                    onInsertWholeText: {
-                        layout.selectedObject.guiConfig.description = aiPopup.wholeText
-                        console.log("1",aiPopup.wholeText);
-                    }
-                    onInsertSelectedText: {
-                        layout.selectedObject.guiConfig.description = aiPopup.selectedText
-                        console.log("2",aiPopup.selectedText);
-                    }
-                }
-
             }
         }
 

@@ -95,7 +95,7 @@ qt_add_qml_module(NodeLink
         resources/Core/I_NodeData.qml
         resources/Core/NodeData.qml
         resources/Core/NLNodeRegistry.qml
-		resources/Core/SelectionToolsRectModel.qml
+        resources/Core/SelectionToolButton.qml
 
         resources/Core/Undo/UndoCore.qml
         resources/Core/Undo/UndoStack.qml
@@ -121,7 +121,6 @@ qt_add_qml_module(NodeLink
         resources/View/Components/HorizontalScrollBar.qml
         resources/View/Components/NLMenuItem.qml
         resources/View/Components/NLRepeater.qml
-        resources/View/Components/AiPopUp.qml
         resources/View/NLView.qml
         resources/View/SceneSession.qml
         resources/View/NLStyle.qml

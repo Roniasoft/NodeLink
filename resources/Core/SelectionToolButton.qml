@@ -15,7 +15,7 @@ QtObject {
     property string name: ""
 
     //! Icon
-    property string icon: "\ue0c6"
+    property string icon: ""
 
     //! Node and/or Link or all types
     property int    type: NLSpec.SelectionToolObjectType.Node
