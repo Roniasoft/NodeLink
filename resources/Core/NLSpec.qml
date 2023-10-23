@@ -18,6 +18,15 @@ QtObject {
         Unknown = 99
     }
 
+    //! Selection tool object type
+    enum SelectionToolObjectType {
+        Node = 0,
+        Link = 1,
+        All  = 2,
+
+        Unknown = 99
+    }
+
     //! Location of port on the node sides
     enum PortPositionSide {
         Top     = 0,

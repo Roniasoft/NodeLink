@@ -54,6 +54,24 @@ Rectangle {
         property bool selectedANodeOnly: selectedNode.length === 1 && selectedLink.length === 0
         property bool selectedALinkOnly: selectedLink.length === 1 && selectedNode.length === 0
 
+        //! Custom Tool  buttons
+        Repeater {
+            model: sceneSession.selectionTools.filter(selectionTool => ((selectionTool.type === NLSpec.SelectionToolObjectType.All) ||
+                                                                         (layout.selectedANodeOnly ? (selectionTool.type === NLSpec.SelectionToolObjectType.Node) :
+                                                                                                      (selectionTool.type === NLSpec.SelectionToolObjectType.Link))
+                                                                         ));
+
+            delegate: NLToolButton {
+                text: modelData.icon
+                Layout.preferredHeight: 30
+                Layout.preferredWidth: 30
+                Layout.topMargin: 2
+                Layout.bottomMargin: 2
+                onClicked: {
+                    modelData.clicked(layout.selectedObject);
+                }
+            }
+        }
 
         NLToolButton {
             id: aiHelpButton
@@ -82,6 +100,7 @@ Rectangle {
 
             }
         }
+
         //! Node/Link: Color change
         NLToolButton {
             id: colorButton1
