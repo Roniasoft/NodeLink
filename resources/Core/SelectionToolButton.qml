@@ -17,6 +17,9 @@ QtObject {
     //! Icon
     property string icon: ""
 
+    //! Enable
+    property bool   enable: true
+
     //! Node and/or Link or all types
     property int    type: NLSpec.SelectionToolObjectType.Node
 

@@ -56,7 +56,7 @@ Rectangle {
 
         //! Custom Tool  buttons
         Repeater {
-            model: (sceneSession?.selectionToolButtons ?? []).filter(selectionTool => ((selectionTool.type === NLSpec.SelectionToolObjectType.All) ||
+            model: (sceneSession?.selectionToolButtons ?? []).filter(selectionTool => (selectionTool.enable && (selectionTool.type === NLSpec.SelectionToolObjectType.All) ||
                                                                                        (layout.selectedANodeOnly ? (selectionTool.type === NLSpec.SelectionToolObjectType.Node) :
                                                                                                                    (selectionTool.type === NLSpec.SelectionToolObjectType.Link))
                                                                                        ));
