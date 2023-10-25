@@ -3,7 +3,7 @@ import QtQuick
 import NodeLink
 
 /*! ***********************************************************************************************
- * SelectionToolsRect Model contain a selection tool button and manage it.
+ * SelectionSpecificTool contains a selection tool button model.
  * ************************************************************************************************/
 
 QtObject {
@@ -11,21 +11,22 @@ QtObject {
     /* Property Declarations
     * ****************************************************************************************/
 
-    //! Name
+    //! Name can be used for debugging (Optional)
     property string name: ""
 
-    //! Icon
+    //! Icon which will be shown in menu (get from fontAwesome 6)
     property string icon: ""
 
-    //! Enable
+    //! Enable can be used to control when the corrosponding button should be visible (Optional)
     property bool   enable: true
 
     //! Node and/or Link or all types
-    property int    type: NLSpec.SelectionToolObjectType.Node
+    property int    type: NLSpec.SelectionSpecificToolType.Any
 
     /* Signals
     * ****************************************************************************************/
 
+    //! should be called upon clicking the corrosponding button
     signal clicked(node: I_Node);
 
 }

@@ -95,7 +95,7 @@ qt_add_qml_module(NodeLink
         resources/Core/I_NodeData.qml
         resources/Core/NodeData.qml
         resources/Core/NLNodeRegistry.qml
-        resources/Core/SelectionToolButton.qml
+        resources/Core/SelectionSpecificTool.qml
 
         resources/Core/Undo/UndoCore.qml
         resources/Core/Undo/UndoStack.qml

@@ -19,10 +19,11 @@ QtObject {
     }
 
     //! Selection tool object type
-    enum SelectionToolObjectType {
-        Node = 0,
-        Link = 1,
-        All  = 2,
+    enum SelectionSpecificToolType {
+        Node = 0,   //! for single node selection
+        Link = 1,   //! for single link selection
+        Any  = 2,   //! for single selection with any type
+        All  = 3,   //! for multiple selection with any types! clicked still send the last selected one
 
         Unknown = 99
     }
