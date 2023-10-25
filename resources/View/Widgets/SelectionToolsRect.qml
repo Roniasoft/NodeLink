@@ -54,6 +54,26 @@ Rectangle {
         property bool selectedANodeOnly: selectedNode.length === 1 && selectedLink.length === 0
         property bool selectedALinkOnly: selectedLink.length === 1 && selectedNode.length === 0
 
+        //! Custom Tool  buttons
+        Repeater {
+            model: (sceneSession?.selectionToolButtons ?? []).
+            filter(selectionTool => (selectionTool.enable && (selectionTool.type === NLSpec.SelectionSpecificToolType.All) ||
+            (layout.selectedANodeOnly && (selectionTool.type === NLSpec.SelectionSpecificToolType.Node || selectionTool.type === NLSpec.SelectionSpecificToolType.Any) ||
+            (layout.selectedALinkOnly && (selectionTool.type === NLSpec.SelectionSpecificToolType.Link || selectionTool.type === NLSpec.SelectionSpecificToolType.Any)))));
+
+            delegate: NLToolButton {
+                text: modelData.icon
+                Layout.preferredHeight: 30
+                Layout.preferredWidth: 30
+                Layout.topMargin: 2
+                Layout.bottomMargin: 2
+                onClicked: {
+                    // we need to figure out how we can handle custom buttons for multiple selection
+                    modelData.clicked(layout.selectedObject);
+                }
+            }
+        }
+
         //! Node/Link: Color change
         NLToolButton {
             id: colorButton1

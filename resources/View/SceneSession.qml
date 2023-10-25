@@ -6,6 +6,9 @@ import NodeLink
  * ************************************************************************************************/
 QtObject {
 
+    //! selectionTools contains user-defined tool buttons in Selection tools rect
+    property var   selectionToolButtons: []
+
     //! map<port uuid: string, isVisible: bool>
     property var   portsVisibility: ({})
 

@@ -18,6 +18,16 @@ QtObject {
         Unknown = 99
     }
 
+    //! Selection tool object type
+    enum SelectionSpecificToolType {
+        Node = 0,   //! for single node selection
+        Link = 1,   //! for single link selection
+        Any  = 2,   //! for single selection with any type
+        All  = 3,   //! for multiple selection with any types! clicked still send the last selected one
+
+        Unknown = 99
+    }
+
     //! Location of port on the node sides
     enum PortPositionSide {
         Top     = 0,
