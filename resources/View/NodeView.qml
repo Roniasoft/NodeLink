@@ -112,8 +112,8 @@ InteractiveNodeView {
 
                 onPressed: (event) => {
                                if (event.button === Qt.RightButton) {
-                                   nodeView.edit = false
-                                   nodeMouseArea.clicked(event)
+                                   nodeView.edit = false;
+                                   nodeMouseArea.clicked(event);
                                }
                            }
 
@@ -122,16 +122,6 @@ InteractiveNodeView {
                 font.pointSize: NLStyle.node.fontSizeTitle
                 font.bold: true
 
-                //! Connections to forceActiveFocus when
-                //! nodeView.edit is true
-                Connections {
-                    target: nodeView
-
-                    function onEditChanged() {
-                        if(nodeView.edit)
-                            titleTextArea.forceActiveFocus();
-                    }
-                }
             }
         }
 
@@ -188,9 +178,7 @@ InteractiveNodeView {
                                    nodeMouseArea.clicked(event);
                                }
                            }
-                background: Rectangle {
-                    color: "transparent";
-                }
+                background: Item {}
             }
         }
 
