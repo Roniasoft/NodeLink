@@ -17,6 +17,11 @@ InteractiveNodeView {
     //! Node is in minimal state or not (based in zoom factor)
     property bool         isNodeMinimal:  sceneSession.zoomManager.zoomFactor < sceneSession.zoomManager.minimalZoomNode
 
+    //! nodeMouseArea
+    //! Simply capture mouse area properties and avoid overwriting anything carelessly.
+    //! such as onPositionChanged, onPressed and etc.
+    property alias        mainMouseArea:  nodeMouseArea
+
     /* Object Properties
      * ****************************************************************************************/
     opacity: isSelected ? 1 : isNodeMinimal ? 0.6 : 0.8
