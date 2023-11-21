@@ -30,7 +30,7 @@ LinkView {
 
         //! Find if there is any port beneath the mouse pointer
         onPressed: (mouse) => {
-            var portId = findPortInRect(Qt.point(mouse.x, mouse.y), 5);
+            var portId = findPortInRect(Qt.point(mouse.x, mouse.y), 10);
             root.inputPort = scene.findPort(portId);
             var gMouse = mapToItem(parent, mouse.x, mouse.y);
             if (root.inputPort) {

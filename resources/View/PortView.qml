@@ -59,6 +59,8 @@ Rectangle {
     MouseArea {
         id: mouseArea
         anchors.fill: parent
+        anchors.margins: -2
+
         enabled: !sceneSession.connectingMode
         propagateComposedEvents: true
 
