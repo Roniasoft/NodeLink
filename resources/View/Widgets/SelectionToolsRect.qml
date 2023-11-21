@@ -362,7 +362,14 @@ Rectangle {
             Layout.topMargin: 2
             Layout.bottomMargin: 2
             //popup appears on click
-            onClicked: deletePopup.open();
+            onClicked: {
+                if (sceneSession.isDeletePromptEnable)
+                    deletePopup.open();
+
+                else
+                    delTimer.start();
+
+            }
 
             //! Delete objects
             Timer {

@@ -35,7 +35,12 @@ I_NodesScene {
 
     //! Handle key pressed (Del: delete selected node and link)
     Keys.onDeletePressed: {
-        if(sceneSession.isSceneEditable && Object.keys(scene.selectionModel.selectedModel).length > 0) {
+        var hasObjectsSelected = Object.keys(scene.selectionModel.selectedModel).length > 0;
+
+        if (!sceneSession.isDeletePromptEnable && hasObjectsSelected)
+            delTimer.start();
+
+        else if(sceneSession.isSceneEditable && hasObjectsSelected) {
             deletePopup.open();
         }
     }

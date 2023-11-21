@@ -28,7 +28,10 @@ I_LinkView {
 
     //! Handle key pressed (Del: delete selected node and link)
     Keys.onDeletePressed: {
-        if(linkView.isSelected)
+        if (!sceneSession.isDeletePromptEnable)
+            delTimer.start();
+
+        else if(linkView.isSelected)
             deletePopup.open();
     }
 

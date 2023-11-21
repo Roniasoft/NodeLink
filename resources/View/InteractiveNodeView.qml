@@ -35,7 +35,10 @@ I_NodeView {
 
     //! Handle key pressed (Del: delete selected node and link)
     Keys.onDeletePressed: {
-        if (isSelected && isNodeEditable)
+        if (!sceneSession.isDeletePromptEnable)
+            delTimer.start();
+
+         else if (isSelected && isNodeEditable)
             deletePopup.open();
     }
 

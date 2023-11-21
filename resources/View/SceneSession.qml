@@ -43,6 +43,11 @@ QtObject {
     //! Is scene editable or not
     property bool isSceneEditable: true
 
+    //! To handle the delete prompt:
+    //! set to 'true' to display a prompt for every deletion of a node or link,
+    //! and 'false' to delete the selected object without additional confirmation.
+    property bool  isDeletePromptEnable: true
+
     //! Active focus of main scene view
     signal sceneForceFocus()
 
