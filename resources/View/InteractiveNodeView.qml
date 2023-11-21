@@ -18,6 +18,14 @@ I_NodeView {
     //! A node is editable or not
     property bool         isNodeEditable: sceneSession?.isSceneEditable ?? true
 
+
+    //! Does the top/ bottom/ right / left borders have mouse?
+    //! Note: Other MouseArea properties are not allowed.
+    property bool         topBorderContainsMouse:    topMouseArea.containsMouse
+    property bool         bottomBorderContainsMouse: bottomMouseArea.containsMouse
+    property bool         leftBorderContainsMouse:   leftMouseArea.containsMouse
+    property bool         rightBorderContainsMouse:  rightMouseArea.containsMouse
+
     /* Object Properties
     * ****************************************************************************************/
 
