@@ -134,8 +134,8 @@ I_NodesScene {
     //! MouseArea for selection of links
     MouseArea {
         anchors.fill: parent
-        acceptedButtons: Qt.LeftButton | Qt.RightButton
-        enabled: sceneSession && !sceneSession.connectingMode &&
+        acceptedButtons: Qt.LeftButton
+        enabled: !sceneSession.connectingMode &&
                  !sceneSession.isRubberBandMoving &&
                  !sceneSession.isCtrlPressed
 
@@ -173,8 +173,6 @@ I_NodesScene {
                 else
                      scene.selectionModel.selectLink(link);
 
-            } else if (sceneSession.isSceneEditable && mouse.button === Qt.RightButton) {
-                contextMenu.popup(mouse.x, mouse.y)
             }
         }
         onDoubleClicked: (mouse) => {
@@ -211,6 +209,44 @@ I_NodesScene {
                 }
             });
             return foundLink;
+        }
+    }
+
+    //! Pan/flick MouseArea
+    MouseArea {
+        property bool wasDragged: false
+        property point lastPoint: Qt.point(-1, -1)
+
+        parent: flickable
+        anchors.fill: parent
+        acceptedButtons: Qt.RightButton
+
+        onClicked: function(mouse){
+            if (wasDragged) {
+                wasDragged = false;
+            } else if (sceneSession.isSceneEditable) {
+                contextMenu.popup(flickable.contentX + mouse.x, flickable.contentY + mouse.y);
+            }
+        }
+
+        onPressed: function(event) {
+            lastPoint = Qt.point(event.x, event.y);
+        }
+
+        onReleased: function(event) {
+            lastPoint = Qt.point(-1, -1);
+        }
+
+        onPositionChanged: function(event) {
+            wasDragged = true;
+            flickable.contentX = Math.max(0, Math.min(
+                                              flickable.contentX + (lastPoint.x - event.x),
+                                              flickable.contentWidth));
+            flickable.contentY = Math.max(0, Math.min(
+                                              flickable.contentY + (lastPoint.y - event.y),
+                                              flickable.contentHeight));
+
+            lastPoint = Qt.point(event.x, event.y);
         }
     }
 
