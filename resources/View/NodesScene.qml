@@ -27,7 +27,7 @@ I_NodesScene {
     * ****************************************************************************************/
 
     anchors.fill: parent
-    interactive: sceneSession && !sceneSession.isCtrlPressed
+    interactive: false
 
     /* Children
     * ****************************************************************************************/
@@ -42,19 +42,19 @@ I_NodesScene {
 
     //! Use Key to manage shift pressed to handle multiObject selection
     Keys.onPressed: (event)=> {
-        if (event.key === Qt.Key_Shift)
-            sceneSession.isShiftModifierPressed = true;
-        if(event.key === Qt.Key_Control)
-            sceneSession.isCtrlPressed = true;
+                        if (event.key === Qt.Key_Shift)
+                        sceneSession.isShiftModifierPressed = true;
+                        if(event.key === Qt.Key_Control)
+                        sceneSession.isCtrlPressed = true;
 
-    }
+                    }
 
     Keys.onReleased: (event)=> {
-        if (event.key === Qt.Key_Shift)
-           sceneSession.isShiftModifierPressed = false;
-        if(event.key === Qt.Key_Control)
-             sceneSession.isCtrlPressed = false;
-    }
+                         if (event.key === Qt.Key_Shift)
+                         sceneSession.isShiftModifierPressed = false;
+                         if(event.key === Qt.Key_Control)
+                         sceneSession.isCtrlPressed = false;
+                     }
 
     //! Change ScrollBars
     ScrollBar.horizontal: HorizontalScrollBar {
@@ -98,11 +98,11 @@ I_NodesScene {
     //! Scale transform
     transform: Scale {
         id: scaleTransform
-          origin: zoomPoint
-          xScale: flickableScale
-          yScale: flickableScale
+        origin: zoomPoint
+        xScale: flickableScale
+        yScale: flickableScale
 
-       }
+    }
 
     //! Delete selected objects
     Timer {
@@ -120,7 +120,7 @@ I_NodesScene {
         id: deletePopup
         confirmText: "Are you sure you want to delete " +
                      (Object.keys(scene?.selectionModel?.selectedModel ?? ({})).length > 1 ?
-                         "these items?" : "this item?");
+                          "these items?" : "this item?");
         sceneSession: flickable.sceneSession
         onAccepted: delTimer.start();
     }
@@ -141,55 +141,42 @@ I_NodesScene {
 
         propagateComposedEvents: true
 
-        onWheel: (wheel) => {
-                     if(!sceneSession.isShiftModifierPressed)
-                        return;
-
-                     zoomPoint      = Qt.vector3d(wheel.x - scene.sceneGuiConfig.contentX, wheel.y - scene.sceneGuiConfig.contentY, 0);
-                     worldZoomPoint = Qt.vector2d(wheel.x, wheel.y);
-
-                     if(wheel.angleDelta.y > 0)
-                            prepareScale(1 + sceneSession.zoomManager.zoomInStep());
-                     else if (wheel.angleDelta.y < 0)
-                            prepareScale(1 / (1 + sceneSession.zoomManager.zoomOutStep()));
-                 }
-
         //! We should toggle line selection with mouse press event
         onClicked: (mouse) => {
 
-            if (!sceneSession.isShiftModifierPressed)
-                 scene.selectionModel.clear();
+                       if (!sceneSession.isShiftModifierPressed)
+                       scene.selectionModel.clear();
 
-            if (mouse.button === Qt.LeftButton) {
-                var gMouse = mapToItem(contentLoader.item, Qt.point(mouse.x, mouse.y));
-                var link = findLink(gMouse);
-                if(link === null)
-                     return;
+                       if (mouse.button === Qt.LeftButton) {
+                           var gMouse = mapToItem(contentLoader.item, Qt.point(mouse.x, mouse.y));
+                           var link = findLink(gMouse);
+                           if(link === null)
+                           return;
 
-                // Select current node
-                if(scene.selectionModel.isSelected(link?._qsUuid) &&
-                   sceneSession.isShiftModifierPressed)
-                     scene.selectionModel.remove(link._qsUuid);
-                else
-                     scene.selectionModel.selectLink(link);
+                           // Select current node
+                           if(scene.selectionModel.isSelected(link?._qsUuid) &&
+                              sceneSession.isShiftModifierPressed)
+                           scene.selectionModel.remove(link._qsUuid);
+                           else
+                           scene.selectionModel.selectLink(link);
 
-            }
-        }
+                       }
+                   }
         onDoubleClicked: (mouse) => {
-            //! Do nothing when user double clicks the on rubber band.
-            if(sceneSession.isMouseInRubberBand)
-                return;
+                             //! Do nothing when user double clicks the on rubber band.
+                             if(sceneSession.isMouseInRubberBand)
+                             return;
 
-            scene.selectionModel.clear();
-            if (sceneSession.isSceneEditable && mouse.button === Qt.LeftButton) {
-                var position = Qt.vector2d(mouse.x, mouse.y);
+                             scene.selectionModel.clear();
+                             if (sceneSession.isSceneEditable && mouse.button === Qt.LeftButton) {
+                                 var position = Qt.vector2d(mouse.x, mouse.y);
 
-                // Correct position with zoom factor into real position.
-                var positionMapped = position?.times(1 / sceneSession.zoomManager.zoomFactor)
+                                 // Correct position with zoom factor into real position.
+                                 var positionMapped = position?.times(1 / sceneSession.zoomManager.zoomFactor)
 
-                scene.createCustomizeNode(scene.nodeRegistry.defaultNode, positionMapped.x, positionMapped.y);
-            }
-        }
+                                 scene.createCustomizeNode(scene.nodeRegistry.defaultNode, positionMapped.x, positionMapped.y);
+                             }
+                         }
 
         //! Context Menu for adding a new node (for now)
         ContextMenu {
@@ -202,12 +189,12 @@ I_NodesScene {
         function findLink(gMouse): Link {
             let foundLink = null;
             Object.values(scene.links).forEach(obj => {
-                var inputPos  = obj.inputPort?._position ?? Qt.vector2d(0, 0)
-                var outputPos = obj.outputPort?._position ?? Qt.vector2d(0, 0)
-                if (Calculation.isPointOnLink(gMouse.x, gMouse.y, 15, obj.controlPoints, obj.guiConfig.type)) {
-                    foundLink = obj;
-                }
-            });
+                                                   var inputPos  = obj.inputPort?._position ?? Qt.vector2d(0, 0)
+                                                   var outputPos = obj.outputPort?._position ?? Qt.vector2d(0, 0)
+                                                   if (Calculation.isPointOnLink(gMouse.x, gMouse.y, 15, obj.controlPoints, obj.guiConfig.type)) {
+                                                       foundLink = obj;
+                                                   }
+                                               });
             return foundLink;
         }
     }
@@ -273,6 +260,29 @@ I_NodesScene {
             //! Restart elapsedTimer
             elapsedTimer.restart();
         }
+
+        onWheel: (wheel) => {
+                     if(sceneSession.isShiftModifierPressed) {
+                         //! Move flickable horizontally
+                         flickable.contentX = Math.max(0, Math.min(
+                                                           flickable.contentX + wheel.angleDelta.y,
+                                                           flickable.contentWidth));
+                     } else if (wheel.modifiers === Qt.ControlModifier) {
+                         //! Move flickable vertically
+                         flickable.contentY = Math.max(0, Math.min(
+                                                           flickable.contentY + wheel.angleDelta.y,
+                                                           flickable.contentHeight));
+                     } else if (wheel.modifiers === Qt.NoModifier) {
+
+                         zoomPoint      = Qt.vector3d(wheel.x - scene.sceneGuiConfig.contentX, wheel.y - scene.sceneGuiConfig.contentY, 0);
+                         worldZoomPoint = Qt.vector2d(wheel.x, wheel.y);
+
+                         if(wheel.angleDelta.y > 0)
+                         prepareScale(1 + sceneSession.zoomManager.zoomInStep());
+                         else if (wheel.angleDelta.y < 0)
+                         prepareScale(1 / (1 + sceneSession.zoomManager.zoomOutStep()));
+                     }
+                 }
     }
 
     //! HelpersView
@@ -348,7 +358,7 @@ I_NodesScene {
             var zoomFactor = nodesLength > 1 ? Math.min(widthRatio, heightRatio, sceneSession.zoomManager.maximumZoom) : 1;
 
             worldZoomPoint = Qt.vector2d(scene.sceneGuiConfig.contentX + flickable.width / 2,
-                                      scene.sceneGuiConfig.contentY + flickable.height / 2);
+                                         scene.sceneGuiConfig.contentY + flickable.height / 2);
 
             //! update zoom factor
             sceneSession.zoomManager.customZoom(zoomFactor)
@@ -412,9 +422,9 @@ I_NodesScene {
             flickable.zoomPoint      = Qt.vector3d(zoomPointScaled.x - scene.sceneGuiConfig.contentX, zoomPointScaled.y - scene.sceneGuiConfig.contentY, 0);
             flickable.worldZoomPoint = Qt.vector2d(zoomPointScaled.x, zoomPointScaled.y);
             if(wheelAngle > 0)
-                   prepareScale(1 + sceneSession.zoomManager.zoomInStep());
+                prepareScale(1 + sceneSession.zoomManager.zoomInStep());
             else if (wheelAngle < 0)
-                   prepareScale(1 / (1 + sceneSession.zoomManager.zoomOutStep()))
+                prepareScale(1 / (1 + sceneSession.zoomManager.zoomOutStep()))
         }
 
         //! Set focus on NodesScene after zoom In/Out
@@ -442,7 +452,7 @@ I_NodesScene {
                 return;
 
             var origin  = Qt.vector2d(node.guiConfig.position.x + node.guiConfig.width / 2,
-                                         node.guiConfig.position.y + node.guiConfig.height / 2);
+                                      node.guiConfig.position.y + node.guiConfig.height / 2);
 
             //! Prepare positions with targetZoomFactor.
             origin =  origin.times(targetZoomFactor)
