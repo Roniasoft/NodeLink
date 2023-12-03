@@ -213,14 +213,6 @@ I_NodesScene {
         anchors.fill: parent
         acceptedButtons: Qt.RightButton
 
-        onClicked: function(mouse){
-            if (wasDragged) {
-                wasDragged = false;
-            } else if (sceneSession.isSceneEditable) {
-                contextMenu.popup(flickable.contentX + mouse.x, flickable.contentY + mouse.y);
-            }
-        }
-
         onPressed: function(event) {
             //! Start ElapsedTimer
             elapsedTimer.start();
@@ -236,8 +228,13 @@ I_NodesScene {
                 lastSpeed = Qt.vector2d(Math.max(-1, Math.min(1, lastSpeed.x)),
                                         Math.max(-1, Math.min(1, lastSpeed.y)));
                 flickable.flick(lastSpeed.x * Screen.width, lastSpeed.y * Screen.height);
+            } else if (flickable.moving) {
+                flickable.cancelFlick();
+            } else if (sceneSession.isSceneEditable && !wasDragged) {
+                contextMenu.popup(flickable.contentX + event.x, flickable.contentY + event.y);
             }
 
+            wasDragged = false;
             elapsedTimer.stop();
         }
 
