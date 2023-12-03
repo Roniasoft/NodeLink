@@ -23,6 +23,12 @@ I_Node  {
     //! Node Type
     property int            type: 0
 
+    //! Maps child node Id to actual node
+    property var children: ({})
+
+    //! Maps parent node Id to actual node
+    property var parents:  ({})
+
     //! Port list
     //! map<uuid, Port>
     property var            ports:      ({})
