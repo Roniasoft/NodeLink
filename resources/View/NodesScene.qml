@@ -214,6 +214,11 @@ I_NodesScene {
         acceptedButtons: Qt.RightButton
 
         onPressed: function(event) {
+            if (flickable.moving) {
+                flickable.cancelFlick();
+                wasDragged = true;
+            }
+
             //! Start ElapsedTimer
             elapsedTimer.start();
 
@@ -240,12 +245,12 @@ I_NodesScene {
 
         onPositionChanged: function(event) {
             wasDragged = true;
-            flickable.contentX = Math.max(0, Math.min(
-                                              flickable.contentX + (lastPoint.x - event.x),
-                                              flickable.contentWidth));
-            flickable.contentY = Math.max(0, Math.min(
-                                              flickable.contentY + (lastPoint.y - event.y),
-                                              flickable.contentHeight));
+            scene.sceneGuiConfig.contentX = Math.max(0, Math.min(
+                                              scene.sceneGuiConfig.contentX + (lastPoint.x - event.x),
+                                              scene.sceneGuiConfig.contentWidth));
+            scene.sceneGuiConfig.contentY = Math.max(0, Math.min(
+                                              scene.sceneGuiConfig.contentY + (lastPoint.y - event.y),
+                                              scene.sceneGuiConfig.contentHeight));
 
             //! Get nanoseconds since last drag
             var elapsed = elapsedTimer.msecsElapsed();
@@ -261,14 +266,14 @@ I_NodesScene {
         onWheel: (wheel) => {
                      if(sceneSession.isShiftModifierPressed) {
                          //! Move flickable horizontally
-                         flickable.contentX = Math.max(0, Math.min(
-                                                           flickable.contentX + wheel.angleDelta.y,
-                                                           flickable.contentWidth));
+                         scene.sceneGuiConfig.contentX = Math.max(0, Math.min(
+                                                           scene.sceneGuiConfig.contentX + wheel.angleDelta.y,
+                                                           scene.sceneGuiConfig.contentWidth));
                      } else if (wheel.modifiers === Qt.ControlModifier) {
                          //! Move flickable vertically
-                         flickable.contentY = Math.max(0, Math.min(
-                                                           flickable.contentY + wheel.angleDelta.y,
-                                                           flickable.contentHeight));
+                         scene.sceneGuiConfig.contentY = Math.max(0, Math.min(
+                                                           scene.sceneGuiConfig.contentY + wheel.angleDelta.y,
+                                                           scene.sceneGuiConfig.contentHeight));
                      } else if (wheel.modifiers === Qt.NoModifier) {
 
                          zoomPoint      = Qt.vector3d(wheel.x - scene.sceneGuiConfig.contentX, wheel.y - scene.sceneGuiConfig.contentY, 0);
