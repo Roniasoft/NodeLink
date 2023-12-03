@@ -264,20 +264,10 @@ I_NodesScene {
         }
 
         onWheel: (wheel) => {
-                     if(sceneSession.isShiftModifierPressed) {
-                         //! Move flickable horizontally
-                         scene.sceneGuiConfig.contentX = Math.max(0, Math.min(
-                                                           scene.sceneGuiConfig.contentX + wheel.angleDelta.y,
-                                                           scene.sceneGuiConfig.contentWidth));
-                     } else if (wheel.modifiers === Qt.ControlModifier) {
-                         //! Move flickable vertically
-                         scene.sceneGuiConfig.contentY = Math.max(0, Math.min(
-                                                           scene.sceneGuiConfig.contentY + wheel.angleDelta.y,
-                                                           scene.sceneGuiConfig.contentHeight));
-                     } else if (wheel.modifiers === Qt.NoModifier) {
+                     if (wheel.modifiers === Qt.NoModifier) {
 
-                         zoomPoint      = Qt.vector3d(wheel.x - scene.sceneGuiConfig.contentX, wheel.y - scene.sceneGuiConfig.contentY, 0);
-                         worldZoomPoint = Qt.vector2d(wheel.x, wheel.y);
+                         zoomPoint      = Qt.vector2d(wheel.x, wheel.y);
+                         worldZoomPoint = Qt.vector3d(wheel.x + scene.sceneGuiConfig.contentX, wheel.y + scene.sceneGuiConfig.contentY, 0);
 
                          if(wheel.angleDelta.y > 0)
                          prepareScale(1 + sceneSession.zoomManager.zoomInStep());
