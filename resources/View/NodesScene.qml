@@ -212,9 +212,14 @@ I_NodesScene {
         }
     }
 
+    ElapsedTimer {
+        id: elapsedTimer
+    }
+
     //! Pan/flick MouseArea
     MouseArea {
         property bool wasDragged: false
+        property vector2d lastSpeed: Qt.vector2d(0, 0)
         property point lastPoint: Qt.point(-1, -1)
 
         parent: flickable
@@ -230,11 +235,23 @@ I_NodesScene {
         }
 
         onPressed: function(event) {
+            //! Start ElapsedTimer
+            elapsedTimer.start();
+
             lastPoint = Qt.point(event.x, event.y);
         }
 
         onReleased: function(event) {
             lastPoint = Qt.point(-1, -1);
+
+            //! Make flick happen
+            if (elapsedTimer.msecsElapsed() < 2) {
+                lastSpeed = Qt.vector2d(Math.max(-1, Math.min(1, lastSpeed.x)),
+                                        Math.max(-1, Math.min(1, lastSpeed.y)));
+                flickable.flick(lastSpeed.x * Screen.width, lastSpeed.y * Screen.height);
+            }
+
+            elapsedTimer.stop();
         }
 
         onPositionChanged: function(event) {
@@ -246,7 +263,15 @@ I_NodesScene {
                                               flickable.contentY + (lastPoint.y - event.y),
                                               flickable.contentHeight));
 
+            //! Get nanoseconds since last drag
+            var elapsed = elapsedTimer.msecsElapsed();
+            lastSpeed = Qt.vector2d((event.x - lastPoint.x) / elapsed,
+                                    (event.y - lastPoint.y) / elapsed);
+
             lastPoint = Qt.point(event.x, event.y);
+
+            //! Restart elapsedTimer
+            elapsedTimer.restart();
         }
     }
 
