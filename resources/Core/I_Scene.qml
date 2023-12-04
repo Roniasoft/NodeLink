@@ -216,7 +216,8 @@ QSObject {
         // Delete objects
         Object.entries(scene.selectionModel.selectedModel).forEach(([key, value]) => {
             if(value.objectType === NLSpec.ObjectType.Node) {
-                scene.deleteNode(value._qsUuid);
+                if (!value.guiConfig.locked)
+                    scene.deleteNode(value._qsUuid);
             }
             if(value.objectType === NLSpec.ObjectType.Link) {
                 scene.unlinkNodes(value.inputPort._qsUuid, value.outputPort._qsUuid)

@@ -37,7 +37,10 @@ I_NodesScene {
     Keys.onDeletePressed: {
         var hasObjectsSelected = Object.keys(scene.selectionModel.selectedModel).length > 0;
 
-        if (!hasObjectsSelected || !sceneSession.isSceneEditable) {
+        if (!hasObjectsSelected)
+            return;
+
+        if (!sceneSession.isSceneEditable) {
             infoPopup.open();
             return;
         }
@@ -137,7 +140,7 @@ I_NodesScene {
     ConfirmPopUp {
         id: infoPopup
 
-        confirmText: "The deletion process cannot be executed because either no object is selected or the scene is not editable."
+        confirmText: "The deletion process cannot be executed because the scene is not editable."
         sceneSession: flickable.sceneSession
         keyButtons: [MessageDialog.Ok]
     }

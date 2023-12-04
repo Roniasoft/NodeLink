@@ -30,7 +30,10 @@ I_LinkView {
 
     //! Handle key pressed (Del: delete selected node and link)
     Keys.onDeletePressed: {
-        if (!isSelected || !sceneSession.isSceneEditable) {
+        if (!isSelected)
+            return;
+
+        if (!sceneSession.isSceneEditable) {
             infoPopup.open();
             return;
         }
@@ -69,7 +72,7 @@ I_LinkView {
     ConfirmPopUp {
         id: infoPopup
 
-        confirmText: "The deletion process cannot be executed because either no object is selected or the scene is not editable."
+        confirmText: "The deletion process cannot be executed because the scene is not editable."
         sceneSession: root.sceneSession
         keyButtons: [MessageDialog.Ok]
     }

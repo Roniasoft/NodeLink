@@ -58,7 +58,7 @@ InteractiveNodeView {
     onIsSelectedChanged: {
         //! Current nodeView keep the focus, current focus handle in the upper layers.
         nodeView.forceActiveFocus();
-        if(!nodeView.isSelected )
+        if (!nodeView.isSelected)
             nodeView.edit = false;
 
     }

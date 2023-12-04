@@ -17,7 +17,7 @@ I_NodeView {
     property bool isResizable: true
 
     //! A node is editable or not
-    property bool         isNodeEditable: sceneSession?.isSceneEditable ?? true
+    property bool         isNodeEditable: !node.guiConfig.locked && (sceneSession?.isSceneEditable ?? true)
 
 
     //! Does the top/ bottom/ right / left borders have mouse?
@@ -44,7 +44,10 @@ I_NodeView {
 
     //! Handle key pressed (Del: delete selected node and link)
     Keys.onDeletePressed: {
-        if (!isSelected || !isNodeEditable) {
+        if (!isSelected)
+            return;
+
+        if (!isNodeEditable) {
             infoPopup.open();
             return;
         }
@@ -97,7 +100,7 @@ I_NodeView {
     ConfirmPopUp {
         id: infoPopup
 
-        confirmText: "The deletion process cannot be executed because either no object is selected or the scene is not editable."
+        confirmText: "The deletion process cannot be executed because either the node is lock or the scene is not editable."
         sceneSession: root.sceneSession
         keyButtons: [MessageDialog.Ok]
     }
