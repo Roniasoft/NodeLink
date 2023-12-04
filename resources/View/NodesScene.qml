@@ -160,6 +160,26 @@ I_NodesScene {
                  !sceneSession.isCtrlPressed
 
         propagateComposedEvents: true
+        hoverEnabled: sceneSession.marqueeSelectionMode
+
+        pressAndHoldInterval: 10
+        onPressAndHold: (mouse) => {
+            if (mouse.button === Qt.LeftButton) {
+                sceneSession.marqueeSelectionMode = true;
+                sceneSession.marqueeSelectionStart(mouse);
+            }
+        }
+
+        onPositionChanged: (mouse) => {
+            // Update marquee selection
+            sceneSession.updateMarqueeSelection(mouse)
+        }
+
+
+        onReleased: (mouse) => {
+            if (mouse.button === Qt.LeftButton)
+                sceneSession.marqueeSelectionMode = false;
+        }
 
         onWheel: (wheel) => {
                      if(!sceneSession.isShiftModifierPressed)
@@ -175,7 +195,7 @@ I_NodesScene {
                  }
 
         //! We should toggle line selection with mouse press event
-        onClicked: (mouse) => {
+        onPressed: (mouse) => {
 
             if (!sceneSession.isShiftModifierPressed)
                  scene.selectionModel.clear();

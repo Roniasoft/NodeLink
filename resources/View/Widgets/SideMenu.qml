@@ -134,6 +134,15 @@ Item {
             Layout.preferredWidth: 34
             NLToolTip{
                 visible: parent.hovered
+                text: "Auto Format"
+            }
+            onClicked: {
+
+                var leftmostNode = Object.values(scene.selectionModel.selectedModel).reduce(
+                    (minNode, currentNode) => currentNode.guiConfig.position.x < minNode.guiConfig.position.x ? currentNode : minNode
+                );
+                scene.automaticNodeReorder(scene.selectionModel.selectedModel, leftmostNode._qsUuid, true);
+
             }
         }
 

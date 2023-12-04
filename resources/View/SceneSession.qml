@@ -32,7 +32,7 @@ QtObject {
 
     //! Creating rubberband with mouse and pressed and hold the ctrl btn in
     //! SelectionHelperView
-    property bool rubberBandSelectionMode: false
+    property bool marqueeSelectionMode: false
 
 	//! Zoom manager
     property ZoomManager zoomManager: ZoomManager {}
@@ -50,6 +50,12 @@ QtObject {
 
     //! Active focus of main scene view
     signal sceneForceFocus()
+
+    //! Start marquee(rubber band) selection.
+    signal marqueeSelectionStart(var mouse);
+
+    //! Update marquee(rubber band) selection.
+    signal updateMarqueeSelection(var mouse);
 
     //! Sets port visibility
     function setPortVisibility(portId: string, visible: Boolean) {
