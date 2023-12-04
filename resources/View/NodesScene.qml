@@ -140,25 +140,25 @@ I_NodesScene {
                  !sceneSession.isCtrlPressed
 
         propagateComposedEvents: true
-        hoverEnabled: sceneSession.rubberBandSelectionMode
+        hoverEnabled: sceneSession.marqueeSelectionMode
 
         pressAndHoldInterval: 10
         onPressAndHold: (mouse) => {
             if (mouse.button === Qt.LeftButton) {
-                sceneSession.rubberBandSelectionMode = true;
-                sceneSession.marqueSelectionStart(mouse);
+                sceneSession.marqueeSelectionMode = true;
+                sceneSession.marqueeSelectionStart(mouse);
             }
         }
 
         onPositionChanged: (mouse) => {
-            // Update marque selection
-            sceneSession.updateMarqueSelection(mouse)
+            // Update marquee selection
+            sceneSession.updateMarqueeSelection(mouse)
         }
 
 
         onReleased: (mouse) => {
             if (mouse.button === Qt.LeftButton)
-                sceneSession.rubberBandSelectionMode = false;
+                sceneSession.marqueeSelectionMode = false;
         }
 
         onWheel: (wheel) => {

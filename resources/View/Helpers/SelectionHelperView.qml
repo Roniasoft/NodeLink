@@ -28,18 +28,18 @@ Item {
     /* Children
     * ****************************************************************************************/
 
-    //! Update marque selection with SceneSession signals.
+    //! Update marquee selection with SceneSession signals.
     Connections {
         target: sceneSession
 
-        function onRubberBandSelectionModeChanged() {
-            if (!sceneSession.rubberBandSelectionMode) {
+        function onMarqueeSelectionModeChanged() {
+            if (!sceneSession.marqueeSelectionMode) {
                 selectionRubberBandItem.width  = 0;
                 selectionRubberBandItem.height = 0;
             }
         }
 
-        function onMarqueSelectionStart(mouse) {
+        function onMarqueeSelectionStart(mouse) {
             // create a new rectangle at the wanted position
             lastPressPoint.x = mouse.x;
             lastPressPoint.y = mouse.y;
@@ -50,7 +50,7 @@ Item {
 
         }
 
-        function onUpdateMarqueSelection(mouse) {
+        function onUpdateMarqueeSelection(mouse) {
             // Update position and dimentions of temp rubber band
             selectionRubberBandItem.x = Math.min(lastPressPoint.x , mouse.x)
             selectionRubberBandItem.y = Math.min(lastPressPoint.y , mouse.y)
@@ -65,7 +65,7 @@ Item {
     Item {
         id: selectionRubberBandItem
 
-        visible: sceneSession?.rubberBandSelectionMode ?? false
+        visible: sceneSession?.marqueeSelectionMode ?? false
         //! Rubber band border with different opacity
         Rectangle {
             anchors.fill: parent
