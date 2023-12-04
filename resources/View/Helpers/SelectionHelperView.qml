@@ -33,9 +33,8 @@ Item {
         target: sceneSession
 
         function onMarqueeSelectionModeChanged() {
-            if (!sceneSession.marqueeSelectionMode) {
-                selectionRubberBandItem.width  = 0;
-                selectionRubberBandItem.height = 0;
+            if (!sceneSession.marqueeSelectionMode && !selectionTimer.running) {
+                resetMarqueeDimentions();
             }
         }
 
@@ -44,10 +43,7 @@ Item {
             lastPressPoint.x = mouse.x;
             lastPressPoint.y = mouse.y;
 
-            // Reset the rubberband width and height
-            selectionRubberBandItem.width  = 0;
-            selectionRubberBandItem.height = 0;
-
+            resetMarqueeDimentions();
         }
 
         function onUpdateMarqueeSelection(mouse) {
@@ -104,6 +100,15 @@ Item {
                                                   selectionRubberBandItem.height / zoomFactor);
             var selectedObj = scene.findNodesInContainerItem(selectionRubberBandRect);
             selectedObj.forEach(node => scene.selectionModel.selectNode(node));
+
+            if (!sceneSession.marqueeSelectionMode)
+                resetMarqueeDimentions();
         }
+    }
+
+    // Reset the rubberband width and height
+    function resetMarqueeDimentions() {
+        selectionRubberBandItem.width  = 0;
+        selectionRubberBandItem.height = 0;
     }
 }
