@@ -38,7 +38,6 @@ I_NodesScene {
         var hasObjectsSelected = Object.keys(scene.selectionModel.selectedModel).length > 0;
 
         if (!hasObjectsSelected || !sceneSession.isSceneEditable) {
-            infoPopup.confirmText = "The nodes/links cannot be deleted."
             infoPopup.open();
             return;
         }
@@ -138,6 +137,7 @@ I_NodesScene {
     ConfirmPopUp {
         id: infoPopup
 
+        confirmText: "The deletion process cannot be executed because either no object is selected or the scene is not editable."
         sceneSession: flickable.sceneSession
         keyButtons: [MessageDialog.Ok]
     }

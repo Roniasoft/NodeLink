@@ -45,7 +45,6 @@ I_NodeView {
     //! Handle key pressed (Del: delete selected node and link)
     Keys.onDeletePressed: {
         if (!isSelected || !isNodeEditable) {
-            infoPopup.confirmText = "The node cannot be edited/deleted."
             infoPopup.open();
             return;
         }
@@ -98,6 +97,7 @@ I_NodeView {
     ConfirmPopUp {
         id: infoPopup
 
+        confirmText: "The deletion process cannot be executed because either no object is selected or the scene is not editable."
         sceneSession: root.sceneSession
         keyButtons: [MessageDialog.Ok]
     }
