@@ -263,8 +263,8 @@ InteractiveNodeView {
 
         //! Manage zoom in nodeview and pass it to zoomManager
         onWheel: (wheel) => {
-                     //! active zoom with shift modifier.
-                     if(sceneSession.isShiftModifierPressed) {
+                     //! active zoom with no modifier.
+                     if(wheel.modifiers === Qt.NoModifier) {
                          var zoomPoint = Qt.vector2d(wheel.x + nodeView.x, wheel.y + nodeView.y);
                          sceneSession.zoomManager.zoomNodeSignal(zoomPoint, wheel.angleDelta.y);
                      }
