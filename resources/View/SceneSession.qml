@@ -46,6 +46,12 @@ QtObject {
     //! Active focus of main scene view
     signal sceneForceFocus()
 
+    //! Start marque(rubber band) selection.
+    signal marqueSelectionStart(var mouse);
+
+    //! Update marque(rubber band) selection.
+    signal updateMarqueSelection(var mouse);
+
     //! Sets port visibility
     function setPortVisibility(portId: string, visible: Boolean) {
         portsVisibility[portId] = visible;

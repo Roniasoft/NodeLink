@@ -140,6 +140,26 @@ I_NodesScene {
                  !sceneSession.isCtrlPressed
 
         propagateComposedEvents: true
+        hoverEnabled: sceneSession.rubberBandSelectionMode
+
+        pressAndHoldInterval: 10
+        onPressAndHold: (mouse) => {
+            if (mouse.button === Qt.LeftButton) {
+                sceneSession.rubberBandSelectionMode = true;
+                sceneSession.marqueSelectionStart(mouse);
+            }
+        }
+
+        onPositionChanged: (mouse) => {
+            // Update marque selection
+            sceneSession.updateMarqueSelection(mouse)
+        }
+
+
+        onReleased: (mouse) => {
+            if (mouse.button === Qt.LeftButton)
+                sceneSession.rubberBandSelectionMode = false;
+        }
 
         onWheel: (wheel) => {
                      if(!sceneSession.isShiftModifierPressed)
@@ -155,7 +175,7 @@ I_NodesScene {
                  }
 
         //! We should toggle line selection with mouse press event
-        onClicked: (mouse) => {
+        onPressed: (mouse) => {
 
             if (!sceneSession.isShiftModifierPressed)
                  scene.selectionModel.clear();
