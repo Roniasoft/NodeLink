@@ -276,6 +276,10 @@ I_NodesScene {
         id: contentLoader
         anchors.fill: parent
         sourceComponent: contentItem
+
+        // The value needs to be greater than 1 to
+        // avoid interference with the upper MouseAreas.
+        z: 1
     }
 
     //! Foreground Loader
