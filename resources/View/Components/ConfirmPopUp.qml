@@ -19,6 +19,8 @@ Popup {
     //! Confirm Text
     property string confirmText: "Are you sure you want to delete this item?"
 
+    property var    keyButtons:  [MessageDialog.Yes, MessageDialog.No]
+
     /* Object Properties
      * ****************************************************************************************/
     closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
@@ -44,6 +46,7 @@ Popup {
 
     /* Signals
      * ****************************************************************************************/
+    signal okAccepted();
     signal accepted();
     signal rejected();
 
@@ -122,20 +125,44 @@ Popup {
         }
 
         //! Button Item
-        Item {
+        Row {
             anchors.right: parent.right
             anchors.left: parent.left
             anchors.bottom: parent.bottom
 
             height: 25
+            spacing: 10
+
+            //if clicked yes, card is deleted
+            Button {
+                id: okBtn
+                width: 60
+                anchors.verticalCenter: parent.verticalCenter
+                checkable: true
+                visible: keyButtons.includes(MessageDialog.Ok)
+                background: Rectangle {
+                    color: okBtn.enabled && (okBtn.hovered || okBtn.checked)? Qt.lighter("gray", 1.5) : "gray"
+                    radius: NLStyle.radiusAmount.confirmPopup
+                }
+                text: qsTr("Yes")
+
+                font.family: NLStyle.fontType.roboto
+                font.pointSize: okBtn.enabled && okBtn.hovered ? 12 : 10
+
+                onClicked: {
+                    popUp.okAccepted();
+                    popUp.close();
+                }
+            }
 
             //if clicked yes, card is deleted
             Button {
                 id: yesBtn
                 width: 60
-                anchors.left: parent.left
                 anchors.verticalCenter: parent.verticalCenter
                 checkable: true
+                visible: keyButtons.includes(MessageDialog.Yes)
+
                 background: Rectangle {
                     color: yesBtn.enabled && (yesBtn.hovered || yesBtn.checked)? Qt.lighter("gray", 1.5) : "gray"
                     radius: NLStyle.radiusAmount.confirmPopup
@@ -155,9 +182,9 @@ Popup {
             Button {
                 id: noBtn
                 width: 60
-                anchors.right: parent.right
                 anchors.verticalCenter: parent.verticalCenter
                 checkable: true
+                visible: keyButtons.includes(MessageDialog.No)
 
                 background: Rectangle {
                     color: noBtn.enabled && (noBtn.hovered || noBtn.checked) ? Qt.lighter("gray", 1.5) : "gray"
@@ -172,6 +199,8 @@ Popup {
                     popUp.close()
                 }
             }
+
+
         }
     }
 }

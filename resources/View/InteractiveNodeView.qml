@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Dialogs
 
 import NodeLink
 
@@ -43,11 +44,16 @@ I_NodeView {
 
     //! Handle key pressed (Del: delete selected node and link)
     Keys.onDeletePressed: {
-        if (!sceneSession.isDeletePromptEnable)
-            delTimer.start();
+        if (!isSelected || !isNodeEditable) {
+            infoPopup.confirmText = "The node cannot be edited/deleted."
+            infoPopup.open();
+            return;
+        }
 
-         else if (isSelected && isNodeEditable)
+        if (sceneSession.isDeletePromptEnable)
             deletePopup.open();
+         else
+            delTimer.start();
     }
 
     //! Use Key to manage shift pressed to handle multiObject selection
@@ -86,6 +92,14 @@ I_NodeView {
                                          "these items?" : "this item?");
         sceneSession: root.sceneSession
         onAccepted: delTimer.start();
+    }
+
+    //! Information of a process
+    ConfirmPopUp {
+        id: infoPopup
+
+        sceneSession: root.sceneSession
+        keyButtons: [MessageDialog.Ok]
     }
 
 

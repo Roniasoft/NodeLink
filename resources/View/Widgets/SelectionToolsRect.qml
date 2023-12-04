@@ -365,10 +365,8 @@ Rectangle {
             onClicked: {
                 if (sceneSession.isDeletePromptEnable)
                     deletePopup.open();
-
                 else
                     delTimer.start();
-
             }
 
             //! Delete objects
