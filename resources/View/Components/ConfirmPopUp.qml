@@ -125,26 +125,27 @@ Popup {
         }
 
         //! Button Item
-        Row {
-            anchors.right: parent.right
-            anchors.left: parent.left
+        RowLayout {
+            anchors.horizontalCenter: parent.horizontalCenter
             anchors.bottom: parent.bottom
 
             height: 25
-            spacing: 10
+            spacing: 20
 
-            //if clicked yes, card is deleted
+            //if clicked Ok, card emit okAccepted and close.
             Button {
                 id: okBtn
+
+                Layout.alignment: Qt.AlignCenter
+
                 width: 60
-                anchors.verticalCenter: parent.verticalCenter
                 checkable: true
                 visible: keyButtons.includes(MessageDialog.Ok)
                 background: Rectangle {
                     color: okBtn.enabled && (okBtn.hovered || okBtn.checked)? Qt.lighter("gray", 1.5) : "gray"
                     radius: NLStyle.radiusAmount.confirmPopup
                 }
-                text: qsTr("Yes")
+                text: qsTr("Ok")
 
                 font.family: NLStyle.fontType.roboto
                 font.pointSize: okBtn.enabled && okBtn.hovered ? 12 : 10
@@ -158,8 +159,10 @@ Popup {
             //if clicked yes, card is deleted
             Button {
                 id: yesBtn
+
+                Layout.alignment: Qt.AlignCenter
+
                 width: 60
-                anchors.verticalCenter: parent.verticalCenter
                 checkable: true
                 visible: keyButtons.includes(MessageDialog.Yes)
 
@@ -181,11 +184,12 @@ Popup {
             //if clicked no, popup is closed
             Button {
                 id: noBtn
+
+                Layout.alignment: Qt.AlignCenter
+
                 width: 60
-                anchors.verticalCenter: parent.verticalCenter
                 checkable: true
                 visible: keyButtons.includes(MessageDialog.No)
-
                 background: Rectangle {
                     color: noBtn.enabled && (noBtn.hovered || noBtn.checked) ? Qt.lighter("gray", 1.5) : "gray"
                     radius: NLStyle.radiusAmount.confirmPopup
