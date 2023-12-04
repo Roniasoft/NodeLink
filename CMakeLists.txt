@@ -156,9 +156,6 @@ qt_add_qml_module(NodeLink
         Source/Core/HashCompareStringCPP.cpp
         include/NodeLink/View/BackgroundGridsCPP.h
         Source/View/BackgroundGridsCPP.cpp
-        include/NodeLink//Core/ElapsedTimer.h
-        Source/Core/ElapsedTimer.cpp
-	
 
     RESOURCES
         resources/fonts/Font\ Awesome\ 6\ Pro-Regular-400.otf

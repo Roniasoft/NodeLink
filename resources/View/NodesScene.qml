@@ -27,7 +27,7 @@ I_NodesScene {
     * ****************************************************************************************/
 
     anchors.fill: parent
-    interactive: false
+    interactive: sceneSession && !sceneSession.isCtrlPressed
 
     /* Children
     * ****************************************************************************************/
@@ -134,12 +134,25 @@ I_NodesScene {
     //! MouseArea for selection of links
     MouseArea {
         anchors.fill: parent
-        acceptedButtons: Qt.LeftButton
-        enabled: !sceneSession.connectingMode &&
+        acceptedButtons: Qt.LeftButton | Qt.RightButton
+        enabled: sceneSession && !sceneSession.connectingMode &&
                  !sceneSession.isRubberBandMoving &&
                  !sceneSession.isCtrlPressed
 
         propagateComposedEvents: true
+
+        onWheel: (wheel) => {
+                     if(!sceneSession.isShiftModifierPressed)
+                        return;
+
+                     zoomPoint      = Qt.vector3d(wheel.x - scene.sceneGuiConfig.contentX, wheel.y - scene.sceneGuiConfig.contentY, 0);
+                     worldZoomPoint = Qt.vector2d(wheel.x, wheel.y);
+
+                     if(wheel.angleDelta.y > 0)
+                            prepareScale(1 + sceneSession.zoomManager.zoomInStep());
+                     else if (wheel.angleDelta.y < 0)
+                            prepareScale(1 / (1 + sceneSession.zoomManager.zoomOutStep()));
+                 }
 
         //! We should toggle line selection with mouse press event
         onClicked: (mouse) => {
@@ -160,6 +173,8 @@ I_NodesScene {
                            else
                            scene.selectionModel.selectLink(link);
 
+                       } else if (sceneSession.isSceneEditable && mouse.button === Qt.RightButton) {
+                           contextMenu.popup(mouse.x, mouse.y)
                        }
                    }
         onDoubleClicked: (mouse) => {
@@ -199,83 +214,7 @@ I_NodesScene {
         }
     }
 
-    ElapsedTimer {
-        id: elapsedTimer
-    }
 
-    //! Pan/flick MouseArea
-    MouseArea {
-        property bool wasDragged: false
-        property vector2d lastSpeed: Qt.vector2d(0, 0)
-        property point lastPoint: Qt.point(-1, -1)
-
-        parent: flickable
-        anchors.fill: parent
-        acceptedButtons: Qt.RightButton
-
-        onPressed: function(event) {
-            if (flickable.moving) {
-                flickable.cancelFlick();
-                wasDragged = true;
-            }
-
-            //! Start ElapsedTimer
-            elapsedTimer.start();
-
-            lastPoint = Qt.point(event.x, event.y);
-        }
-
-        onReleased: function(event) {
-            lastPoint = Qt.point(-1, -1);
-
-            //! Make flick happen
-            if (elapsedTimer.msecsElapsed() < 2) {
-                lastSpeed = Qt.vector2d(Math.max(-1, Math.min(1, lastSpeed.x)),
-                                        Math.max(-1, Math.min(1, lastSpeed.y)));
-                flickable.flick(lastSpeed.x * Screen.width, lastSpeed.y * Screen.height);
-            } else if (flickable.moving) {
-                flickable.cancelFlick();
-            } else if (sceneSession.isSceneEditable && !wasDragged) {
-                contextMenu.popup(flickable.contentX + event.x, flickable.contentY + event.y);
-            }
-
-            wasDragged = false;
-            elapsedTimer.stop();
-        }
-
-        onPositionChanged: function(event) {
-            wasDragged = true;
-            scene.sceneGuiConfig.contentX = Math.max(0, Math.min(
-                                              scene.sceneGuiConfig.contentX + (lastPoint.x - event.x),
-                                              scene.sceneGuiConfig.contentWidth));
-            scene.sceneGuiConfig.contentY = Math.max(0, Math.min(
-                                              scene.sceneGuiConfig.contentY + (lastPoint.y - event.y),
-                                              scene.sceneGuiConfig.contentHeight));
-
-            //! Get nanoseconds since last drag
-            var elapsed = elapsedTimer.msecsElapsed();
-            lastSpeed = Qt.vector2d((event.x - lastPoint.x) / elapsed,
-                                    (event.y - lastPoint.y) / elapsed);
-
-            lastPoint = Qt.point(event.x, event.y);
-
-            //! Restart elapsedTimer
-            elapsedTimer.restart();
-        }
-
-        onWheel: (wheel) => {
-                     if (wheel.modifiers === Qt.NoModifier) {
-
-                         zoomPoint      = Qt.vector2d(wheel.x, wheel.y);
-                         worldZoomPoint = Qt.vector3d(wheel.x + scene.sceneGuiConfig.contentX, wheel.y + scene.sceneGuiConfig.contentY, 0);
-
-                         if(wheel.angleDelta.y > 0)
-                         prepareScale(1 + sceneSession.zoomManager.zoomInStep());
-                         else if (wheel.angleDelta.y < 0)
-                         prepareScale(1 / (1 + sceneSession.zoomManager.zoomOutStep()));
-                     }
-                 }
-    }
 
     //! HelpersView
     HelpersView {

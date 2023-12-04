@@ -13,16 +13,20 @@ Item {
 
     property SceneSession   sceneSession:   SceneSession {}
 
-    property alias          nodesScene:     nodesScene
+    //! Nodes Scene (flickable)
+    property Component      nodesScene: NodesScene {
+        scene: view.scene
+        sceneSession: view.sceneSession
+    }
 
     /* Children
     * ****************************************************************************************/
 
-    //! Nodes Scene (flickable)
-    NodesScene {
-        id: nodesScene
-        scene: view.scene
-        sceneSession: view.sceneSession
+    //! Loader Nodes Scene (flickable)
+    Loader {
+        id: nodesSceneLoader
+        anchors.fill: parent
+        sourceComponent: nodesScene
     }
 
     //! Overview Rect
