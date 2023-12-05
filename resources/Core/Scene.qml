@@ -172,22 +172,23 @@ I_Scene {
             return;
         }
 
-        // Find the nodes to which portA and portB belong
-        let nodeX = Object.values(nodes).find(node => Object.keys(node.ports).includes(portA));
-        let nodeY = Object.values(nodes).find(node => Object.keys(node.ports).includes(portB));
-
-        //! Updates children and parents
-        nodeX.children[nodeY._qsUuid] = nodeY;
-        nodeX.childrenChanged()
-
-        nodeY.parents[nodeX._qsUuid] = nodeX;
-        nodeY.parentsChanged()
-
         let link = Object.values(links).find(conObj =>
                                              conObj.inputPort._qsUuid === portA &&
                                              conObj.outputPort._qsUuid === portB);
 
         if (link === undefined) {
+            // Find the nodes to which portA and portB belong
+            let nodeX = findNode(portA);
+            let nodeY = findNode(portB);
+
+            //! Updates children and parents when a link created successfully
+            nodeX.children[nodeY._qsUuid] = nodeY;
+            nodeX.childrenChanged()
+
+            nodeY.parents[nodeX._qsUuid] = nodeX;
+            nodeY.parentsChanged()
+
+            // Create link
             createLink(portA, portB)
         }
     }
