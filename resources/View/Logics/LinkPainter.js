@@ -84,17 +84,15 @@ function arrows(context, controlPoints, color, headLength, startPos, type) {
     var margin = 10 + headLength;
 
     // Draw Arrow for bezier curve
-    if (type !== 1) {
+    if (type === 0) {
         if (controlPoints.length < 4)
             return;
 
-        margin = 50;
+        margin = 150;
 
         var endPos = controlPoints[1];
         var startPosCp = controlPoints[2];
 
-        // if (reverseDirection)
-            // [endPos, startPosCp] = [startPosCp, endPos];
 
        var targetPoint = findMidPoint(startPosCp, endPos);
 
@@ -104,9 +102,16 @@ function arrows(context, controlPoints, color, headLength, startPos, type) {
         // Calculate angle using atan2 function
         var angle = calculateAngle(startPosCp, endPos);
 
-        console.log(margin, Math.abs(dx), Math.abs(dy), reverseDirection);
-        if (Math.abs(dx) > margin || Math.abs(dy) > margin)
+        if (dx < 0 && dy > 0) {
+            angle += (Math.PI / 10);
+        } else if (dx < 0 && dy < 0) {
+            angle -= Math.PI / 20;
+
+        }
+
+        if (Math.abs(dx) > margin || Math.abs(dy) > margin) {
           drawArrow(context, targetPoint, angle, color, headLength);
+        }
 
         return;
     }
