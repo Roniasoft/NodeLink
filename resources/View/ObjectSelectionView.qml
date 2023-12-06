@@ -203,6 +203,9 @@ Item {
                                        (position.y > portPosVecOut.y) ? position.y : portPosVecOut.y);
 
         Object.values(scene.selectionModel.selectedModel).forEach(obj => {
+                                                                      if (!obj)
+                                                                          return;
+
                                                                       if (obj.objectType === NLSpec.ObjectType.Node) {
 
                                                                           // Find left, right, top and bottom positions.
