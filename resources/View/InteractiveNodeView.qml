@@ -100,7 +100,7 @@ I_NodeView {
     ConfirmPopUp {
         id: infoPopup
 
-        confirmText: "The deletion process cannot be executed because either the node is lock or the scene is not editable."
+        confirmText: "Can not be deleted! either the scene or the node is not editable."
         sceneSession: root.sceneSession
         keyButtons: [MessageDialog.Ok]
     }

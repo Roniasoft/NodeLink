@@ -140,7 +140,7 @@ I_NodesScene {
     ConfirmPopUp {
         id: infoPopup
 
-        confirmText: "The deletion process cannot be executed because the scene is not editable."
+        confirmText: "Can not be deleted! either the scene or the node is not editable"
         sceneSession: flickable.sceneSession
         keyButtons: [MessageDialog.Ok]
     }

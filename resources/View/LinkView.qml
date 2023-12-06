@@ -72,7 +72,7 @@ I_LinkView {
     ConfirmPopUp {
         id: infoPopup
 
-        confirmText: "The deletion process cannot be executed because the scene is not editable."
+        confirmText: "Can not be deleted! the scene is not editable"
         sceneSession: root.sceneSession
         keyButtons: [MessageDialog.Ok]
     }
