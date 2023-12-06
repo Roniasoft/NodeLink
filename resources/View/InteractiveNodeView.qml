@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Dialogs
 
 import NodeLink
 
@@ -16,7 +17,15 @@ I_NodeView {
     property bool isResizable: true
 
     //! A node is editable or not
-    property bool         isNodeEditable: sceneSession?.isSceneEditable ?? true
+    property bool         isNodeEditable: !node.guiConfig.locked && (sceneSession?.isSceneEditable ?? true)
+
+
+    //! Does the top/ bottom/ right / left borders have mouse?
+    //! Note: Other MouseArea properties are not allowed.
+    property bool         topBorderContainsMouse:    topMouseArea.containsMouse
+    property bool         bottomBorderContainsMouse: bottomMouseArea.containsMouse
+    property bool         leftBorderContainsMouse:   leftMouseArea.containsMouse
+    property bool         rightBorderContainsMouse:  rightMouseArea.containsMouse
 
     /* Object Properties
     * ****************************************************************************************/
@@ -35,8 +44,18 @@ I_NodeView {
 
     //! Handle key pressed (Del: delete selected node and link)
     Keys.onDeletePressed: {
-        if (isSelected && isNodeEditable)
+        if (!isSelected)
+            return;
+
+        if (!isNodeEditable) {
+            infoPopup.open();
+            return;
+        }
+
+        if (sceneSession.isDeletePromptEnable)
             deletePopup.open();
+         else
+            delTimer.start();
     }
 
     //! Use Key to manage shift pressed to handle multiObject selection
@@ -75,6 +94,15 @@ I_NodeView {
                                          "these items?" : "this item?");
         sceneSession: root.sceneSession
         onAccepted: delTimer.start();
+    }
+
+    //! Information of a process
+    ConfirmPopUp {
+        id: infoPopup
+
+        confirmText: "Can not be deleted! either the scene or the node is not editable."
+        sceneSession: root.sceneSession
+        keyButtons: [MessageDialog.Ok]
     }
 
 

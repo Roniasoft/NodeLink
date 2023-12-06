@@ -89,7 +89,7 @@ QtObject {
 
         lastSelectedObj = Object.values(selectedModel)[Object.keys(selectedModel).length - 1];
 
-        if (lastSelectedObj.objectType === objType)
+        if (lastSelectedObj && lastSelectedObj.objectType === objType)
             return lastSelectedObj;
 
         return null;

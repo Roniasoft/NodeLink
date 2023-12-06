@@ -173,10 +173,24 @@ QSObject {
             const inputPortUuid  = value.inputPort._qsUuid;
             const outputPortUuid = value.outputPort._qsUuid;
             if (inputPortUuid === portA && outputPortUuid === portB) {
+                // Find the nodes to which portA and portB belong
+                let nodeX = findNode(portA);
+                let nodeY = findNode(portB);
+
+                if (Object.keys(nodeX.children).includes(nodeY._qsUuid)) {
+                    delete nodeX.children[nodeY._qsUuid];
+                    nodeX.childrenChanged()
+                }
+
+                if (Object.keys(nodeX.parents).includes(nodeX._qsUuid)) {
+                    delete nodeY.parents[nodeX._qsUuid];
+                    nodeY.parentsChanged()
+                }
+
                 linkRemoved(value);
                 selectionModel.remove(key);
                 delete links[key];
-                }
+            }
         });
         linksChanged();
     }
@@ -216,7 +230,8 @@ QSObject {
         // Delete objects
         Object.entries(scene.selectionModel.selectedModel).forEach(([key, value]) => {
             if(value.objectType === NLSpec.ObjectType.Node) {
-                scene.deleteNode(value._qsUuid);
+                if (!value.guiConfig.locked)
+                    scene.deleteNode(value._qsUuid);
             }
             if(value.objectType === NLSpec.ObjectType.Link) {
                 scene.unlinkNodes(value.inputPort._qsUuid, value.outputPort._qsUuid)

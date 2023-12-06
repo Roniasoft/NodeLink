@@ -35,9 +35,20 @@ I_NodesScene {
 
     //! Handle key pressed (Del: delete selected node and link)
     Keys.onDeletePressed: {
-        if(sceneSession.isSceneEditable && Object.keys(scene.selectionModel.selectedModel).length > 0) {
-            deletePopup.open();
+        var hasObjectsSelected = Object.keys(scene.selectionModel.selectedModel).length > 0;
+
+        if (!hasObjectsSelected)
+            return;
+
+        if (!sceneSession.isSceneEditable) {
+            infoPopup.open();
+            return;
         }
+
+        if (sceneSession.isDeletePromptEnable)
+            deletePopup.open();
+        else
+            delTimer.start();
     }
 
     //! Use Key to manage shift pressed to handle multiObject selection
@@ -123,6 +134,15 @@ I_NodesScene {
                          "these items?" : "this item?");
         sceneSession: flickable.sceneSession
         onAccepted: delTimer.start();
+    }
+
+    //! Information of a process
+    ConfirmPopUp {
+        id: infoPopup
+
+        confirmText: "Can not be deleted! either the scene or the node is not editable"
+        sceneSession: flickable.sceneSession
+        keyButtons: [MessageDialog.Ok]
     }
 
     //! Nodes/Connections
@@ -256,6 +276,10 @@ I_NodesScene {
         id: contentLoader
         anchors.fill: parent
         sourceComponent: contentItem
+
+        // The value needs to be greater than 1 to
+        // avoid interference with the upper MouseAreas.
+        z: 1
     }
 
     //! Foreground Loader

@@ -357,12 +357,21 @@ Rectangle {
         NLToolButton {
             id: deleteButton
             text: "\uf2ed"
+
+            enabled: !layout.selectedNodeOnly || (layout.selectedObject?.objectType === NLSpec.ObjectType.Node  &&
+                                           !layout.selectedObject?.guiConfig?.locked)
+
             Layout.preferredHeight: 30
             Layout.preferredWidth: 30
             Layout.topMargin: 2
             Layout.bottomMargin: 2
             //popup appears on click
-            onClicked: deletePopup.open();
+            onClicked: {
+                if (sceneSession.isDeletePromptEnable)
+                    deletePopup.open();
+                else
+                    delTimer.start();
+            }
 
             //! Delete objects
             Timer {

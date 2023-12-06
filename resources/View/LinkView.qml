@@ -1,6 +1,8 @@
 import QtQuick
-import NodeLink
 import QtQuick.Controls
+import QtQuick.Dialogs
+
+import NodeLink
 
 /*! ***********************************************************************************************
  * LinkView use I_LinkView (BezierCurve) to manages link children.
@@ -28,8 +30,18 @@ I_LinkView {
 
     //! Handle key pressed (Del: delete selected node and link)
     Keys.onDeletePressed: {
-        if(linkView.isSelected)
+        if (!isSelected)
+            return;
+
+        if (!sceneSession.isSceneEditable) {
+            infoPopup.open();
+            return;
+        }
+
+        if (sceneSession.isDeletePromptEnable)
             deletePopup.open();
+        else
+            delTimer.start();
     }
 
     /* Children
@@ -54,6 +66,15 @@ I_LinkView {
 
         sceneSession: linkView.sceneSession
         onAccepted: delTimer.start();
+    }
+
+    //! Information of a process
+    ConfirmPopUp {
+        id: infoPopup
+
+        confirmText: "Can not be deleted! the scene is not editable"
+        sceneSession: root.sceneSession
+        keyButtons: [MessageDialog.Ok]
     }
 
     // Description view
