@@ -34,7 +34,7 @@ Item {
 
         function onMarqueeSelectionModeChanged() {
             if (!sceneSession.marqueeSelectionMode && !selectionTimer.running) {
-                resetMarqueeDimentions();
+                resetMarqueeDimensions();
             }
         }
 
@@ -43,14 +43,14 @@ Item {
             lastPressPoint.x = mouse.x;
             lastPressPoint.y = mouse.y;
 
-            resetMarqueeDimentions();
+            resetMarqueeDimensions();
         }
 
         function onUpdateMarqueeSelection(mouse) {
             // Update position and dimentions of temp rubber band
             selectionRubberBandItem.x = Math.min(lastPressPoint.x , mouse.x)
             selectionRubberBandItem.y = Math.min(lastPressPoint.y , mouse.y)
-            selectionRubberBandItem.width = Math.abs(lastPressPoint.x - mouse.x);
+            selectionRubberBandItem.width  = Math.abs(lastPressPoint.x - mouse.x);
             selectionRubberBandItem.height =  Math.abs(lastPressPoint.y - mouse.y);
 
             selectionTimer.start();
@@ -102,12 +102,12 @@ Item {
             selectedObj.forEach(node => scene.selectionModel.selectNode(node));
 
             if (!sceneSession.marqueeSelectionMode)
-                resetMarqueeDimentions();
+                resetMarqueeDimensions();
         }
     }
 
     // Reset the rubberband width and height
-    function resetMarqueeDimentions() {
+    function resetMarqueeDimensions() {
         selectionRubberBandItem.width  = 0;
         selectionRubberBandItem.height = 0;
     }
