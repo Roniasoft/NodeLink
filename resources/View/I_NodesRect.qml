@@ -56,7 +56,7 @@ Item {
             if (Object.keys(_nodeViewMap).includes(nodeObj._qsUuid))
                 return;
 
-            const objView = nodeViewComponent.createObject(parent, {
+            const objView = nodeViewComponent.createObject(root, {
                                                            scene: root.scene,
                                                            sceneSession: root.sceneSession,
                                                            node: nodeObj,

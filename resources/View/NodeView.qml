@@ -26,6 +26,7 @@ InteractiveNodeView {
      * ****************************************************************************************/
     opacity: isSelected ? 1 : isNodeMinimal ? 0.6 : 0.8
     scaleFactor: sceneSession?.zoomManager.zoomFactor ?? 1.0
+    onScaleFactorChanged: console.log('scale factor: ', scaleFactor)
 
     /* Slots
      * ****************************************************************************************/
@@ -383,14 +384,14 @@ InteractiveNodeView {
         onClicked: _selectionTimer.start();
         visible: node.guiConfig.locked || !isNodeEditable
 
-        //! Manage zoom in nodeview and pass it to zoomManager in lock mode.
-        onWheel: (wheel) => {
-                     //! active zoom with shift modifier.
-                     if(sceneSession.isShiftModifierPressed) {
-                         var zoomPoint = Qt.vector2d(wheel.x + nodeView.x, wheel.y + nodeView.y);
-                         sceneSession.zoomManager.zoomNodeSignal(zoomPoint, wheel.angleDelta.y);
-                     }
-                 }
+        // //! Manage zoom in nodeview and pass it to zoomManager in lock mode.
+        // onWheel: (wheel) => {
+        //              //! active zoom with shift modifier.
+        //              if(sceneSession.isShiftModifierPressed) {
+        //                  var zoomPoint = Qt.vector2d(wheel.x + nodeView.x, wheel.y + nodeView.y);
+        //                  sceneSession.zoomManager.zoomNodeSignal(zoomPoint, wheel.angleDelta.y);
+        //              }
+        //          }
 
     }
 

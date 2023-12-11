@@ -81,40 +81,6 @@ I_NodesScene {
     /* Children
     * ****************************************************************************************/
 
-    //! Behavior on scaleX
-    Behavior on flickableScale {
-        id: scaleBehavior
-
-        NumberAnimation {
-            duration: 200
-            easing.type: Easing.Linear
-
-            onRunningChanged: {
-                if(!running) {
-                    if(flickableScale > 1.0)
-                        sceneSession.zoomManager.zoomIn();
-                    else if (flickableScale < 1.0)
-                        sceneSession.zoomManager.zoomOut();
-
-                    updateFlickableDimension();
-                    scaleBehavior.enabled = false;
-                    zoomPoint = Qt.vector3d(0, 0, 0);
-                    flickableScale = 1.00;
-                    scaleBehavior.enabled = true;
-                }
-            }
-        }
-    }
-
-    //! Scale transform
-    transform: Scale {
-        id: scaleTransform
-          origin: zoomPoint
-          xScale: flickableScale
-          yScale: flickableScale
-
-       }
-
     //! Delete selected objects
     Timer {
         id: delTimer
@@ -147,6 +113,8 @@ I_NodesScene {
 
     //! Nodes/Connections
     contentItem: NodesRect {
+        transformOrigin: Item.TopLeft
+        scale: flickableScale
         scene: flickable.scene
         sceneSession: flickable.sceneSession
     }
@@ -497,5 +465,10 @@ I_NodesScene {
     //! Prepare scale to set on the scene scale
     function prepareScale(scale: real) {
         flickableScale = scale;
+
+        resizeContent(scene.sceneGuiConfig.contentWidth * flickableScale,
+                      scene.sceneGuiConfig.contentHeight * flickableScale,
+                      worldZoomPoint);
+        returnToBounds();
     }
 }

@@ -20,7 +20,7 @@ QtObject {
     property real zoomFactor    : 1.0
 
     //! step of zoom in/out
-    property real zoomStep      : 0.3
+    property real zoomStep      : 0.1
 
     //! In minimalZoomNode, node show a minimal Rectangle without header and description
     property real minimalZoomNode: 0.6
