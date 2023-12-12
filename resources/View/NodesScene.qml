@@ -26,7 +26,6 @@ I_NodesScene {
     /* Object Properties
     * ****************************************************************************************/
 
-    anchors.fill: parent
     interactive: sceneSession && !sceneSession.isCtrlPressed
 
     /* Children
@@ -70,12 +69,10 @@ I_NodesScene {
     //! Change ScrollBars
     ScrollBar.horizontal: HorizontalScrollBar {
         //! Hide scrollbar when zoom process is running ...
-        visible: flickableScale === 1.0
     }
 
     ScrollBar.vertical: VerticalScrollBar {
         //! Hide scrollbar when zoom process is running ...
-        visible: flickableScale === 1.0
     }
 
     /* Children
@@ -113,8 +110,6 @@ I_NodesScene {
 
     //! Nodes/Connections
     contentItem: NodesRect {
-        transformOrigin: Item.TopLeft
-        scale: flickableScale
         scene: flickable.scene
         sceneSession: flickable.sceneSession
     }
@@ -232,31 +227,39 @@ I_NodesScene {
     //! Foreground
     foreground: null
 
-    //! Background Loader
-    Loader {
-        id: backgroundLoader
-        anchors.fill: parent
-        sourceComponent: background
-        z: -10
-    }
+    Item {
+        id: flickableContents
+        width: scene?.sceneGuiConfig?.contentWidth ?? 0
+        height: scene?.sceneGuiConfig?.contentHeight ?? 0
+        transformOrigin: Item.TopLeft
+        scale: flickableScale
 
-    //! Content Loader
-    Loader {
-        id: contentLoader
-        anchors.fill: parent
-        sourceComponent: contentItem
+        //! Background Loader
+        Loader {
+            id: backgroundLoader
+            anchors.fill: parent
+            sourceComponent: background
+            z: -10
+        }
 
-        // The value needs to be greater than 1 to
-        // avoid interference with the upper MouseAreas.
-        z: 1
-    }
+        //! Content Loader
+        Loader {
+            id: contentLoader
+            anchors.fill: parent
+            sourceComponent: contentItem
 
-    //! Foreground Loader
-    Loader {
-        id: foregroundLoader
-        anchors.fill: parent
-        sourceComponent: foreground
-        z: 10
+            // The value needs to be greater than 1 to
+            // avoid interference with the upper MouseAreas.
+            z: 1
+        }
+
+        //! Foreground Loader
+        Loader {
+            id: foregroundLoader
+            anchors.fill: parent
+            sourceComponent: foreground
+            z: 10
+        }
     }
 
     //! Manage zoom in flickable and zoomManager.
@@ -410,10 +413,6 @@ I_NodesScene {
             //! update zoom factor
             sceneSession.zoomManager.customZoom(targetZoomFactor)
 
-            //! update content dimentions
-            scene.sceneGuiConfig.contentWidth  = NLStyle.scene.defaultContentWidth  * targetZoomFactor;
-            scene.sceneGuiConfig.contentHeight = NLStyle.scene.defaultContentHeight * targetZoomFactor;
-
             //! Calculate contentX and contentY, when nodes has one node, the node must be in center
             var fcontentX = origin.x - (flickable.width / 2);
             var fcontentY = origin.y - (flickable.height / 2 ) ;
@@ -431,43 +430,5 @@ I_NodesScene {
         function onSceneForceFocus() {
             flickable.forceActiveFocus();
         }
-    }
-
-    /* Functions
-    * ****************************************************************************************/
-
-    //! Update flicable dimension with zoomfactor
-    function updateFlickableDimension() {
-
-        //! Zoom implemented in two state: first : zoom Flicable
-        //!                    second: scale Item objects
-
-        //! Calculation parameters in flicable:
-        //! zoomFactor, zoomPoint (in center now), contentX (horizontal scrollbar),
-        //! contentY (vertical scrollbar)
-
-        var xDiffrence = worldZoomPoint.x - scene.sceneGuiConfig.contentX;
-        var yDiffrence = worldZoomPoint.y - scene.sceneGuiConfig.contentY;
-
-        var zoomOriginX = worldZoomPoint.x * flickableScale;
-        var zoomOriginY = worldZoomPoint.y * flickableScale;
-
-
-        //! update content dimentions
-        var canWidthChange = scene.sceneGuiConfig.contentWidth * flickableScale >= flickable.width;
-        var isNotRight =  (scene.sceneGuiConfig.contentWidth * flickableScale - scene.sceneGuiConfig.contentX - flickable.width) > 0
-        scene.sceneGuiConfig.contentWidth  *= (canWidthChange && isNotRight )? flickableScale : 1;
-
-        var canHeightChange = scene.sceneGuiConfig.contentHeight * flickableScale >= flickable.height;
-        var isNotBottom = (scene.sceneGuiConfig.contentHeight * flickableScale - scene.sceneGuiConfig.contentY - flickable.height) > 0
-
-        scene.sceneGuiConfig.contentHeight *= (canHeightChange && isNotBottom) ? flickableScale : 1;
-
-        // Adjust the content position to zoom to the mouse point
-        if (canWidthChange)
-            scene.sceneGuiConfig.contentX =  Math.max(0, zoomOriginX - xDiffrence);
-
-        if (canHeightChange)
-            scene.sceneGuiConfig.contentY =  Math.max(0, zoomOriginY - yDiffrence);
     }
 }
