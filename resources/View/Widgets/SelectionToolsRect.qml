@@ -149,6 +149,7 @@ Rectangle {
                 Object.values(selectionModel.selectedModel).forEach(obj => {
                             if (!obj.guiConfig.locked) {
                                 allLocked = false;
+                                return false;
                             }
                         });
                 return allLocked;
