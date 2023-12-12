@@ -83,7 +83,7 @@ Item {
             if (Object.keys(_linkViewMap).includes(linkObj._qsUuid))
                 return;
 
-            const objView = linkViewComponent.createObject(parent, {
+            const objView = linkViewComponent.createObject(root, {
                                                                  link: linkObj,
                                                                  scene: root.scene,
                                                                  sceneSession: root.sceneSession,
