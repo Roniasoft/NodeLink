@@ -18,7 +18,7 @@ I_NodesScene {
      * ****************************************************************************************/
 
     //! flicable scale, use in scale transform
-    property real flickableScale: 1.00
+    property real flickableScale: sceneSession.zoomManager.zoomFactor
 
     property vector3d    zoomPoint:      Qt.vector3d(0, 0, 0)
     property vector2d    worldZoomPoint: Qt.vector2d(0, 0)
@@ -157,9 +157,9 @@ I_NodesScene {
                      worldZoomPoint = Qt.vector2d(wheel.x, wheel.y);
 
                      if(wheel.angleDelta.y > 0)
-                            prepareScale(1 + sceneSession.zoomManager.zoomInStep());
+                        sceneSession.zoomManager.zoomIn();
                      else if (wheel.angleDelta.y < 0)
-                            prepareScale(1 / (1 + sceneSession.zoomManager.zoomOutStep()));
+                        sceneSession.zoomManager.zoomOut();
                  }
 
         //! We should toggle line selection with mouse press event
@@ -224,6 +224,7 @@ I_NodesScene {
 
     //! HelpersView
     HelpersView {
+        parent: contentLoader.item ?? flickable
         scene: flickable.scene
         sceneSession: flickable.sceneSession
     }
@@ -261,6 +262,14 @@ I_NodesScene {
     //! Manage zoom in flickable and zoomManager.
     Connections {
         target: sceneSession?.zoomManager ?? null
+
+        function onZoomFactorChanged()
+        {
+            resizeContent(scene.sceneGuiConfig.contentWidth * sceneSession.zoomManager.zoomFactor,
+                          scene.sceneGuiConfig.contentHeight * sceneSession.zoomManager.zoomFactor,
+                          worldZoomPoint);
+            returnToBounds();
+        }
 
         //! Emit from side menu, Do zoomIn process
         function onZoomToFitSignal () {
@@ -342,7 +351,7 @@ I_NodesScene {
             worldZoomPoint = Qt.vector2d(scene.sceneGuiConfig.contentX + flickable.width / 2,
                                          scene.sceneGuiConfig.contentY + flickable.height / 2);
 
-            prepareScale(1 + sceneSession.zoomManager.zoomInStep());
+            sceneSession.zoomManager.zoomIn();
         }
 
         //! Emit from side menu, Do zoomOut process
@@ -354,7 +363,7 @@ I_NodesScene {
             worldZoomPoint = Qt.vector2d(scene.sceneGuiConfig.contentX + flickable.width / 2,
                                          scene.sceneGuiConfig.contentY + flickable.height / 2);
 
-            prepareScale(1 / (1 + sceneSession.zoomManager.zoomOutStep()));
+            sceneSession.zoomManager.zoomIn();
         }
 
         //! Manage zoom from nodeView.
@@ -363,9 +372,9 @@ I_NodesScene {
             flickable.zoomPoint      = Qt.vector3d(zoomPointScaled.x - scene.sceneGuiConfig.contentX, zoomPointScaled.y - scene.sceneGuiConfig.contentY, 0);
             flickable.worldZoomPoint = Qt.vector2d(zoomPointScaled.x, zoomPointScaled.y);
             if(wheelAngle > 0)
-                   prepareScale(1 + sceneSession.zoomManager.zoomInStep());
+                   sceneSession.zoomManager.zoomIn();
             else if (wheelAngle < 0)
-                   prepareScale(1 / (1 + sceneSession.zoomManager.zoomOutStep()))
+                   sceneSession.zoomManager.zoomOut();
         }
 
         //! Set focus on NodesScene after zoom In/Out
@@ -460,15 +469,5 @@ I_NodesScene {
 
         if (canHeightChange)
             scene.sceneGuiConfig.contentY =  Math.max(0, zoomOriginY - yDiffrence);
-    }
-
-    //! Prepare scale to set on the scene scale
-    function prepareScale(scale: real) {
-        flickableScale = scale;
-
-        resizeContent(scene.sceneGuiConfig.contentWidth * flickableScale,
-                      scene.sceneGuiConfig.contentHeight * flickableScale,
-                      worldZoomPoint);
-        returnToBounds();
     }
 }
