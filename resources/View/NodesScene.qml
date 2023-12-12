@@ -268,10 +268,7 @@ I_NodesScene {
 
         function onZoomFactorChanged()
         {
-            resizeContent(scene.sceneGuiConfig.contentWidth * sceneSession.zoomManager.zoomFactor,
-                          scene.sceneGuiConfig.contentHeight * sceneSession.zoomManager.zoomFactor,
-                          worldZoomPoint);
-            returnToBounds();
+            updateContenSize();
         }
 
         //! Emit from side menu, Do zoomIn process
@@ -430,5 +427,34 @@ I_NodesScene {
         function onSceneForceFocus() {
             flickable.forceActiveFocus();
         }
+    }
+
+    Connections {
+        target: scene.sceneGuiConfig
+
+        function onContentWidthChanged()
+        {
+            worldZoomPoint = Qt.point(contentX, contentY);
+            updateContenSize();
+        }
+
+        function onContentHeightChanged()
+        {
+            worldZoomPoint = Qt.point(contentX, contentY);
+            updateContenSize();
+        }
+    }
+
+    /*! Methods
+     * *******************************************************************************************/
+    function updateContenSize()
+    {
+        resizeContent(scene.sceneGuiConfig.contentWidth * sceneSession.zoomManager.zoomFactor,
+                      scene.sceneGuiConfig.contentHeight * sceneSession.zoomManager.zoomFactor,
+                      worldZoomPoint);
+
+
+        contentX = Math.max(0, Math.min(contentWidth - width, contentX));
+        contentY = Math.max(0, Math.min(contentHeight - height, contentY));
     }
 }
