@@ -3,34 +3,34 @@
 
 // calculate control points based on direction, type and port sides for all Link types.
 function calculateControlPoints(startPos, endPos, direction, type,
-                                inputPortSide, outputPortSide, zoomFactor) {
+                                inputPortSide, outputPortSide) {
 
     // create Link
     switch (type) {
     case 1: { // L Line
-        return lLineControlPoints(startPos, endPos, inputPortSide, outputPortSide, zoomFactor);
+        return lLineControlPoints(startPos, endPos, inputPortSide, outputPortSide);
     }
     case 2: { // Straight Line
         return straightLineControlPoints(startPos, endPos, inputPortSide, outputPortSide, direction);
     }
     default: { // Bezier Curve
-        return bezierCurveControlPoints(startPos, endPos, inputPortSide, outputPortSide, zoomFactor)
+        return bezierCurveControlPoints(startPos, endPos, inputPortSide, outputPortSide)
     }
     }
 }
 
 
 //! Control points of curve Link
-function bezierCurveControlPoints(startPos, endPos, inputPortSide, outputPortSide, zoomFactor) {
+function bezierCurveControlPoints(startPos, endPos, inputPortSide, outputPortSide) {
     // calculate the control points
-    var controlPoint1 = startPos.plus(connectionMargin(inputPortSide, zoomFactor));
-    var controlPoint2 = endPos.plus(connectionMargin(outputPortSide, zoomFactor));
+    var controlPoint1 = startPos.plus(connectionMargin(inputPortSide));
+    var controlPoint2 = endPos.plus(connectionMargin(outputPortSide));
 
     return [startPos, controlPoint1, controlPoint2, endPos];
 }
 
 // Control points of L Line Link.
-function lLineControlPoints(startPos, endPos, inputType, outputType, zoomFactor) {
+function lLineControlPoints(startPos, endPos, inputType, outputType) {
 
     var cps = [];
 
@@ -50,7 +50,7 @@ function lLineControlPoints(startPos, endPos, inputType, outputType, zoomFactor)
     }
 
     var dy =  endPos.y - startPos.y
-    var margin = 20 * zoomFactor;
+    var margin = 20;
 
     // Add start points as first control point
     cps.push(startPos);
@@ -347,20 +347,20 @@ function straightLineControlPoints(startPos, endPos, inputType, outputType, dire
 }
 
 //! Connection Margin with port side.
-function connectionMargin (portSide, zoomFactor = 1) {
+function connectionMargin (portSide) {
 
     switch (portSide) {
     case 0: // \todo: use NLSpec some how here
-        return Qt.vector2d(0, -100).times(zoomFactor);
+        return Qt.vector2d(0, -100);
 
     case 1:
-        return Qt.vector2d(0, +100).times(zoomFactor);
+        return Qt.vector2d(0, +100);
 
     case 2:
-        return Qt.vector2d(-100, 0).times(zoomFactor);
+        return Qt.vector2d(-100, 0);
 
     case 3:
-        return Qt.vector2d(+100, 0).times(zoomFactor);
+        return Qt.vector2d(+100, 0);
 
     default:
         return Qt.vector2d(0, 0);

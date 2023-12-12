@@ -28,8 +28,8 @@ QtObject {
     //! zoom in node edit mode (When a node is in minimal mode)
     property real nodeEditZoom   : 2.0
 
-//    ! Behavior on zoomFactor change
-//    Behavior on zoomFactor {NumberAnimation{duration: 100}}
+    //    ! Behavior on zoomFactor change
+    //    Behavior on zoomFactor {NumberAnimation{duration: 100}}
 
     /* Signals
      * ****************************************************************************************/
@@ -62,7 +62,7 @@ QtObject {
     //! ZoomIn method
     function zoomIn() {
         if(canZoomIn())
-                zoomFactor *= (1 + zoomInStep());
+            zoomFactor += zoomStep;
 
         focusToScene();
     }
@@ -70,7 +70,7 @@ QtObject {
     //! ZoomOut method
     function zoomOut() {
         if(canZoomOut())
-                zoomFactor /= (1 + zoomOutStep());
+            zoomFactor -= zoomStep;
 
         focusToScene();
     }
@@ -107,25 +107,15 @@ QtObject {
 
     //! Zoom in step
     function zoomInStep() : real {
-                if(canZoomIn()) {
-                    if(zoomFactor * (1 + zoomStep) >= maximumZoom)
-                        return Math.abs(maximumZoom - zoomFactor) / zoomFactor;
-                    else
-                        return zoomStep;
-                }
+        if(canZoomIn()) return zoomStep;
 
-                return 0.0;
+        return 0.0;
     }
 
     //! Zoom out step
     function zoomOutStep() : real {
-                if(canZoomOut()) {
-                    if(zoomFactor / (1 + zoomStep) <= minimumZoom)
-                        return Math.abs(zoomFactor - minimumZoom) / minimumZoom;
-                    else
-                        return zoomStep;
-                }
+        if(canZoomOut()) return zoomStep;
 
-                return 0.0;
+        return 0.0;
     }
 }

@@ -101,8 +101,7 @@ LinkView {
                     // Update node position
                     var gMouse = mapToItem(parent, mouse.x, mouse.y);
                     contextMenu.nodePosition = calculateNodePosition(Qt.vector2d(gMouse.x, gMouse.y),
-                                                                     link.inputPort.portSide,
-                                                                     sceneSession.zoomManager.zoomFactor);
+                                                                     link.inputPort.portSide);
                     contextMenu.popup(gMouse.x, gMouse.y);
                     sceneSession.connectingMode = false;
             }
@@ -195,17 +194,17 @@ LinkView {
         //!     mousePoint: To calculate distance.
         //!     searchMargin: A margin to search nodes
         function findClosestPort (inputPortId: string, mousePoint: point, searchMargin: int) : string {
+
             var gMouse = mapToItem(parent, mousePoint.x, mousePoint.y);
             let foundNodeIds = [];
             var finalPortId = ""
 
             Object.values(scene.nodes).forEach(node => {
-                var zoomFactor = sceneSession.zoomManager.zoomFactor;
-                var nodePosition = node.guiConfig.position.times(zoomFactor);
+                var nodePosition = node.guiConfig.position;
                 if (gMouse.x >= nodePosition.x - searchMargin &&
-                gMouse.x <= nodePosition.x + node.guiConfig.width * zoomFactor + searchMargin) {
+                gMouse.x <= nodePosition.x + node.guiConfig.width + searchMargin) {
                     if (gMouse.y >= nodePosition.y - searchMargin &&
-                    gMouse.y <= nodePosition.y + node.guiConfig.height * zoomFactor + searchMargin)
+                    gMouse.y <= nodePosition.y + node.guiConfig.height + searchMargin)
                             foundNodeIds.push(node._qsUuid);
                 }
             });
@@ -278,7 +277,7 @@ LinkView {
 
         //! Calculate node position based on contextmenu position,
         //! inputPortSide and defualt node width and height
-        function calculateNodePosition(mousePoint: vector2d, inputPortSide: int, zoomFactor: real) : vector2d {
+        function calculateNodePosition(mousePoint: vector2d, inputPortSide: int) : vector2d {
                 var correctionFactor = Qt.vector2d(0, 0);
                 switch (inputPortSide)  {
                     case (NLSpec.PortPositionSide.Top): {
@@ -298,7 +297,7 @@ LinkView {
                     } break;
                 }
 
-                return mousePoint.minus(correctionFactor.times(zoomFactor));
+                return mousePoint.minus(correctionFactor);
         }
     }
 }

@@ -542,8 +542,7 @@ I_NodeView {
 
                 //! Mapped position based on PortView, container and zoom factor
                 property vector2d positionMapped: Qt.vector2d(topRowPort.x + x + NLStyle.portView.size / 2,
-                                                              topRowPort.y + y + NLStyle.portView.size / 2).
-                                                              times(scaleFactor)
+                                                              topRowPort.y + y + NLStyle.portView.size / 2)
 
                 globalX: root.x + positionMapped.x
                 globalY: root.y + positionMapped.y
@@ -568,8 +567,7 @@ I_NodeView {
 
                 //! Mapped position based on PortView, container and zoom factor
                 property vector2d positionMapped: Qt.vector2d(leftColumnPort.x + x + NLStyle.portView.size / 2,
-                                                     leftColumnPort.y + y + NLStyle.portView.size / 2).
-                                                     times(scaleFactor)
+                                                     leftColumnPort.y + y + NLStyle.portView.size / 2)
 
                 globalX: root.x + positionMapped.x
                 globalY: root.y + positionMapped.y
@@ -594,8 +592,7 @@ I_NodeView {
 
                 //! Mapped position based on PortView, container and zoom factor
                 property vector2d positionMapped: Qt.vector2d(rightColumnPort.x + x + NLStyle.portView.size / 2,
-                                                              rightColumnPort.y + y + NLStyle.portView.size / 2).
-                                                              times(scaleFactor)
+                                                              rightColumnPort.y + y + NLStyle.portView.size / 2)
 
                 globalX: root.x + positionMapped.x
                 globalY: root.y + positionMapped.y
@@ -620,8 +617,7 @@ I_NodeView {
 
                 //! Mapped position based on PortView, container and zoom factor
                 property vector2d positionMapped: Qt.vector2d(bottomRowPort.x + x + NLStyle.portView.size / 2,
-                                                              bottomRowPort.y + y + NLStyle.portView.size / 2).
-                                                              times(scaleFactor)
+                                                              bottomRowPort.y + y + NLStyle.portView.size / 2)
 
                 globalX: root.x + positionMapped.x
                 globalY: root.y + positionMapped.y
