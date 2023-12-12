@@ -206,6 +206,17 @@ QSObject {
         return foundNodeId;
     }
 
+    //! Finds Node using its ID
+    function findNodeByItsId(nodeId: string) : Node {
+        var foundNode;
+        Object.values(nodes).forEach(node => {
+            if (node._qsUuid === nodeId) {
+                foundNode = node;
+            }
+        });
+        return foundNode;
+    }
+
     //! Finds the exact node according to the given portId
     function findNode(portId: string) : Node {
         let foundNodeId = findNodeId(portId);
