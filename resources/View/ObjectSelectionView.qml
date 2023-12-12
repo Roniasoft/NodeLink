@@ -17,10 +17,20 @@ Item {
 
     property bool           hasSelectedObject: Object.values(selectionModel?.selectedModel ?? ({})).length > 0
 
+    property var            selectedObj: Object.values(scene.selectionModel.selectedModel)[0] ?? null
+
+    property bool           isSelectedObjNode: selectedObj?.objectType === NLSpec.ObjectType.Node
+
+    property var            selectedObjPos: selectedObj ? (isSelectedObjNode ? selectedObj.guiConfig?.position
+                                                                             : selectedObj.outputPort?._position)
+                                                        : Qt.vector2d(0, 0)
+
     /*  Object Properties
     * ****************************************************************************************/
     visible: hasSelectedObject && sceneSession.isSceneEditable
     z: 1000
+    x: selectedObjPos.x
+    y: selectedObjPos.y
 
     Keys.forwardTo: parent
 
@@ -54,7 +64,8 @@ Item {
         anchors.bottom: parent.top
         anchors.bottomMargin: 5
         anchors.horizontalCenter: parent.horizontalCenter
-
+        transformOrigin: Item.Bottom
+        scale: 1 / sceneSession.zoomManager.zoomFactor
         scene: root.scene
         sceneSession: root.sceneSession
 
@@ -192,14 +203,13 @@ Item {
         var isNodeFirstObj = firstObj.objectType === NLSpec.ObjectType.Node;
         var portPosVecOut = isNodeFirstObj ? Qt.vector2d(0, 0) : firstObj?.outputPort?._position
 
-        var position = isNodeFirstObj ? firstObj.guiConfig?.position?.times(sceneSession.zoomManager.zoomFactor) :
-                                        firstObj?.inputPort?._position;
+        var position = isNodeFirstObj ? firstObj.guiConfig?.position?.times(1) : firstObj?.inputPort?._position;
         var leftX = (isNodeFirstObj ? position.x : (position.x < portPosVecOut.x) ? position.x : portPosVecOut.x);
         var topY = (isNodeFirstObj ? position.y : (position.y < portPosVecOut.y) ? position.y : portPosVecOut.y);
 
-        var rightX = (isNodeFirstObj ? position.x + firstObj.guiConfig.width * sceneSession.zoomManager.zoomFactor :
+        var rightX = (isNodeFirstObj ? position.x + firstObj.guiConfig.width:
                                       (position.x > portPosVecOut.x) ? position.x : portPosVecOut.x);
-        var bottomY = (isNodeFirstObj ? position.y + firstObj.guiConfig.height * sceneSession.zoomManager.zoomFactor :
+        var bottomY = (isNodeFirstObj ? position.y + firstObj.guiConfig.height:
                                        (position.y > portPosVecOut.y) ? position.y : portPosVecOut.y);
 
         Object.values(scene.selectionModel.selectedModel).forEach(obj => {
@@ -210,12 +220,12 @@ Item {
 
                                                                           // Find left, right, top and bottom positions.
                                                                           // they are depend on inputPort and outputPort position (temporary).
-                                                                          var pos = obj.guiConfig.position.times(sceneSession.zoomManager.zoomFactor); //obj.guiConfig.position.plus(obj.guiConfig.position.minus(sceneSession.zoomManager.zoomPoint).times(sceneSession.zoomManager.zoomFactor - 1))
+                                                                          var pos = obj.guiConfig.position.times(1); //obj.guiConfig.position.plus(obj.guiConfig.position.minus(sceneSession.zoomManager.zoomPoint).times(sceneSession.zoomManager.zoomFactor - 1))
 
                                                                           var tempLeftX = pos.x;
                                                                           var tempTopY = pos.y;
-                                                                          var tempRightX = pos.x + obj.guiConfig.width * sceneSession.zoomManager.zoomFactor;
-                                                                          var tempBottomY =pos.y + obj.guiConfig.height * sceneSession.zoomManager.zoomFactor;
+                                                                          var tempRightX = pos.x + obj.guiConfig.width;
+                                                                          var tempBottomY =pos.y + obj.guiConfig.height;
 
 
                                                                           if (tempLeftX < leftX) {
@@ -264,9 +274,5 @@ Item {
         // Update dimentions
         root.width  = (rightX  - leftX + 2 * margin)
         root.height = (bottomY - topY + 2 * margin)
-
-        // Locate at center
-        root.x = (leftX + rightX) / 2 - root.width / 2;
-        root.y = (bottomY + topY) / 2 - root.height / 2;
     }
 }
