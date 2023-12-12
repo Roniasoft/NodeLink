@@ -125,16 +125,34 @@ Rectangle {
         NLToolButton {
             id: lockButton
             text: "\uf30d"
-            visible: layout.selectedANodeOnly
             checkable: true
             Layout.preferredHeight: 30
             Layout.preferredWidth: 30
             Layout.topMargin: 2
             Layout.bottomMargin: 2
-            checked: layout.selectedObject?.guiConfig?.locked ?? false
+            checked: !areAllLocked() ? false : true
 
-            //! Enabling read only
-            onClicked: layout.selectedObject.guiConfig.locked = checked;
+            onClicked: {
+                if (!areAllLocked())
+                    Object.values(selectionModel.selectedModel).forEach(obj => {
+                        obj.guiConfig.locked = true;
+                    });
+                else {
+                    Object.values(selectionModel.selectedModel).forEach(obj => {
+                        obj.guiConfig.locked = false;
+                    });
+                }
+            }
+
+            function areAllLocked () {
+                var allLocked = true;
+                Object.values(selectionModel.selectedModel).forEach(obj => {
+                            if (!obj.guiConfig.locked) {
+                                allLocked = false;
+                            }
+                        });
+                return allLocked;
+            }
         }
 
         //! Link: Edit discription
