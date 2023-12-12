@@ -147,11 +147,11 @@ Rectangle {
             function areAllLocked () {
                 var allLocked = true;
                 Object.values(selectionModel.selectedModel).forEach(obj => {
-                            if (!obj.guiConfig.locked) {
-                                allLocked = false;
-                                return false;
-                            }
-                        });
+                    if (!obj.guiConfig.locked) {
+                        allLocked = false;
+                        return allLocked;
+                    }
+                });
                 return allLocked;
             }
         }
