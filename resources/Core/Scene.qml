@@ -98,7 +98,13 @@ I_Scene {
 
             var topY = cursor[level];
 
-            for (var childId in node.children) {
+
+            var childIds = Object.keys(node.children).sort(function(a, b) {
+                return nodes[a].guiConfig.position.y - nodes[b].guiConfig.position.y;
+            });
+
+            for (var i = 0; i < childIds.length; i++) {
+                var childId = childIds[i];
                 var childNode = nodes[childId];
                 recursiveStep(level, childNode);
                 cursor[level] += childNode.guiConfig.height + NODE_SPACING;
