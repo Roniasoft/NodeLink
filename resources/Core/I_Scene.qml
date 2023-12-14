@@ -50,6 +50,10 @@ QSObject {
     //! Link Removed
     signal linkRemoved(Link link)
 
+    //! This signals can be used to request changes in content x/y/width/height
+    signal contentMoveRequested(diff: vector2d)
+    signal contentResizeRequested(diff: vector2d)
+
     /* Functions
      * ****************************************************************************************/
 

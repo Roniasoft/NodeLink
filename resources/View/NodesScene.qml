@@ -446,6 +446,16 @@ I_NodesScene {
         }
     }
 
+    Connections {
+        target: scene
+
+        function onContentMoveRequested(diff)
+        {
+            contentX = Math.max(0, Math.min(contentWidth - width, contentX + diff.x));
+            contentY = Math.max(0, Math.min(contentHeight - height, contentY + diff.y));
+        }
+    }
+
     /*! Methods
      * *******************************************************************************************/
     function updateContenSize()

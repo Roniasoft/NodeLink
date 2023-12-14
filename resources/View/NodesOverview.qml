@@ -75,29 +75,6 @@ Item {
 
         nodeRectTopLeft:  root.nodeRectTopLeft
         overviewScaleFactor: root.overviewScaleFactor
-
-        MouseArea {
-            anchors.fill: parent
-
-            //! Handle unexpected behaviors by capturing both left and right buttons.
-            acceptedButtons: Qt.LeftButton | Qt.RightButton
-
-            enabled: interactive
-
-            onClicked: (mouse) =>  {
-                if (mouse.button === Qt.RightButton)
-                    return;
-
-                //! When mouse is clicked, the diff between clicked area and the red rectangle position is calculated
-                // and then mapped to the scene
-                var diffX = (mouse.x - userViewRect.x) / userViewRect.customScaleFactor
-                var diffY = (mouse.y - userViewRect.y) / userViewRect.customScaleFactor
-                var halfWidthBefore = scene.sceneGuiConfig.sceneViewWidth / 2
-                var halfHeightBefore = scene.sceneGuiConfig.sceneViewHeight / 2
-                scene.sceneGuiConfig.contentX = scene.sceneGuiConfig.contentX + diffX - halfWidthBefore;
-                scene.sceneGuiConfig.contentY = scene.sceneGuiConfig.contentY + diffY - halfHeightBefore;
-            }
-        }
     }
 
     //! User view rectangle to handle position change of user view
@@ -105,71 +82,66 @@ Item {
         id: userViewRect
 
         //! Top Left position of node rect (pos of the node in the top left corner)
-        property vector2d     nodeRectTopLeft: root.nodeRectTopLeft.times(sceneSession?.zoomManager?.zoomFactor ?? 1.0)
+        property vector2d     nodeRectTopLeft: root.nodeRectTopLeft
 
         //! Scale used for mapping scene -> overview. Min is used to avoid complication in link drawings
-        property real         customScaleFactor: root.overviewScaleFactor / (root.overviewScaleFactor > 1 ? 1 : (sceneSession?.zoomManager?.zoomFactor ?? 1.0))
+        property real         customScaleFactor: root.overviewScaleFactor / (sceneSession?.zoomManager?.zoomFactor ?? 1.0)
 
         visible: interactive
         color: "transparent"
         border.color: NLStyle.primaryColor
-        x: ((scene?.sceneGuiConfig?.contentX - nodeRectTopLeft.x) ?? 0) * customScaleFactor
-        y: ((scene?.sceneGuiConfig?.contentY - nodeRectTopLeft.y) ?? 0) * customScaleFactor
-        width:  (scene?.sceneGuiConfig?.sceneViewWidth ?? 0) * customScaleFactor
+        x: ((scene?.sceneGuiConfig?.contentX / (sceneSession?.zoomManager.zoomFactor) - nodeRectTopLeft.x) ?? 0) * root.overviewScaleFactor
+        y: ((scene?.sceneGuiConfig?.contentY / (sceneSession?.zoomManager.zoomFactor) - nodeRectTopLeft.y) ?? 0) * root.overviewScaleFactor
+        width: (scene?.sceneGuiConfig?.sceneViewWidth ?? 0) * customScaleFactor
         height: (scene?.sceneGuiConfig?.sceneViewHeight ?? 0) * customScaleFactor
+    }
+
+    //! MouseArea to handle position change of user view
+    MouseArea {
+
+        property real    prevX
+        property real    prevY
+        property bool    isDraging:  false
+
+        //! Handle unexpected behaviors by capturing both left and right buttons.
+        acceptedButtons: Qt.LeftButton | Qt.RightButton
+
+        anchors.fill: parent
+        hoverEnabled: true
         z: 3
 
-        //! MouseArea to handle position change of user view
-        MouseArea {
+        onPressed: (mouse) => {
+            if (mouse.button === Qt.RightButton)
+                return;
 
-            property real    prevX
-            property real    prevY
-            property bool    isDraging:  false
+            isDraging = true;
+            prevX = mouse.x;
+            prevY = mouse.y;
+        }
 
-            //! Handle unexpected behaviors by capturing both left and right buttons.
-            acceptedButtons: Qt.LeftButton | Qt.RightButton
+        onReleased: (mouse) => {
+            isDraging = false;
+        }
 
-            anchors.fill: parent
-            hoverEnabled: true
+        onPositionChanged: (mouse) => {
+            if (mouse.button === Qt.RightButton)
+                return;
 
-            onPressed: (mouse) => {
-                if (mouse.button === Qt.RightButton)
-                    return;
+            if (isDraging) {
+                //! When mouse is dragged, the diff between pressed mouse and current position is calculated
+                // and then mapped to the scene
+                var startingPointInSceneX = (prevX / userViewRect.customScaleFactor);
+                var startingPointInSceneY = (prevY / userViewRect.customScaleFactor);
+                var endingPointInSceneX = (mouse.x / userViewRect.customScaleFactor);
+                var endingPointInSceneY = (mouse.y / userViewRect.customScaleFactor);
 
-                isDraging = true;
                 prevX = mouse.x;
                 prevY = mouse.y;
-            }
 
-            onReleased: (mouse) => {
-                isDraging = false;
-            }
+                scene.contentMoveRequested(Qt.vector2d(endingPointInSceneX - startingPointInSceneX,
+                                                       endingPointInSceneY - startingPointInSceneY));
 
-            onPositionChanged: (mouse) => {
-                if (mouse.button === Qt.RightButton)
-                    return;
-
-                if (isDraging) {
-                    //! When mouse is dragged, the diff between pressed mouse and current position is calculated
-                    // and then mapped to the scene
-                    var startingPointInSceneX = (prevX / userViewRect.customScaleFactor);
-                    var startingPointInSceneY = (prevY / userViewRect.customScaleFactor);
-                    var endingPointInSceneX = (mouse.x / userViewRect.customScaleFactor);
-                    var endingPointInSceneY = (mouse.y / userViewRect.customScaleFactor);
-
-                    var contentX = scene.sceneGuiConfig.contentX + endingPointInSceneX - startingPointInSceneX;
-                    // Check the maximum value of contentX
-                    if (contentX < (scene.sceneGuiConfig.contentWidth - scene.sceneGuiConfig.sceneViewWidth))
-                        scene.sceneGuiConfig.contentX = Math.max(0, contentX);
-
-                    var contentY = scene.sceneGuiConfig.contentY + endingPointInSceneY - startingPointInSceneY;
-
-                    // Check the maximum value of contentY
-                    if (contentY < (scene.sceneGuiConfig.contentHeight - scene.sceneGuiConfig.sceneViewHeight))
-                        scene.sceneGuiConfig.contentY = Math.max(0, contentY);
-                }
             }
         }
     }
-
 }
