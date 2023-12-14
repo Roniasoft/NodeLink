@@ -130,7 +130,7 @@ Rectangle {
             Layout.preferredWidth: 30
             Layout.topMargin: 2
             Layout.bottomMargin: 2
-            checked: !areAllLocked() ? false : true
+            checked: areAllLocked()
 
             onClicked: {
                 if (!areAllLocked())
@@ -144,15 +144,13 @@ Rectangle {
                 }
             }
 
+            //! returns true on empty selection as well
             function areAllLocked () {
-                var allLocked = true;
-                Object.values(selectionModel.selectedModel).forEach(obj => {
-                    if (!obj.guiConfig.locked) {
-                        allLocked = false;
-                        return allLocked;
-                    }
+               return Object.values(selectionModel.selectedModel).every(obj => {
+                    if (!obj.guiConfig.locked)
+                        return false;
+                    return true;
                 });
-                return allLocked;
             }
         }
 
