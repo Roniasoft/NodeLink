@@ -17,20 +17,10 @@ Item {
 
     property bool           hasSelectedObject: Object.values(selectionModel?.selectedModel ?? ({})).length > 0
 
-    property var            selectedObj: Object.values(scene.selectionModel.selectedModel)[0] ?? null
-
-    property bool           isSelectedObjNode: selectedObj?.objectType === NLSpec.ObjectType.Node
-
-    property var            selectedObjPos: selectedObj ? (isSelectedObjNode ? selectedObj.guiConfig?.position
-                                                                             : selectedObj.outputPort?._position)
-                                                        : Qt.vector2d(0, 0)
-
     /*  Object Properties
     * ****************************************************************************************/
     visible: hasSelectedObject && sceneSession.isSceneEditable
     z: 1000
-    x: selectedObjPos.x
-    y: selectedObjPos.y
 
     Keys.forwardTo: parent
 
@@ -107,8 +97,8 @@ Item {
 
         onPressed: (mouse) => {
             sceneSession.isRubberBandMoving = true;
-            prevX = mouse.x * sceneSession.zoomManager.zoomFactor;
-            prevY = mouse.y * sceneSession.zoomManager.zoomFactor;
+            prevX = mouse.x;
+            prevY = mouse.y;
         }
 
         onReleased: (mouse) => {
@@ -118,10 +108,10 @@ Item {
         onPositionChanged: (mouse) => {
             if (sceneSession.isRubberBandMoving) {
                 // Prepare key variables of node movement
-                var deltaX = (mouse.x * sceneSession.zoomManager.zoomFactor - prevX);
-                prevX = mouse.x * sceneSession.zoomManager.zoomFactor - deltaX;
-                var deltaY = (mouse.y * sceneSession.zoomManager.zoomFactor- prevY);
-                prevY = mouse.y * sceneSession.zoomManager.zoomFactor - deltaY;
+                var deltaX = (mouse.x - prevX);
+                prevX = mouse.x - deltaX;
+                var deltaY = (mouse.y- prevY);
+                prevY = mouse.y - deltaY;
 
                 // Start movement process
                 Object.values(scene.selectionModel.selectedModel).forEach(obj => {
@@ -135,13 +125,14 @@ Item {
                        (obj.guiConfig.position.y < 0 && deltaY < 0))
                         sceneSession.isRubberBandMoving = false;
 
+                    /*
                     //! Extend contentWidth and contentWidth when is necessary
                     if (obj.guiConfig.position.x + obj.guiConfig.width > scene.sceneGuiConfig.contentWidth && deltaX > 0)
                         scene.sceneGuiConfig.contentWidth += deltaX;
 
                     if(obj.guiConfig.position.y + obj.guiConfig.height > scene.sceneGuiConfig.contentHeight && deltaY > 0)
                         scene.sceneGuiConfig.contentHeight += deltaY;
-
+                    */
                     }
                 });
             }
@@ -203,7 +194,7 @@ Item {
         var isNodeFirstObj = firstObj.objectType === NLSpec.ObjectType.Node;
         var portPosVecOut = isNodeFirstObj ? Qt.vector2d(0, 0) : firstObj?.outputPort?._position
 
-        var position = isNodeFirstObj ? firstObj.guiConfig?.position?.times(1) : firstObj?.inputPort?._position;
+        var position = isNodeFirstObj ? firstObj.guiConfig?.position : firstObj?.inputPort?._position;
         var leftX = (isNodeFirstObj ? position.x : (position.x < portPosVecOut.x) ? position.x : portPosVecOut.x);
         var topY = (isNodeFirstObj ? position.y : (position.y < portPosVecOut.y) ? position.y : portPosVecOut.y);
 
@@ -220,7 +211,7 @@ Item {
 
                                                                           // Find left, right, top and bottom positions.
                                                                           // they are depend on inputPort and outputPort position (temporary).
-                                                                          var pos = obj.guiConfig.position.times(1); //obj.guiConfig.position.plus(obj.guiConfig.position.minus(sceneSession.zoomManager.zoomPoint).times(sceneSession.zoomManager.zoomFactor - 1))
+                                                                          var pos = obj.guiConfig.position; //obj.guiConfig.position.plus(obj.guiConfig.position.minus(sceneSession.zoomManager.zoomPoint).times(sceneSession.zoomManager.zoomFactor - 1))
 
                                                                           var tempLeftX = pos.x;
                                                                           var tempTopY = pos.y;
@@ -272,7 +263,9 @@ Item {
         var margin = 5;
 
         // Update dimentions
-        root.width  = (rightX  - leftX + 2 * margin)
+        root.width = (rightX  - leftX + 2 * margin)
         root.height = (bottomY - topY + 2 * margin)
+        root.x = leftX - margin;
+        root.y = topY - margin;
     }
 }

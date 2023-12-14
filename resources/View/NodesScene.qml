@@ -116,6 +116,7 @@ I_NodesScene {
 
     //! MouseArea for selection of links
     MouseArea {
+        parent: contentLoader.item
         anchors.fill: parent
         acceptedButtons: Qt.LeftButton | Qt.RightButton
         enabled: sceneSession && !sceneSession.connectingMode &&
