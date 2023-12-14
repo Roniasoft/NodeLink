@@ -143,5 +143,19 @@ Item {
 
             }
         }
+
+        onClicked: (mouse) =>  {
+            if (mouse.button === Qt.RightButton)
+                return;
+
+            //! When mouse is clicked, the diff between clicked area and the red rectangle position is calculated
+            // and then mapped to the scene
+            var diffX = (mouse.x - userViewRect.x) / userViewRect.customScaleFactor
+            var diffY = (mouse.y - userViewRect.y) / userViewRect.customScaleFactor
+            var halfWidthBefore = scene.sceneGuiConfig.sceneViewWidth / 2
+            var halfHeightBefore = scene.sceneGuiConfig.sceneViewHeight / 2
+
+            scene.contentMoveRequested(Qt.vector2d(diffX - halfWidthBefore, diffY - halfHeightBefore));
+        }
     }
 }
