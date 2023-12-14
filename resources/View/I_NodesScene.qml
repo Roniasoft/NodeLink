@@ -42,7 +42,7 @@ Flickable {
 
     // Update contentY when changed by user (No flick process)
     onContentXChanged: {
-        if (scene && (scene.sceneGuiConfig.contentX - contentX) > 0.001) {
+        if (scene && Math.abs(scene.sceneGuiConfig.contentX - contentX) > 0.001) {
             scene.sceneGuiConfig.contentX = contentX;
         }
 
@@ -63,7 +63,7 @@ Flickable {
     
     // Update contentY when changed by user (No flick process)
     onContentYChanged: {
-        if (scene && (scene.sceneGuiConfig.contentY - contentY) > 0.001) {
+        if (scene && Math.abs(scene.sceneGuiConfig.contentY - contentY) > 0.001) {
             scene.sceneGuiConfig.contentY = contentY;
         }
 
