@@ -125,14 +125,15 @@ Rectangle {
         NLToolButton {
             id: lockButton
             text: "\uf30d"
-            checkable: true
             visible: !layout.selectedLinkOnly
+            checkable: true
             Layout.preferredHeight: 30
             Layout.preferredWidth: 30
             Layout.topMargin: 2
             Layout.bottomMargin: 2
             checked: areAllLocked()
 
+            //! Enabling read only
             onClicked: {
                 var locked =  areAllLocked();
                 Object.values(selectionModel.selectedModel).forEach(obj => {
