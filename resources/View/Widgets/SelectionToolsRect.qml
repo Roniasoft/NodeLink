@@ -126,6 +126,7 @@ Rectangle {
             id: lockButton
             text: "\uf30d"
             checkable: true
+            visible: !layout.selectedLinkOnly
             Layout.preferredHeight: 30
             Layout.preferredWidth: 30
             Layout.topMargin: 2
@@ -133,21 +134,18 @@ Rectangle {
             checked: areAllLocked()
 
             onClicked: {
-                if (!areAllLocked())
-                    Object.values(selectionModel.selectedModel).forEach(obj => {
-                        obj.guiConfig.locked = true;
-                    });
-                else {
-                    Object.values(selectionModel.selectedModel).forEach(obj => {
-                        obj.guiConfig.locked = false;
-                    });
-                }
+                var locked =  areAllLocked();
+                Object.values(selectionModel.selectedModel).forEach(obj => {
+                    if (obj.objectType === NLSpec.ObjectType.Link)
+                        return;
+                    obj.guiConfig.locked = !locked;
+                });
             }
 
             //! returns true on empty selection as well
             function areAllLocked () {
                return Object.values(selectionModel.selectedModel).every(obj => {
-                    if (!obj.guiConfig.locked)
+                    if (obj.objectType === NLSpec.ObjectType.Node && !obj.guiConfig.locked)
                         return false;
                     return true;
                 });
