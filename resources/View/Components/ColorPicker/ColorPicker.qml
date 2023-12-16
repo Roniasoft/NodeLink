@@ -19,7 +19,7 @@ Rectangle {
      * ****************************************************************************************/
     width: colorPicker.width + 15
     height: 50
-    color: "transparent"
+    color: "#1e1e1e"
     radius: NLStyle.radiusAmount.itemButton
     border.width: 1
     border.color: "#363636"
@@ -71,6 +71,8 @@ Rectangle {
             }
         }
         ColorItem {
+            id: rainbowColorItem
+            isRainbow: true
             cellColor: customeColor
             onClicked: {
                 colorDialog.open()
@@ -87,6 +89,7 @@ Rectangle {
         }
         onAccepted: {
             colorPickerRect.colorChanged(customeColor);
+            rainbowColorItem.isRainbow = false
         }
         onRejected: {
             colorDialog.close()
