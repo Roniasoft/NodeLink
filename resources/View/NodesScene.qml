@@ -460,10 +460,33 @@ I_NodesScene {
      * *******************************************************************************************/
     function updateContentSize()
     {
-        resizeContent(scene.sceneGuiConfig.contentWidth * sceneSession.zoomManager.zoomFactor,
-                      scene.sceneGuiConfig.contentHeight * sceneSession.zoomManager.zoomFactor,
-                      worldZoomPoint);
+        //! \note: This might not be always desired so its better to add a boolean to control if
+        //! users of NodesScene want's to enable this behavior
+        //!
+        //! This method will be called mostly due to zooming, so lets check if content width/height
+        //! is less than the view (flickable's width/height), we'll resize them so there are no
+        //! non-functional areas
+        var newContentWidth = scene.sceneGuiConfig.contentWidth * sceneSession.zoomManager.zoomFactor;
+        var newContentHeight = scene.sceneGuiConfig.contentHeight * sceneSession.zoomManager.zoomFactor;
+        if (newContentWidth < flickable.width) {
+            //! Increase content width
+            scene.sceneGuiConfig.contentWidth += (flickable.width - newContentWidth) / sceneSession.zoomManager.zoomFactor;
+            scene.sceneGuiConfig.contentHeight = scene.sceneGuiConfig.contentWidth;
 
+            newContentWidth = scene.sceneGuiConfig.contentWidth * sceneSession.zoomManager.zoomFactor;
+            newContentHeight = scene.sceneGuiConfig.contentHeight * sceneSession.zoomManager.zoomFactor;
+        }
+
+        if (newContentHeight < flickable.height) {
+            //! Increase content height
+            scene.sceneGuiConfig.contentHeight += (flickable.height - newContentHeight) / sceneSession.zoomManager.zoomFactor;
+            scene.sceneGuiConfig.contentWidth = scene.sceneGuiConfig.contentHeight;
+
+            newContentWidth = scene.sceneGuiConfig.contentWidth * sceneSession.zoomManager.zoomFactor;
+            newContentHeight = scene.sceneGuiConfig.contentHeight * sceneSession.zoomManager.zoomFactor;
+        }
+
+        resizeContent(newContentWidth, newContentHeight, worldZoomPoint);
 
         contentX = Math.max(0, Math.min(contentWidth - width, contentX));
         contentY = Math.max(0, Math.min(contentHeight - height, contentY));
