@@ -86,7 +86,11 @@ QSObject {
 
         scene.selectionModel.clear();
         scene.selectionModel.selectNode(node);
-        node.onPortAdded.connect(onPortAdded);
+
+        Object.values(node.ports).forEach(port => {
+            port._qsRepo = scene._qsRepo
+        })
+
         return node;
     }
 
@@ -167,6 +171,7 @@ QSObject {
             obj.guiConfig.colorIndex = 0;
             obj.inputPort  = findPort(portA);
             obj.outputPort = findPort(portB);
+            obj._qsRepo = scene._qsRepo
             links[obj._qsUuid] = obj;
             linksChanged();
 
