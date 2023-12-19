@@ -11,25 +11,22 @@ QtObject {
      * ****************************************************************************************/
 
     //! Maximum zoom value
-    property real maximumZoom   :   2.5
+    property real maximumZoom :     2.5
 
     //! Minimum zoom value
-    property real minimumZoom   : 0.35
+    property real minimumZoom :     0.35
 
     //! Zoom factor, control the zoom
-    property real zoomFactor    : 1.0
+    property real zoomFactor:       1.0
 
     //! step of zoom in/out
-    property real zoomStep      : 0.1
+    property real zoomStep:         0.1
 
     //! In minimalZoomNode, node show a minimal Rectangle without header and description
-    property real minimalZoomNode: 0.6
+    property real minimalZoomNode:  0.6
 
     //! zoom in node edit mode (When a node is in minimal mode)
-    property real nodeEditZoom   : 2.0
-
-    //    ! Behavior on zoomFactor change
-    //    Behavior on zoomFactor {NumberAnimation{duration: 100}}
+    property real nodeEditZoom :    2.0
 
     /* Signals
      * ****************************************************************************************/
@@ -97,25 +94,25 @@ QtObject {
 
     //! Can zoom In ...
     function canZoomIn() : bool {
-        return zoomFactor - maximumZoom < 0.001;
+        return zoomFactor - maximumZoom < 0.0001;
     }
 
     //! Can zoom Out ...
     function canZoomOut() : bool {
-        return zoomFactor - minimumZoom > 0.001;
+        return zoomFactor - minimumZoom > 0.0001;
     }
 
     //! Zoom in step
     function zoomInStep() : real {
-        if (canZoomIn()) return zoomStep;
+        if (canZoomIn()) return Math.min(zoomStep, maximumZoom - zoomFactor);
 
-        return 0.0;
+        return 0
     }
 
     //! Zoom out step
     function zoomOutStep() : real {
-        if (canZoomOut()) return zoomStep;
+        if (canZoomOut()) return Math.min(zoomStep, zoomFactor - minimumZoom);
 
-        return 0.0;
+        return 0
     }
 }
