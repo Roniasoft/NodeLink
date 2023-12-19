@@ -107,14 +107,14 @@ QtObject {
 
     //! Zoom in step
     function zoomInStep() : real {
-        if(canZoomIn()) return zoomStep;
+        if (canZoomIn()) return zoomStep;
 
         return 0.0;
     }
 
     //! Zoom out step
     function zoomOutStep() : real {
-        if(canZoomOut()) return zoomStep;
+        if (canZoomOut()) return zoomStep;
 
         return 0.0;
     }

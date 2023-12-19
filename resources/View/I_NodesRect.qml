@@ -56,6 +56,8 @@ Item {
             if (Object.keys(_nodeViewMap).includes(nodeObj._qsUuid))
                 return;
 
+            //! NodeViews should be child of NodesRect so they also get the zoom factor through
+            //! scaling
             const objView = nodeViewComponent.createObject(root, {
                                                            scene: root.scene,
                                                            sceneSession: root.sceneSession,

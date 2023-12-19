@@ -54,7 +54,9 @@ Item {
         anchors.bottom: parent.top
         anchors.bottomMargin: 5
         anchors.horizontalCenter: parent.horizontalCenter
+        //! This prevents header item from moving over NodeView
         transformOrigin: Item.Bottom
+        //! This is for keeping size fixed and ignoring scale
         scale: 1 / sceneSession.zoomManager.zoomFactor
         scene: root.scene
         sceneSession: root.sceneSession
@@ -110,7 +112,7 @@ Item {
                 // Prepare key variables of node movement
                 var deltaX = (mouse.x - prevX);
                 prevX = mouse.x - deltaX;
-                var deltaY = (mouse.y- prevY);
+                var deltaY = (mouse.y - prevY);
                 prevY = mouse.y - deltaY;
 
                 // Start movement process
@@ -125,6 +127,10 @@ Item {
                        (obj.guiConfig.position.y < 0 && deltaY < 0))
                         sceneSession.isRubberBandMoving = false;
 
+                    /*
+                     * Should use signal in I_Scene to request resizing contents since directly
+                     * changing scene.sceneGuiConfig.contentWidth/Height won't effect on Flickable
+                     */
                     /*
                     //! Extend contentWidth and contentWidth when is necessary
                     if (obj.guiConfig.position.x + obj.guiConfig.width > scene.sceneGuiConfig.contentWidth && deltaX > 0)
@@ -263,7 +269,7 @@ Item {
         var margin = 5;
 
         // Update dimentions
-        root.width = (rightX  - leftX + 2 * margin)
+        root.width = (rightX - leftX + 2 * margin)
         root.height = (bottomY - topY + 2 * margin)
         root.x = leftX - margin;
         root.y = topY - margin;

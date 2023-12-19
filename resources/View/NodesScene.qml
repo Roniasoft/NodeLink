@@ -269,7 +269,7 @@ I_NodesScene {
 
         function onZoomFactorChanged()
         {
-            updateContenSize();
+            updateContentSize();
         }
 
         //! Emit from side menu, Do zoomIn process
@@ -436,13 +436,13 @@ I_NodesScene {
         function onContentWidthChanged()
         {
             worldZoomPoint = Qt.point(contentX, contentY);
-            updateContenSize();
+            updateContentSize();
         }
 
         function onContentHeightChanged()
         {
             worldZoomPoint = Qt.point(contentX, contentY);
-            updateContenSize();
+            updateContentSize();
         }
     }
 
@@ -458,7 +458,7 @@ I_NodesScene {
 
     /*! Methods
      * *******************************************************************************************/
-    function updateContenSize()
+    function updateContentSize()
     {
         resizeContent(scene.sceneGuiConfig.contentWidth * sceneSession.zoomManager.zoomFactor,
                       scene.sceneGuiConfig.contentHeight * sceneSession.zoomManager.zoomFactor,

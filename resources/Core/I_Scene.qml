@@ -50,7 +50,9 @@ QSObject {
     //! Link Removed
     signal linkRemoved(Link link)
 
-    //! This signals can be used to request changes in content x/y/width/height
+    //! This signals can be and should be used to request changes in content x/y/width/height, since
+    //! direct changes of SceneGuiConfig.content* won't effect Flickable contents.
+    //! contentMoveRequested() is mainly used by NodesOverview
     signal contentMoveRequested(diff: vector2d)
     signal contentResizeRequested(diff: vector2d)
 

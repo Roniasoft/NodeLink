@@ -382,14 +382,14 @@ InteractiveNodeView {
         onClicked: _selectionTimer.start();
         visible: node.guiConfig.locked || !isNodeEditable
 
-        // //! Manage zoom in nodeview and pass it to zoomManager in lock mode.
-        // onWheel: (wheel) => {
-        //              //! active zoom with shift modifier.
-        //              if(sceneSession.isShiftModifierPressed) {
-        //                  var zoomPoint = Qt.vector2d(wheel.x + nodeView.x, wheel.y + nodeView.y);
-        //                  sceneSession.zoomManager.zoomNodeSignal(zoomPoint, wheel.angleDelta.y);
-        //              }
-        //          }
+        //! Manage zoom in nodeview and pass it to zoomManager in lock mode.
+        onWheel: (wheel) => {
+                     //! active zoom with no modifier.
+                     if(wheel.modifiers === Qt.NoModifier) {
+                         var zoomPoint = mapToItem(nodeView.parent.parent, wheel.x, wheel.y)
+                         sceneSession.zoomManager.zoomNodeSignal(zoomPoint, wheel.angleDelta.y);
+                     }
+                 }
 
     }
 
