@@ -77,7 +77,7 @@ QtObject {
 
     //! Dump repo for stack
     function dumpRepo(scene : I_Scene) : string {
-        let repoDump = NLCore.defaultRepo.dumpRepo()
+        let repoDump = scene._qsRepo.dumpRepo()
         return JSON.stringify(repoDump, null, 4);
     }
 
@@ -91,12 +91,12 @@ QtObject {
 
         // Update imports if necessary
         var nodeLinkImport = "NodeLink";
-        if(!NLCore.defaultRepo._allImports.includes(nodeLinkImport)) {
-            NLCore.defaultRepo._localImports.push(nodeLinkImport);
-            NLCore.defaultRepo._localImportsChanged();
+        if(!scene._qsRepo._allImports.includes(nodeLinkImport)) {
+            scene._qsRepo._localImports.push(nodeLinkImport);
+            scene._qsRepo._localImportsChanged();
         }
 
-        NLCore.defaultRepo.loadRepo(fileObjects);
+        scene._qsRepo.loadRepo(fileObjects);
 
         // Unblock Observers
         NLSpec.undo.blockObservers = false;

@@ -98,8 +98,8 @@ QSObject {
                                 title: string,
                                 xPos : real, yPos : real) : string {
         //! Create a Node with custom node type
-        var node = QSSerializer.createQSObject(nodeTypeName, imports, NLCore.defaultRepo);
-        node._qsRepo = NLCore.defaultRepo;
+        var node = QSSerializer.createQSObject(nodeTypeName, imports, scene._qsRepo);
+        node._qsRepo = scene._qsRepo;
         node.type = nodeType;
         node.guiConfig.position.x = xPos;
         node.guiConfig.position.y = yPos;
@@ -142,8 +142,8 @@ QSObject {
 
         // Create node
         var node = QSSerializer.createQSObject(nodeRegistry.nodeTypes[baseNode.type],
-                                               nodeRegistry.imports, NLCore.defaultRepo);
-        node._qsRepo = NLCore.defaultRepo;
+                                               nodeRegistry.imports, scene._qsRepo);
+        node._qsRepo = scene._qsRepo;
 
         // Clone node
         node.cloneFrom(baseNode);
