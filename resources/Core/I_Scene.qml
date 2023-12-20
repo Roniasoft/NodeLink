@@ -74,6 +74,13 @@ QSObject {
         }
     }
 
+    //! Checks if scene is empty or not
+    function isSceneEmpty() : bool {
+        if (Object.keys(nodes).length === 0 && Object.keys(links).length === 0)
+            return true;
+        return false;
+    }
+
     //! Adds a node the to nodes map
     function addNode(node: Node) {
         //Sanity check
