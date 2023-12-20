@@ -140,8 +140,10 @@ I_NodesScene {
         }
 
         onPositionChanged: (mouse) => {
-            // Update marquee selection
-            sceneSession.updateMarqueeSelection(mouse)
+            if (mouse.buttons === Qt.LeftButton) {
+                // Update marquee selection
+                sceneSession.updateMarqueeSelection(mouse)
+            }
         }
 
 
