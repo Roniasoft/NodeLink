@@ -27,9 +27,6 @@ I_NodesScene {
     //! for making NodesScene behavior customizable
     property int         selectionMouseAreaButtons: Qt.LeftButton | Qt.RightButton
 
-    //! This is to be able to override wheel handling by NodesScene
-    property int         zoomModifier:              Qt.ShiftModifier
-
     /* Object Properties
     * ****************************************************************************************/
 
@@ -154,7 +151,7 @@ I_NodesScene {
         }
 
         onWheel: (wheel) => {
-                     if(wheel.modifiers !== zoomModifier)
+                     if(wheel.modifiers !== sceneSession.zoomManager.zoomModifier)
                         return;
 
                      zoomPoint      = Qt.vector3d(wheel.x - scene.sceneGuiConfig.contentX, wheel.y - scene.sceneGuiConfig.contentY, 0);

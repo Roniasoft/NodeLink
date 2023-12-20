@@ -28,6 +28,9 @@ QtObject {
     //! zoom in node edit mode (When a node is in minimal mode)
     property real nodeEditZoom :    2.0
 
+    //! Holds the modifier that should be held during wheel event so zooming is performed
+    property int  zoomModifier:     Qt.ShiftModifier
+
     /* Signals
      * ****************************************************************************************/
 

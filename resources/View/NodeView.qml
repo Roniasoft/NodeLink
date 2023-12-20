@@ -263,7 +263,7 @@ InteractiveNodeView {
         //! Manage zoom in nodeview and pass it to zoomManager
         onWheel: (wheel) => {
                      //! active zoom with no modifier.
-                     if(wheel.modifiers === Qt.NoModifier) {
+                     if(wheel.modifiers === sceneSession.zoomManager.zoomModifier) {
                          sceneSession.zoomManager.zoomNodeSignal(
                              Qt.point(wheel.x, wheel.y),
                              this,
