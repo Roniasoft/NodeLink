@@ -19,10 +19,10 @@ Rectangle {
      * ****************************************************************************************/
     width: colorPicker.width + 15
     height: 50
-    color: "#1e1e1e"
+    color: NLStyle.primaryBackgroundColor
     radius: NLStyle.radiusAmount.itemButton
     border.width: 1
-    border.color: "#363636"
+    border.color: NLStyle.primaryBorderColor
 
     /* Signals
      * ****************************************************************************************/
@@ -31,52 +31,47 @@ Rectangle {
     //A row with 6 colors
     RowLayout {
         id: colorPicker
+
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.verticalCenter: parent.verticalCenter
         spacing: 2
+
         //Each color is one color item
         ColorItem {
+            id: redColorItem
             cellColor: "red";
-            onClicked: {
-                colorPickerRect.colorChanged(cellColor);
-                colorPickerRect.visible = false;
-            }
+            onClicked: updateColor(redColorItem.cellColor);
         }
+
         ColorItem {
+            id: greenItem
             cellColor: "green";
-            onClicked: {
-                colorPickerRect.colorChanged(cellColor);
-                colorPickerRect.visible = false;
-            }
+            onClicked: updateColor(greenItem.cellColor);
         }
+
         ColorItem {
+            id: purpleItem
             cellColor: "purple";
-            onClicked: {
-                colorPickerRect.colorChanged(cellColor);
-                colorPickerRect.visible = false;
-            }
+            onClicked: updateColor(purpleItem.cellColor);
         }
+
         ColorItem {
+            id: yellowItem
             cellColor: "yellow";
-            onClicked: {
-                colorPickerRect.colorChanged(cellColor);
-                colorPickerRect.visible = false;
-            }
+            onClicked: updateColor(yellowItem.cellColor);
         }
+
         ColorItem {
+            id: steelBlueItem
             cellColor: "steelblue";
-            onClicked: {
-                colorPickerRect.colorChanged(cellColor);
-                colorPickerRect.visible = false;
-            }
+            onClicked: updateColor(steelBlueItem.cellColor);
         }
+
         ColorItem {
             id: rainbowColorItem
             isRainbow: true
             cellColor: customeColor
-            onClicked: {
-                colorDialog.open()
-            }
+            onClicked: colorDialog.open()
         }
     }
 
@@ -94,5 +89,13 @@ Rectangle {
         onRejected: {
             colorDialog.close()
         }
+    }
+
+    /* Functions
+     * ****************************************************************************************/
+    function updateColor(cellColor) {
+        colorPickerRect.colorChanged(cellColor);
+        colorPickerRect.visible = false;
+        rainbowColorItem.isRainbow = true;
     }
 }
