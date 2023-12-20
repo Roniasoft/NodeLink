@@ -38,8 +38,9 @@ QtObject {
     signal zoomInSignal();
     signal zoomOutSignal();
 
-    //! Zoom In/Out from NodeView
-    signal zoomNodeSignal(zoomPoint: vector2d, wheelAngle: int);
+    //! Zoom In/Out from NodeView:
+    //! zoomPoint must be in local coordinates of NodeView, mapping is handled by NodesScene itself
+    signal zoomNodeSignal(point zoomPoint, Item nodeView, int wheelAngle);
 
     //! Zoom into a node
     signal zoomToNodeSignal(node: Node, targetZoomFactor: real);

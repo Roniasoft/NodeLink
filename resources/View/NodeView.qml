@@ -264,8 +264,10 @@ InteractiveNodeView {
         onWheel: (wheel) => {
                      //! active zoom with no modifier.
                      if(wheel.modifiers === Qt.NoModifier) {
-                         var zoomPoint = mapToItem(nodeView.parent.parent, wheel.x, wheel.y)
-                         sceneSession.zoomManager.zoomNodeSignal(zoomPoint, wheel.angleDelta.y);
+                         sceneSession.zoomManager.zoomNodeSignal(
+                             Qt.point(wheel.x, wheel.y),
+                             this,
+                             wheel.angleDelta.y);
                      }
                  }
 
@@ -386,8 +388,10 @@ InteractiveNodeView {
         onWheel: (wheel) => {
                      //! active zoom with no modifier.
                      if(wheel.modifiers === Qt.NoModifier) {
-                         var zoomPoint = mapToItem(nodeView.parent.parent, wheel.x, wheel.y)
-                         sceneSession.zoomManager.zoomNodeSignal(zoomPoint, wheel.angleDelta.y);
+                         sceneSession.zoomManager.zoomNodeSignal(
+                             Qt.point(wheel.x, wheel.y),
+                             this,
+                             wheel.angleDelta.y);
                      }
                  }
 
