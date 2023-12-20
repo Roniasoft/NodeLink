@@ -6,20 +6,32 @@ import NodeLink
  * A view for user connection (creating a new connection by user)
  * Using a js canvas for drawing
  * ************************************************************************************************/
-LinkView {
-    id: root
+Item {
+    id: item
+
+    /* Property Declarations
+     * ****************************************************************************************/
+    property I_Scene        scene
+
+    property SceneSession   sceneSession
+
 
     /* Object Properties
      * ****************************************************************************************/
 
-    /* Property Declarations
-    * ****************************************************************************************/
-
-
     /* Children
     * ****************************************************************************************/
+    LinkView {
+        id: linkview
+        scene: item.scene
+        sceneSession: item.sceneSession
+    }
+
     MouseArea {
         id: mouseArea
+
+        property alias link: linkview.link
+
         anchors.fill: parent
         enabled: sceneSession?.connectingMode ?? false
         hoverEnabled: true
@@ -31,13 +43,13 @@ LinkView {
         //! Find if there is any port beneath the mouse pointer
         onPressed: (mouse) => {
             var portId = findPortInRect(Qt.point(mouse.x, mouse.y), 10);
-            root.inputPort = scene.findPort(portId);
+            linkview.inputPort = scene.findPort(portId);
             var gMouse = mapToItem(parent, mouse.x, mouse.y);
-            if (root.inputPort) {
-                root.opacity = 0 // The link will be shown on the first move
-                root.outputPos = Qt.vector2d(gMouse.x, gMouse.y);
-                inputPortId = root.inputPort._qsUuid;
-                link.inputPort.portSide = root.inputPort.portSide;
+            if (linkview.inputPort) {
+                linkview.opacity = 0 // The link will be shown on the first move
+                linkview.outputPos = Qt.vector2d(gMouse.x, gMouse.y);
+                inputPortId = linkview.inputPort._qsUuid;
+                link.inputPort.portSide = linkview.inputPort.portSide;
                 sceneSession.setPortVisibility(inputPortId, true)
             }
 
@@ -51,7 +63,7 @@ LinkView {
                  return;
 
             // make it visible on first move
-            root.opacity = 1.0
+            linkview.opacity = 1.0
 
             // Hide input port
             if (sceneSession.portsVisibility[inputPortId])
@@ -72,17 +84,17 @@ LinkView {
             // Update outputPos to paint line with new position.
             if (outputPortId.length > 0) {
                 // find the detected port position to link it as a TEMP LINK
-                root.outputPos = scene.findPort(outputPortId)._position;
+                linkview.outputPos = scene.findPort(outputPortId)._position;
                 // Find port side based on the found output port
-                root.outputPortSide = scene.findPort(outputPortId)?.portSide ??
+                linkview.outputPortSide = scene.findPort(outputPortId)?.portSide ??
                                    findPortSide(link.inputPort.portSide)
                 sceneSession.setPortVisibility(outputPortId, true);
             } else {
                 // Find the global mouse position and update outputPos
                 var gMouse = mapToItem(parent, mouse.x, mouse.y);
-                root.outputPos = Qt.vector2d(gMouse.x, gMouse.y);
+                linkview.outputPos = Qt.vector2d(gMouse.x, gMouse.y);
                 // Find port side based on the input port
-                root.outputPortSide = findPortSide(link.inputPort.portSide)
+                linkview.outputPortSide = findPortSide(link.inputPort.portSide)
             }
         }
 
@@ -109,11 +121,11 @@ LinkView {
 
         ContextMenu {
             id: contextMenu
-            scene: root.scene
-            sceneSession: root.sceneSession
+            scene: linkview.scene
+            sceneSession: linkview.sceneSession
 
             onNodeAdded: (nodeUuid) => {
-                parent.outputPortId = parent.findCorrespondingPortSide(root.inputPort, nodeUuid);
+                parent.outputPortId = parent.findCorrespondingPortSide(linkview.inputPort, nodeUuid);
 
                 if(parent.inputPortId.length > 0 && parent.outputPortId.length > 0)
                     scene.linkNodes(parent.inputPortId, parent.outputPortId);
@@ -127,7 +139,7 @@ LinkView {
 
         //! clear temp connection.
         function clearTempConnection() {
-            root.inputPort = null;
+            linkview.inputPort = null;
             sceneSession.connectingMode = false;
             sceneSession.setPortVisibility(inputPortId, false);
             sceneSession.setPortVisibility(outputPortId, false);
