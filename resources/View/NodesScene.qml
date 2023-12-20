@@ -23,6 +23,13 @@ I_NodesScene {
     property vector3d    zoomPoint:      Qt.vector3d(0, 0, 0)
     property vector2d    worldZoomPoint: Qt.vector2d(0, 0)
 
+    //! This is to control what button selections MouseArea handle. This is a temporary solution
+    //! for making NodesScene behavior customizable
+    property int         selectionMouseAreaButtons: Qt.LeftButton | Qt.RightButton
+
+    //! This is to be able to override wheel handling by NodesScene
+    property int         zoomModifier:              Qt.ShiftModifier
+
     /* Object Properties
     * ****************************************************************************************/
 
@@ -116,12 +123,13 @@ I_NodesScene {
 
     //! MouseArea for selection of links
     MouseArea {
-        parent: contentLoader.item
+        parent: flickableContents
         anchors.fill: parent
-        acceptedButtons: Qt.LeftButton | Qt.RightButton
+        acceptedButtons: selectionMouseAreaButtons
         enabled: sceneSession && !sceneSession.connectingMode &&
                  !sceneSession.isRubberBandMoving &&
                  !sceneSession.isCtrlPressed
+        z: -1 //! Below contents and above background
 
         propagateComposedEvents: true
         hoverEnabled: sceneSession.marqueeSelectionMode
@@ -146,11 +154,11 @@ I_NodesScene {
         }
 
         onWheel: (wheel) => {
-                     if(!sceneSession.isShiftModifierPressed)
+                     if(wheel.modifiers !== zoomModifier)
                         return;
 
                      zoomPoint      = Qt.vector3d(wheel.x - scene.sceneGuiConfig.contentX, wheel.y - scene.sceneGuiConfig.contentY, 0);
-                     worldZoomPoint = Qt.vector2d(wheel.x, wheel.y);
+                     worldZoomPoint = mapToItem(flickableContents.parent, wheel.x, wheel.y);
 
                      if(wheel.angleDelta.y > 0)
                         sceneSession.zoomManager.zoomIn();
@@ -368,14 +376,16 @@ I_NodesScene {
         }
 
         //! Manage zoom from nodeView.
-        function onZoomNodeSignal(zoomPointScaled: vector2d, wheelAngle: int) {
+        function onZoomNodeSignal(localZoomPoint: point, nodeView: Item, wheelAngle: int) {
+            if (!nodeView) return;
 
-            flickable.zoomPoint      = Qt.vector3d(zoomPointScaled.x - scene.sceneGuiConfig.contentX, zoomPointScaled.y - scene.sceneGuiConfig.contentY, 0);
-            flickable.worldZoomPoint = Qt.vector2d(zoomPointScaled.x, zoomPointScaled.y);
+            flickable.zoomPoint = Qt.vector3d(localZoomPoint.x - scene.sceneGuiConfig.contentX, localZoomPoint.y - scene.sceneGuiConfig.contentY, 0);
+            flickable.worldZoomPoint = nodeView.mapToItem(flickableContents.parent, localZoomPoint);
+
             if(wheelAngle > 0)
-                   sceneSession.zoomManager.zoomIn();
+                sceneSession.zoomManager.zoomIn();
             else if (wheelAngle < 0)
-                   sceneSession.zoomManager.zoomOut();
+                sceneSession.zoomManager.zoomOut();
         }
 
         //! Set focus on NodesScene after zoom In/Out
