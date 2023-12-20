@@ -290,7 +290,7 @@ I_NodesScene {
             var firstNode = Object.values(scene.nodes)[0];
             var correctPosition = firstNode.guiConfig.position;
             var leftX = correctPosition.x;
-            var rigthX = correctPosition.x + firstNode.guiConfig.width;
+            var rightX = correctPosition.x + firstNode.guiConfig.width;
             var topY = correctPosition.y;
             var bottomY = correctPosition.y + firstNode.guiConfig.height;
 
@@ -303,52 +303,30 @@ I_NodesScene {
                                                    var bottomNodeY = correctPosition.y + node.guiConfig.height;
 
                                                    leftX   = Math.min(leftX,   leftNodeX);
-                                                   rigthX  = Math.max(rigthX,  rightNodeX);
+                                                   rightX  = Math.max(rightX,  rightNodeX);
                                                    topY    = Math.min(topY,    topNodeY);
                                                    bottomY = Math.max(bottomY, bottomNodeY);
                                                });
 
 
             //! Calculate width and height ratio, Use minimum value to fit in width and height
-            var widthRatio  = flickable.width / (rigthX - leftX) / 1.15;
+            var widthRatio  = flickable.width / (rightX - leftX) / 1.15;
             var heightRatio = flickable.height / (bottomY - topY) / 1.15;
 
             //! Maximum zoomFactor is 1.5, greater than 1.5 is not necessary.
-            var zoomFactor = nodesLength > 1 ? Math.min(widthRatio, heightRatio, sceneSession.zoomManager.maximumZoom) : 1;
+            var zoomFactor = nodesLength > 1 ? Math.max(sceneSession.zoomManager.minimumZoom,
+                                                        Math.min(sceneSession.zoomManager.maximumZoom,
+                                                                 widthRatio, heightRatio))
+                                             : 1;
 
-            worldZoomPoint = Qt.vector2d(scene.sceneGuiConfig.contentX + flickable.width / 2,
-                                      scene.sceneGuiConfig.contentY + flickable.height / 2);
+            worldZoomPoint = Qt.vector2d((rightX + leftX) / 2, (topY + bottomY) / 2).times(
+                        sceneSession.zoomManager.zoomFactor);
+
+            contentX = Math.max(0, worldZoomPoint.x - flickable.width / 2);
+            contentY = Math.max(0, worldZoomPoint.y - flickable.height / 2);
 
             //! update zoom factor
             sceneSession.zoomManager.customZoom(zoomFactor)
-
-            //! update content dimentions
-            var fcontentWidth  = NLStyle.scene.defaultContentWidth  * zoomFactor
-            var fcontentHeight = NLStyle.scene.defaultContentHeight * zoomFactor
-
-            //! Calculate contentX and contentY, when nodes has one node, the node must be in center
-            //! Contents margin
-            var cantentMargin = nodesLength === 1 ? 1 : 0.95;
-
-            var fcontentX = leftX * zoomFactor * cantentMargin - (nodesLength === 1 ? (flickable.width - (rigthX - leftX)) / 2 : 0);
-            var fcontentY = topY  * zoomFactor * cantentMargin - (nodesLength === 1 ? (flickable.height - (bottomY - topY)) / 2 : 0);
-
-            fcontentWidth = Math.max(...Object.values(scene?.nodes ?? ({})).
-                                     map(node => ((node.guiConfig.position.x + node.guiConfig.width) *
-                                                  sceneSession.zoomManager.zoomFactor)), fcontentWidth);
-
-            //! Maximum contentWidth is 8000, greater than 8000, the app was slow.
-            scene.sceneGuiConfig.contentWidth = Math.max(fcontentWidth, scene.sceneGuiConfig.contentWidth);
-
-            fcontentHeight = Math.max(...Object.values(scene?.nodes ?? ({})).
-                                      map(node => ((node.guiConfig.position.y + node.guiConfig.height) *
-                                                   sceneSession.zoomManager.zoomFactor)), fcontentHeight);
-
-            scene.sceneGuiConfig.contentHeight = Math.max(fcontentHeight, scene.sceneGuiConfig.contentHeight);
-
-            // Adjust the content position to zoom to the mouse point
-            scene.sceneGuiConfig.contentX = Math.max(0, fcontentX);
-            scene.sceneGuiConfig.contentY = Math.max(0, fcontentY);
         }
 
         //! Emit from side menu, Do zoomIn process
@@ -372,7 +350,7 @@ I_NodesScene {
             worldZoomPoint = Qt.vector2d(scene.sceneGuiConfig.contentX + flickable.width / 2,
                                          scene.sceneGuiConfig.contentY + flickable.height / 2);
 
-            sceneSession.zoomManager.zoomIn();
+            sceneSession.zoomManager.zoomOut();
         }
 
         //! Manage zoom from nodeView.
@@ -395,14 +373,9 @@ I_NodesScene {
 
         //! Reset zoom and related parameters
         function onResetZoomSignal(zoomFactor: real) {
-            //! Reset zoom to defualt values
-            scene.sceneGuiConfig.contentWidth  = NLStyle.scene.defaultContentWidth;
-            scene.sceneGuiConfig.contentHeight = NLStyle.scene.defaultContentHeight;
-
-            //! Change contents to initial value
-            scene.sceneGuiConfig.contentX = 1500;
-            scene.sceneGuiConfig.contentY = 1500;
-
+            zoomPoint      = Qt.vector3d(flickable.width / 2, flickable.height / 2, 0);
+            worldZoomPoint = Qt.vector2d(scene.sceneGuiConfig.contentX + flickable.width / 2,
+                                         scene.sceneGuiConfig.contentY + flickable.height / 2);
 
             sceneSession.zoomManager.customZoom(zoomFactor);
         }
