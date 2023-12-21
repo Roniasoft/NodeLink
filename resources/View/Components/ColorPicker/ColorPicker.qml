@@ -24,9 +24,7 @@ Rectangle {
     radius: NLStyle.radiusAmount.itemButton
     border.width: 1
     border.color: NLStyle.primaryBorderColor
-    onColorItemsChanged:  {
-        console.log("hey, ", colorItems)
-    }
+
 
     /* Signals
      * ****************************************************************************************/
@@ -113,7 +111,6 @@ Rectangle {
         onAccepted: {
             colorPickerRect.colorChanged(customeColor);
             updateColor(customeColor, rainbowColorItem)
-//            rainbowColorItem.isCustom = false
         }
         onRejected: {
             colorDialog.close()
@@ -125,7 +122,7 @@ Rectangle {
     function updateColor(cellColor, colorItem) {
         colorPickerRect.colorChanged(cellColor);
         colorPickerRect.visible = false;
-//        rainbowColorItem.isCustom = true;
+
         colorItems.forEach(colorItemInstance => {
             if (colorItemInstance !== colorItem)
                 colorItemInstance.isCurrent = false;
