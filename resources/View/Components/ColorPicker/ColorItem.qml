@@ -12,6 +12,11 @@ Item {
      * ****************************************************************************************/
     property alias cellColor: innerRect.color
     property bool  isCustom: false
+    property bool  isCurrent: false
+
+    onIsCurrentChanged: {
+        console.log("hey",isCurrent)
+    }
 
     /* Signals
      * ****************************************************************************************/
@@ -27,13 +32,13 @@ Item {
         id:outerRect
         anchors.fill: parent
         radius: width /2
-        visible: mouseArea.containsMouse ? true : false
-        border.color: isCustom ? "#3f3f3f" : cellColor
+        visible: mouseArea.containsMouse || isCurrent ? true : false
+        border.color: mouseArea.containsMouse || isCurrent ? cellColor : "#3f3f3f"
 
         Canvas {
             anchors.fill: parent
-            enabled: isCustom
-            visible: isCustom
+            enabled: isCustom && (isCurrent || mouseArea.containsMouse)
+            visible: isCustom && (isCurrent || mouseArea.containsMouse)
             antialiasing: true
             smooth: true
             onPaint: {
@@ -63,10 +68,11 @@ Item {
         height: colorItemContainer.height - 6;
         radius: innerRect.width/2
         anchors.centerIn: outerRect
+
         Canvas {
             anchors.fill: parent
-            enabled: isCustom
-            visible: isCustom
+            enabled: isCustom && !isCurrent
+            visible: isCustom && !isCurrent
             antialiasing: true
             smooth: true
             onPaint: {
@@ -92,6 +98,8 @@ Item {
         }
     }
 
+    /* Functions
+     * ****************************************************************************************/
     function rainbowGradient(ctx, width, height) {
         var gradient = ctx.createConicalGradient(width / 2, height / 2, 0);
 

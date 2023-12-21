@@ -14,6 +14,7 @@ Rectangle {
     /* Property Declarations
      * ****************************************************************************************/
     property string customeColor: colorDialog.selectedColor
+    property var    colorItems:   []
 
     /* Object Properties
      * ****************************************************************************************/
@@ -23,6 +24,9 @@ Rectangle {
     radius: NLStyle.radiusAmount.itemButton
     border.width: 1
     border.color: NLStyle.primaryBorderColor
+    onColorItemsChanged:  {
+        console.log("hey, ", colorItems)
+    }
 
     /* Signals
      * ****************************************************************************************/
@@ -40,31 +44,51 @@ Rectangle {
         ColorItem {
             id: redColorItem
             cellColor: "red";
-            onClicked: updateColor(redColorItem.cellColor);
+            onClicked: updateColor(redColorItem.cellColor, redColorItem);
+            Component.onCompleted: {
+                colorItems.push(redColorItem)
+                colorItemsChanged();
+            }
         }
 
         ColorItem {
             id: greenItem
             cellColor: "green";
-            onClicked: updateColor(greenItem.cellColor);
+            onClicked: updateColor(greenItem.cellColor, greenItem);
+            Component.onCompleted: {
+                colorItems.push(greenItem)
+                colorItemsChanged();
+            }
         }
 
         ColorItem {
             id: purpleItem
             cellColor: "purple";
-            onClicked: updateColor(purpleItem.cellColor);
+            onClicked: updateColor(purpleItem.cellColor, purpleItem);
+            Component.onCompleted: {
+                colorItems.push(purpleItem)
+                colorItemsChanged();
+            }
         }
 
         ColorItem {
             id: yellowItem
             cellColor: "yellow";
-            onClicked: updateColor(yellowItem.cellColor);
+            onClicked: updateColor(yellowItem.cellColor, yellowItem);
+            Component.onCompleted: {
+                colorItems.push(yellowItem)
+                colorItemsChanged();
+            }
         }
 
         ColorItem {
             id: steelBlueItem
             cellColor: "steelblue";
-            onClicked: updateColor(steelBlueItem.cellColor);
+            onClicked: updateColor(steelBlueItem.cellColor, steelBlueItem);
+            Component.onCompleted: {
+                colorItems.push(steelBlueItem)
+                colorItemsChanged();
+            }
         }
 
         ColorItem {
@@ -72,6 +96,10 @@ Rectangle {
             isCustom: true
             cellColor: customeColor
             onClicked: colorDialog.open()
+            Component.onCompleted: {
+                colorItems.push(rainbowColorItem)
+                colorItemsChanged();
+            }
         }
     }
 
@@ -84,7 +112,8 @@ Rectangle {
         }
         onAccepted: {
             colorPickerRect.colorChanged(customeColor);
-            rainbowColorItem.isCustom = false
+            updateColor(customeColor, rainbowColorItem)
+//            rainbowColorItem.isCustom = false
         }
         onRejected: {
             colorDialog.close()
@@ -93,9 +122,15 @@ Rectangle {
 
     /* Functions
      * ****************************************************************************************/
-    function updateColor(cellColor) {
+    function updateColor(cellColor, colorItem) {
         colorPickerRect.colorChanged(cellColor);
         colorPickerRect.visible = false;
-        rainbowColorItem.isCustom = true;
+//        rainbowColorItem.isCustom = true;
+        colorItems.forEach(colorItemInstance => {
+            if (colorItemInstance !== colorItem)
+                colorItemInstance.isCurrent = false;
+            else
+                colorItemInstance.isCurrent = true;
+        });
     }
 }
