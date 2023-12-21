@@ -69,7 +69,7 @@ Rectangle {
 
         ColorItem {
             id: rainbowColorItem
-            isRainbow: true
+            isCustom: true
             cellColor: customeColor
             onClicked: colorDialog.open()
         }
@@ -84,7 +84,7 @@ Rectangle {
         }
         onAccepted: {
             colorPickerRect.colorChanged(customeColor);
-            rainbowColorItem.isRainbow = false
+            rainbowColorItem.isCustom = false
         }
         onRejected: {
             colorDialog.close()
@@ -96,6 +96,6 @@ Rectangle {
     function updateColor(cellColor) {
         colorPickerRect.colorChanged(cellColor);
         colorPickerRect.visible = false;
-        rainbowColorItem.isRainbow = true;
+        rainbowColorItem.isCustom = true;
     }
 }
