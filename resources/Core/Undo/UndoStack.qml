@@ -30,6 +30,8 @@ QtObject {
     //! Redo stack
     property var    redoStack:      []
 
+    property var    correctRepo:    scene?._qsRepo ?? NLCore.defaultRepo
+
     /* Functions
      * ****************************************************************************************/
 
@@ -77,7 +79,7 @@ QtObject {
 
     //! Dump repo for stack
     function dumpRepo(scene : I_Scene) : string {
-        let repoDump = scene._qsRepo.dumpRepo()
+        let repoDump = correctRepo.dumpRepo()
         return JSON.stringify(repoDump, null, 4);
     }
 
@@ -91,12 +93,12 @@ QtObject {
 
         // Update imports if necessary
         var nodeLinkImport = "NodeLink";
-        if(!scene._qsRepo._allImports.includes(nodeLinkImport)) {
-            scene._qsRepo._localImports.push(nodeLinkImport);
-            scene._qsRepo._localImportsChanged();
+        if(!correctRepo._allImports.includes(nodeLinkImport)) {
+            correctRepo._localImports.push(nodeLinkImport);
+            correctRepo._localImportsChanged();
         }
 
-        scene._qsRepo.loadRepo(fileObjects);
+        correctRepo.loadRepo(fileObjects);
 
         // Unblock Observers
         NLSpec.undo.blockObservers = false;

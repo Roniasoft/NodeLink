@@ -64,8 +64,8 @@ Menu {
             return null;
         }
 
-        var node = QSSerializer.createQSObject(qsType, scene.nodeRegistry.imports, scene._qsRepo);
-        node._qsRepo = scene._qsRepo;
+        var node = QSSerializer.createQSObject(qsType, scene.nodeRegistry.imports, scene?._qsRepo ?? NLCore.defaultRepo);
+        node._qsRepo = scene?._qsRepo ?? NLCore.defaultRepo;
         node.type = nodeType;
 
         // Correct position with zoompoint and zoom factor into real position.

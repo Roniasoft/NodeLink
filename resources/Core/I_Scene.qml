@@ -29,11 +29,13 @@ QSObject {
 
     //! Scene GUI Config and Properties
     property SceneGuiConfig sceneGuiConfig: SceneGuiConfig {
-        _qsRepo: scene._qsRepo
+        _qsRepo: correctRepo
     }
 
     //! Each scene requires its own NodeRegistry.
     property NLNodeRegistry nodeRegistry: null
+
+    property var            correctRepo:  scene?._qsRepo ?? NLCore.defaultRepo
 
     /* Signals
      * ****************************************************************************************/
@@ -62,9 +64,9 @@ QSObject {
     //! Check the repository if the model is loading the call the nodes add/remove
     //! related signals to sync the UI
     property Connections _initializeCon : Connections {
-        target: scene._qsRepo
+        target: correctRepo
         function onIsLoadingChanged() {
-            if (scene._qsRepo._isLoading) {
+            if (correctRepo._isLoading) {
                 Object.values(nodes).forEach(node => nodeRemoved(node));
                 Object.values(links).forEach(link => linkRemoved(link));
             } else {
@@ -95,7 +97,7 @@ QSObject {
         scene.selectionModel.selectNode(node);
 
         Object.values(node.ports).forEach(port => {
-            port._qsRepo = scene._qsRepo
+            port._qsRepo = correctRepo
         })
 
         return node;
@@ -109,8 +111,8 @@ QSObject {
                                 title: string,
                                 xPos : real, yPos : real) : string {
         //! Create a Node with custom node type
-        var node = QSSerializer.createQSObject(nodeTypeName, imports, scene._qsRepo);
-        node._qsRepo = scene._qsRepo;
+        var node = QSSerializer.createQSObject(nodeTypeName, imports, correctRepo);
+        node._qsRepo = correctRepo;
         node.type = nodeType;
         node.guiConfig.position.x = xPos;
         node.guiConfig.position.y = yPos;
@@ -153,8 +155,8 @@ QSObject {
 
         // Create node
         var node = QSSerializer.createQSObject(nodeRegistry.nodeTypes[baseNode.type],
-                                               nodeRegistry.imports, scene._qsRepo);
-        node._qsRepo = scene._qsRepo;
+                                               nodeRegistry.imports, correctRepo);
+        node._qsRepo = correctRepo;
 
         // Clone node
         node.cloneFrom(baseNode);
@@ -178,7 +180,7 @@ QSObject {
             obj.guiConfig.colorIndex = 0;
             obj.inputPort  = findPort(portA);
             obj.outputPort = findPort(portB);
-            obj._qsRepo = scene._qsRepo
+            obj._qsRepo = correctRepo;
             links[obj._qsUuid] = obj;
             linksChanged();
 
