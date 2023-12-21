@@ -11,12 +11,10 @@ Item {
     /* Property Declarations
      * ****************************************************************************************/
     property alias cellColor: innerRect.color
-    property bool  isCustom: false
+    //! Is color Item rainbow(custom) or not
+    property bool  isCustom:  false
+    //Is the color Item currently selected color item or not
     property bool  isCurrent: false
-
-    onIsCurrentChanged: {
-        console.log("hey",isCurrent)
-    }
 
     /* Signals
      * ****************************************************************************************/
