@@ -14,6 +14,9 @@ Rectangle {
     /* Property Declarations
      * ****************************************************************************************/
     property string customeColor: colorDialog.selectedColor
+    property string currentColor: colorDialog.selectedColor
+    property int currentIndex: -1
+
     property var    colorItems:   []
 
     /* Object Properties
@@ -28,7 +31,7 @@ Rectangle {
 
     /* Signals
      * ****************************************************************************************/
-    signal colorChanged(var colorName)
+    signal colorChanged(var colorName, var index)
 
     //A row with 6 colors
     RowLayout {
@@ -104,15 +107,20 @@ Rectangle {
     //!qml color dialouge, for user to choose the color themeselves
     ColorDialog {
         id: colorDialog
+
         title: "Please Choose a Color"
+        selectedColor: colorPickerRect.currentColor
         onSelectedColorChanged: {
-            colorPickerRect.colorChanged(colorDialog.selectedColor);
+            colorPickerRect.colorChanged(colorDialog.selectedColor, colorPickerRect.currentIndex);
         }
         onAccepted: {
-            colorPickerRect.colorChanged(customeColor);
+            colorPickerRect.colorChanged(customeColor, 0);
             updateColor(customeColor, rainbowColorItem)
         }
         onRejected: {
+            colorPickerRect.currentColorChanged();
+            // not working good on multiple selection with different color Index
+            colorPickerRect.colorChanged(colorPickerRect.currentColor, colorPickerRect.currentIndex);
             colorDialog.close()
         }
     }
@@ -120,7 +128,9 @@ Rectangle {
     /* Functions
      * ****************************************************************************************/
     function updateColor(cellColor, colorItem) {
-        colorPickerRect.colorChanged(cellColor);
+        colorPickerRect.currentColor = cellColor;
+        colorPickerRect.currentIndex = colorItems.indexOf(colorItem);
+        colorPickerRect.colorChanged(colorPickerRect.currentColor, colorPickerRect.currentIndex);
         colorPickerRect.visible = false;
 
         colorItems.forEach(colorItemInstance => {
@@ -129,5 +139,23 @@ Rectangle {
             else
                 colorItemInstance.isCurrent = true;
         });
+    }
+
+    function setColor(cellColor, colorIndex) {
+        colorItems.forEach(colorItemInstance => {
+                colorItemInstance.isCurrent = false;
+        });
+        if (colorIndex === 0) {
+            rainbowColorItem.isCurrent = true;
+        } else if (colorIndex > 0 && colorIndex <= colorItems.length) {
+            colorItems[colorIndex].isCurrent = true;
+        } else {
+            // make default color current
+            return;
+        }
+        // not working good with multiple nodes with colorIndex == 0 but different color
+        // as emits colorChanged
+        colorPickerRect.currentIndex = colorIndex;
+        colorPickerRect.currentColor = cellColor;
     }
 }
