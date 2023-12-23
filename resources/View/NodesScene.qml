@@ -23,14 +23,15 @@ I_NodesScene {
     property vector3d    zoomPoint:      Qt.vector3d(0, 0, 0)
     property vector2d    worldZoomPoint: Qt.vector2d(0, 0)
 
+    //! Controls whether flicking should happen or not
+    property bool        flickEnabled: true
     //! This is to control what button selections MouseArea handle. This is a temporary solution
     //! for making NodesScene behavior customizable
     property int         selectionMouseAreaButtons: Qt.LeftButton | Qt.RightButton
 
     /* Object Properties
     * ****************************************************************************************/
-
-    interactive: sceneSession && !sceneSession.isCtrlPressed
+    interactive: false
 
     /* Children
     * ****************************************************************************************/
@@ -56,19 +57,19 @@ I_NodesScene {
 
     //! Use Key to manage shift pressed to handle multiObject selection
     Keys.onPressed: (event)=> {
-        if (event.key === Qt.Key_Shift)
-            sceneSession.isShiftModifierPressed = true;
-        if(event.key === Qt.Key_Control)
-            sceneSession.isCtrlPressed = true;
+                        if (event.key === Qt.Key_Shift)
+                        sceneSession.isShiftModifierPressed = true;
+                        if(event.key === Qt.Key_Control)
+                        sceneSession.isCtrlPressed = true;
 
-    }
+                    }
 
     Keys.onReleased: (event)=> {
-        if (event.key === Qt.Key_Shift)
-           sceneSession.isShiftModifierPressed = false;
-        if(event.key === Qt.Key_Control)
-             sceneSession.isCtrlPressed = false;
-    }
+                         if (event.key === Qt.Key_Shift)
+                         sceneSession.isShiftModifierPressed = false;
+                         if(event.key === Qt.Key_Control)
+                         sceneSession.isCtrlPressed = false;
+                     }
 
     //! Change ScrollBars
     ScrollBar.horizontal: HorizontalScrollBar {
@@ -98,7 +99,7 @@ I_NodesScene {
         id: deletePopup
         confirmText: "Are you sure you want to delete " +
                      (Object.keys(scene?.selectionModel?.selectedModel ?? ({})).length > 1 ?
-                         "these items?" : "this item?");
+                          "these items?" : "this item?");
         sceneSession: flickable.sceneSession
         onAccepted: delTimer.start();
     }
@@ -118,111 +119,155 @@ I_NodesScene {
         sceneSession: flickable.sceneSession
     }
 
-    //! MouseArea for selection of links
+    //! Context Menu for adding a new node (for now)
+    ContextMenu {
+        id: contextMenu
+        scene: flickable.scene
+        sceneSession: flickable.sceneSession
+        nodePosition: Qt.vector2d(x + contentX, y + contentY).times(1 / flickableScale)
+    }
+
+    //! Pan and flick MouseArea. This is added to override Flickable handling pan/flick to be able
+    //! to tweak it easily from outside
+    //! Note: This MouseArea should be child of flickable itself and not its content item.
     MouseArea {
+        property bool       wasDragged: false
+        property vector2d   lastSpeed:  Qt.vector2d(0, 0)
+        property point      lastPoint:  Qt.point(-1, -1)
+        property real       elapsedTime: 0
+
+        parent: flickable //! Redundant, just for clarification
+        anchors.fill: parent
+        propagateComposedEvents: true
+        acceptedButtons: sceneSession.panButton
+        z: -1 //! This is neccessary so this MouseArea is below flickableContents
+
+        onPressed: function(event){
+            if (flickable.moving) {
+                flickable.cancelFlick();
+                wasDragged = true;
+            }
+
+            //! Set elapsedTime
+            if (flickEnabled) {
+                elapsedTime = new Date().getMilliseconds();
+            }
+            lastPoint = Qt.point(event.x, event.y);
+        }
+
+        onReleased: function(mouse){
+            lastPoint = Qt.point(-1, -1);
+
+            if (flickEnabled && (new Date()).getMilliseconds() - elapsedTime < 5) {
+                lastSpeed = Qt.vector2d(Math.max(-1, Math.min(1, lastSpeed.x)),
+                                        Math.max(-1, Math.min(1, lastSpeed.y)));
+                flickable.flick(lastSpeed.x * Screen.width, lastSpeed.y * Screen.height);
+                elapsedTime = 0;
+            } else if (flickable.moving) {
+                flickable.cancelFlick();
+            }
+
+            if (!wasDragged) {
+                //! Any left-button click outside rubber bound will clear selections
+                //! Any right-button click should show contextMenu if possible
+                if (mouse.button === Qt.LeftButton) {
+                    if (!sceneSession.isMouseInRubberBand) {
+                        scene.selectionModel.clear();
+                    }
+
+                    //! Search for links under click point too
+                    selectLinkAt(Qt.point(mouse.x, mouse.y), mouse.modifiers);
+                } else if (sceneSession.isSceneEditable && mouse.button === Qt.RightButton) {
+                    contextMenu.popup(mouse.x, mouse.y);
+                }
+            }
+
+            wasDragged = false;
+        }
+
+        onPositionChanged: function(event){
+            wasDragged = true;
+
+            contentX = Math.max(0, Math.min(contentX + (lastPoint.x - event.x), flickable.contentWidth - flickable.width));
+            contentY = Math.max(0, Math.min(contentY + (lastPoint.y - event.y), flickable.contentHeight - flickable.height));
+
+            //! Get miliseconds since last drag
+            var elapsed = new Date().getMilliseconds() - elapsedTime;
+            lastSpeed = Qt.vector2d((event.x - lastPoint.x) / elapsed,
+                                    (event.y - lastPoint.y) / elapsed);
+
+            lastPoint = Qt.point(event.x, event.y);
+
+            //! Restart elapsedTime
+            if (flickEnabled) {
+                elapsedTime = new Date().getMilliseconds();
+            }
+        }
+    }
+
+    //! MouseArea for selection of links: This should be child of Flickable content item
+    //! (flickableContents) and not Flickable itself
+    MouseArea {
+        property bool wasDragged: false
+
         parent: flickableContents
         anchors.fill: parent
-        acceptedButtons: selectionMouseAreaButtons
         enabled: sceneSession && !sceneSession.connectingMode &&
                  !sceneSession.isRubberBandMoving &&
                  !sceneSession.isCtrlPressed
         z: -1 //! Below contents and above background
-
-        propagateComposedEvents: true
         hoverEnabled: sceneSession.marqueeSelectionMode
-
-        pressAndHoldInterval: 10
-        onPressAndHold: (mouse) => {
-            if (mouse.button === Qt.LeftButton) {
-                sceneSession.marqueeSelectionMode = true;
-                sceneSession.marqueeSelectionStart(mouse);
-            }
-        }
+        acceptedButtons: sceneSession.marqueeSelectionButton
 
         onPositionChanged: (mouse) => {
-            if (mouse.buttons === Qt.LeftButton) {
-                // Update marquee selection
-                sceneSession.updateMarqueeSelection(mouse)
-            }
-        }
+                               // Update marquee selection
+                               wasDragged = true;
+                               sceneSession.updateMarqueeSelection(mouse)
+                           }
 
 
         onReleased: (mouse) => {
-            if (mouse.button === Qt.LeftButton)
-                sceneSession.marqueeSelectionMode = false;
-        }
+                        if (!wasDragged) {
+                            //! Any left-button click outside rubber bound will clear selections
+                            //! Any right-button click should show contextMenu if possible
+                            if (mouse.button === Qt.LeftButton) {
+                                if (!sceneSession.isMouseInRubberBand) {
+                                    scene.selectionModel.clear();
+                                }
 
-        onWheel: (wheel) => {
-                     if(wheel.modifiers !== sceneSession.zoomManager.zoomModifier)
-                        return;
+                                //! Search for links under click point too
+                                selectLinkAt(Qt.point(mouse.x, mouse.y), mouse.modifiers);
+                            } else if (sceneSession.isSceneEditable && mouse.button === Qt.RightButton) {
+                                contextMenu.popup(flickableContents.mapToItem(flickable, mouse.x, mouse.y))
+                            }
+                        }
 
-                     zoomPoint      = Qt.vector3d(wheel.x - scene.sceneGuiConfig.contentX, wheel.y - scene.sceneGuiConfig.contentY, 0);
-                     worldZoomPoint = mapToItem(flickableContents.parent, wheel.x, wheel.y);
-
-                     if(wheel.angleDelta.y > 0)
-                        sceneSession.zoomManager.zoomIn();
-                     else if (wheel.angleDelta.y < 0)
-                        sceneSession.zoomManager.zoomOut();
-                 }
+                        wasDragged = false;
+                        sceneSession.marqueeSelectionMode = false;
+                    }
 
         //! We should toggle line selection with mouse press event
         onPressed: (mouse) => {
+                       sceneSession.marqueeSelectionMode = true;
+                       sceneSession.marqueeSelectionStart(mouse);
+                   }
 
-            if (!sceneSession.isShiftModifierPressed)
-                 scene.selectionModel.clear();
-
-            if (mouse.button === Qt.LeftButton) {
-                var gMouse = mapToItem(contentLoader.item, Qt.point(mouse.x, mouse.y));
-                var link = findLink(gMouse);
-                if(link === null)
-                     return;
-
-                // Select current node
-                if(scene.selectionModel.isSelected(link?._qsUuid) &&
-                   sceneSession.isShiftModifierPressed)
-                     scene.selectionModel.remove(link._qsUuid);
-                else
-                     scene.selectionModel.selectLink(link);
-
-            } else if (sceneSession.isSceneEditable && mouse.button === Qt.RightButton) {
-                contextMenu.popup(mouse.x, mouse.y)
-            }
-        }
         onDoubleClicked: (mouse) => {
-            //! Do nothing when user double clicks the on rubber band.
-            if(sceneSession.isMouseInRubberBand)
-                return;
+                             //! Do nothing when user double clicks the on rubber band.
+                             if(sceneSession.isMouseInRubberBand) {
+                                 return;
+                             }
 
-            scene.selectionModel.clear();
-            if (sceneSession.isSceneEditable && mouse.button === Qt.LeftButton) {
-                var position = Qt.vector2d(mouse.x, mouse.y);
+                             scene.selectionModel.clear();
+                             if (sceneSession.isSceneEditable) {
+                                 var position = Qt.vector2d(mouse.x, mouse.y);
 
-                // Correct position with zoom factor into real position.
-                var positionMapped = position
+                                 // Correct position with zoom factor into real position.
+                                 var positionMapped = position
 
-                scene.createCustomizeNode(scene.nodeRegistry.defaultNode, positionMapped.x, positionMapped.y);
-            }
-        }
-
-        //! Context Menu for adding a new node (for now)
-        ContextMenu {
-            id: contextMenu
-            scene: flickable.scene
-            sceneSession: flickable.sceneSession
-        }
-
-        //! find the link under or close to the mouse cursor
-        function findLink(gMouse): Link {
-            let foundLink = null;
-            Object.values(scene.links).forEach(obj => {
-                var inputPos  = obj.inputPort?._position ?? Qt.vector2d(0, 0)
-                var outputPos = obj.outputPort?._position ?? Qt.vector2d(0, 0)
-                if (Calculation.isPointOnLink(gMouse.x, gMouse.y, 15, obj.controlPoints, obj.guiConfig.type)) {
-                    foundLink = obj;
-                }
-            });
-            return foundLink;
-        }
+                                 scene.createCustomizeNode(scene.nodeRegistry.defaultNode, positionMapped.x, positionMapped.y);
+                             }
+                         }
     }
 
     //! HelpersView
@@ -248,6 +293,20 @@ I_NodesScene {
             anchors.fill: parent
             sourceComponent: background
             z: -10
+        }
+
+        WheelHandler {
+            acceptedModifiers: sceneSession.zoomModifier
+            onWheel: function(wheel) {
+                zoomPoint      = Qt.vector3d(wheel.x - scene.sceneGuiConfig.contentX, wheel.y - scene.sceneGuiConfig.contentY, 0);
+                worldZoomPoint = flickableContents.mapToItem(flickableContents.parent, wheel.x, wheel.y);
+
+                if(wheel.angleDelta.y > 0) {
+                    sceneSession.zoomManager.zoomIn();
+                } else if (wheel.angleDelta.y < 0) {
+                    sceneSession.zoomManager.zoomOut();
+                }
+            }
         }
 
         //! Content Loader
@@ -385,7 +444,7 @@ I_NodesScene {
                 return;
 
             var origin  = Qt.vector2d(node.guiConfig.position.x + node.guiConfig.width / 2,
-                                         node.guiConfig.position.y + node.guiConfig.height / 2);
+                                      node.guiConfig.position.y + node.guiConfig.height / 2);
 
             //! Prepare positions with targetZoomFactor.
             origin =  origin.times(targetZoomFactor)
@@ -440,6 +499,33 @@ I_NodesScene {
 
     /*! Methods
      * *******************************************************************************************/
+    //! find the link under or close to the mouse cursor
+    function findLink(gMouse): Link {
+        let foundLink = null;
+        Object.values(scene.links).forEach(obj => {
+                                               var inputPos  = obj.inputPort?._position ?? Qt.vector2d(0, 0)
+                                               var outputPos = obj.outputPort?._position ?? Qt.vector2d(0, 0)
+                                               if (Calculation.isPointOnLink(gMouse.x, gMouse.y, 15, obj.controlPoints, obj.guiConfig.type)) {
+                                                   foundLink = obj;
+                                               }
+                                           });
+        return foundLink;
+    }
+
+    function selectLinkAt(pos, modifier)
+    {
+        var link = findLink(pos);
+
+        if (link === null) return;
+
+        // Select current node
+        if (scene.selectionModel.isSelected(link?._qsUuid) && modifier === Qt.ShiftModifier) {
+            scene.selectionModel.remove(link._qsUuid);
+        } else {
+            scene.selectionModel.selectLink(link);
+        }
+    }
+
     function updateContentSize()
     {
         //! \note: This might not be always desired so its better to add a boolean to control if

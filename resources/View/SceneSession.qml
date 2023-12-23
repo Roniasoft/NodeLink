@@ -48,6 +48,15 @@ QtObject {
     //! and 'false' to delete the selected object without additional confirmation.
     property bool  isDeletePromptEnable: true
 
+    //! Pan and flick button
+    property int panButton: Qt.RightButton
+
+    //! Marquee selection button
+    property int marqueeSelectionButton: Qt.LeftButton
+
+    //! Holds the modifier that should be held during wheel event so zooming is performed
+    property int zoomModifier:     Qt.ShiftModifier
+
     //! Active focus of main scene view
     signal sceneForceFocus()
 
