@@ -111,7 +111,8 @@ Rectangle {
         title: "Please Choose a Color"
         selectedColor: colorPickerRect.currentColor
         onSelectedColorChanged: {
-            colorPickerRect.colorChanged(colorDialog.selectedColor, colorPickerRect.currentIndex);
+            if (colorDialog.visible)
+                colorPickerRect.colorChanged(colorDialog.selectedColor, colorPickerRect.currentIndex);
         }
         onAccepted: {
             colorPickerRect.colorChanged(customeColor, 0);
@@ -153,8 +154,6 @@ Rectangle {
             // make default color current
             return;
         }
-        // not working good with multiple nodes with colorIndex == 0 but different color
-        // as emits colorChanged
         colorPickerRect.currentIndex = colorIndex;
         colorPickerRect.currentColor = cellColor;
     }
