@@ -336,6 +336,11 @@ I_NodesScene {
         function onZoomFactorChanged()
         {
             updateContentSize();
+
+            //! Update zoomFactor in SceneGuiConfig
+            if (Math.abs(scene.sceneGuiConfig.zoomFactor - sceneSession.zoomManager.zoomFactor) > 0.0001) {
+                scene.sceneGuiConfig.zoomFactor = sceneSession.zoomManager.zoomFactor;
+            }
         }
 
         //! Emit from side menu, Do zoomIn process
@@ -497,6 +502,24 @@ I_NodesScene {
         {
             contentX = Math.max(0, Math.min(contentWidth - width, contentX + diff.x));
             contentY = Math.max(0, Math.min(contentHeight - height, contentY + diff.y));
+        }
+    }
+
+    Connections {
+        target: scene?._undoCore.undoStack ?? null
+
+        function onUndoRedoDone()
+        {
+            //! Restore zoom
+            sceneSession.zoomManager.customZoom(scene.sceneGuiConfig.zoomFactor);
+
+            //! Update contentX and contentY
+            if (Math.abs(scene.sceneGuiConfig.contentX - contentX) > 0.001) {
+                contentX = scene.sceneGuiConfig.contentX;
+            }
+            if (Math.abs(scene.sceneGuiConfig.contentY - contentY) > 0.001) {
+                contentY = scene.sceneGuiConfig.contentY;
+            }
         }
     }
 

@@ -9,6 +9,10 @@ import NodeLink
 QtObject {
     id: root
 
+    /*! Signals
+     * *******************************************************************************************/
+    signal undoRedoDone()
+
     /* Property Properties
      * ****************************************************************************************/
     //! Target scene
@@ -96,5 +100,6 @@ QtObject {
 
         // Unblock Observers
         NLSpec.undo.blockObservers = false;
+        undoRedoDone();
     }
 }
