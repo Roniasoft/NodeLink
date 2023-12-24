@@ -484,13 +484,13 @@ I_NodesScene {
 
         function onContentWidthChanged()
         {
-            worldZoomPoint = Qt.point(contentX, contentY);
+            worldZoomPoint = Qt.point(0, 0);
             updateContentSize();
         }
 
         function onContentHeightChanged()
         {
-            worldZoomPoint = Qt.point(contentX, contentY);
+            worldZoomPoint = Qt.point(0, 0);
             updateContentSize();
         }
     }
