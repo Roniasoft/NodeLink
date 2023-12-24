@@ -107,55 +107,50 @@ Item {
         acceptedButtons: Qt.LeftButton | Qt.RightButton
 
         anchors.fill: parent
-        hoverEnabled: true
         z: 3
 
         onPressed: (mouse) => {
             if (mouse.button === Qt.RightButton)
                 return;
 
-            isDraging = true;
             prevX = mouse.x;
             prevY = mouse.y;
         }
 
         onReleased: (mouse) => {
-            isDraging = false;
+                        if (mouse.button === Qt.LeftButton && !isDraging) {
+                            //! When mouse is clicked, the diff between clicked area and the red rectangle position is calculated
+                            // and then mapped to the scene
+                            var diffX = (mouse.x - userViewRect.x) / userViewRect.customScaleFactor
+                            var diffY = (mouse.y - userViewRect.y) / userViewRect.customScaleFactor
+                            var halfWidthBefore = scene.sceneGuiConfig.sceneViewWidth / 2
+                            var halfHeightBefore = scene.sceneGuiConfig.sceneViewHeight / 2
+
+                            scene.contentMoveRequested(Qt.vector2d(diffX - halfWidthBefore, diffY - halfHeightBefore));
+                        }
+
+                        isDraging = false;
         }
 
         onPositionChanged: (mouse) => {
             if (mouse.button === Qt.RightButton)
                 return;
 
-            if (isDraging) {
-                //! When mouse is dragged, the diff between pressed mouse and current position is calculated
-                // and then mapped to the scene
-                var startingPointInSceneX = (prevX / userViewRect.customScaleFactor);
-                var startingPointInSceneY = (prevY / userViewRect.customScaleFactor);
-                var endingPointInSceneX = (mouse.x / userViewRect.customScaleFactor);
-                var endingPointInSceneY = (mouse.y / userViewRect.customScaleFactor);
 
-                prevX = mouse.x;
-                prevY = mouse.y;
-
-                scene.contentMoveRequested(Qt.vector2d(endingPointInSceneX - startingPointInSceneX,
-                                                       endingPointInSceneY - startingPointInSceneY));
-
-            }
-        }
-
-        onClicked: (mouse) =>  {
-            if (mouse.button === Qt.RightButton)
-                return;
-
-            //! When mouse is clicked, the diff between clicked area and the red rectangle position is calculated
+            isDraging = true;
+            //! When mouse is dragged, the diff between pressed mouse and current position is calculated
             // and then mapped to the scene
-            var diffX = (mouse.x - userViewRect.x) / userViewRect.customScaleFactor
-            var diffY = (mouse.y - userViewRect.y) / userViewRect.customScaleFactor
-            var halfWidthBefore = scene.sceneGuiConfig.sceneViewWidth / 2
-            var halfHeightBefore = scene.sceneGuiConfig.sceneViewHeight / 2
+            var startingPointInSceneX = (prevX / userViewRect.customScaleFactor);
+            var startingPointInSceneY = (prevY / userViewRect.customScaleFactor);
+            var endingPointInSceneX = (mouse.x / userViewRect.customScaleFactor);
+            var endingPointInSceneY = (mouse.y / userViewRect.customScaleFactor);
 
-            scene.contentMoveRequested(Qt.vector2d(diffX - halfWidthBefore, diffY - halfHeightBefore));
+            prevX = mouse.x;
+            prevY = mouse.y;
+
+            scene.contentMoveRequested(Qt.vector2d(endingPointInSceneX - startingPointInSceneX,
+                                                   endingPointInSceneY - startingPointInSceneY));
+
         }
     }
 }
