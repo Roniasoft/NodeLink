@@ -432,10 +432,13 @@ I_NodesScene {
         //! Reset zoom and related parameters
         function onResetZoomSignal(zoomFactor: real) {
             zoomPoint      = Qt.vector3d(flickable.width / 2, flickable.height / 2, 0);
-            worldZoomPoint = Qt.vector2d(scene.sceneGuiConfig.contentX + flickable.width / 2,
-                                         scene.sceneGuiConfig.contentY + flickable.height / 2);
+            worldZoomPoint = Qt.vector2d(NLStyle.scene.defaultContentX + flickable.width / 2,
+                                         NLStyle.scene.defaultContentY + flickable.height / 2);
 
             sceneSession.zoomManager.customZoom(zoomFactor);
+
+            contentX = NLStyle.scene.defaultContentX;
+            contentY = NLStyle.scene.defaultContentY;
         }
 
         //! Manage zoom to node signal
