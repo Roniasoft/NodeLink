@@ -24,6 +24,7 @@ Item {
     //! Nodes Scene (flickable)
     NodesScene {
         id: nodesScene
+        anchors.fill: parent
         scene: view.scene
         sceneSession: view.sceneSession
         contentItem: NodesRect {

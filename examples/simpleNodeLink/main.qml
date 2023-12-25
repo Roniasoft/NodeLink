@@ -15,7 +15,7 @@ Window {
     /* Property Declarations
      * ****************************************************************************************/
 
-    property Scene scene: null
+    property Scene scene: Scene { }
 
     //! nodeRegistry: Use nodeRegistry in the main scene (we need one object)
     property NLNodeRegistry nodeRegistry:      NLNodeRegistry {
