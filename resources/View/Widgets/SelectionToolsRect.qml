@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import QtQuick.Dialogs
 
 import NodeLink
 
@@ -136,6 +137,29 @@ Rectangle {
             Layout.topMargin: 2
             Layout.bottomMargin: 2
             onClicked: scene.cloneNode(layout.selectedObject?._qsUuid);
+        }
+
+        //! Adding image button
+        NLToolButton {
+            id: imageButton
+            text: "\uf03e"
+            visible: layout.selectedANodeOnly
+            Layout.preferredHeight: 30
+            Layout.preferredWidth: 30
+            Layout.topMargin: 2
+            Layout.bottomMargin: 2
+            property string path;
+
+            onClicked: imageChose.open();
+
+            FileDialog {
+                id: imageChose
+                title: "Please choose a file"
+                nameFilters: ["Image files (*.png *.jpg *.jpeg *.bmp *.gif)"]
+
+                onAccepted: layout.selectedObject.imageSource = imageChose.currentFile
+
+            }
         }
 
         //! Node: Locking the card

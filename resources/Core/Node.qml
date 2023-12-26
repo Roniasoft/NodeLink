@@ -33,6 +33,9 @@ I_Node  {
     //! map<uuid, Port>
     property var            ports:      ({})
 
+    //! Image source picture
+    property string         imageSource: ""
+
     /* Object Properties
     * ****************************************************************************************/
     objectType: NLSpec.ObjectType.Node
