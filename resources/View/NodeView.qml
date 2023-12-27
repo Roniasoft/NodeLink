@@ -22,6 +22,9 @@ InteractiveNodeView {
     //! such as onPositionChanged, onPressed and etc.
     property alias        mainMouseArea:  nodeMouseArea
 
+    //! Node Context menu, required in image MouseArea
+    property alias        nodeContextMenu: nodeContextMenu
+
     /* Object Properties
      * ****************************************************************************************/
     opacity: isSelected ? 1 : isNodeMinimal ? 0.6 : 0.8
