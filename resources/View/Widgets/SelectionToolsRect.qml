@@ -85,6 +85,22 @@ Rectangle {
 
             //! Color changer appears on all selected items
             onClicked: {
+                // iterate and if all colors are the same set to color picker
+                // otherwise select nothing
+                if (!colorPicker.visible){
+                    var colorIndex = -1;
+                    var color = "";
+                    var hasSameIndex = Object.values(selectionModel.selectedModel).every(obj => {
+                                                                                             if (colorIndex === -1) {
+                                                                                                 colorIndex = obj.guiConfig.colorIndex;
+                                                                                                 color = obj.guiConfig.color;
+                                                                                             } else if (obj.guiConfig.colorIndex !== colorIndex) {
+                                                                                                 return false;
+                                                                                             }
+                                                                                             return true;
+                                                                                         });
+                    colorPicker.setColor(hasSameIndex ? color : "", hasSameIndex ? colorIndex : -1)
+                }
                 colorPicker.visible = !colorPicker.visible
             }
 
@@ -101,9 +117,10 @@ Rectangle {
                 anchors.left: parent.left
                 anchors.topMargin: 5
                 visible: false
-                onColorChanged: (colorName) => {
+                onColorChanged: (colorName, index) => {
                                     Object.values(selectionModel.selectedModel).forEach(obj => {
                                                              obj.guiConfig.color = colorName;
+                                                             obj.guiConfig.colorIndex = index;
                                                          });
                                 }
            }

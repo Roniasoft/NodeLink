@@ -98,6 +98,7 @@ QSObject {
         node.guiConfig.position.x = xPos;
         node.guiConfig.position.y = yPos;
         node.guiConfig.color = nodeColor;
+        node.guiConfig.colorIndex = 0;
         node.title = title;
         scene.addNode(node)
 
@@ -157,6 +158,7 @@ QSObject {
     function createLink(portA : string, portB : string) {
 
             let obj = NLCore.createLink();
+            obj.guiConfig.colorIndex = 0;
             obj.inputPort  = findPort(portA);
             obj.outputPort = findPort(portB);
             links[obj._qsUuid] = obj;

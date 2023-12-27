@@ -76,6 +76,7 @@ Menu {
 
 
         node.guiConfig.color = scene.nodeRegistry.nodeColors[nodeType];
+        node.guiConfig.colorIndex = 0;
         node.title = scene.nodeRegistry.nodeNames[nodeType] + "_" + (Object.values(scene.nodes).filter(nodeObj => (nodeObj.type - nodeType) === 0).length + 1)
 
         scene.addNode(node)

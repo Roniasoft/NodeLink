@@ -29,6 +29,8 @@ QSObject {
     //! Color
     property string     color:      NLStyle.node.color
 
+    property  int       colorIndex: -1
+
     //! Opacity
     property real       opacity:    NLStyle.node.opacity
 

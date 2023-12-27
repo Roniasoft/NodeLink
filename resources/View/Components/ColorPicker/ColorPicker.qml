@@ -14,66 +14,92 @@ Rectangle {
     /* Property Declarations
      * ****************************************************************************************/
     property string customeColor: colorDialog.selectedColor
+    property string currentColor: colorDialog.selectedColor
+    property int currentIndex: -1
+
+    property var    colorItems:   []
 
     /* Object Properties
      * ****************************************************************************************/
     width: colorPicker.width + 15
     height: 50
-    color: "transparent"
+    color: NLStyle.primaryBackgroundColor
     radius: NLStyle.radiusAmount.itemButton
     border.width: 1
-    border.color: "#363636"
+    border.color: NLStyle.primaryBorderColor
+
 
     /* Signals
      * ****************************************************************************************/
-    signal colorChanged(var colorName)
+    signal colorChanged(var colorName, var index)
 
     //A row with 6 colors
     RowLayout {
         id: colorPicker
+
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.verticalCenter: parent.verticalCenter
         spacing: 2
+
         //Each color is one color item
         ColorItem {
+            id: redColorItem
             cellColor: "red";
-            onClicked: {
-                colorPickerRect.colorChanged(cellColor);
-                colorPickerRect.visible = false;
+            onClicked: updateColor(redColorItem.cellColor, redColorItem);
+            Component.onCompleted: {
+                colorItems.push(redColorItem)
+                colorItemsChanged();
             }
         }
+
         ColorItem {
+            id: greenItem
             cellColor: "green";
-            onClicked: {
-                colorPickerRect.colorChanged(cellColor);
-                colorPickerRect.visible = false;
+            onClicked: updateColor(greenItem.cellColor, greenItem);
+            Component.onCompleted: {
+                colorItems.push(greenItem)
+                colorItemsChanged();
             }
         }
+
         ColorItem {
+            id: purpleItem
             cellColor: "purple";
-            onClicked: {
-                colorPickerRect.colorChanged(cellColor);
-                colorPickerRect.visible = false;
+            onClicked: updateColor(purpleItem.cellColor, purpleItem);
+            Component.onCompleted: {
+                colorItems.push(purpleItem)
+                colorItemsChanged();
             }
         }
+
         ColorItem {
+            id: yellowItem
             cellColor: "yellow";
-            onClicked: {
-                colorPickerRect.colorChanged(cellColor);
-                colorPickerRect.visible = false;
+            onClicked: updateColor(yellowItem.cellColor, yellowItem);
+            Component.onCompleted: {
+                colorItems.push(yellowItem)
+                colorItemsChanged();
             }
         }
+
         ColorItem {
+            id: steelBlueItem
             cellColor: "steelblue";
-            onClicked: {
-                colorPickerRect.colorChanged(cellColor);
-                colorPickerRect.visible = false;
+            onClicked: updateColor(steelBlueItem.cellColor, steelBlueItem);
+            Component.onCompleted: {
+                colorItems.push(steelBlueItem)
+                colorItemsChanged();
             }
         }
+
         ColorItem {
+            id: rainbowColorItem
+            isCustom: true
             cellColor: customeColor
-            onClicked: {
-                colorDialog.open()
+            onClicked: colorDialog.open()
+            Component.onCompleted: {
+                colorItems.push(rainbowColorItem)
+                colorItemsChanged();
             }
         }
     }
@@ -81,15 +107,58 @@ Rectangle {
     //!qml color dialouge, for user to choose the color themeselves
     ColorDialog {
         id: colorDialog
+        options: ColorDialog.NoButtons
         title: "Please Choose a Color"
+        selectedColor: colorPickerRect.currentColor
         onSelectedColorChanged: {
-            colorPickerRect.colorChanged(colorDialog.selectedColor);
+            if (colorDialog.visible)
+                colorPickerRect.colorChanged(colorDialog.selectedColor, colorPickerRect.currentIndex);
         }
         onAccepted: {
-            colorPickerRect.colorChanged(customeColor);
+            colorPickerRect.colorChanged(customeColor, 0);
+            updateColor(customeColor, rainbowColorItem)
         }
         onRejected: {
-            colorDialog.close()
+            //! cancel button removed so we have no reject and accept always
+            colorPickerRect.colorChanged(customeColor, 0);
+            updateColor(customeColor, rainbowColorItem)
+            /* code for rejection
+            colorPickerRect.currentColorChanged();
+            // not working good on multiple selection with different color Index
+            colorPickerRect.colorChanged(colorPickerRect.currentColor, colorPickerRect.currentIndex);
+            colorDialog.close()*/
         }
+    }
+
+    /* Functions
+     * ****************************************************************************************/
+    function updateColor(cellColor, colorItem) {
+        colorPickerRect.currentColor = cellColor;
+        colorPickerRect.currentIndex = colorItems.indexOf(colorItem);
+        colorPickerRect.colorChanged(colorPickerRect.currentColor, colorPickerRect.currentIndex);
+        colorPickerRect.visible = false;
+
+        colorItems.forEach(colorItemInstance => {
+            if (colorItemInstance !== colorItem)
+                colorItemInstance.isCurrent = false;
+            else
+                colorItemInstance.isCurrent = true;
+        });
+    }
+
+    function setColor(cellColor, colorIndex) {
+        colorItems.forEach(colorItemInstance => {
+                colorItemInstance.isCurrent = false;
+        });
+        if (colorIndex === 0) {
+            rainbowColorItem.isCurrent = true;
+        } else if (colorIndex > 0 && colorIndex <= colorItems.length) {
+            colorItems[colorIndex].isCurrent = true;
+        } else {
+            // make default color current
+            return;
+        }
+        colorPickerRect.currentIndex = colorIndex;
+        colorPickerRect.currentColor = cellColor;
     }
 }
