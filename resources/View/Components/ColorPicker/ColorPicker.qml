@@ -107,7 +107,7 @@ Rectangle {
     //!qml color dialouge, for user to choose the color themeselves
     ColorDialog {
         id: colorDialog
-
+        options: ColorDialog.NoButtons
         title: "Please Choose a Color"
         selectedColor: colorPickerRect.currentColor
         onSelectedColorChanged: {
@@ -119,10 +119,14 @@ Rectangle {
             updateColor(customeColor, rainbowColorItem)
         }
         onRejected: {
+            //! cancel button removed so we have no reject and accept always
+            colorPickerRect.colorChanged(customeColor, 0);
+            updateColor(customeColor, rainbowColorItem)
+            /* code for rejection
             colorPickerRect.currentColorChanged();
             // not working good on multiple selection with different color Index
             colorPickerRect.colorChanged(colorPickerRect.currentColor, colorPickerRect.currentIndex);
-            colorDialog.close()
+            colorDialog.close()*/
         }
     }
 
