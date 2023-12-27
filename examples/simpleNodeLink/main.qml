@@ -47,7 +47,7 @@ Window {
         nodeRegistry.nodeColors[nodeType] = "#444";
 
 
-        NLCore.defaultRepo = NLCore.createDefaultRepo(["QtQuickStream", "NodeLink"])
+        NLCore.defaultRepo = NLCore.createDefaultRepo(["QtQuickStream", "NodeLink", "SimpleNodeLink"])
         NLCore.defaultRepo.initRootObject("Scene");
 
         //Set registry to scene
