@@ -17,7 +17,7 @@ Item {
 
     property Timer _timer : Timer {
         repeat: false
-        interval: 50
+        interval: 300
         onTriggered: {
             undoStack.updateStacks();
         }
@@ -32,14 +32,23 @@ Item {
 
 
         function onTitleChanged() {
+            if (_timer.running) {
+                _timer.stop()
+            }
             _timer.start();
         }
 
         function onTypeChanged() {
+            if (_timer.running) {
+                _timer.stop()
+            }
             root._timer.start();
         }
 
         function onPortsChanged() {
+            if (_timer.running) {
+                _timer.stop()
+            }
             root._timer.start();
         }
     }
