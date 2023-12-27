@@ -37,6 +37,9 @@ QtObject {
 	//! Zoom manager
     property ZoomManager zoomManager: ZoomManager {}
 
+    //! Show and hide the overview control in side menu
+    property bool enabledOverview: true
+
     //! Show and hide the overview
     property bool visibleOverview: true
 

@@ -124,7 +124,7 @@ Item {
             onCheckedChanged: NLStyle.snapEnabled = snapGrid.checked
             NLToolTip{
                 visible: parent.hovered
-                text: "Snap tp grid"
+                text: "Snap to grid"
             }
         }
         SideMenuButton {
@@ -137,10 +137,13 @@ Item {
                 text: "Auto Format"
             }
             onClicked: {
-
+                // do reorder for all nodes if nothing is selected
+                // what should we if just one connection is selected?
+                // we need to be sure that every node is visited
                 var leftmostNode = Object.values(scene.selectionModel.selectedModel).reduce(
                     (minNode, currentNode) => currentNode.guiConfig.position.x < minNode.guiConfig.position.x ? currentNode : minNode
                 );
+
                 scene.automaticNodeReorder(scene.selectionModel.selectedModel, leftmostNode._qsUuid, true);
 
             }
@@ -154,7 +157,9 @@ Item {
             Layout.preferredWidth: 34
 
             checkable: true
-            checked: sceneSession && sceneSession.visibleOverview
+            visible:  sceneSession && sceneSession.enabledOverview
+            enabled:  sceneSession && sceneSession.enabledOverview
+            checked:  sceneSession && sceneSession.enabledOverview  && sceneSession.visibleOverview
 
             NLToolTip{
                 text: (((sceneSession?.visibleOverview ?? false) ? "Hide " : "Show ") +"the overview")

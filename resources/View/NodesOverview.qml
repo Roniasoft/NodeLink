@@ -57,7 +57,7 @@ Item {
 
     width: overviewWidth
     height: overviewHeight
-    visible: sceneSession?.visibleOverview ?? false
+    visible: sceneSession && sceneSession.enabledOverview  && sceneSession.visibleOverview
 
     /* Children
     * ****************************************************************************************/

@@ -16,7 +16,9 @@ Item {
     * ****************************************************************************************/
     property CalculatorScene scene
 
-    property SceneSession    sceneSession:   SceneSession {}
+    property SceneSession    sceneSession:   SceneSession {
+        enabledOverview: false;
+    }
 
     /* Children
     * ****************************************************************************************/
