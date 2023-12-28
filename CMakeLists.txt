@@ -157,6 +157,8 @@ qt_add_qml_module(NodeLink
         Source/Core/HashCompareStringCPP.cpp
         include/NodeLink/View/BackgroundGridsCPP.h
         Source/View/BackgroundGridsCPP.cpp
+
+
         Utils/NLUtilsCPP.h
         Utils/NLUtilsCPP.cpp
 	
@@ -180,6 +182,7 @@ target_include_directories(NodeLink
   PRIVATE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Source>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/NodeLink>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Utils>
 )
 
 #Definitions of preprocessor macros
