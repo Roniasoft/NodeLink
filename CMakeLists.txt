@@ -96,6 +96,7 @@ qt_add_qml_module(NodeLink
         resources/Core/NodeData.qml
         resources/Core/NLNodeRegistry.qml
         resources/Core/SelectionSpecificTool.qml
+        resources/Core/NLUtils.qml
 
         resources/Core/Undo/UndoCore.qml
         resources/Core/Undo/UndoStack.qml
@@ -156,6 +157,8 @@ qt_add_qml_module(NodeLink
         Source/Core/HashCompareStringCPP.cpp
         include/NodeLink/View/BackgroundGridsCPP.h
         Source/View/BackgroundGridsCPP.cpp
+        Utils/NLUtilsCPP.h
+        Utils/NLUtilsCPP.cpp
 	
 
     RESOURCES

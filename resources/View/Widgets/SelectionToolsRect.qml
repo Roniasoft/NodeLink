@@ -157,9 +157,18 @@ Rectangle {
                 title: "Please choose a file"
                 nameFilters: ["Image files (*.png *.jpg *.jpeg *.bmp *.gif)"]
 
-                onAccepted: layout.selectedObject.imageSource = imageChose.currentFile
+                onAccepted: {
+                    var imageUrl = imageChose.currentFile.toString();
+                    imageUrl = imageUrl.replace('file:///', '');
+                    var base64Image = nlUtils.imageURLToImageString(imageUrl)
+                    layout.selectedObject.imageSource = "data:image/jpeg;base64," + base64Image;
+                }
 
             }
+        }
+
+        NLUtils {
+            id: nlUtils
         }
 
         //! Node: Locking the card
