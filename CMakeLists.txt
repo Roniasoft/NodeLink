@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 
 #The Library name
-project(NodeLink VERSION 1.0 LANGUAGES CXX)
+project(NodeLink VERSION 1.0.0 LANGUAGES CXX)
 
 # ##################################################################################################
 # Project Settings
