@@ -33,6 +33,9 @@ I_Node  {
     //! map<uuid, Port>
     property var            ports:      ({})
 
+    //! Image source picture
+    property string         imageSource: ""
+
     /* Object Properties
     * ****************************************************************************************/
     objectType: NLSpec.ObjectType.Node
@@ -47,6 +50,7 @@ I_Node  {
         // Copy direct properties in root.
         title = baseNode.title;
         type  = baseNode.type;
+        imageSource = baseNode.imageSource
 
         root.guiConfig?.setProperties(baseNode.guiConfig);
     }

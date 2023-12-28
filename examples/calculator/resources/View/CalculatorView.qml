@@ -18,6 +18,7 @@ Item {
 
     property SceneSession    sceneSession:   SceneSession {
         enabledOverview: false;
+        doNodesNeedImage: false
     }
 
     /* Children
