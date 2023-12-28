@@ -25,7 +25,6 @@ InteractiveNodeView {
     /* Object Properties
      * ****************************************************************************************/
     opacity: isSelected ? 1 : isNodeMinimal ? 0.6 : 0.8
-    scaleFactor: sceneSession?.zoomManager.zoomFactor ?? 1.0
 
     /* Slots
      * ****************************************************************************************/
@@ -264,9 +263,11 @@ InteractiveNodeView {
         //! Manage zoom in nodeview and pass it to zoomManager
         onWheel: (wheel) => {
                      //! active zoom with no modifier.
-                     if(wheel.modifiers === Qt.NoModifier) {
-                         var zoomPoint = Qt.vector2d(wheel.x + nodeView.x, wheel.y + nodeView.y);
-                         sceneSession.zoomManager.zoomNodeSignal(zoomPoint, wheel.angleDelta.y);
+                     if(wheel.modifiers === sceneSession.zoomModifier) {
+                         sceneSession.zoomManager.zoomNodeSignal(
+                             Qt.point(wheel.x, wheel.y),
+                             this,
+                             wheel.angleDelta.y);
                      }
                  }
 
@@ -306,8 +307,8 @@ InteractiveNodeView {
 
         onPressed: (mouse) => {
             isDraging = true;
-            prevX = mouse.x * sceneSession.zoomManager.zoomFactor;
-            prevY = mouse.y * sceneSession.zoomManager.zoomFactor;
+            prevX = mouse.x;
+            prevY = mouse.y;
             _selectionTimer.start();
         }
 
@@ -317,17 +318,17 @@ InteractiveNodeView {
 
         onPositionChanged: (mouse) => {
             if (isDraging) {
-                var deltaX = mouse.x *  sceneSession.zoomManager.zoomFactor - prevX;
-                node.guiConfig.position.x += deltaX / sceneSession.zoomManager.zoomFactor;
-                prevX = mouse.x * sceneSession.zoomManager.zoomFactor - deltaX;
-                var deltaY = mouse.y * sceneSession.zoomManager.zoomFactor - prevY;
-                node.guiConfig.position.y += deltaY / sceneSession.zoomManager.zoomFactor;
+                var deltaX = mouse.x - prevX;
+                node.guiConfig.position.x += deltaX;
+                prevX = mouse.x - deltaX;
+                var deltaY = mouse.y - prevY;
+                node.guiConfig.position.y += deltaY;
                 if(NLStyle.snapEnabled){
                     node.guiConfig.position.y =  Math.ceil(node.guiConfig.position.y / 20) * 20;
                     node.guiConfig.position.x =  Math.ceil(node.guiConfig.position.x / 20) * 20;
                 }
                 node.guiConfig.positionChanged();
-                prevY = mouse.y * sceneSession.zoomManager.zoomFactor - deltaY;
+                prevY = mouse.y - deltaY;
 
                 if((node.guiConfig.position.x < 0  && deltaX < 0) ||
                    (node.guiConfig.position.y < 0 && deltaY < 0))
@@ -385,10 +386,12 @@ InteractiveNodeView {
 
         //! Manage zoom in nodeview and pass it to zoomManager in lock mode.
         onWheel: (wheel) => {
-                     //! active zoom with shift modifier.
-                     if(sceneSession.isShiftModifierPressed) {
-                         var zoomPoint = Qt.vector2d(wheel.x + nodeView.x, wheel.y + nodeView.y);
-                         sceneSession.zoomManager.zoomNodeSignal(zoomPoint, wheel.angleDelta.y);
+                     //! active zoom with no modifier.
+                     if(wheel.modifiers === Qt.NoModifier) {
+                         sceneSession.zoomManager.zoomNodeSignal(
+                             Qt.point(wheel.x, wheel.y),
+                             this,
+                             wheel.angleDelta.y);
                      }
                  }
 

@@ -92,12 +92,6 @@ I_LinkView {
         font.pointSize: 14
         focus: link.guiConfig._isEditableDescription
 
-        //! Scale with zoomFactor
-        transform: Scale {
-            xScale: sceneSession?.zoomManager?.zoomFactor ?? 1.0
-            yScale: sceneSession?.zoomManager?.zoomFactor ?? 1.0
-        }
-
         onTextChanged: {
             if (link && link.description !== text)
                 link.guiConfig.description = text;

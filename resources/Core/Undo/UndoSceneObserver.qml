@@ -17,7 +17,7 @@ Item {
 
     property Timer _timer : Timer {
         repeat: false
-        interval: 50
+        interval: 300
         onTriggered: {
             undoStack.updateStacks();
         }
@@ -32,14 +32,23 @@ Item {
         enabled: !NLSpec.undo.blockObservers
 
         function onTitleChanged() {
+            if (_timer.running) {
+                _timer.stop()
+            }
             root._timer.start();
         }
 
         function onNodesChanged() {
+            if (_timer.running) {
+                _timer.stop()
+            }
              root._timer.start();
         }
 
         function onLinksChanged() {
+            if (_timer.running) {
+                _timer.stop()
+            }
             root._timer.start();
         }
     }

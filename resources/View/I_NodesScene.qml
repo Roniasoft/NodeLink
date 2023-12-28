@@ -32,67 +32,54 @@ Flickable {
 
     /* Object Properties
     * ****************************************************************************************/
-    anchors.fill: parent
-    contentWidth: scene?.sceneGuiConfig?.contentWidth ?? 0
-    contentHeight: scene?.sceneGuiConfig?.contentHeight ?? 0
-    contentX: scene?.sceneGuiConfig?.contentX ?? 0
-    contentY: scene?.sceneGuiConfig?.contentY ?? 0
-
-    // Update contentY when changed by user (No flick process)
-    onContentXChanged: {
-        if (!isFlickStarted && (scene.sceneGuiConfig.contentX - contentX) !== 0) {
-
-            var isExtendWidthNeed = contentX + root.width > scene.sceneGuiConfig.contentWidth;
-
-            // Ignore the negative value.
-            var tcontentX = Math.max(0, contentX);
-
-            if (isExtendWidthNeed) {
-                // The addWidth needed to add into current flickable width.
-                // if width is extended by Node (node creation or movements),
-                // we ignore the maximum value and add the addWidth into flickable width.
-                var addWidth = contentX + root.width - scene.sceneGuiConfig.contentWidth;
-                if (scene.sceneGuiConfig.contentWidth + addWidth < NLStyle.scene.maximumContentWidth) {
-                    scene.sceneGuiConfig.contentWidth += addWidth;
-
-                } else {
-                    // Maximum value of contentWidth
-                    scene.sceneGuiConfig.contentWidth = NLStyle.scene.maximumContentWidth;
-
-                    // Maximum value of contentX
-                    tcontentX = scene.sceneGuiConfig.contentWidth - root.width;
-                }
-            }
-
-            scene.sceneGuiConfig.contentX = tcontentX;
-        }
+    Component.onCompleted: {
+        //! Bindings are not needed so these are set here
+        contentWidth = scene?.sceneGuiConfig?.contentWidth ?? 0;
+        contentHeight = scene?.sceneGuiConfig?.contentHeight ?? 0;
+        contentX = scene?.sceneGuiConfig?.contentX ?? 0;
+        contentY = scene?.sceneGuiConfig?.contentY ?? 0;
     }
 
     // Update contentY when changed by user (No flick process)
-    onContentYChanged: {
-        if (!isFlickStarted && (scene.sceneGuiConfig.contentY - contentY) !== 0) {
+    onContentXChanged: {
+        if (scene && Math.abs(scene.sceneGuiConfig.contentX - contentX) > 0.001) {
+            scene.sceneGuiConfig.contentX = contentX;
+        }
 
-            var isExtendHeightNeed = contentY + root.height > scene.sceneGuiConfig.contentHeight;
+        //! If not flicking and user is near right of content, extend contentWidth
+        if (!flickingHorizontally) {
+            const threshold = 200; // Pixels
+            var isExtendWidthNeed = contentX + width > contentWidth - threshold;
+            
+            if (isExtendWidthNeed) {
+                //! Add three times threshold
+                const addWidth = 3 * threshold;
 
-            // Ignore the negative value.
-             var tcontentY = Math.max(0, contentY);
-
-            if (isExtendHeightNeed) {
-                // The addHeight needed to add into current flickable height.
-                // if height is extended by Node (node creation or movements),
-                // we ignore the maximum value and add the addHeight into flickable height.
-                var addHeight = contentY + root.height - scene.sceneGuiConfig.contentHeight;
-
-                if (scene.sceneGuiConfig.contentHeight + addHeight < NLStyle.scene.maximumContentHeight) {
-                    scene.sceneGuiConfig.contentHeight += addHeight;
-
-                } else {
-                    scene.sceneGuiConfig.contentHeight = NLStyle.scene.maximumContentHeight;
-                    tcontentY = scene.sceneGuiConfig.contentHeight - root.height;
-                }
+                scene.sceneGuiConfig.contentWidth = Math.min(scene.sceneGuiConfig.contentWidth + addWidth,
+                                                             NLStyle.scene.maximumContentWidth)
             }
+        }
+    }
+    
+    // Update contentY when changed by user (No flick process)
+    onContentYChanged: {
+        if (scene && Math.abs(scene.sceneGuiConfig.contentY - contentY) > 0.001) {
+            scene.sceneGuiConfig.contentY = contentY;
+        }
 
-            scene.sceneGuiConfig.contentY = tcontentY;
+
+        //! If not flicking and user is near right of content, extend contentHeight
+        if (!flickingHorizontally) {
+            const threshold = 200; // Pixels
+            var isExtendWidthNeed = contentY + height > contentHeight - threshold;
+
+            if (isExtendWidthNeed) {
+                //! Add three times threshold
+                const addHeight = 3 * threshold;
+
+                scene.sceneGuiConfig.contentHeight = Math.min(scene.sceneGuiConfig.contentHeight + addHeight,
+                                                             NLStyle.scene.maximumContentHeight)
+            }
         }
     }
 
@@ -127,7 +114,7 @@ Flickable {
             scene.sceneGuiConfig.sceneViewHeight = height;
     }
 
-	//! Update sceneGuiConfig properties (specifically, sceneViewWidth and sceneViewHeight)
+    //! Update sceneGuiConfig properties (specifically, sceneViewWidth and sceneViewHeight)
     //! following a scene change from null to a defined object.
     onSceneChanged: {
         if (!scene)

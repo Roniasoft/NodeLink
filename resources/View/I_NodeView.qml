@@ -33,18 +33,12 @@ Rectangle {
     property real           scaleFactor:    1.0
 
     //! Correct position based on zoomPoint and zoomFactor
-    property vector2d       positionMapped: node.guiConfig?.position?.times(scaleFactor)
+    property vector2d       positionMapped: node.guiConfig?.position ?? Qt.vector2d(0, 0)
 
     /* Object Properties
     * ****************************************************************************************/
 
     visible: node && scene
-    //! NodeView scales relative to top left
-    transform: Scale {
-        xScale: scaleFactor
-        yScale: scaleFactor
-    }
-
 
     width: node.guiConfig.width
     height: node.guiConfig.height

@@ -11,25 +11,22 @@ QtObject {
      * ****************************************************************************************/
 
     //! Maximum zoom value
-    property real maximumZoom   :   2.5
+    property real maximumZoom :     2.5
 
     //! Minimum zoom value
-    property real minimumZoom   : 0.35
+    property real minimumZoom :     0.35
 
     //! Zoom factor, control the zoom
-    property real zoomFactor    : 1.0
+    property real zoomFactor:       1.0
 
     //! step of zoom in/out
-    property real zoomStep      : 0.3
+    property real zoomStep:         0.1
 
     //! In minimalZoomNode, node show a minimal Rectangle without header and description
-    property real minimalZoomNode: 0.6
+    property real minimalZoomNode:  0.6
 
     //! zoom in node edit mode (When a node is in minimal mode)
-    property real nodeEditZoom   : 2.0
-
-//    ! Behavior on zoomFactor change
-//    Behavior on zoomFactor {NumberAnimation{duration: 100}}
+    property real nodeEditZoom :    2.0
 
     /* Signals
      * ****************************************************************************************/
@@ -41,8 +38,9 @@ QtObject {
     signal zoomInSignal();
     signal zoomOutSignal();
 
-    //! Zoom In/Out from NodeView
-    signal zoomNodeSignal(zoomPoint: vector2d, wheelAngle: int);
+    //! Zoom In/Out from NodeView:
+    //! zoomPoint must be in local coordinates of NodeView, mapping is handled by NodesScene itself
+    signal zoomNodeSignal(point zoomPoint, Item nodeView, int wheelAngle);
 
     //! Zoom into a node
     signal zoomToNodeSignal(node: Node, targetZoomFactor: real);
@@ -62,7 +60,7 @@ QtObject {
     //! ZoomIn method
     function zoomIn() {
         if(canZoomIn())
-                zoomFactor *= (1 + zoomInStep());
+            zoomFactor += zoomInStep();
 
         focusToScene();
     }
@@ -70,7 +68,7 @@ QtObject {
     //! ZoomOut method
     function zoomOut() {
         if(canZoomOut())
-                zoomFactor /= (1 + zoomOutStep());
+            zoomFactor -= zoomOutStep();
 
         focusToScene();
     }
@@ -97,35 +95,25 @@ QtObject {
 
     //! Can zoom In ...
     function canZoomIn() : bool {
-        return zoomFactor - maximumZoom < 0.001;
+        return zoomFactor - maximumZoom < 0.0001;
     }
 
     //! Can zoom Out ...
     function canZoomOut() : bool {
-        return zoomFactor - minimumZoom > 0.001;
+        return zoomFactor - minimumZoom > 0.0001;
     }
 
     //! Zoom in step
     function zoomInStep() : real {
-                if(canZoomIn()) {
-                    if(zoomFactor * (1 + zoomStep) >= maximumZoom)
-                        return Math.abs(maximumZoom - zoomFactor) / zoomFactor;
-                    else
-                        return zoomStep;
-                }
+        if (canZoomIn()) return Math.min(zoomStep, maximumZoom - zoomFactor);
 
-                return 0.0;
+        return 0
     }
 
     //! Zoom out step
     function zoomOutStep() : real {
-                if(canZoomOut()) {
-                    if(zoomFactor / (1 + zoomStep) <= minimumZoom)
-                        return Math.abs(zoomFactor - minimumZoom) / minimumZoom;
-                    else
-                        return zoomStep;
-                }
+        if (canZoomOut()) return Math.min(zoomStep, zoomFactor - minimumZoom);
 
-                return 0.0;
+        return 0
     }
 }

@@ -51,9 +51,6 @@ Canvas {
     //! Link color
     property string     linkColor: Object.keys(sceneSession?.linkColorOverrideMap ?? ({})).includes(link?._qsUuid ?? "") ? sceneSession.linkColorOverrideMap[link._qsUuid] : link.guiConfig.color
 
-    //! zoomFactor
-    property real zoomFactor: sceneSession?.zoomManager?.zoomFactor ?? 1.0
-
     //! Canvas Dimensions
     property real topLeftX: Math.min(...link.controlPoints.map(controlpoint => controlpoint.x), inputPos.x, outputPos.x)
     property real topLeftY: Math.min(...link.controlPoints.map(controlpoint => controlpoint.y), inputPos.y, outputPos.y)
@@ -62,7 +59,7 @@ Canvas {
     property real bottomRightY: Math.max(...link.controlPoints.map(controlpoint => controlpoint.y), inputPos.y, outputPos.y)
 
     //! Length of arrow
-    property real arrowHeadLength: 10 * zoomFactor;
+    property real arrowHeadLength: 10;
 
     //! Update painted line when change position of input and output ports and some another
     //! properties changed
@@ -70,7 +67,6 @@ Canvas {
     onInputPosChanged:   preparePainter();
     onIsSelectedChanged: preparePainter();
     onLinkColorChanged:  preparePainter();
-    onZoomFactorChanged: preparePainter();
     onOutputPortSideChanged: preparePainter();
 
     /*  Object Properties
@@ -106,12 +102,12 @@ Canvas {
         // since with the LType it's not possible to find the middle point easily
         // the design needs to be revised
 
-        var minPoint1 = inputPos.plus(BasicLinkCalculator.connectionMargin(inputPort?.portSide ?? -1, zoomFactor));
-        var minPoint2 = outputPos.plus(BasicLinkCalculator.connectionMargin(outputPort?.portSide ?? -1, zoomFactor));
+        var minPoint1 = inputPos.plus(BasicLinkCalculator.connectionMargin(inputPort?.portSide ?? -1));
+        var minPoint2 = outputPos.plus(BasicLinkCalculator.connectionMargin(outputPort?.portSide ?? -1));
         linkMidPoint = Calculation.getPositionByTolerance(0.5, [inputPos, minPoint1, minPoint2, outputPos]);
         linkMidPoint = linkMidPoint.minus(topLeftPosition);
 
-        var lineWidth = 2 * zoomFactor;
+        var lineWidth = 2;
 
         //! Correcte control points in ui state
         var controlPoints = [];
@@ -162,7 +158,7 @@ Canvas {
             // Calculate the control points with BasicLinkCalculator
             link.controlPoints = BasicLinkCalculator.calculateControlPoints(inputPos, outputPos, link.direction,
                                                                             link.guiConfig.type, link.inputPort.portSide,
-                                                                            outputPortSide, zoomFactor);
+                                                                            outputPortSide);
 
             // The function controlPointsChanged is invoked once following current change.
             // link.controlPointsChanged();

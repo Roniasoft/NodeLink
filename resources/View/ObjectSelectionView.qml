@@ -54,7 +54,10 @@ Item {
         anchors.bottom: parent.top
         anchors.bottomMargin: 5
         anchors.horizontalCenter: parent.horizontalCenter
-
+        //! This prevents header item from moving over NodeView
+        transformOrigin: Item.Bottom
+        //! This is for keeping size fixed and ignoring scale
+        scale: 1 / sceneSession.zoomManager.zoomFactor
         scene: root.scene
         sceneSession: root.sceneSession
 
@@ -96,8 +99,8 @@ Item {
 
         onPressed: (mouse) => {
             sceneSession.isRubberBandMoving = true;
-            prevX = mouse.x * sceneSession.zoomManager.zoomFactor;
-            prevY = mouse.y * sceneSession.zoomManager.zoomFactor;
+            prevX = mouse.x;
+            prevY = mouse.y;
         }
 
         onReleased: (mouse) => {
@@ -107,10 +110,10 @@ Item {
         onPositionChanged: (mouse) => {
             if (sceneSession.isRubberBandMoving) {
                 // Prepare key variables of node movement
-                var deltaX = (mouse.x * sceneSession.zoomManager.zoomFactor - prevX);
-                prevX = mouse.x * sceneSession.zoomManager.zoomFactor - deltaX;
-                var deltaY = (mouse.y * sceneSession.zoomManager.zoomFactor- prevY);
-                prevY = mouse.y * sceneSession.zoomManager.zoomFactor - deltaY;
+                var deltaX = (mouse.x - prevX);
+                prevX = mouse.x - deltaX;
+                var deltaY = (mouse.y - prevY);
+                prevY = mouse.y - deltaY;
 
                 // Start movement process
                 Object.values(scene.selectionModel.selectedModel).forEach(obj => {
@@ -124,13 +127,18 @@ Item {
                        (obj.guiConfig.position.y < 0 && deltaY < 0))
                         sceneSession.isRubberBandMoving = false;
 
+                    /*
+                     * Should use signal in I_Scene to request resizing contents since directly
+                     * changing scene.sceneGuiConfig.contentWidth/Height won't effect on Flickable
+                     */
+                    /*
                     //! Extend contentWidth and contentWidth when is necessary
                     if (obj.guiConfig.position.x + obj.guiConfig.width > scene.sceneGuiConfig.contentWidth && deltaX > 0)
                         scene.sceneGuiConfig.contentWidth += deltaX;
 
                     if(obj.guiConfig.position.y + obj.guiConfig.height > scene.sceneGuiConfig.contentHeight && deltaY > 0)
                         scene.sceneGuiConfig.contentHeight += deltaY;
-
+                    */
                     }
                 });
             }
@@ -192,14 +200,13 @@ Item {
         var isNodeFirstObj = firstObj.objectType === NLSpec.ObjectType.Node;
         var portPosVecOut = isNodeFirstObj ? Qt.vector2d(0, 0) : firstObj?.outputPort?._position
 
-        var position = isNodeFirstObj ? firstObj.guiConfig?.position?.times(sceneSession.zoomManager.zoomFactor) :
-                                        firstObj?.inputPort?._position;
+        var position = isNodeFirstObj ? firstObj.guiConfig?.position : firstObj?.inputPort?._position;
         var leftX = (isNodeFirstObj ? position.x : (position.x < portPosVecOut.x) ? position.x : portPosVecOut.x);
         var topY = (isNodeFirstObj ? position.y : (position.y < portPosVecOut.y) ? position.y : portPosVecOut.y);
 
-        var rightX = (isNodeFirstObj ? position.x + firstObj.guiConfig.width * sceneSession.zoomManager.zoomFactor :
+        var rightX = (isNodeFirstObj ? position.x + firstObj.guiConfig.width:
                                       (position.x > portPosVecOut.x) ? position.x : portPosVecOut.x);
-        var bottomY = (isNodeFirstObj ? position.y + firstObj.guiConfig.height * sceneSession.zoomManager.zoomFactor :
+        var bottomY = (isNodeFirstObj ? position.y + firstObj.guiConfig.height:
                                        (position.y > portPosVecOut.y) ? position.y : portPosVecOut.y);
 
         Object.values(scene.selectionModel.selectedModel).forEach(obj => {
@@ -210,12 +217,12 @@ Item {
 
                                                                           // Find left, right, top and bottom positions.
                                                                           // they are depend on inputPort and outputPort position (temporary).
-                                                                          var pos = obj.guiConfig.position.times(sceneSession.zoomManager.zoomFactor); //obj.guiConfig.position.plus(obj.guiConfig.position.minus(sceneSession.zoomManager.zoomPoint).times(sceneSession.zoomManager.zoomFactor - 1))
+                                                                          var pos = obj.guiConfig.position; //obj.guiConfig.position.plus(obj.guiConfig.position.minus(sceneSession.zoomManager.zoomPoint).times(sceneSession.zoomManager.zoomFactor - 1))
 
                                                                           var tempLeftX = pos.x;
                                                                           var tempTopY = pos.y;
-                                                                          var tempRightX = pos.x + obj.guiConfig.width * sceneSession.zoomManager.zoomFactor;
-                                                                          var tempBottomY =pos.y + obj.guiConfig.height * sceneSession.zoomManager.zoomFactor;
+                                                                          var tempRightX = pos.x + obj.guiConfig.width;
+                                                                          var tempBottomY =pos.y + obj.guiConfig.height;
 
 
                                                                           if (tempLeftX < leftX) {
@@ -262,11 +269,9 @@ Item {
         var margin = 5;
 
         // Update dimentions
-        root.width  = (rightX  - leftX + 2 * margin)
+        root.width = (rightX - leftX + 2 * margin)
         root.height = (bottomY - topY + 2 * margin)
-
-        // Locate at center
-        root.x = (leftX + rightX) / 2 - root.width / 2;
-        root.y = (bottomY + topY) / 2 - root.height / 2;
+        root.x = leftX - margin;
+        root.y = topY - margin;
     }
 }

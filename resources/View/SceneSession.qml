@@ -37,6 +37,9 @@ QtObject {
 	//! Zoom manager
     property ZoomManager zoomManager: ZoomManager {}
 
+    //! Show and hide the overview control in side menu
+    property bool enabledOverview: true
+
     //! Show and hide the overview
     property bool visibleOverview: true
 
@@ -47,6 +50,18 @@ QtObject {
     //! set to 'true' to display a prompt for every deletion of a node or link,
     //! and 'false' to delete the selected object without additional confirmation.
     property bool  isDeletePromptEnable: true
+
+    //! Pan and flick button
+    property int panButton: Qt.RightButton
+
+    //! Marquee selection button
+    property int marqueeSelectionButton: Qt.LeftButton
+
+    //! Holds the modifier that should be held during wheel event so zooming is performed
+    property int zoomModifier:     Qt.ShiftModifier
+
+    //! Controls whether flicking should happen or not
+    property bool flickEnabled: true
 
     //! Active focus of main scene view
     signal sceneForceFocus()

@@ -50,8 +50,8 @@ Item {
             // Update position and dimentions of temp rubber band
             selectionRubberBandItem.x = Math.min(lastPressPoint.x , mouse.x)
             selectionRubberBandItem.y = Math.min(lastPressPoint.y , mouse.y)
-            selectionRubberBandItem.width  = Math.abs(lastPressPoint.x - mouse.x);
-            selectionRubberBandItem.height =  Math.abs(lastPressPoint.y - mouse.y);
+            selectionRubberBandItem.width = Math.abs(lastPressPoint.x - mouse.x);
+            selectionRubberBandItem.height = Math.abs(lastPressPoint.y - mouse.y);
 
             selectionTimer.start();
         }
@@ -62,6 +62,7 @@ Item {
         id: selectionRubberBandItem
 
         visible: sceneSession?.marqueeSelectionMode ?? false
+
         //! Rubber band border with different opacity
         Rectangle {
             anchors.fill: parent
@@ -92,12 +93,12 @@ Item {
         onTriggered: {
             // clear selection model
             scene.selectionModel.clear();
+
             // Find objects inside foregroundItem
-            var zoomFactor = sceneSession.zoomManager.zoomFactor
-            var selectionRubberBandRect = Qt.rect(selectionRubberBandItem.x / zoomFactor,
-                                                  selectionRubberBandItem.y / zoomFactor,
-                                                  selectionRubberBandItem.width / zoomFactor,
-                                                  selectionRubberBandItem.height / zoomFactor);
+            var selectionRubberBandRect = Qt.rect(selectionRubberBandItem.x,
+                                                  selectionRubberBandItem.y,
+                                                  selectionRubberBandItem.width,
+                                                  selectionRubberBandItem.height);
             var selectedObj = scene.findNodesInContainerItem(selectionRubberBandRect);
             selectedObj.forEach(node => scene.selectionModel.selectNode(node));
 
@@ -108,7 +109,7 @@ Item {
 
     // Reset the rubberband width and height
     function resetMarqueeDimensions() {
-        selectionRubberBandItem.width  = 0;
+        selectionRubberBandItem.width = 0;
         selectionRubberBandItem.height = 0;
     }
 }

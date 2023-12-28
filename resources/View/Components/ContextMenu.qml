@@ -58,7 +58,6 @@ Menu {
 
     //! Create a node with node type and its position
     function createNode(nodeType : int) : string {
-
         var qsType = scene.nodeRegistry.nodeTypes[nodeType];
         if (!qsType) {
             console.info("The current node type (Node type: " + nodeType + ") cannot be created.");
@@ -70,7 +69,7 @@ Menu {
         node.type = nodeType;
 
         // Correct position with zoompoint and zoom factor into real position.
-        var positionMapped = nodePosition?.times(1 / sceneSession.zoomManager.zoomFactor)
+        var positionMapped = nodePosition
 
         node.guiConfig.position = positionMapped;
 

@@ -27,12 +27,12 @@ I_LinkView {
     * ****************************************************************************************/
 
     // Height and width of canvas, (arrowHeadLength * 2) is the margin
-    width:  (Math.abs(topLeftX - bottomRightX) + arrowHeadLength * 2) * overviewScaleFactor / zoomFactor
-    height: (Math.abs(topLeftY - bottomRightY) + arrowHeadLength * 2) * overviewScaleFactor / zoomFactor
+    width: (Math.abs(topLeftX - bottomRightX) + arrowHeadLength * 2) * overviewScaleFactor
+    height: (Math.abs(topLeftY - bottomRightY) + arrowHeadLength * 2) * overviewScaleFactor
 
     // Position of canvas, arrowHeadLength is the margin
-    x: ((topLeftX - arrowHeadLength) / zoomFactor  - nodeRectTopLeft.x) * overviewScaleFactor
-    y: ((topLeftY - arrowHeadLength) / zoomFactor - nodeRectTopLeft.y) * overviewScaleFactor
+    x: ((topLeftX - arrowHeadLength) - nodeRectTopLeft.x) * overviewScaleFactor
+    y: ((topLeftY - arrowHeadLength) - nodeRectTopLeft.y) * overviewScaleFactor
 
     arrowHeadLength: 10 * overviewScaleFactor;
 
@@ -56,14 +56,14 @@ I_LinkView {
 
         var lineWidth = 2 * overviewScaleFactor;
 
-        var inputPosx = (inputPos.x  - (topLeftX - arrowHeadLength)) * overviewScaleFactor / zoomFactor
-        var inputPosy = (inputPos.y  - (topLeftY - arrowHeadLength)) * overviewScaleFactor / zoomFactor
+        var inputPosx = (inputPos.x  - (topLeftX - arrowHeadLength)) * overviewScaleFactor;
+        var inputPosy = (inputPos.y  - (topLeftY - arrowHeadLength)) * overviewScaleFactor;
         var mapInputPos = Qt.vector2d(inputPosx,inputPosy);
 
         var mapControlPoints = [];
         link.controlPoints.forEach(controlPoint => {
-                                        var mapControlPointx = (controlPoint.x  - (topLeftX - arrowHeadLength)) * overviewScaleFactor / zoomFactor
-                                        var mapControlPointy = (controlPoint.y  - (topLeftY - arrowHeadLength)) * overviewScaleFactor / zoomFactor
+                                        var mapControlPointx = (controlPoint.x  - (topLeftX - arrowHeadLength)) * overviewScaleFactor
+                                        var mapControlPointy = (controlPoint.y  - (topLeftY - arrowHeadLength)) * overviewScaleFactor
                                         var mapControlPoint  = Qt.vector2d(mapControlPointx, mapControlPointy)
                                         mapControlPoints.push(mapControlPoint)
                                     });
