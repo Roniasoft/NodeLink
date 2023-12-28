@@ -64,7 +64,7 @@ QtObject {
     property bool flickEnabled: true
 
     //! Whether adding image should be available for nodes
-    property bool  doNodesNeedImage:     tru
+    property bool  doNodesNeedImage:     true
 
     //! Active focus of main scene view
     signal sceneForceFocus()
