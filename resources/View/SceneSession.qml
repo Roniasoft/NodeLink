@@ -60,6 +60,9 @@ QtObject {
     //! Holds the modifier that should be held during wheel event so zooming is performed
     property int zoomModifier:     Qt.ShiftModifier
 
+    //! Controls whether flicking should happen or not
+    property bool flickEnabled: true
+
     //! Active focus of main scene view
     signal sceneForceFocus()
 

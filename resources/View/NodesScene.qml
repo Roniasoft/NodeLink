@@ -23,15 +23,13 @@ I_NodesScene {
     property vector3d    zoomPoint:      Qt.vector3d(0, 0, 0)
     property vector2d    worldZoomPoint: Qt.vector2d(0, 0)
 
-    //! Controls whether flicking should happen or not
-    property bool        flickEnabled: true
     //! This is to control what button selections MouseArea handle. This is a temporary solution
     //! for making NodesScene behavior customizable
     property int         selectionMouseAreaButtons: Qt.LeftButton | Qt.RightButton
 
     /* Object Properties
     * ****************************************************************************************/
-    interactive: false
+    interactive: false // Pannding and flicking is controlled manually by NodesScene
 
     /* Children
     * ****************************************************************************************/
@@ -149,7 +147,7 @@ I_NodesScene {
             }
 
             //! Set elapsedTime
-            if (flickEnabled) {
+            if (sceneSession.flickEnabled) {
                 elapsedTime = new Date().getMilliseconds();
             }
             lastPoint = Qt.point(event.x, event.y);
@@ -158,7 +156,7 @@ I_NodesScene {
         onReleased: function(mouse){
             lastPoint = Qt.point(-1, -1);
 
-            if (flickEnabled && (new Date()).getMilliseconds() - elapsedTime < 5) {
+            if (sceneSession.flickEnabled && (new Date()).getMilliseconds() - elapsedTime < 5) {
                 lastSpeed = Qt.vector2d(Math.max(-1, Math.min(1, lastSpeed.x)),
                                         Math.max(-1, Math.min(1, lastSpeed.y)));
                 flickable.flick(lastSpeed.x * Screen.width, lastSpeed.y * Screen.height);
@@ -199,7 +197,7 @@ I_NodesScene {
             lastPoint = Qt.point(event.x, event.y);
 
             //! Restart elapsedTime
-            if (flickEnabled) {
+            if (sceneSession.flickEnabled) {
                 elapsedTime = new Date().getMilliseconds();
             }
         }
@@ -503,11 +501,26 @@ I_NodesScene {
             contentX = Math.max(0, Math.min(contentWidth - width, contentX + diff.x));
             contentY = Math.max(0, Math.min(contentHeight - height, contentY + diff.y));
         }
+
+        function onContentResizeRequested(diff: vector2d)
+        {
+            scene.sceneGuiConfig.contentWidth = Math.max(NLStyle.scene.defaultContentWidth,
+                                                         Math.min(NLStyle.scene.maximumContentWidth,
+                                                                  scene.sceneGuiConfig.contentWidth + diff.x));
+            scene.sceneGuiConfig.contentHeight = Math.max(NLStyle.scene.defaultContentHeight,
+                                                         Math.min(NLStyle.scene.maximumContentHeight,
+                                                                  scene.sceneGuiConfig.contentHeight + diff.y));
+
+            updateContentSize();
+        }
     }
 
     Connections {
         target: scene?._undoCore.undoStack ?? null
 
+        //! We use this connection to update content x, y, width, and height when and undo/redo is
+        //! happened, scene properties of Scene.sceneGuiConfig is not binded to that of this
+        //! Flickable
         function onUndoRedoDone()
         {
             //! Restore zoom

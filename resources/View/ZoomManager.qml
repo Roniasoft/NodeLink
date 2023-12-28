@@ -60,7 +60,7 @@ QtObject {
     //! ZoomIn method
     function zoomIn() {
         if(canZoomIn())
-            zoomFactor += zoomStep;
+            zoomFactor += zoomInStep();
 
         focusToScene();
     }
@@ -68,7 +68,7 @@ QtObject {
     //! ZoomOut method
     function zoomOut() {
         if(canZoomOut())
-            zoomFactor -= zoomStep;
+            zoomFactor -= zoomOutStep();
 
         focusToScene();
     }
