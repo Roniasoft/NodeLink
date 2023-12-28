@@ -50,6 +50,7 @@ I_Node  {
         // Copy direct properties in root.
         title = baseNode.title;
         type  = baseNode.type;
+        imageSource = baseNode.imageSource
 
         root.guiConfig?.setProperties(baseNode.guiConfig);
     }
