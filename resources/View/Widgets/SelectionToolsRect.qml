@@ -143,7 +143,7 @@ Rectangle {
         NLToolButton {
             id: imageButton
             text: "\uf03e"
-            visible: layout.selectedANodeOnly
+            visible: layout.selectedANodeOnly && sceneSession.doNodesNeedImage
             Layout.preferredHeight: 30
             Layout.preferredWidth: 30
             Layout.topMargin: 2
