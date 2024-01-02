@@ -310,4 +310,60 @@ QSObject {
         return foundObj;
     }
 
+    //! Function to paste nodes. Currently only works for nodes and not links
+    function pasteNodes() {
+        //! Top Left of the nodes rectangle that will be pasted
+        var topLeftX = (scene.sceneGuiConfig._mousePosition.x >= 0) ? scene.sceneGuiConfig._mousePosition.x : scene.sceneGuiConfig.contentX
+        var topLeftY = (scene.sceneGuiConfig._mousePosition.y >= 0) ? scene.sceneGuiConfig._mousePosition.y : scene.sceneGuiConfig.contentY
+
+        var minX = Number.POSITIVE_INFINITY
+        var minY = Number.POSITIVE_INFINITY
+        var maxX = Number.NEGATIVE_INFINITY
+        var maxY = Number.NEGATIVE_INFINITY
+
+        //! Finding topleft and bottom right of the copied node rectangle
+        Object.values(NLCore._copiedObjects).forEach(node1 => {
+            minX = Math.min(minX, node1.guiConfig.position.x)
+            maxX = Math.max(maxX, node1.guiConfig.position.x + node1.guiConfig.width)
+            // Check y position
+            minY = Math.min(minY, node1.guiConfig.position.y)
+            maxY = Math.max(maxY, node1.guiConfig.position.y + node1.guiConfig.height)
+        });
+
+        //! Mapping previous copied rect to paste the new one
+        var diffX = topLeftX - minX;
+        var diffY = topLeftY - minY;
+
+        //! Handling exception: if mapped bottom right is too big for flickable
+        if (maxX + diffX >= scene.sceneGuiConfig.contentWidth) {
+            var tempXDiff = maxX + diffX - scene.sceneGuiConfig.contentWidth
+            topLeftX -= tempXDiff
+            diffX = topLeftX - minX
+        }
+
+        if (maxX + diffY >= scene.sceneGuiConfig.contentHeight) {
+            var tempYDiff = maxY + diffY - scene.sceneGuiConfig.contentHeight
+            topLeftY -= tempYDiff
+            diffY = topLeftY - minY
+        }
+
+        //! Calling function to create desired Nodes
+        Object.values(NLCore._copiedObjects).forEach( node => {
+            createCopyNode(node, diffX, diffY)
+        })
+    }
+
+    function createCopyNode(baseNode, diffX, diffY) {
+        var node = QSSerializer.createQSObject(nodeRegistry.nodeTypes[baseNode.type],
+                                                       nodeRegistry.imports, NLCore.defaultRepo);
+        node._qsRepo = NLCore.defaultRepo;
+        node.cloneFrom(baseNode);
+
+        // Fixing node position.
+        node.guiConfig.position.x += diffX;
+        node.guiConfig.position.y += diffY;
+        // Add node into nodes array to updata ui
+        addNode(node);
+    }
+
 }
