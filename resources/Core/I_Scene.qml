@@ -322,7 +322,7 @@ QSObject {
         var maxY = Number.NEGATIVE_INFINITY
 
         //! Finding topleft and bottom right of the copied node rectangle
-        Object.values(NLCore._copiedObjects).forEach(node1 => {
+        Object.values(NLCore._copiedNodes).forEach(node1 => {
             minX = Math.min(minX, node1.guiConfig.position.x)
             maxX = Math.max(maxX, node1.guiConfig.position.x + node1.guiConfig.width)
             // Check y position
@@ -348,7 +348,7 @@ QSObject {
         }
 
         //! Calling function to create desired Nodes
-        Object.values(NLCore._copiedObjects).forEach( node => {
+        Object.values(NLCore._copiedNodes).forEach( node => {
             createCopyNode(node, diffX, diffY)
         })
     }

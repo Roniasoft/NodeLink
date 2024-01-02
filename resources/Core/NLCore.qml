@@ -19,8 +19,11 @@ QSCore {
         readonly property var imports: [ "QtQuickStream", "NodeLink"]
     }
 
-    //! Copied objects, to be pasted later
-    property var     _copiedObjects: ({})
+    //! Copied Nodes, to be pasted later
+    property var     _copiedNodes: ({})
+
+    //! Copied Nodes, to be pasted later
+    property var     _copiedLinks: ({})
 
     /* Object Properties
      * ****************************************************************************************/
