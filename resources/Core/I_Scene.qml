@@ -172,6 +172,7 @@ QSObject {
 
             // Add link into UI
             linkAdded(obj);
+            return obj;
     }
 
     //! Unlink two ports
@@ -347,12 +348,32 @@ QSObject {
             diffY = topLeftY - minY
         }
 
-        //! Calling function to create desired Nodes
+        //! Making a map of ports, copied node port to pasted node port
+        var allPorts =  ({});
+        var keys1;
+        var keys2;
+
+        //! Calling function to create desired Nodes, and mapping ports
         Object.values(NLCore._copiedNodes).forEach( node => {
-            createCopyNode(node, diffX, diffY)
+
+            var copiedNode = createCopyNode(node, diffX, diffY)
+            keys1 = Object.keys(node.ports);
+            keys2 = Object.keys(copiedNode.ports);
+            for (var i = 0; i < keys1.length; ++i) {
+                var id1 = keys1[i];
+                var id2 = keys2[i]
+                var port1Value = node.ports[id1];
+                var port2Value = copiedNode.ports[id2];
+
+                allPorts[port1Value] = port2Value;
+            }
         })
+
+        //! Calling function to create links
+        createCopiedLinks(allPorts);
     }
 
+    //! Creating coped nodes
     function createCopyNode(baseNode, diffX, diffY) {
         var node = QSSerializer.createQSObject(nodeRegistry.nodeTypes[baseNode.type],
                                                        nodeRegistry.imports, NLCore.defaultRepo);
@@ -364,6 +385,26 @@ QSObject {
         node.guiConfig.position.y += diffY;
         // Add node into nodes array to updata ui
         addNode(node);
+
+        return node;
+    }
+
+    //! Creating coped links
+    function createCopiedLinks(allPorts) {
+        Object.values(NLCore._copiedLinks).forEach( link => {
+            var matchedInputPort;
+            var matchedOutputPort;
+            Object.keys(allPorts).forEach(port => {
+                if(String(link.inputPort) === String(port))
+                    matchedInputPort = allPorts[port];
+
+                if(String(link.outputPort) === String(port))
+                    matchedOutputPort = allPorts[port];
+            })
+            var copiedLink = createLink(matchedInputPort._qsUuid, matchedOutputPort._qsUuid)
+            copiedLink._qsRepo = NLCore.defaultRepo;
+            copiedLink.cloneFrom(link);
+        })
     }
 
 }
