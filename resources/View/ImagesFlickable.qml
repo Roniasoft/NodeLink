@@ -79,8 +79,12 @@ Rectangle {
                 anchors.fill: parent
                 hoverEnabled: true
                 acceptedButtons: Qt.LeftButton | Qt.RightButton
-                onEntered: iconRect.visible = true
-                onExited: iconRect.visible = false
+                onEntered: {
+                    iconRect.visible = true
+                }
+                onExited: {
+                    iconRect.visible = false
+                }
 
                 onClicked: (mouse) => {
                     if (mouse.button === Qt.LeftButton) {
@@ -102,19 +106,43 @@ Rectangle {
                 anchors.top: nodeImage.top
                 anchors.right: nodeImage.right
 
-                size: 25
+                size: 20
                 text: "\uf00d"
                 radius: 2
                 backColor: "transparent"
                 textColor: "#fb464c"
                 visible: false
-                onClicked: node.imagesManager.deleteImage(nodeImage.image)
+                onClicked: {
+                    node.imagesManager.deleteImage(nodeImage.image)
+                    if (nodeImage.image === node.coverImage)
+                        node.coverImage = "";
+                }
 
                 MouseArea {
                     anchors.fill: parent
                     acceptedButtons: Qt.NoButton
                     hoverEnabled: true
                     onEntered: iconRect.visible = true
+                }
+            }
+
+            NLIconButtonRound {
+                id: starRect
+
+                anchors.top: nodeImage.top
+                anchors.left: nodeImage.left
+                fontWeight: (node.coverImage === nodeImage.image) ? 900 : 400
+
+                size: 20
+                text: "\uf005"
+                radius: 2
+                backColor: "transparent"
+                textColor: "yellow"
+                onClicked: {
+                    if (node.coverImage !== nodeImage.image)
+                        node.coverImage = nodeImage.image;
+                    else
+                        node.coverImage = "";
                 }
 
             }
