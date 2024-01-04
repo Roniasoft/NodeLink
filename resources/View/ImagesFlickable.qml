@@ -4,7 +4,7 @@ import NodeLink
 /*! ***********************************************************************************************
  * Images Flickable appearing on top of each node that has images
  * ************************************************************************************************/
-Item {
+Rectangle {
     id: root
 
     /* Property Declarations
@@ -17,10 +17,20 @@ Item {
 
     property I_Node         node
 
+    /* Object Properties
+    * ****************************************************************************************/
+    color: "#1e1e1e"
+    radius: NLStyle.radiusAmount.itemButton
+    border.width: 1
+    border.color: "#363636"
+    visible: node.imagesManager.imagesSources.length !== 0
+
+
     /*  Children
     * ****************************************************************************************/
     ListView {
         anchors.fill: parent
+        anchors.margins: 4
         orientation: Qt.Horizontal
         model: node.imagesManager.imagesSources
         clip: true
@@ -31,9 +41,9 @@ Item {
             width: parent.height * nodeImage.aspectRatio
             height: parent.height
             color: "transparent"
-            property int radius: 5
-            property color bgColor: "#1c2127"
-            property int drawRadius: radius > 0 ? radius : width / 2
+            property int   radius: 5
+            property color bgColor: "#1e1e1e"
+            property int   drawRadius: radius > 0 ? radius : width / 2
 
             Image {
                 id: nodeImage
