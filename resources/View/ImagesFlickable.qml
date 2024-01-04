@@ -79,13 +79,13 @@ Rectangle {
                 anchors.fill: parent
                 hoverEnabled: true
                 acceptedButtons: Qt.LeftButton | Qt.RightButton
+                onEntered: iconRect.visible = true
+                onExited: iconRect.visible = false
 
                 onClicked: (mouse) => {
                     if (mouse.button === Qt.LeftButton) {
                         imageViewer.visible = true
                     }
-
-
 
 //                    if (isNodeEditable && mouse.button === Qt.RightButton) {
 //                        scene.selectionModel.clearAllExcept(node._qsUuid);
@@ -107,7 +107,15 @@ Rectangle {
                 radius: 2
                 backColor: "transparent"
                 textColor: "#fb464c"
+                visible: false
                 onClicked: node.imagesManager.deleteImage(nodeImage.image)
+
+                MouseArea {
+                    anchors.fill: parent
+                    acceptedButtons: Qt.NoButton
+                    hoverEnabled: true
+                    onEntered: iconRect.visible = true
+                }
 
             }
 
