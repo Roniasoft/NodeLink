@@ -97,6 +97,7 @@ qt_add_qml_module(NodeLink
         resources/Core/NLNodeRegistry.qml
         resources/Core/SelectionSpecificTool.qml
         resources/Core/NLUtils.qml
+        resources/Core/ImagesManager.qml
 
         resources/Core/Undo/UndoCore.qml
         resources/Core/Undo/UndoStack.qml
@@ -106,8 +107,16 @@ qt_add_qml_module(NodeLink
         resources/Core/Undo/UndoLinkObserver.qml
         resources/Core/Undo/HashCompareString.qml
 
+        resources/UiCore/Buttons/NLBaseButton.qml
+        resources/UiCore/Buttons/NLButton.qml
+        resources/UiCore/Buttons/NLIconButton.qml
+        resources/UiCore/Buttons/NLIconButtonRound.qml
+        resources/UiCore/Buttons/NLIconTextButton.qml
+        resources/UiCore/Buttons/NLSideMenuButton.qml
+
         resources/View/Components/ColorPicker/ColorItem.qml
         resources/View/Components/ColorPicker/ColorPicker.qml
+        resources/View/Components/NLPopUp.qml
         resources/View/Components/NLTextArea.qml
         resources/View/Components/NLTextField.qml
         resources/View/Components/NLToolButton.qml
@@ -147,6 +156,7 @@ qt_add_qml_module(NodeLink
         resources/View/Helpers/SelectionHelperView.qml
         resources/View/Helpers/LinkHelperView.qml
         resources/View/ZoomManager.qml
+        resources/View/ImagesFlickable.qml
 
         resources/View/Logics/Calculation.js
         resources/View/Logics/BasicLinkCalculator.js

@@ -36,6 +36,9 @@ I_Node  {
     //! Image source picture
     property string         imageSource: ""
 
+    //! Manages node images
+    property ImagesManager  imagesManager: ImagesManager {}
+
     /* Object Properties
     * ****************************************************************************************/
     objectType: NLSpec.ObjectType.Node

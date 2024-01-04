@@ -161,7 +161,8 @@ Rectangle {
                     var imageUrl = imageChose.currentFile.toString();
                     imageUrl = imageUrl.replace('file:///', '');
                     var base64Image = nlUtils.imageURLToImageString(imageUrl)
-                    layout.selectedObject.imageSource = "data:image/jpeg;base64," + base64Image;
+                    //layout.selectedObject.imageSource = "data:image/jpeg;base64," + base64Image;
+                    layout.selectedObject.imagesManager.addImage("data:image/jpeg;base64," + base64Image)
                 }
 
             }
