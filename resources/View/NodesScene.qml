@@ -268,6 +268,19 @@ I_NodesScene {
                          }
     }
 
+    //! MouseArea to update the current mouse position in scene model
+    MouseArea {
+        anchors.fill: parent
+        acceptedButtons: Qt.NoButton
+        hoverEnabled: true
+
+        onPositionChanged: (mouse) => {
+            scene.sceneGuiConfig._mousePosition = Qt.vector2d(mouse.x, mouse.y)
+        }
+
+        onExited: scene.sceneGuiConfig._mousePosition = Qt.vector2d(-1, -1)
+    }
+
     //! HelpersView
     HelpersView {
         parent: contentLoader.item ?? flickable

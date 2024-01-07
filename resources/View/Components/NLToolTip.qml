@@ -28,4 +28,7 @@ ToolTip {
         color: "white"
         font.bold: true
     }
+
+    //! To fix the fade effect on tooltip
+    exit: Transition {}
 }

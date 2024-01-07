@@ -58,34 +58,6 @@ Menu {
         }
     }
 
-    //! View Image
-    ContextMenuItem {
-        name: "View Image"
-        iconStr: "\uf06e"
-        visible: node.imageSource !== ""
-        enabled: node.imageSource !== ""
-        width: if(node.imageSource === "") 0
-        height: if(node.imageSource === "") 0
-
-        onClicked: {
-            viewImage();
-        }
-    }
-
-    //! Remove Image
-    ContextMenuItem {
-        name: "Remove Image"
-        iconStr: "\ue1b7"
-        visible: node.imageSource !== ""
-        enabled: node.imageSource !== ""
-        width: if(node.imageSource === "") 0
-        height: if(node.imageSource === "") 0
-
-        onClicked: {
-            node.imageSource = "";
-        }
-    }
-
     //! Lock button
     ContextMenuItem {
         id: lockItem

@@ -94,4 +94,17 @@ QtObject {
 
         return null;
     }
+
+    //! Selects all nodes and links in the scene
+    function selectAll(nodes, links) {
+        clear();
+
+        Object.values(nodes).forEach(node => {
+            selectNode(node);
+        });
+
+        Object.values(links).forEach(link => {
+            selectLink(link);
+        })
+    }
 }
