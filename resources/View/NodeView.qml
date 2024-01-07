@@ -79,84 +79,7 @@ InteractiveNodeView {
             anchors.margins: 12
 
             visible: !nodeView.isNodeMinimal
-            height: (node.imageSource !== "") ? node.guiConfig.height * 0.5 : 20
-            Rectangle {
-                id: imageItem
-                visible: node.imageSource === "" ? false : true
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.top: parent.top
-                anchors.bottom: iconText.top
-                anchors.margins: 2
-                width: parent.width
-
-                color: "transparent"
-
-
-                Image {
-                    id: nodeImage
-                    width: parent.width
-                    height: parent.height
-                    anchors.centerIn: parent
-                    fillMode: Image.PreserveAspectFit
-                    // Set the source to the local file path
-                    source: node.imageSource
-
-                    //! MouseArea for showing image popup
-                    MouseArea {
-                        id: imageMouseArea
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        acceptedButtons: Qt.LeftButton | Qt.RightButton
-
-                        onClicked: (mouse) => {
-                            if (mouse.button === Qt.LeftButton) {
-                                imageViewer.visible = true
-                            }
-
-                            if (isNodeEditable && mouse.button === Qt.RightButton) {
-                                scene.selectionModel.clearAllExcept(node._qsUuid);
-                                scene.selectionModel.selectNode(node);
-                                nodeView.nodeContextMenu.popup(mouse.x, mouse.y);
-                            }
-                        }
-                    }
-
-                    Connections {
-                        target: nodeView.nodeContextMenu
-
-                        function onViewImage() {
-                            imageViewer.visible = true;
-                        }
-                    }
-
-                    //! Image in its actual size
-                    Popup {
-                        id: imageViewer
-                        parent: Overlay.overlay
-                        x: Math.round((parent.width - width) / 2)
-                        y: Math.round((parent.height - height) / 2)
-                        width: Math.min(popupImage.sourceSize.width, 850)
-                        height: Math.min(popupImage.sourceSize.height, 650)
-
-                        background: Rectangle {
-                            radius: 15
-                            color:  "#161314"
-                            border.color: "#4890e2"
-                            border.width: 2
-                        }
-
-                        Image {
-                            id: popupImage
-
-                            anchors.fill: parent
-                            anchors.centerIn: parent
-                            fillMode: Image.PreserveAspectFit
-                            source: node.imageSource
-                        }
-                    }
-                }
-            }
+            height: 20
 
             //! Icon
             Text {
@@ -314,7 +237,8 @@ InteractiveNodeView {
                 height: parent.height
                 anchors.centerIn: parent
                 fillMode: Image.PreserveAspectFit
-                source: node.imageSource
+                source: (node.imagesModel.coverImageIndex !== -1) ? node.imagesModel.imagesSources[node.imagesModel.coverImageIndex] : ""
+                visible: node.imagesModel.coverImageIndex !== -1
             }
 
             //! Text Icon for when node has an image
@@ -327,7 +251,7 @@ InteractiveNodeView {
                 text: scene?.nodeRegistry?.nodeIcons[node.type] ?? ""
                 color: node.guiConfig.color
                 font.weight: 400
-                visible: nodeView.isNodeMinimal && node.imageSource !== ""
+                visible: nodeView.isNodeMinimal && node.imagesModel.coverImageIndex !== -1
             }
 
             //! Text Icon for when node does not have an image
@@ -338,7 +262,7 @@ InteractiveNodeView {
                 text: scene?.nodeRegistry?.nodeIcons[node.type] ?? ""
                 color: node.guiConfig.color
                 font.weight: 400
-                visible: nodeView.isNodeMinimal && node.imageSource === ""
+                visible: nodeView.isNodeMinimal && node.imagesModel.coverImageIndex === -1
             }
         }
 

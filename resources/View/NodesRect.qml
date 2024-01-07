@@ -17,7 +17,40 @@ I_NodesRect {
 
     //! Rubber band border with different opacity
     ObjectSelectionView {
+        id: objectSelectionView
         scene: root.scene
         sceneSession: root.sceneSession
+    }
+
+    Repeater {
+        model: Object.values(root.scene.nodes)
+        delegate: ImagesFlickable {
+            id: imageFlickable
+            width: modelData.guiConfig.width - 6
+            height: modelData.guiConfig.height * 0.35
+            x: modelData.guiConfig.position.x + 3
+            y: modelData.guiConfig.position.y - height - 5
+            scene: root.scene
+            sceneSession: root.sceneSession
+            node: modelData
+
+            Connections {
+                property SelectionModel selectionModel: root.scene.selectionModel
+                target: selectionModel
+                function onSelectedModelChanged() {
+                    if (!objectSelectionView.hasSelectedObject)
+                        imageFlickable.y = Qt.binding(function() { return modelData.guiConfig.position.y - height - 5;});
+                    Object.values(selectionModel.selectedModel).forEach(node =>{
+                        if (imageFlickable.node === node) {
+                            imageFlickable.y = Qt.binding(function() { return modelData.guiConfig.position.y - height - 49;});
+                            return;
+                        }
+                        else
+                            imageFlickable.y = Qt.binding(function() { return modelData.guiConfig.position.y - height - 5;});
+                    })
+                }
+            }
+
+        }
     }
 }
