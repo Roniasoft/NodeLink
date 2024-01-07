@@ -107,13 +107,12 @@ qt_add_qml_module(NodeLink
         resources/Core/Undo/UndoLinkObserver.qml
         resources/Core/Undo/HashCompareString.qml
 
-        resources/UiCore/Buttons/NLBaseButton.qml
-        resources/UiCore/Buttons/NLButton.qml
-        resources/UiCore/Buttons/NLIconButton.qml
-        resources/UiCore/Buttons/NLIconButtonRound.qml
-        resources/UiCore/Buttons/NLIconTextButton.qml
-        resources/UiCore/Buttons/NLSideMenuButton.qml
-
+        resources/View/Components/Buttons/NLBaseButton.qml
+        resources/View/Components/Buttons/NLButton.qml
+        resources/View/Components/Buttons/NLIconButton.qml
+        resources/View/Components/Buttons/NLIconButtonRound.qml
+        resources/View/Components/Buttons/NLIconTextButton.qml
+        resources/View/Components/Buttons/NLSideMenuButton.qml
         resources/View/Components/ColorPicker/ColorItem.qml
         resources/View/Components/ColorPicker/ColorPicker.qml
         resources/View/Components/NLPopUp.qml

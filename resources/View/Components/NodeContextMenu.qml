@@ -58,34 +58,6 @@ Menu {
         }
     }
 
-//    //! View Image
-//    ContextMenuItem {
-//        name: "View Image"
-//        iconStr: "\uf06e"
-//        visible: node.coverImage !== ""
-//        enabled: node.coverImage !== ""
-//        width: if(node.coverImage === "") 0
-//        height: if(node.coverImage === "") 0
-
-//        onClicked: {
-//            viewImage();
-//        }
-//    }
-
-//    //! Remove Image
-//    ContextMenuItem {
-//        name: "Remove Image"
-//        iconStr: "\ue1b7"
-//        visible: node.coverImage !== ""
-//        enabled: node.coverImage !== ""
-//        width: if(node.coverImage === "") 0
-//        height: if(node.coverImage === "") 0
-
-//        onClicked: {
-//            node.coverImage = "";
-//        }
-//    }
-
     //! Lock button
     ContextMenuItem {
         id: lockItem

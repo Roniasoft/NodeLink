@@ -1,5 +1,5 @@
-import QtQuick 2.0
-import QtQuick.Controls 2.15
+import QtQuick
+import QtQuick.Controls
 
 /*! ***********************************************************************************************
  * The MslIconButtonRound is round button with a icon as contentItem. Because the button is round
