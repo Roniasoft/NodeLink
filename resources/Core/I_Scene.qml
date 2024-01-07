@@ -311,6 +311,20 @@ QSObject {
         return foundObj;
     }
 
+    function copyNodes() {
+        NLCore._copiedNodes = ({})
+        NLCore._copiedLinks = ({})
+
+        var selectedNodes = Object.values(selectionModel?.selectedModel ?? ({})).filter(obj => obj?.objectType === NLSpec.ObjectType.Node)
+        var selectedLinks = Object.values(selectionModel?.selectedModel ?? ({})).filter(obj => obj?.objectType === NLSpec.ObjectType.Link)
+
+        selectedNodes.forEach(node => {NLCore._copiedNodes[node._qsUuid] = node;});
+        selectedLinks.forEach(link => {NLCore._copiedLinks[link._qsUuid] = link;});
+
+        NLCore._copiedNodesChanged()
+        NLCore._copiedLinksChanged();
+    }
+
     //! Function to paste nodes. Currently only works for nodes and not links
     function pasteNodes() {
         //! Top Left of the nodes rectangle that will be pasted
