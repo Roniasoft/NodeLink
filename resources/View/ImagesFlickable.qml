@@ -113,9 +113,9 @@ Rectangle {
                 textColor: "#fb464c"
                 visible: false
                 onClicked: {
+                    if (nodeImage.image === node.imagesManager.imagesSources[node.coverImageIndex])
+                        node.coverImageIndex = -1;
                     node.imagesManager.deleteImage(nodeImage.image)
-                    if (nodeImage.image === node.coverImage)
-                        node.coverImage = "";
                 }
 
                 MouseArea {
@@ -131,7 +131,7 @@ Rectangle {
 
                 anchors.top: nodeImage.top
                 anchors.left: nodeImage.left
-                fontWeight: (node.coverImage === nodeImage.image) ? 900 : 400
+                fontWeight: (node.imagesManager.imagesSources[node.coverImageIndex] === nodeImage.image) ? 900 : 400
 
                 size: 20
                 text: "\uf005"
@@ -139,10 +139,10 @@ Rectangle {
                 backColor: "transparent"
                 textColor: "yellow"
                 onClicked: {
-                    if (node.coverImage !== nodeImage.image)
-                        node.coverImage = nodeImage.image;
+                    if (node.imagesManager.imagesSources[node.coverImageIndex] !== nodeImage.image)
+                        node.coverImageIndex = node.imagesManager.imagesSources.indexOf(nodeImage.image);
                     else
-                        node.coverImage = "";
+                        node.coverImageIndex = -1;
                 }
 
             }

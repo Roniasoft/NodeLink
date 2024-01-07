@@ -34,7 +34,7 @@ I_Node  {
     property var            ports:      ({})
 
     //! Image source picture
-    property string         coverImage: ""
+    property int            coverImageIndex: -1
 
     //! Manages node images
     property ImagesManager  imagesManager: ImagesManager {}
@@ -53,7 +53,7 @@ I_Node  {
         // Copy direct properties in root.
         title = baseNode.title;
         type  = baseNode.type;
-        coverImage = baseNode.coverImage
+        coverImageIndex = baseNode.coverImageIndex
 
         root.guiConfig?.setProperties(baseNode.guiConfig);
     }
