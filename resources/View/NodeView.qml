@@ -237,7 +237,8 @@ InteractiveNodeView {
                 height: parent.height
                 anchors.centerIn: parent
                 fillMode: Image.PreserveAspectFit
-                source: node.imagesManager.imagesSources[node.imagesManager.coverImageIndex]
+                source: (node.imagesManager.coverImageIndex !== -1) ? node.imagesManager.imagesSources[node.imagesManager.coverImageIndex] : ""
+                visible: node.imagesManager.coverImageIndex !== -1
             }
 
             //! Text Icon for when node has an image
