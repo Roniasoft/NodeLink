@@ -237,7 +237,7 @@ InteractiveNodeView {
                 height: parent.height
                 anchors.centerIn: parent
                 fillMode: Image.PreserveAspectFit
-                source: node.imagesManager.imagesSources[coverImageIndex]
+                source: node.imagesManager.imagesSources[node.imagesManager.coverImageIndex]
             }
 
             //! Text Icon for when node has an image
@@ -250,7 +250,7 @@ InteractiveNodeView {
                 text: scene?.nodeRegistry?.nodeIcons[node.type] ?? ""
                 color: node.guiConfig.color
                 font.weight: 400
-                visible: nodeView.isNodeMinimal && node.coverImageIndex !== -1
+                visible: nodeView.isNodeMinimal && node.imagesManager.coverImageIndex !== -1
             }
 
             //! Text Icon for when node does not have an image
@@ -261,7 +261,7 @@ InteractiveNodeView {
                 text: scene?.nodeRegistry?.nodeIcons[node.type] ?? ""
                 color: node.guiConfig.color
                 font.weight: 400
-                visible: nodeView.isNodeMinimal && node.coverImageIndex === -1
+                visible: nodeView.isNodeMinimal && node.imagesManager.coverImageIndex === -1
             }
         }
 

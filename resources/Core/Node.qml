@@ -1,6 +1,7 @@
 import QtQuick
-import NodeLink
 import QtQuickStream
+
+import NodeLink
 
 /*! ***********************************************************************************************
  * Node is a model that manage node properties..
@@ -33,9 +34,6 @@ I_Node  {
     //! map<uuid, Port>
     property var            ports:      ({})
 
-    //! Image source picture
-    property int            coverImageIndex: -1
-
     //! Manages node images
     property ImagesManager  imagesManager: ImagesManager {}
 
@@ -53,8 +51,8 @@ I_Node  {
         // Copy direct properties in root.
         title = baseNode.title;
         type  = baseNode.type;
-        coverImageIndex = baseNode.coverImageIndex
 
+        root.imagesManager?.setProperties(baseNode.imagesManager);
         root.guiConfig?.setProperties(baseNode.guiConfig);
     }
 

@@ -9,7 +9,10 @@ import NodeLink
 QSObject {
     /* Property Declarations
     * ****************************************************************************************/
-    property var imagesSources: []
+    property var imagesSources:   []
+
+    //! Image source picture
+    property int coverImageIndex: -1
 
     /* Functions
     * ****************************************************************************************/
