@@ -97,7 +97,7 @@ qt_add_qml_module(NodeLink
         resources/Core/NLNodeRegistry.qml
         resources/Core/SelectionSpecificTool.qml
         resources/Core/NLUtils.qml
-        resources/Core/ImagesManager.qml
+        resources/Core/ImagesModel.qml
 
         resources/Core/Undo/UndoCore.qml
         resources/Core/Undo/UndoStack.qml

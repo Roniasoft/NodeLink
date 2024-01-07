@@ -25,7 +25,7 @@ Rectangle {
     radius: NLStyle.radiusAmount.itemButton
     border.width: 1
     border.color: "#363636"
-    visible: node.imagesManager.imagesSources.length !== 0
+    visible: node.imagesModel.imagesSources.length !== 0
 
 
     /*  Children
@@ -34,7 +34,7 @@ Rectangle {
         anchors.fill: parent
         anchors.margins: 4
         orientation: Qt.Horizontal
-        model: node.imagesManager.imagesSources
+        model: node.imagesModel.imagesSources
         clip: true
         spacing: 4
 
@@ -113,9 +113,9 @@ Rectangle {
                 textColor: "#fb464c"
                 visible: false
                 onClicked: {
-                    if (nodeImage.image === node.imagesManager.imagesSources[node.imagesManager.coverImageIndex])
-                        node.imagesManager.coverImageIndex = -1;
-                    node.imagesManager.deleteImage(nodeImage.image)
+                    if (nodeImage.image === node.imagesModel.imagesSources[node.imagesModel.coverImageIndex])
+                        node.imagesModel.coverImageIndex = -1;
+                    node.imagesModel.deleteImage(nodeImage.image)
                 }
 
                 MouseArea {
@@ -131,7 +131,7 @@ Rectangle {
 
                 anchors.top: nodeImage.top
                 anchors.left: nodeImage.left
-                fontWeight: (node.imagesManager.imagesSources[node.imagesManager.coverImageIndex] === nodeImage.image) ? 900 : 400
+                fontWeight: (node.imagesModel.imagesSources[node.imagesModel.coverImageIndex] === nodeImage.image) ? 900 : 400
 
                 size: 20
                 text: "\uf005"
@@ -139,10 +139,10 @@ Rectangle {
                 backColor: "transparent"
                 textColor: "yellow"
                 onClicked: {
-                    if (node.imagesManager.imagesSources[node.imagesManager.coverImageIndex] !== nodeImage.image)
-                        node.imagesManager.coverImageIndex = node.imagesManager.imagesSources.indexOf(nodeImage.image);
+                    if (node.imagesModel.imagesSources[node.imagesModel.coverImageIndex] !== nodeImage.image)
+                        node.imagesModel.coverImageIndex = node.imagesModel.imagesSources.indexOf(nodeImage.image);
                     else
-                        node.imagesManager.coverImageIndex = -1;
+                        node.imagesModel.coverImageIndex = -1;
                 }
 
             }

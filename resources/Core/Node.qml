@@ -35,7 +35,7 @@ I_Node  {
     property var            ports:      ({})
 
     //! Manages node images
-    property ImagesManager  imagesManager: ImagesManager {}
+    property ImagesModel    imagesModel: ImagesModel {}
 
     /* Object Properties
     * ****************************************************************************************/
@@ -52,7 +52,7 @@ I_Node  {
         title = baseNode.title;
         type  = baseNode.type;
 
-        root.imagesManager?.setProperties(baseNode.imagesManager);
+        root.imagesModel?.setProperties(baseNode.imagesModel);
         root.guiConfig?.setProperties(baseNode.guiConfig);
     }
 
