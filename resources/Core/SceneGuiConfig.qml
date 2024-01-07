@@ -23,4 +23,8 @@ QSObject {
     //! Scene view width and height of flickable in ui session
     property real sceneViewWidth
     property real sceneViewHeight
+
+    //! Mouse position in scene, used for paste based on mouse positions! // \TODO: find better approach
+    property vector2d       _mousePosition:    Qt.vector2d(0.0, 0.0)
+
 }

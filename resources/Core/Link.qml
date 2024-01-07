@@ -34,4 +34,8 @@ I_Node {
 
     /* Functions
      * ****************************************************************************************/
+    //! Function for handling link guiconfgi when copying and pasting
+    onCloneFrom: function (baseLink)  {
+        root.guiConfig?.setProperties(baseLink.guiConfig);
+    }
 }
