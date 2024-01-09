@@ -221,6 +221,14 @@ I_Scene {
             return false;
         }
 
+        //! Just a input port can be link to output port, or input to inAndOut port
+        var portAObj = findPort(portA);
+        var portBObj = findPort(portB);
+        if (portAObj.portType === NLSpec.PortType.Input)
+            return false;
+        if (portBObj.portType === NLSpec.PortType.Output)
+            return false;
+
         return true;
     }
 }
