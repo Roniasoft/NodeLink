@@ -51,6 +51,9 @@ Item {
     property real         overviewScaleFactor:  Math.min( overviewXScaleFactor > 1 ? 1 : overviewXScaleFactor,
                                                        overviewYScaleFactor > 1 ? 1 : overviewYScaleFactor)
 
+    //! Whether background border should be visible or not
+    property  bool        backgroundBorderVisibility: true
+
 
     /* Object Properties
     * ****************************************************************************************/
@@ -66,6 +69,8 @@ Item {
         id: backgroundRect
         anchors.fill: parent
         color: backColor
+        border.color: NLStyle.primaryBorderColor
+        border.width: (backgroundBorderVisibility) ? 2 : 0
     }
 
     //! NodesRectOverview (nodes and links)
