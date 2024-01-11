@@ -88,30 +88,14 @@ function arrows(context, controlPoints, color, headLength, startPos, type) {
         if (controlPoints.length < 4)
             return;
 
-        margin = 150;
+        margin = 100;
 
-        var endPos = controlPoints[1];
-        var startPosCp = controlPoints[2];
+        //! Calculating middle point and angle properties
+        var targetPoint = calculateMiddlePointForBrezier(controlPoints[0], controlPoints[3], controlPoints[1], controlPoints[2])
+        var angleProperties = calculateMiddleAngleForBrezier(controlPoints[0], controlPoints[3], controlPoints[1], controlPoints[2])
 
-
-       var targetPoint = findMidPoint(startPosCp, endPos);
-
-        var dx = startPos.x - controlPoints[3].x;
-        var dy = startPos.y - controlPoints[3].y;
-
-        // Calculate angle using atan2 function
-        var angle = calculateAngle(startPosCp, endPos);
-
-        if (dx < 0 && dy > 0) {
-            angle += (Math.PI / 10);
-        } else if (dx < 0 && dy < 0) {
-            angle -= Math.PI / 20;
-
-        }
-
-        if (Math.abs(dx) > margin || Math.abs(dy) > margin) {
-          drawArrow(context, targetPoint, angle, color, headLength);
-        }
+        if (Math.abs(angleProperties.dx) > margin || Math.abs(angleProperties.dy) > margin)
+          drawArrow(context, targetPoint, angleProperties.angle, color, headLength);
 
         return;
     }
@@ -188,6 +172,37 @@ function calculateAngle(startPos, endPos) {
     var angle = Math.atan2(dy, dx) ;
 
     return angle;
+}
+
+//! Caclualtes the middle point of the bezier curve (bezier curve formula)
+function calculateMiddlePointForBrezier (startPos, endPos, cp1, cp2) {
+    //! Parameter for the middle point
+    var t = 0.5;
+
+    var middleX = startPos.x * Math.pow(1 - t, 3) + 3 * cp1.x * Math.pow(1 - t, 2) * t + 3 * cp2.x * (1 - t) * Math.pow(t, 2) + endPos.x * Math.pow(t, 3);
+    var middleY = startPos.y * Math.pow(1 - t, 3) + 3 * cp1.y * Math.pow(1 - t, 2) * t + 3 * cp2.y * (1 - t) * Math.pow(t, 2) + endPos.y * Math.pow(t, 3);
+
+    var middlePosition = Qt.vector2d(middleX, middleY)
+
+    return middlePosition;
+}
+
+//! Calculating the middle point angle, using bezier formula derivative
+function calculateMiddleAngleForBrezier (startPos, endPos, cp1, cp2) {
+    //! Parameter for the middle point
+    var t = 0.5;
+
+    var dx = -3 * startPos.x * Math.pow(1 - t, 2) + 3 * cp1.x * (Math.pow(1 - t, 2) - 2 * t * (1 - t)) + 3 * cp2.x * (2 * t * (1 - t) - Math.pow(t, 2)) + 3 * endPos.x * Math.pow(t, 2);
+    var dy = -3 * startPos.y * Math.pow(1 - t, 2) + 3 * cp1.y * (Math.pow(1 - t, 2) - 2 * t * (1 - t)) + 3 * cp2.y * (2 * t * (1 - t) - Math.pow(t, 2)) + 3 * endPos.y * Math.pow(t, 2);
+
+    // Calculate the angle in radians
+    var middleAngle = Math.atan2(dy, dx);
+
+    return {
+        angle: middleAngle,
+        dx: dx,
+        dy: dy
+    }
 }
 
 //! Paint curve line
