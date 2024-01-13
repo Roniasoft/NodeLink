@@ -51,6 +51,9 @@ Item {
     property real         overviewScaleFactor:  Math.min( overviewXScaleFactor > 1 ? 1 : overviewXScaleFactor,
                                                        overviewYScaleFactor > 1 ? 1 : overviewYScaleFactor)
 
+    //! Whether background border should be visible or not
+    property  bool        backgroundBorderVisibility: true
+
 
     /* Object Properties
     * ****************************************************************************************/
@@ -94,6 +97,16 @@ Item {
         y: ((scene?.sceneGuiConfig?.contentY / (sceneSession?.zoomManager.zoomFactor) - nodeRectTopLeft.y) ?? 0) * root.overviewScaleFactor
         width: (scene?.sceneGuiConfig?.sceneViewWidth ?? 0) * customScaleFactor
         height: (scene?.sceneGuiConfig?.sceneViewHeight ?? 0) * customScaleFactor
+    }
+
+    //! Overview borders, implemented here (and not in the background rect) because borders need to be higher
+    //! on the visual stack than userViewRect
+    Rectangle {
+        id: borderRect
+        anchors.fill: parent
+        color: "transparent"
+        border.color: NLStyle.primaryBorderColor
+        border.width: (backgroundBorderVisibility) ? 2 : 0
     }
 
     //! MouseArea to handle position change of user view
