@@ -121,6 +121,12 @@ Item {
                     if (obj?.objectType === NLSpec.ObjectType.Node) {
                         obj.guiConfig.position.x += deltaX;
                         obj.guiConfig.position.y += deltaY;
+
+                    if (NLStyle.snapEnabled) {
+                        obj.guiConfig.position.y = Math.ceil(obj.guiConfig.position.y / 20) * 20;
+                        obj.guiConfig.position.x = Math.ceil(obj.guiConfig.position.x / 20) * 20;
+                    }
+
                     obj.guiConfig.positionChanged();
 
                     if ((obj.guiConfig.position.x < 0  && deltaX < 0) ||
