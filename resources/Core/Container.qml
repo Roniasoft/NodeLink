@@ -24,5 +24,13 @@ QSObject {
 
     /* Functions
      * ****************************************************************************************/
+    function addNode(node: Node) {
+        nodes[node._qsUuid] = node;
+        nodesChanged();
+    }
 
+    function removeNode(node: Node) {
+        delete nodes[node._qsUuid];
+        nodesChanged();
+    }
 }

@@ -71,6 +71,9 @@ Item {
         // To hide cursor when is disable
         visible: enabled
 
+        onEntered: checkBounds()
+        onExited: checkBounds()
+
         //! Manage zoom in containerView and pass it to zoomManager
         onWheel: (wheel) => {
                      //! active zoom with no modifier.
@@ -130,15 +133,27 @@ Item {
         onPositionChanged: (mouse) => {
             if (isDraging) {
                 var deltaX = mouse.x - prevX;
-                container.guiConfig.position.x += deltaX;
-                prevX = mouse.x - deltaX;
                 var deltaY = mouse.y - prevY;
+
+                container.guiConfig.position.x += deltaX;
                 container.guiConfig.position.y += deltaY;
                 if(NLStyle.snapEnabled){
                     container.guiConfig.position.y =  Math.ceil(container.guiConfig.position.y / 20) * 20;
                     container.guiConfig.position.x =  Math.ceil(container.guiConfig.position.x / 20) * 20;
                 }
                 container.guiConfig.positionChanged();
+
+                Object.values(container.nodes).forEach(node => {
+                    node.guiConfig.position.x += deltaX;
+                    node.guiConfig.position.y += deltaY;
+                    if(NLStyle.snapEnabled){
+                        node.guiConfig.position.y =  Math.ceil(node.guiConfig.position.y / 20) * 20;
+                        node.guiConfig.position.x =  Math.ceil(node.guiConfig.position.x / 20) * 20;
+                    }
+                    node.guiConfig.positionChanged();
+
+                })
+                prevX = mouse.x - deltaX;
                 prevY = mouse.y - deltaY;
 
                 if((container.guiConfig.position.x < 0  && deltaX < 0) ||
@@ -206,6 +221,7 @@ Item {
 
         onReleased: {
             isDraging = false;
+            checkBounds()
         }
 
         onPositionChanged: (mouse)=> {
@@ -250,6 +266,7 @@ Item {
 
         onReleased: {
             isDraging = false;
+            checkBounds()
         }
 
         onPositionChanged: (mouse)=> {
@@ -289,6 +306,7 @@ Item {
 
         onReleased: {
             isDraging = false;
+            checkBounds()
         }
 
         onPositionChanged: (mouse)=> {
@@ -335,6 +353,7 @@ Item {
 
         onReleased: {
             isDraging = false;
+            checkBounds()
         }
 
         onPositionChanged: (mouse)=> {
@@ -378,6 +397,7 @@ Item {
 
         onReleased: {
             isDraging = false;
+            checkBounds()
         }
 
         onPositionChanged: (mouse)=> {
@@ -428,6 +448,7 @@ Item {
 
         onReleased: {
             isDraging = false;
+            checkBounds()
         }
 
         onPositionChanged: (mouse)=> {
@@ -474,6 +495,7 @@ Item {
 
         onReleased: {
             isDraging = false;
+            checkBounds()
         }
 
         onPositionChanged: (mouse)=> {
@@ -529,6 +551,7 @@ Item {
 
         onReleased: {
             isDraging = false;
+            checkBounds();
         }
 
         onPositionChanged: (mouse)=> {
@@ -553,6 +576,26 @@ Item {
         }
     }
 
+    function checkBounds() {
+        Object.values(container.nodes).forEach(node => {
+            if (!(node.guiConfig.position.x >= container.guiConfig.position.x &&
+                 node.guiConfig.position.y >= container.guiConfig.position.y &&
+                 node.guiConfig.position.x + node.guiConfig.width <= container.guiConfig.position.x + container.guiConfig.width &&
+                 node.guiConfig.position.y + node.guiConfig.height <= container.guiConfig.position.y + container.guiConfig.height)
+                )
+                container.removeNode(node)
+        })
+        Object.values(scene.nodes).forEach(node => {
+           if (node.guiConfig.position.x >= container.guiConfig.position.x &&
+               node.guiConfig.position.y >= container.guiConfig.position.y &&
+               node.guiConfig.position.x + node.guiConfig.width <= container.guiConfig.position.x + container.guiConfig.width &&
+               node.guiConfig.position.y + node.guiConfig.height <= container.guiConfig.position.y + container.guiConfig.height
+               )
+                container.addNode(node);
+        })
 
-
+        Object.values(container.nodes).forEach(node => {
+            console.log("hola",node)
+        })
+    }
 }
