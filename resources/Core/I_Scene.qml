@@ -24,6 +24,9 @@ QSObject {
     //! map <UUID, Link>
     property var            links:          ({})
 
+    //! map <UUID, Container>
+    property var            containers:     ({})
+
     //! Scene Selection Model
     property SelectionModel selectionModel: null
 
@@ -50,6 +53,12 @@ QSObject {
     //! Link Removed
     signal linkRemoved(Link link)
 
+    //! Container added
+    signal containerAdded(Container container)
+
+    //! Container Removed
+    signal containerRemoved(Container container)
+
     //! This signals can be and should be used to request changes in content x/y/width/height, since
     //! direct changes of SceneGuiConfig.content* won't effect Flickable contents.
     //! contentMoveRequested() is mainly used by NodesOverview
@@ -72,6 +81,33 @@ QSObject {
                 Object.values(links).forEach(link => linkAdded(link));
             }
         }
+    }
+
+    //! Creates a new container
+    function createContainer() {
+        let obj = QSSerializer.createQSObject("Container", ["NodeLink"], NLCore.defaultRepo);
+        obj._qsRepo = scene._qsRepo;
+        return obj;
+    }
+
+    //! Adds a container to container map
+    function addContainer(container: Container) {
+        if (containers[container._qsUuid] === container) { return; }
+
+        // Add to local administration
+        containers[container._qsUuid] = container;
+        containersChanged();
+        containerAdded(container);
+        return container;
+    }
+
+    //! Deletes a container from scene
+    function deleteContainer(containerUUId: string) {
+        // Remove the deleted object from selected model
+//        selectionModel.remove(nodeUUId);
+        containerRemoved(containers[containerUUId]);
+        delete containers[containerUUId];
+        containersChanged();
     }
 
     //! Adds a node the to nodes map

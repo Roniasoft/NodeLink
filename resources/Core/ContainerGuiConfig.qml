@@ -1,0 +1,24 @@
+import QtQuick
+
+import NodeLink
+import QtQuickStream
+
+/*! ***********************************************************************************************
+ * Container GUI Config.
+ * ************************************************************************************************/
+QSObject {
+    /* Property Properties
+     * ****************************************************************************************/
+    //! Zoom factor
+    property real zoomFactor : 1.0
+
+    //! Width and height
+    property real width: 200
+    property real height: 200
+
+    property string color: NLStyle.primaryColor
+
+    //! Position in scene
+    property vector2d position: Qt.vector2d(0.0, 0.0)
+
+}

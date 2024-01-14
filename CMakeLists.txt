@@ -98,6 +98,8 @@ qt_add_qml_module(NodeLink
         resources/Core/SelectionSpecificTool.qml
         resources/Core/NLUtils.qml
         resources/Core/ImagesModel.qml
+        resources/Core/Container.qml
+        resources/Core/ContainerGuiConfig.qml
 
         resources/Core/Undo/UndoCore.qml
         resources/Core/Undo/UndoStack.qml
@@ -156,6 +158,7 @@ qt_add_qml_module(NodeLink
         resources/View/Helpers/LinkHelperView.qml
         resources/View/ZoomManager.qml
         resources/View/ImagesFlickable.qml
+        resources/View/ContainerView.qml
 
         resources/View/Logics/Calculation.js
         resources/View/Logics/BasicLinkCalculator.js

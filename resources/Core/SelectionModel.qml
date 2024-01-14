@@ -66,6 +66,13 @@ QtObject {
         selectedModelChanged();
     }
 
+    //! Select container
+    function selectContainer(container: Node) {
+        //! clear selection model when selection changed.
+        selectedModel[container._qsUuid] = container;
+        selectedModelChanged();
+    }
+
     //! Select Link objects  (Add link object to SelectionModel)
     function selectLink(link: Link) {
         if (link === null)
