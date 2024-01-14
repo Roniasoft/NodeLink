@@ -350,10 +350,8 @@ InteractiveNodeView {
                 prevX = mouse.x - deltaX;
                 var deltaY = mouse.y - prevY;
                 node.guiConfig.position.y += deltaY;
-                if(NLStyle.snapEnabled){
-                    node.guiConfig.position.y =  Math.ceil(node.guiConfig.position.y / 20) * 20;
-                    node.guiConfig.position.x =  Math.ceil(node.guiConfig.position.x / 20) * 20;
-                }
+                if(NLStyle.snapEnabled)
+                    node.guiConfig.position = Qt.vector2d(Math.ceil(node.guiConfig.position.x / 20) * 20, Math.ceil(node.guiConfig.position.y / 20) * 20)
                 node.guiConfig.positionChanged();
                 prevY = mouse.y - deltaY;
 
