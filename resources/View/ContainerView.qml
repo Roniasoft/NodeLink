@@ -71,8 +71,8 @@ Item {
         // To hide cursor when is disable
         visible: enabled
 
-        onEntered: checkBounds()
-        onExited: checkBounds()
+//        onEntered: checkBounds()
+//        onExited: checkBounds()
 
         //! Manage zoom in containerView and pass it to zoomManager
         onWheel: (wheel) => {
@@ -86,6 +86,7 @@ Item {
                  }
 
         onDoubleClicked: (mouse) => {
+                             checkBounds()
             // Clear all selected containers
             scene.selectionModel.clearAllExcept(container._qsUuid);
 
@@ -105,6 +106,7 @@ Item {
         //! Manage right and left click to select and
         //! show container contex menue.
         onClicked: (mouse) => {
+                       checkBounds()
 //            if (isContainerEditable && mouse.button === Qt.RightButton) {
 //                // Ensure the isDraging is false.
 //                isDraging = false;
@@ -120,6 +122,7 @@ Item {
         }
 
         onPressed: (mouse) => {
+                       checkBounds()
             isDraging = true;
             prevX = mouse.x;
             prevY = mouse.y;
@@ -128,6 +131,7 @@ Item {
 
         onReleased: (mouse) => {
             isDraging = false;
+                        checkBounds();
         }
 
         onPositionChanged: (mouse) => {
@@ -577,6 +581,7 @@ Item {
     }
 
     function checkBounds() {
+        console.log("hey")
         Object.values(container.nodes).forEach(node => {
             if (!(node.guiConfig.position.x >= container.guiConfig.position.x &&
                  node.guiConfig.position.y >= container.guiConfig.position.y &&
@@ -592,10 +597,6 @@ Item {
                node.guiConfig.position.y + node.guiConfig.height <= container.guiConfig.position.y + container.guiConfig.height
                )
                 container.addNode(node);
-        })
-
-        Object.values(container.nodes).forEach(node => {
-            console.log("hola",node)
         })
     }
 }
