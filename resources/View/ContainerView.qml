@@ -71,8 +71,8 @@ Item {
         // To hide cursor when is disable
         visible: enabled
 
-//        onEntered: checkBounds()
-//        onExited: checkBounds()
+//        onEntered:
+//        onExited:
 
         //! Manage zoom in containerView and pass it to zoomManager
         onWheel: (wheel) => {
@@ -86,7 +86,7 @@ Item {
                  }
 
         onDoubleClicked: (mouse) => {
-                             checkBounds()
+            checkBounds()
             // Clear all selected containers
             scene.selectionModel.clearAllExcept(container._qsUuid);
 
@@ -106,7 +106,7 @@ Item {
         //! Manage right and left click to select and
         //! show container contex menue.
         onClicked: (mouse) => {
-                       checkBounds()
+
 //            if (isContainerEditable && mouse.button === Qt.RightButton) {
 //                // Ensure the isDraging is false.
 //                isDraging = false;
@@ -122,7 +122,7 @@ Item {
         }
 
         onPressed: (mouse) => {
-                       checkBounds()
+            checkBounds()
             isDraging = true;
             prevX = mouse.x;
             prevY = mouse.y;
@@ -131,7 +131,7 @@ Item {
 
         onReleased: (mouse) => {
             isDraging = false;
-                        checkBounds();
+                        ;
         }
 
         onPositionChanged: (mouse) => {
@@ -225,7 +225,7 @@ Item {
 
         onReleased: {
             isDraging = false;
-            checkBounds()
+
         }
 
         onPositionChanged: (mouse)=> {
@@ -270,7 +270,7 @@ Item {
 
         onReleased: {
             isDraging = false;
-            checkBounds()
+
         }
 
         onPositionChanged: (mouse)=> {
@@ -310,7 +310,7 @@ Item {
 
         onReleased: {
             isDraging = false;
-            checkBounds()
+
         }
 
         onPositionChanged: (mouse)=> {
@@ -357,7 +357,7 @@ Item {
 
         onReleased: {
             isDraging = false;
-            checkBounds()
+
         }
 
         onPositionChanged: (mouse)=> {
@@ -401,7 +401,7 @@ Item {
 
         onReleased: {
             isDraging = false;
-            checkBounds()
+
         }
 
         onPositionChanged: (mouse)=> {
@@ -452,7 +452,7 @@ Item {
 
         onReleased: {
             isDraging = false;
-            checkBounds()
+
         }
 
         onPositionChanged: (mouse)=> {
@@ -499,7 +499,7 @@ Item {
 
         onReleased: {
             isDraging = false;
-            checkBounds()
+
         }
 
         onPositionChanged: (mouse)=> {
@@ -555,7 +555,7 @@ Item {
 
         onReleased: {
             isDraging = false;
-            checkBounds();
+            ;
         }
 
         onPositionChanged: (mouse)=> {
@@ -581,7 +581,7 @@ Item {
     }
 
     function checkBounds() {
-        console.log("hey")
+        //! removing nodes that are no longer in bounds
         Object.values(container.nodes).forEach(node => {
             if (!(node.guiConfig.position.x >= container.guiConfig.position.x &&
                  node.guiConfig.position.y >= container.guiConfig.position.y &&
@@ -590,6 +590,7 @@ Item {
                 )
                 container.removeNode(node)
         })
+        //! adding nodes that are now in bounds
         Object.values(scene.nodes).forEach(node => {
            if (node.guiConfig.position.x >= container.guiConfig.position.x &&
                node.guiConfig.position.y >= container.guiConfig.position.y &&
