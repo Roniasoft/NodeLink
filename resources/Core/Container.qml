@@ -14,6 +14,8 @@ QSObject {
     //! Name
     property string title: "group item"
 
+    property int   objectType:     NLSpec.ObjectType.Container
+
     //! Nodes inside container
     property var    nodes: ({})
 
@@ -32,5 +34,9 @@ QSObject {
     function removeNode(node: Node) {
         delete nodes[node._qsUuid];
         nodesChanged();
+    }
+
+    Component.onCompleted: {
+        objectType = NLSpec.ObjectType.Container
     }
 }

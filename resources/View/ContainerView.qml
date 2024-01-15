@@ -44,13 +44,79 @@ Item {
              containerView.forceActiveFocus();
     }
 
+    Keys.onDeletePressed: {
+        if (!isSelected)
+            return;
+
+
+        if (sceneSession.isDeletePromptEnable)
+            deletePopup.open();
+         else
+            delTimer.start();
+    }
+
+    //! Use Key to manage shift pressed to handle multiObject selection
+    Keys.onPressed: (event)=> {
+        if (event.key === Qt.Key_Shift)
+            sceneSession.isShiftModifierPressed = true;
+    }
+
+    Keys.onReleased: (event)=> {
+        if (event.key === Qt.Key_Shift)
+            sceneSession.isShiftModifierPressed = false;
+    }
+    ConfirmPopUp {
+        id: deletePopup
+        confirmText: "Are you sure you want to delete " +
+                                     (Object.keys(scene.selectionModel.selectedModel).length > 1 ?
+                                         "these items?" : "this item?");
+        sceneSession: containerView.sceneSession
+        onAccepted: delTimer.start();
+    }
+
+    Timer {
+        id: delTimer
+        repeat: false
+        running: false
+        interval: 100
+        onTriggered: {
+            scene.deleteSelectedObjects();
+        }
+    }
+
     Rectangle {
-        anchors.fill: parent
+        id: backgroundRect
+        width: parent.width
+        height: parent.height - containerTitle.height - 5
+        anchors.bottom: parent.bottom
         color: "transparent"
         border.color: container.guiConfig.color
         border.width: 2
         opacity: isSelected ? 1 : 0.8
         radius: 5
+    }
+
+    NLTextField {
+        id: containerTitle
+        height: 35
+        width: Math.max(parent.width * 0.3, 100)
+        anchors.left: parent.left
+        anchors.bottom: backgroundRect.top
+        anchors.bottomMargin: 5
+        text: container.title
+        onTextChanged: container.title = text
+        color: NLStyle.primaryTextColor
+        font.family: NLStyle.fontType.roboto
+
+        Rectangle {
+            anchors.fill: parent
+            color: "transparent"
+            border.color: containerTitle.activeFocus ? container.guiConfig.color : NLStyle.primaryBorderColor
+            opacity: 0.9
+            border.width: 1
+            radius: 5
+        }
+
     }
 
     MouseArea {
@@ -60,14 +126,12 @@ Item {
         property real    prevY:      container.guiConfig.position.y
         property bool   isDraging:  false
 
-        anchors.fill: parent
+        anchors.fill: backgroundRect
         anchors.margins: 10
         hoverEnabled: true
         preventStealing: true
-//        enabled: !containerView.edit && !sceneSession.connectingMode &&
-//                 !container.guiConfig.locked && !sceneSession.isCtrlPressed &&
-//                 iscontainerEditable
-
+        enabled: !sceneSession.connectingMode &&
+                 !sceneSession.isCtrlPressed
         // To hide cursor when is disable
         visible: enabled
 
@@ -106,7 +170,9 @@ Item {
         //! Manage right and left click to select and
         //! show container contex menue.
         onClicked: (mouse) => {
-
+//            isDraging = false;
+//                       scene.selectionModel.clearAllExcept(container._qsUuid);
+//            scene.selectionModel.selectContainer(container);
 //            if (isContainerEditable && mouse.button === Qt.RightButton) {
 //                // Ensure the isDraging is false.
 //                isDraging = false;
@@ -209,7 +275,7 @@ Item {
         enabled: isResizable && !sceneSession.connectingMode
         height: 20
         cursorShape: Qt.SizeVerCursor
-        anchors.top: parent.top
+        anchors.top: backgroundRect.top
         anchors.topMargin: -10
         anchors.horizontalCenter: parent.horizontalCenter
         preventStealing: true
@@ -384,7 +450,7 @@ Item {
         cursorShape: Qt.SizeBDiagCursor
         hoverEnabled: true
         anchors.right: parent.right
-        anchors.top: parent.top
+        anchors.top: backgroundRect.top
         anchors.rightMargin: -10
         anchors.bottomMargin: -10
         preventStealing: true
@@ -482,7 +548,7 @@ Item {
         cursorShape: Qt.SizeFDiagCursor
         hoverEnabled: true
         anchors.left: parent.left
-        anchors.top: parent.top
+        anchors.top: backgroundRect.top
         anchors.rightMargin: -10
         anchors.bottomMargin: -10
         preventStealing: true

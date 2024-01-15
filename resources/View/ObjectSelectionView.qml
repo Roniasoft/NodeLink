@@ -118,7 +118,7 @@ Item {
                 // Start movement process
                 Object.values(scene.selectionModel.selectedModel).forEach(obj => {
                     // Ignore Link objects
-                    if (obj?.objectType === NLSpec.ObjectType.Node) {
+                    if (obj?.objectType === NLSpec.ObjectType.Node || obj?.objectType === NLSpec.ObjectType.Container) {
                         obj.guiConfig.position.x += deltaX;
                         obj.guiConfig.position.y += deltaY;
 
@@ -197,27 +197,67 @@ Item {
 
     //! calculate X, Y, width and height of rubber band
     function calculateDimensions() {
-        var firstObj = Object.values(scene.selectionModel.selectedModel)[0];
-        if (firstObj === undefined)
-            return;
+//        var firstObj = Object.values(scene.selectionModel.selectedModel)[0];
+//        if (firstObj === undefined)
+//            return;
 
-        var isNodeFirstObj = firstObj.objectType === NLSpec.ObjectType.Node;
-        var portPosVecOut = isNodeFirstObj ? Qt.vector2d(0, 0) : firstObj?.outputPort?._position
+//        var isNodeFirstObj = firstObj.objectType === NLSpec.ObjectType.Node || firstObj.objectType === NLSpec.ObjectType.Container;
+////        console.log("hola",isNodeFirstObj,firstObj.objectType === NLSpec.ObjectType.Container)
+//        var portPosVecOut = isNodeFirstObj ? Qt.vector2d(0, 0) : firstObj?.outputPort?._position
 
-        var position = isNodeFirstObj ? firstObj.guiConfig?.position : firstObj?.inputPort?._position;
-        var leftX = (isNodeFirstObj ? position.x : (position.x < portPosVecOut.x) ? position.x : portPosVecOut.x);
-        var topY = (isNodeFirstObj ? position.y : (position.y < portPosVecOut.y) ? position.y : portPosVecOut.y);
+//        var position = isNodeFirstObj ? firstObj.guiConfig?.position : firstObj?.inputPort?._position;
+//        var leftX = (isNodeFirstObj ? position.x : (position.x < portPosVecOut.x) ? position.x : portPosVecOut.x);
+//        var topY = (isNodeFirstObj ? position.y : (position.y < portPosVecOut.y) ? position.y : portPosVecOut.y);
 
-        var rightX = (isNodeFirstObj ? position.x + firstObj.guiConfig.width:
-                                      (position.x > portPosVecOut.x) ? position.x : portPosVecOut.x);
-        var bottomY = (isNodeFirstObj ? position.y + firstObj.guiConfig.height:
-                                       (position.y > portPosVecOut.y) ? position.y : portPosVecOut.y);
+//        var rightX = (isNodeFirstObj ? position.x + firstObj.guiConfig.width:
+//                                      (position.x > portPosVecOut.x) ? position.x : portPosVecOut.x);
+//        var bottomY = (isNodeFirstObj ? position.y + firstObj.guiConfig.height:
+//                                       (position.y > portPosVecOut.y) ? position.y : portPosVecOut.y);
+//        console.log("hola", leftX, rightX, topY, bottomY)
 
+
+        var leftX = Number.POSITIVE_INFINITY;
+        var topY = Number.POSITIVE_INFINITY;
+        var rightX = Number.NEGATIVE_INFINITY;
+        var bottomY = Number.NEGATIVE_INFINITY;
+
+        // Iterate through each selected item
+       Object.values(scene.selectionModel.selectedModel).forEach(item => {
+          let positionX, positionY, width, height;
+
+          // Check the type of the item (node, link, container)
+          if (item.objectType === NLSpec.ObjectType.Link) {
+            // For links, use ljnk._inputPort._position
+            positionX = item.inputPort._position.x;
+            positionY = item.inputPort._position.y;
+            height = (positionY > item.outputPort._position.y) ? positionY  : item.outputPort._position.y
+            width = (positionX > item.outputPort._position.x) ? positionX  : item.outputPort._position.x
+          } else {
+            // For nodes and containers, use node.guiConfig.position or container.guiConfig.position
+            positionX = item.guiConfig.position.x;
+            positionY = item.guiConfig.position.y;
+            width = item.guiConfig.width
+            height = item.guiConfig.height
+          }
+
+          // Update least and most positions
+          leftX = Math.min(leftX, positionX);
+          topY = Math.min(topY, positionY);
+                                                                     console.log("hey",item.objectType)
+          if (item.objectType !== NLSpec.ObjectType.Link) {
+                rightX = Math.max(rightX, positionX + width);
+                bottomY = Math.max(bottomY, positionY + height);
+          }
+           else {
+               rightX = Math.max(rightX, width);
+               bottomY = Math.max(bottomY, height);
+           }
+        });
         Object.values(scene.selectionModel.selectedModel).forEach(obj => {
                                                                       if (!obj)
                                                                           return;
 
-                                                                      if (obj.objectType === NLSpec.ObjectType.Node) {
+                                                                      if (obj.objectType === NLSpec.ObjectType.Node || obj.objectType === NLSpec.ObjectType.Container) {
 
                                                                           // Find left, right, top and bottom positions.
                                                                           // they are depend on inputPort and outputPort position (temporary).
@@ -271,7 +311,6 @@ Item {
                                                                       }
                                                                   });
         var margin = 5;
-
         // Update dimentions
         root.width = (rightX - leftX + 2 * margin)
         root.height = (bottomY - topY + 2 * margin)

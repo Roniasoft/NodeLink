@@ -67,7 +67,7 @@ QtObject {
     }
 
     //! Select container
-    function selectContainer(container: Node) {
+    function selectContainer(container: Container) {
         //! clear selection model when selection changed.
         selectedModel[container._qsUuid] = container;
         selectedModelChanged();
@@ -103,7 +103,7 @@ QtObject {
     }
 
     //! Selects all nodes and links in the scene
-    function selectAll(nodes, links) {
+    function selectAll(nodes, links, containers) {
         clear();
 
         Object.values(nodes).forEach(node => {
@@ -112,6 +112,10 @@ QtObject {
 
         Object.values(links).forEach(link => {
             selectLink(link);
+        })
+
+        Object.values(containers).forEach(container => {
+            selectLink(container);
         })
     }
 }

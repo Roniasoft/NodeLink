@@ -17,6 +17,7 @@ QSObject {
     property real height: 200
 
     property string color: NLStyle.primaryColor
+    property int    colorIndex: -1
 
     //! Position in scene
     property vector2d position: Qt.vector2d(0.0, 0.0)

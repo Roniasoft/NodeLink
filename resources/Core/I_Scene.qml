@@ -289,6 +289,9 @@ QSObject {
                 if (!value.guiConfig.locked)
                     scene.deleteNode(value._qsUuid);
             }
+            if(value.objectType === NLSpec.ObjectType.Container) {
+                scene.deleteContainer(value._qsUuid);
+            }
             if(value.objectType === NLSpec.ObjectType.Link) {
                 scene.unlinkNodes(value.inputPort._qsUuid, value.outputPort._qsUuid)
             }
@@ -306,7 +309,9 @@ QSObject {
         var rBRightX = rBLeftX + containerItem.width;
         var rBBottomY = rBTopY + containerItem.height;
 
-        var foundObj = Object.values(nodes).filter(node => {
+        var allObjects = [...Object.values(nodes), ...Object.values(containers)];
+
+        var foundObj = allObjects.filter(node => {
             // Key points of Node to generate line equations and it's limits.
             var position = node.guiConfig.position
 
@@ -350,15 +355,19 @@ QSObject {
     function copyNodes() {
         NLCore._copiedNodes = ({})
         NLCore._copiedLinks = ({})
+        NLCore._copiedContainers = ({})
 
         var selectedNodes = Object.values(selectionModel?.selectedModel ?? ({})).filter(obj => obj?.objectType === NLSpec.ObjectType.Node)
         var selectedLinks = Object.values(selectionModel?.selectedModel ?? ({})).filter(obj => obj?.objectType === NLSpec.ObjectType.Link)
+        var selectedContainers = Object.values(selectionModel?.selectedModel ?? ({})).filter(obj => obj?.objectType === NLSpec.ObjectType.Container)
 
         selectedNodes.forEach(node => {NLCore._copiedNodes[node._qsUuid] = node;});
         selectedLinks.forEach(link => {NLCore._copiedLinks[link._qsUuid] = link;});
+        selectedContainers.forEach(container => {NLCore._copiedContainers[container._qsUuid] = container;});
 
-        NLCore._copiedNodesChanged()
+        NLCore._copiedNodesChanged();
         NLCore._copiedLinksChanged();
+        NLCore._copiedContainersChanged();
     }
 
     //! Function to paste nodes. Currently only works for nodes and not links
