@@ -115,7 +115,7 @@ QtObject {
         })
 
         Object.values(containers).forEach(container => {
-            selectLink(container);
+            selectContainer(container);
         })
     }
 }

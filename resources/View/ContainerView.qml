@@ -100,7 +100,7 @@ Item {
         id: containerTitle
         height: 35
         width: Math.max(parent.width * 0.3, 100)
-        anchors.left: parent.left
+        anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: backgroundRect.top
         anchors.bottomMargin: 5
         text: container.title
@@ -221,8 +221,18 @@ Item {
                         node.guiConfig.position.x =  Math.ceil(node.guiConfig.position.x / 20) * 20;
                     }
                     node.guiConfig.positionChanged();
-
                 })
+
+                Object.values(container.containersInside).forEach(container => {
+                    container.guiConfig.position.x += deltaX;
+                    container.guiConfig.position.y += deltaY;
+                    if(NLStyle.snapEnabled){
+                        container.guiConfig.position.y =  Math.ceil(container.guiConfig.position.y / 20) * 20;
+                        container.guiConfig.position.x =  Math.ceil(container.guiConfig.position.x / 20) * 20;
+                    }
+                    container.guiConfig.positionChanged();
+                })
+
                 prevX = mouse.x - deltaX;
                 prevY = mouse.y - deltaY;
 
@@ -650,7 +660,7 @@ Item {
         //! removing nodes that are no longer in bounds
         Object.values(container.nodes).forEach(node => {
             if (!(node.guiConfig.position.x >= container.guiConfig.position.x &&
-                 node.guiConfig.position.y >= container.guiConfig.position.y &&
+                 node.guiConfig.position.y >= container.guiConfig.position.y + containerTitle.height &&
                  node.guiConfig.position.x + node.guiConfig.width <= container.guiConfig.position.x + container.guiConfig.width &&
                  node.guiConfig.position.y + node.guiConfig.height <= container.guiConfig.position.y + container.guiConfig.height)
                 )
@@ -659,11 +669,29 @@ Item {
         //! adding nodes that are now in bounds
         Object.values(scene.nodes).forEach(node => {
            if (node.guiConfig.position.x >= container.guiConfig.position.x &&
-               node.guiConfig.position.y >= container.guiConfig.position.y &&
+               node.guiConfig.position.y >= container.guiConfig.position.y  + containerTitle.height &&
                node.guiConfig.position.x + node.guiConfig.width <= container.guiConfig.position.x + container.guiConfig.width &&
                node.guiConfig.position.y + node.guiConfig.height <= container.guiConfig.position.y + container.guiConfig.height
                )
                 container.addNode(node);
+        })
+
+        Object.values(container.containersInside).forEach(containerInside => {
+            if (!(containerInside.guiConfig.position.x >= container.guiConfig.position.x &&
+                 containerInside.guiConfig.position.y >= container.guiConfig.position.y + containerTitle.height &&
+                 containerInside.guiConfig.position.x + containerInside.guiConfig.width <= container.guiConfig.position.x + container.guiConfig.width &&
+                 containerInside.guiConfig.position.y + containerInside.guiConfig.height <= container.guiConfig.position.y + container.guiConfig.height)
+                )
+                container.removeContainerInside(containerInside)
+        })
+
+        Object.values(scene.containers).forEach(containerInside => {
+            if ((containerInside.guiConfig.position.x >= container.guiConfig.position.x &&
+                 containerInside.guiConfig.position.y >= container.guiConfig.position.y + containerTitle.height &&
+                 containerInside.guiConfig.position.x + containerInside.guiConfig.width <= container.guiConfig.position.x + container.guiConfig.width &&
+                 containerInside.guiConfig.position.y + containerInside.guiConfig.height <= container.guiConfig.position.y + container.guiConfig.height)
+                )
+                container.addContainerInside(containerInside)
         })
     }
 }

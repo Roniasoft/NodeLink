@@ -427,7 +427,8 @@ QSObject {
                 allPorts[port1Value] = port2Value;
             }
         })
-
+        //! Calling function to create Containers
+        createCopiedContainers(diffX, diffY);
         //! Calling function to create links
         createCopiedLinks(allPorts);
     }
@@ -446,6 +447,19 @@ QSObject {
         addNode(node);
 
         return node;
+    }
+
+    //! Creating copied containers
+    function createCopiedContainers(diffX, diffY) {
+        Object.values(NLCore._copiedContainers).forEach(container => {
+            var newContainer = createContainer();
+            newContainer.cloneFrom(container);
+
+            newContainer.guiConfig.position.x += diffX;
+            newContainer.guiConfig.position.y += diffY;
+
+            addContainer(newContainer);
+        })
     }
 
     //! Creating coped links
