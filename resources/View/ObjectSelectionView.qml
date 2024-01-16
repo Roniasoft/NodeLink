@@ -197,134 +197,71 @@ Item {
 
     //! calculate X, Y, width and height of rubber band
     function calculateDimensions() {
-//        var firstObj = Object.values(scene.selectionModel.selectedModel)[0];
-//        if (firstObj === undefined)
-//            return;
+            var firstObj = Object.values(scene.selectionModel.selectedModel)[0];
+            if (firstObj === undefined)
+                return;
 
-//        var isNodeFirstObj = firstObj.objectType === NLSpec.ObjectType.Node || firstObj.objectType === NLSpec.ObjectType.Container;
-////        console.log("hola",isNodeFirstObj,firstObj.objectType === NLSpec.ObjectType.Container)
-//        var portPosVecOut = isNodeFirstObj ? Qt.vector2d(0, 0) : firstObj?.outputPort?._position
+            var isNodeFirstObj = firstObj.objectType === NLSpec.ObjectType.Node || firstObj.objectType === NLSpec.ObjectType.Container;
+            var portPosVecOut = isNodeFirstObj ? Qt.vector2d(0, 0) : firstObj?.outputPort?._position
 
-//        var position = isNodeFirstObj ? firstObj.guiConfig?.position : firstObj?.inputPort?._position;
-//        var leftX = (isNodeFirstObj ? position.x : (position.x < portPosVecOut.x) ? position.x : portPosVecOut.x);
-//        var topY = (isNodeFirstObj ? position.y : (position.y < portPosVecOut.y) ? position.y : portPosVecOut.y);
+            var position = isNodeFirstObj ? firstObj.guiConfig?.position : firstObj?.inputPort?._position;
+            var leftX = (isNodeFirstObj ? position.x : (position.x < portPosVecOut.x) ? position.x : portPosVecOut.x);
+            var topY = (isNodeFirstObj ? position.y : (position.y < portPosVecOut.y) ? position.y : portPosVecOut.y);
 
-//        var rightX = (isNodeFirstObj ? position.x + firstObj.guiConfig.width:
-//                                      (position.x > portPosVecOut.x) ? position.x : portPosVecOut.x);
-//        var bottomY = (isNodeFirstObj ? position.y + firstObj.guiConfig.height:
-//                                       (position.y > portPosVecOut.y) ? position.y : portPosVecOut.y);
-//        console.log("hola", leftX, rightX, topY, bottomY)
+            var rightX = (isNodeFirstObj ? position.x + firstObj.guiConfig.width:
+                                          (position.x > portPosVecOut.x) ? position.x : portPosVecOut.x);
+            var bottomY = (isNodeFirstObj ? position.y + firstObj.guiConfig.height:
+                                           (position.y > portPosVecOut.y) ? position.y : portPosVecOut.y);
 
+            Object.values(scene.selectionModel.selectedModel).forEach(obj => {
+                if (!obj)
+                    return;
+                if (obj.objectType === NLSpec.ObjectType.Node || obj.objectType === NLSpec.ObjectType.Container) {
+                    // Find left, right, top and bottom positions.
+                    // they are depend on inputPort and outputPort position (temporary).
+                    var pos = obj.guiConfig.position; //obj.guiConfig.position.plus(obj.guiConfig.position.minus(sceneSession.zoomManager.zoomPoint).times(sceneSession.zoomManager.zoomFactor - 1))
+                    var tempLeftX = pos.x;
+                    var tempTopY = pos.y;
+                    var tempRightX = pos.x + obj.guiConfig.width;
+                    var tempBottomY =pos.y + obj.guiConfig.height;
+                    if (tempLeftX < leftX) {
+                        leftX = tempLeftX;
+                    }
+                    if (tempTopY < topY) {
+                        topY = tempTopY;
+                    }
+                    if (rightX < tempRightX) {
+                        rightX = tempRightX;
+                    }
+                    if (bottomY < tempBottomY) {
+                        bottomY = tempBottomY;
+                     }
+                } else if (obj.objectType === NLSpec.ObjectType.Link) {
+                    var portPosVecIn = obj?.inputPort?._position
+                    portPosVecOut = obj?.outputPort?._position
+                    // Find left, right, top and bottom positions.
+                    // they are depend on inputPort and outputPort position (temporary).
+                    tempLeftX = (portPosVecIn.x < portPosVecOut.x) ? portPosVecIn.x : portPosVecOut.x;
+                    tempTopY = (portPosVecIn.y < portPosVecOut.y) ? portPosVecIn.y : portPosVecOut.y;
+                    tempRightX = (portPosVecIn.x > portPosVecOut.x) ? portPosVecIn.x : portPosVecOut.x;
+                    tempBottomY = (portPosVecIn.y > portPosVecOut.y) ? portPosVecIn.y : portPosVecOut.y;
+                    // Set temp value into it's real variable.
+                    if (tempLeftX < leftX)
+                       leftX = tempLeftX;
+                    if (tempTopY < topY)
+                       topY = tempTopY;
+                    if (tempRightX > rightX)
+                       rightX = tempRightX;
+                    if (tempBottomY > bottomY)
+                       bottomY = tempBottomY;
+                }
+            });
+            var margin = 5;
 
-        var leftX = Number.POSITIVE_INFINITY;
-        var topY = Number.POSITIVE_INFINITY;
-        var rightX = Number.NEGATIVE_INFINITY;
-        var bottomY = Number.NEGATIVE_INFINITY;
-
-        // Iterate through each selected item
-       Object.values(scene.selectionModel.selectedModel).forEach(item => {
-          let positionX, positionY, width, height;
-
-          // Check the type of the item (node, link, container)
-          if (item.objectType === NLSpec.ObjectType.Link) {
-            // For links, use ljnk._inputPort._position
-            positionX = item.inputPort._position.x;
-            positionY = item.inputPort._position.y;
-            height = (positionY > item.outputPort._position.y) ? positionY  : item.outputPort._position.y
-            width = (positionX > item.outputPort._position.x) ? positionX  : item.outputPort._position.x
-          } else {
-            // For nodes and containers, use node.guiConfig.position or container.guiConfig.position
-            positionX = item.guiConfig.position.x;
-            positionY = item.guiConfig.position.y;
-            width = item.guiConfig.width
-            height = item.guiConfig.height
-          }
-
-          if (item.objectType === NLSpec.ObjectType.Container)
-                console.log("ggg",item.guiConfig.position,item.guiConfig.width,item.guiConfig.height,"\n")
-console.log("hhh",item.objectType,leftX, positionX,"topY",topY, positionY,"bottomT",bottomY, positionY + height
-
-            ,"right",rightX, positionX + width)
-          // Update least and most positions
-          leftX = Math.min(leftX, positionX);
-          topY = Math.min(topY, positionY);
-                                                                     console.log("hoy",leftX, topY)
-
-          if (item.objectType !== NLSpec.ObjectType.Link) {
-                rightX = Math.max(rightX, positionX + width);
-                bottomY = Math.max(bottomY, positionY + height);
-          }
-           else {
-               rightX = Math.max(rightX, width);
-               bottomY = Math.max(bottomY, height);
-           }
-        });
-//        Object.values(scene.selectionModel.selectedModel).forEach(obj => {
-//                                                                      if (!obj)
-//                                                                          return;
-
-//                                                                      if (obj.objectType === NLSpec.ObjectType.Node || obj.objectType === NLSpec.ObjectType.Container) {
-
-//                                                                          // Find left, right, top and bottom positions.
-//                                                                          // they are depend on inputPort and outputPort position (temporary).
-//                                                                          var pos = obj.guiConfig.position; //obj.guiConfig.position.plus(obj.guiConfig.position.minus(sceneSession.zoomManager.zoomPoint).times(sceneSession.zoomManager.zoomFactor - 1))
-
-//                                                                          var tempLeftX = pos.x;
-//                                                                          var tempTopY = pos.y;
-//                                                                          var tempRightX = pos.x + obj.guiConfig.width;
-//                                                                          var tempBottomY =pos.y + obj.guiConfig.height;
-
-
-//                                                                          if (tempLeftX < leftX) {
-//                                                                              leftX = tempLeftX;
-//                                                                          }
-//                                                                          if (tempTopY < topY) {
-//                                                                              topY = tempTopY;
-//                                                                          }
-
-//                                                                          if (rightX < tempRightX) {
-//                                                                              rightX = tempRightX;
-//                                                                          }
-
-//                                                                          if (bottomY < tempBottomY) {
-//                                                                              bottomY = tempBottomY;
-//                                                                           }
-
-//                                                                      } else if (obj.objectType === NLSpec.ObjectType.Link) {
-//                                                                          var portPosVecIn = obj?.inputPort?._position
-//                                                                          portPosVecOut = obj?.outputPort?._position
-
-//                                                                          // Find left, right, top and bottom positions.
-//                                                                          // they are depend on inputPort and outputPort position (temporary).
-//                                                                          tempLeftX = (portPosVecIn.x < portPosVecOut.x) ? portPosVecIn.x : portPosVecOut.x;
-//                                                                          tempTopY = (portPosVecIn.y < portPosVecOut.y) ? portPosVecIn.y : portPosVecOut.y;
-//                                                                          tempRightX = (portPosVecIn.x > portPosVecOut.x) ? portPosVecIn.x : portPosVecOut.x;
-//                                                                          tempBottomY = (portPosVecIn.y > portPosVecOut.y) ? portPosVecIn.y : portPosVecOut.y;
-
-//                                                                          // Set temp value into it's real variable.
-//                                                                          if (tempLeftX < leftX)
-//                                                                             leftX = tempLeftX;
-
-//                                                                          if (tempTopY < topY)
-//                                                                             topY = tempTopY;
-
-//                                                                          if (tempRightX > rightX)
-//                                                                             rightX = tempRightX;
-
-//                                                                          if (tempBottomY > bottomY)
-//                                                                             bottomY = tempBottomY;
-
-//                                                                      }
-//                                                                  });
-        var margin = 5;
-        // Update dimentions
-        root.width = (rightX - leftX + 2 * margin)
-        root.height = (bottomY - topY + 2 * margin)
-        root.x = leftX - margin;
-        root.y = topY - margin;
-        console.log(topY,leftX)
+            // Update dimentions
+            root.width = (rightX - leftX + 2 * margin)
+            root.height = (bottomY - topY + 2 * margin)
+            root.x = leftX - margin;
+            root.y = topY - margin;
+        }
     }
-
-    onXChanged: console.log("x:",x)
-    onYChanged: console.log("y:",y)
-}
