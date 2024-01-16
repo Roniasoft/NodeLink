@@ -120,6 +120,12 @@ QtObject {
 
     readonly property string unknown: "Unknown"
 
+    //! Background grid properties
+    readonly property QtObject backgroundGrid: QtObject {
+        readonly property int spacing:    20
+        readonly property double opacity: 0.65
+    }
+
     //! Radius
     readonly property QtObject radiusAmount: QtObject {
         readonly property double nodeOverview:   20
