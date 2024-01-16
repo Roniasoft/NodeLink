@@ -89,35 +89,39 @@ Item {
         width: parent.width
         height: parent.height - containerTitle.height - 5
         anchors.bottom: parent.bottom
-        color: "transparent"
+        color: Qt.darker(container?.guiConfig?.color ?? "transparent", 10)
         border.color: container.guiConfig.color
-        border.width: 2
+        border.width: NLStyle.node.borderWidth
         opacity: isSelected ? 1 : 0.8
         radius: 5
     }
 
-    NLTextField {
-        id: containerTitle
-        height: 35
-        width: Math.max(parent.width * 0.3, 100)
+
+
+    Rectangle {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: backgroundRect.top
         anchors.bottomMargin: 5
-        text: container.title
-        onTextChanged: container.title = text
-        color: NLStyle.primaryTextColor
-        font.family: NLStyle.fontType.roboto
+        border.color: containerTitle.activeFocus ? container.guiConfig.color : NLStyle.primaryBorderColor
+        color: Qt.darker(container?.guiConfig?.color ?? "transparent", 10)
+        height: 35
+        width: Math.min(containerTitle.width, parent.width)
+        border.width: 2
+        radius: 5
+        clip: true
 
-        Rectangle {
-            anchors.fill: parent
-            color: "transparent"
-            border.color: containerTitle.activeFocus ? container.guiConfig.color : NLStyle.primaryBorderColor
-            opacity: 0.9
-            border.width: 1
-            radius: 5
+        NLTextField {
+            id: containerTitle
+            anchors.centerIn: parent
+            text: container.title
+            onTextChanged: container.title = text
+            color: NLStyle.primaryTextColor
+            font.family: NLStyle.fontType.roboto
+            font.pixelSize: 15
         }
-
     }
+
+
 
     MouseArea {
         id: containerMouseArea
