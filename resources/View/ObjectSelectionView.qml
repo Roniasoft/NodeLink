@@ -121,6 +121,10 @@ Item {
                     if (obj?.objectType === NLSpec.ObjectType.Node) {
                         obj.guiConfig.position.x += deltaX;
                         obj.guiConfig.position.y += deltaY;
+
+                    if(NLStyle.snapEnabled)
+                        obj.guiConfig.position = scene.snappedPosition(obj.guiConfig.position)
+
                     obj.guiConfig.positionChanged();
 
                     if ((obj.guiConfig.position.x < 0  && deltaX < 0) ||

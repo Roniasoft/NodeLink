@@ -158,6 +158,11 @@ I_Scene {
         }
 
         var title = nodeRegistry.nodeNames[nodeType] + "_" + (Object.values(root.nodes).filter(node => node.type === nodeType).length + 1);
+        if (NLStyle.snapEnabled) {
+            var position = snappedPosition(Qt.vector2d(xPos, yPos));
+            xPos = position.x;
+            yPos = position.y;
+        }
         return createSpecificNode(nodeRegistry.imports, nodeType, qsType,
                                   nodeRegistry.nodeColors[nodeType],
                                   title, xPos, yPos);
@@ -230,5 +235,11 @@ I_Scene {
             return false;
 
         return true;
+    }
+
+    //! Snapped Position for when snap is enabled
+    function snappedPosition (position) {
+        return Qt.vector2d(Math.round(position.x / NLStyle.backgroundGrid.spacing) * NLStyle.backgroundGrid.spacing,
+                           Math.round(position.y / NLStyle.backgroundGrid.spacing) * NLStyle.backgroundGrid.spacing);
     }
 }

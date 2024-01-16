@@ -71,8 +71,10 @@ Menu {
         // Correct position with zoompoint and zoom factor into real position.
         var positionMapped = nodePosition
 
-        node.guiConfig.position = positionMapped;
-
+        if (NLStyle.snapEnabled)
+            node.guiConfig.position = scene.snappedPosition(positionMapped);
+        else
+            node.guiConfig.position = positionMapped
 
         node.guiConfig.color = scene.nodeRegistry.nodeColors[nodeType];
         node.guiConfig.colorIndex = 0;
