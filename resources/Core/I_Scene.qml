@@ -104,7 +104,7 @@ QSObject {
     //! Deletes a container from scene
     function deleteContainer(containerUUId: string) {
         // Remove the deleted object from selected model
-//        selectionModel.remove(nodeUUId);
+        selectionModel.remove(containerUUId);
         containerRemoved(containers[containerUUId]);
         delete containers[containerUUId];
         containersChanged();

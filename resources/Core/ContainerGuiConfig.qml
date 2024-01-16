@@ -17,8 +17,10 @@ QSObject {
 
     property real     height:     200
 
+    //! Color
     property string   color:      NLStyle.primaryColor
 
+    //! Color index
     property int      colorIndex: -1
 
     //! Position in scene
@@ -26,5 +28,4 @@ QSObject {
 
     //! Lock
     property bool     locked:     false
-
 }
