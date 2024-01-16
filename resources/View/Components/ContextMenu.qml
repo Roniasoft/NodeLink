@@ -64,11 +64,10 @@ Menu {
             }
         }
     }
-    function createContainer(nodeType : int) {
-//        var container = scene.createContainer();
-        var qsType = scene.nodeRegistry.nodeTypes[nodeType];
 
-        var container = QSSerializer.createQSObject(qsType, scene.nodeRegistry.imports, NLCore.defaultRepo);
+    //! Creates and adds a container
+    function createContainer(nodeType : int) {
+        var container = scene.createContainer();
         container._qsRepo = scene._qsRepo;
         container.guiConfig.position = nodePosition;
         container.guiConfig.color = scene.nodeRegistry.nodeColors[nodeType];

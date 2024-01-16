@@ -22,7 +22,7 @@ Window {
     property NLNodeRegistry nodeRegistry:      NLNodeRegistry {
         _qsRepo: NLCore.defaultRepo
 
-        imports: ["SimpleNodeLink"];
+        imports: ["SimpleNodeLink","NodeLink"];
         defaultNode: 0
     }
 
@@ -47,6 +47,10 @@ Window {
         nodeRegistry.nodeIcons[nodeType]  = "\ue4e2";
         nodeRegistry.nodeColors[nodeType] = "#444";
 
+        nodeRegistry.nodeTypes[nodeType + 1]  = "Container";
+        nodeRegistry.nodeNames[nodeType + 1]  = "Container";
+        nodeRegistry.nodeIcons[nodeType + 1]  = "\uf247";
+        nodeRegistry.nodeColors[nodeType + 1] = NLStyle.primaryColor;
 
         NLCore.defaultRepo = NLCore.createDefaultRepo(["QtQuickStream", "NodeLink", "SimpleNodeLink"])
         NLCore.defaultRepo.initRootObject("Scene");

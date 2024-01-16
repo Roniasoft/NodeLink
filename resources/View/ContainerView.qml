@@ -135,7 +135,6 @@ Item {
             font.family: NLStyle.fontType.roboto
             height: parent.height
             font.pixelSize: 15
-            wrapMode: Text.Wrap
         }
     }
 
