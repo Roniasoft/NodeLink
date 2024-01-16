@@ -180,7 +180,7 @@ Rectangle {
         NLToolButton {
             id: lockButton
             text: "\uf30d"
-            visible: !layout.selectedLinkOnly && !layout.selectedContainerOnly
+            visible: !layout.selectedLinkOnly
             checkable: true
             Layout.preferredHeight: 30
             Layout.preferredWidth: 30
@@ -192,7 +192,7 @@ Rectangle {
             onClicked: {
                 var locked =  areAllLocked();
                 Object.values(selectionModel.selectedModel).forEach(obj => {
-                    if (obj.objectType === NLSpec.ObjectType.Link || obj.objectType === NLSpec.ObjectType.Container)
+                    if (obj.objectType === NLSpec.ObjectType.Link)
                         return;
                     obj.guiConfig.locked = !locked;
                 });
@@ -201,7 +201,7 @@ Rectangle {
             //! returns true on empty selection as well
             function areAllLocked () {
                return Object.values(selectionModel.selectedModel).every(obj => {
-                    if (obj.objectType === NLSpec.ObjectType.Node && !obj.guiConfig.locked)
+                    if ((obj.objectType === NLSpec.ObjectType.Node || obj.objectType === NLSpec.ObjectType.Container) && !obj.guiConfig.locked)
                         return false;
                     return true;
                 });

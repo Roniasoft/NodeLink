@@ -12,42 +12,55 @@ Item {
 
     /* Property Declarations
     * ****************************************************************************************/
+    //! Container
     property Container container;
 
+    //! Scene
     property I_Scene        scene
 
+    //! SceneSession
     property SceneSession   sceneSession
 
-    property bool isResizable: true
+    //! Is container resizable or not
+    property bool isResizable: !container.guiConfig.locked
 
+    //! Is container currently selected
     property bool isSelected: scene?.selectionModel?.isSelected(container?._qsUuid ?? "") ?? false
+
     //! viewProperties encompasses all view properties that are not included
     //! in either the scene or the scene session.
     property QtObject   viewProperties: null
 
-    property bool edit
-
+    /* Object properties
+    * ****************************************************************************************/
     width: container.guiConfig.width
     height: container.guiConfig.height
     x: container.guiConfig.position.x
     y: container.guiConfig.position.y
 
-    onEditChanged: {
+    /* Children
+    * ****************************************************************************************/
+    //! When container is selected, width, height, x, and y
+    //! changed must be sent into rubber bandd.
+    Connections {
+        target: container.guiConfig
 
-        // When Node is editting and zoomFactor is less than minimalZoomNode,
-        // and need a node to be edit
-        // The zoom will change to the minimum editable value
-        if(containerView.edit)
-            sceneSession.zoomManager.zoomToNodeSignal(container, sceneSession.zoomManager.nodeEditZoom);
+        function onPositionChanged() {
+            dimensionChanged();
+        }
 
-        if (!containerView.edit)
-             containerView.forceActiveFocus();
+        function onWidthChanged() {
+            dimensionChanged();
+        }
+
+        function onHeightChanged() {
+            dimensionChanged();
+        }
     }
 
     Keys.onDeletePressed: {
         if (!isSelected)
             return;
-
 
         if (sceneSession.isDeletePromptEnable)
             deletePopup.open();
@@ -65,6 +78,7 @@ Item {
         if (event.key === Qt.Key_Shift)
             sceneSession.isShiftModifierPressed = false;
     }
+
     ConfirmPopUp {
         id: deletePopup
         confirmText: "Are you sure you want to delete " +
@@ -97,8 +111,9 @@ Item {
     }
 
 
-
+    //! container title
     Rectangle {
+        id: containerRect
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: backgroundRect.top
         anchors.bottomMargin: 5
@@ -110,37 +125,36 @@ Item {
         radius: 5
         clip: true
 
-        NLTextField {
+        NLTextArea {
             id: containerTitle
-            anchors.centerIn: parent
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.verticalCenter: parent.verticalCenter
             text: container.title
             onTextChanged: container.title = text
             color: NLStyle.primaryTextColor
             font.family: NLStyle.fontType.roboto
+            height: parent.height
             font.pixelSize: 15
+            wrapMode: Text.Wrap
         }
     }
 
-
-
+    //! Mousearea to manage dragging and selection
     MouseArea {
         id: containerMouseArea
 
         property real    prevX:      container.guiConfig.position.x
         property real    prevY:      container.guiConfig.position.y
-        property bool   isDraging:  false
+        property bool    isDraging:  false
 
         anchors.fill: backgroundRect
         anchors.margins: 10
         hoverEnabled: true
         preventStealing: true
         enabled: !sceneSession.connectingMode &&
-                 !sceneSession.isCtrlPressed
+                 !sceneSession.isCtrlPressed && !container.guiConfig.locked
         // To hide cursor when is disable
         visible: enabled
-
-//        onEntered:
-//        onExited:
 
         //! Manage zoom in containerView and pass it to zoomManager
         onWheel: (wheel) => {
@@ -154,45 +168,22 @@ Item {
                  }
 
         onDoubleClicked: (mouse) => {
-            checkBounds()
+            updateInnerItems();
             // Clear all selected containers
             scene.selectionModel.clearAllExcept(container._qsUuid);
 
             // Select current container
             scene.selectionModel.selectContainer(container);
 
-            // Enable edit mode
-            containerView.edit = true;
             isDraging = false;
         }
 
-        cursorShape: (containerMouseArea.containsMouse/* && !containerView.edit*/)
+        cursorShape: (containerMouseArea.containsMouse)
                      ? (isDraging ? Qt.ClosedHandCursor : Qt.OpenHandCursor)
                      : Qt.ArrowCursor
 
-
-        //! Manage right and left click to select and
-        //! show container contex menue.
-        onClicked: (mouse) => {
-//            isDraging = false;
-//                       scene.selectionModel.clearAllExcept(container._qsUuid);
-//            scene.selectionModel.selectContainer(container);
-//            if (isContainerEditable && mouse.button === Qt.RightButton) {
-//                // Ensure the isDraging is false.
-//                isDraging = false;
-
-//                // Clear all selected containers
-//                scene.selectionModel.clearAllExcept(container._qsUuid);
-
-//                // Select current container
-//                scene.selectionModel.selectcontainer(container);
-
-//                containerContextMenu.popup(mouse.x, mouse.y);
-//            }
-        }
-
         onPressed: (mouse) => {
-            checkBounds()
+            updateInnerItems()
             isDraging = true;
             prevX = mouse.x;
             prevY = mouse.y;
@@ -208,7 +199,7 @@ Item {
             if (isDraging) {
                 var deltaX = mouse.x - prevX;
                 var deltaY = mouse.y - prevY;
-
+                //! Updating container position
                 container.guiConfig.position.x += deltaX;
                 container.guiConfig.position.y += deltaY;
                 if(NLStyle.snapEnabled){
@@ -216,7 +207,7 @@ Item {
                     container.guiConfig.position.x =  Math.ceil(container.guiConfig.position.x / 20) * 20;
                 }
                 container.guiConfig.positionChanged();
-
+                //! Updating inner nodes position
                 Object.values(container.nodes).forEach(node => {
                     node.guiConfig.position.x += deltaX;
                     node.guiConfig.position.y += deltaY;
@@ -226,7 +217,7 @@ Item {
                     }
                     node.guiConfig.positionChanged();
                 })
-
+                //! Updating inner containers position
                 Object.values(container.containersInside).forEach(container => {
                     container.guiConfig.position.x += deltaX;
                     container.guiConfig.position.y += deltaY;
@@ -276,9 +267,6 @@ Item {
             }
         }
     }
-
-
-
 
 
     //! Top Side Mouse Area
@@ -390,7 +378,6 @@ Item {
 
         onReleased: {
             isDraging = false;
-
         }
 
         onPositionChanged: (mouse)=> {
@@ -425,7 +412,6 @@ Item {
         anchors.verticalCenter: parent.verticalCenter
         preventStealing: true
 
-
         //! Resize properties
         property bool   isDraging:  false
         property int    prevX:      0
@@ -437,7 +423,6 @@ Item {
 
         onReleased: {
             isDraging = false;
-
         }
 
         onPositionChanged: (mouse)=> {
@@ -481,7 +466,6 @@ Item {
 
         onReleased: {
             isDraging = false;
-
         }
 
         onPositionChanged: (mouse)=> {
@@ -532,7 +516,6 @@ Item {
 
         onReleased: {
             isDraging = false;
-
         }
 
         onPositionChanged: (mouse)=> {
@@ -579,7 +562,6 @@ Item {
 
         onReleased: {
             isDraging = false;
-
         }
 
         onPositionChanged: (mouse)=> {
@@ -635,7 +617,6 @@ Item {
 
         onReleased: {
             isDraging = false;
-            ;
         }
 
         onPositionChanged: (mouse)=> {
@@ -660,42 +641,44 @@ Item {
         }
     }
 
-    function checkBounds() {
+    //! Updating inner added or removed items
+    function updateInnerItems() {
         //! removing nodes that are no longer in bounds
         Object.values(container.nodes).forEach(node => {
-            if (!(node.guiConfig.position.x >= container.guiConfig.position.x &&
-                 node.guiConfig.position.y >= container.guiConfig.position.y + containerTitle.height &&
-                 node.guiConfig.position.x + node.guiConfig.width <= container.guiConfig.position.x + container.guiConfig.width &&
-                 node.guiConfig.position.y + node.guiConfig.height <= container.guiConfig.position.y + container.guiConfig.height)
-                )
+            if (!isInsideBound(node))
                 container.removeNode(node)
         })
         //! adding nodes that are now in bounds
         Object.values(scene.nodes).forEach(node => {
-           if (node.guiConfig.position.x >= container.guiConfig.position.x &&
-               node.guiConfig.position.y >= container.guiConfig.position.y  + containerTitle.height &&
-               node.guiConfig.position.x + node.guiConfig.width <= container.guiConfig.position.x + container.guiConfig.width &&
-               node.guiConfig.position.y + node.guiConfig.height <= container.guiConfig.position.y + container.guiConfig.height
-               )
+           if (isInsideBound(node))
                 container.addNode(node);
         })
 
         Object.values(container.containersInside).forEach(containerInside => {
-            if (!(containerInside.guiConfig.position.x >= container.guiConfig.position.x &&
-                 containerInside.guiConfig.position.y >= container.guiConfig.position.y + containerTitle.height &&
-                 containerInside.guiConfig.position.x + containerInside.guiConfig.width <= container.guiConfig.position.x + container.guiConfig.width &&
-                 containerInside.guiConfig.position.y + containerInside.guiConfig.height <= container.guiConfig.position.y + container.guiConfig.height)
-                )
+            if (!isInsideBound(containerInside))
                 container.removeContainerInside(containerInside)
         })
 
         Object.values(scene.containers).forEach(containerInside => {
-            if ((containerInside.guiConfig.position.x >= container.guiConfig.position.x &&
-                 containerInside.guiConfig.position.y >= container.guiConfig.position.y + containerTitle.height &&
-                 containerInside.guiConfig.position.x + containerInside.guiConfig.width <= container.guiConfig.position.x + container.guiConfig.width &&
-                 containerInside.guiConfig.position.y + containerInside.guiConfig.height <= container.guiConfig.position.y + container.guiConfig.height)
-                )
+            if (isInsideBound(containerInside))
                 container.addContainerInside(containerInside)
         })
+    }
+    //! Handle dimension change
+    function dimensionChanged() {
+        if(containerView.isSelected)
+            scene?.selectionModel?.selectedObjectChanged();
+        else {
+            scene?.selectionModel?.clearAllExcept(container._qsUuid)
+            scene?.selectionModel?.selectContainer(container)
+        }
+    }
+
+    //! If given item is inside container or not
+    function isInsideBound(node) {
+        return node.guiConfig.position.x >= container.guiConfig.position.x &&
+                node.guiConfig.position.y >= container.guiConfig.position.y  + containerTitle.height &&
+                node.guiConfig.position.x + node.guiConfig.width <= container.guiConfig.position.x + container.guiConfig.width &&
+                node.guiConfig.position.y + node.guiConfig.height <= container.guiConfig.position.y + container.guiConfig.height;
     }
 }
