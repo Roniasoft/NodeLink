@@ -18,7 +18,7 @@ QSObject {
     property string     logoUrl:    ""
 
     //! Position in the world
-    property vector2d   position:   Qt.vector2d(0.0, 0.0);
+    property point   position:   Qt.point(0, 0);
 
     //! Width
     property int        width:      NLStyle.node.width

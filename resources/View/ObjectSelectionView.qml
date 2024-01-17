@@ -71,6 +71,7 @@ Item {
 
         property int    prevX:      0
         property int    prevY:      0
+        property var _childData: []
 
         //! update isMouseInRubberBand with containsMouse
         onContainsMouseChanged: sceneSession.isMouseInRubberBand = containsMouse
@@ -101,6 +102,14 @@ Item {
             sceneSession.isRubberBandMoving = true;
             prevX = mouse.x;
             prevY = mouse.y;
+
+            _childData = Object
+                       .values(scene.selectionModel.selectedModel)
+                       .map(obj => ({
+                            obj: obj,
+                            pos: obj.guiConfig.position
+                        })
+            );
         }
 
         onReleased: (mouse) => {
@@ -111,12 +120,17 @@ Item {
             if (sceneSession.isRubberBandMoving) {
                 // Prepare key variables of node movement
                 var deltaX = (mouse.x - prevX);
-                prevX = mouse.x - deltaX;
+                // prevX = mouse.x - deltaX;
                 var deltaY = (mouse.y - prevY);
-                prevY = mouse.y - deltaY;
+                // prevY = mouse.y - deltaY;
 
-                // Start movement process
-                Object.values(scene.selectionModel.selectedModel).forEach(obj => {
+               _childData.forEach(d => {
+                    d.obj.guiConfig.position.x = d.pos.x + deltaX;
+                    d.obj.guiConfig.position.y = d.pos.y + deltaY;
+                })
+                // Star:118t movement process
+                /*
+                                   Object.values(scene.selectionModel.selectedModel).forEach(obj => {
                     // Ignore Link objects
                     if (obj?.objectType === NLSpec.ObjectType.Node) {
                         obj.guiConfig.position.x += deltaX;
@@ -138,9 +152,10 @@ Item {
 
                     if(obj.guiConfig.position.y + obj.guiConfig.height > scene.sceneGuiConfig.contentHeight && deltaY > 0)
                         scene.sceneGuiConfig.contentHeight += deltaY;
-                    */
+                    * /
                     }
                 });
+        */
             }
         }
     }

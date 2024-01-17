@@ -15,6 +15,7 @@ Item {
 
     required property UndoStack undoStack
 
+    // Why even this exists?
     property Timer _timer : Timer {
         repeat: false
         interval: 300
