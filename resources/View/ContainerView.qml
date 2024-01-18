@@ -209,7 +209,7 @@ InteractiveNodeView {
     //! If given item is inside container or not
     function isInsideBound(node) {
         return node.guiConfig.position.x >= container.guiConfig.position.x &&
-                node.guiConfig.position.y >= container.guiConfig.position.y  + containerTitle.height &&
+                node.guiConfig.position.y >= container.guiConfig.position.y  + 1 &&
                 node.guiConfig.position.x + node.guiConfig.width <= container.guiConfig.position.x + container.guiConfig.width &&
                 node.guiConfig.position.y + node.guiConfig.height <= container.guiConfig.position.y + container.guiConfig.height;
     }
