@@ -123,10 +123,8 @@ InteractiveNodeView {
                 //! Updating container position
                 container.guiConfig.position.x += deltaX;
                 container.guiConfig.position.y += deltaY;
-                if(NLStyle.snapEnabled){
-                    container.guiConfig.position.y =  Math.ceil(container.guiConfig.position.y / 20) * 20;
-                    container.guiConfig.position.x =  Math.ceil(container.guiConfig.position.x / 20) * 20;
-                }
+                if(NLStyle.snapEnabled)
+                    container.guiConfig.position = scene.snappedPosition(container.guiConfig.position);
                 container.guiConfig.positionChanged();
 
                 var allObjects = [...Object.values(container.nodes), ...Object.values(container.containersInside)];
@@ -134,10 +132,8 @@ InteractiveNodeView {
                 allObjects.forEach(obj => {
                     obj.guiConfig.position.x += deltaX;
                     obj.guiConfig.position.y += deltaY;
-                    if(NLStyle.snapEnabled){
-                        obj.guiConfig.position.y =  Math.round(obj.guiConfig.position.y / 20) * 20;
-                        obj.guiConfig.position.x =  Math.round(obj.guiConfig.position.x / 20) * 20;
-                    }
+                    if(NLStyle.snapEnabled)
+                        obj.guiConfig.position = scene.snappedPosition(obj.guiConfig.position);
                     obj.guiConfig.positionChanged();
                 })
 
