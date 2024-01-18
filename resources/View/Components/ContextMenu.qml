@@ -67,8 +67,9 @@ Menu {
 
     //! Creates and adds a container
     function createContainer(nodeType : int) {
-        var container = scene.createContainer();
-        container._qsRepo = scene._qsRepo;
+        var qsType = scene.nodeRegistry.nodeTypes[nodeType];
+        var container = QSSerializer.createQSObject(qsType, scene.nodeRegistry.imports, NLCore.defaultRepo);
+        container._qsRepo = NLCore.defaultRepo._qsRepo;
         container.guiConfig.position = nodePosition;
         container.guiConfig.color = scene.nodeRegistry.nodeColors[nodeType];
         scene.addContainer(container);
