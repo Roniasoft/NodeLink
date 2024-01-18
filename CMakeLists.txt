@@ -159,6 +159,7 @@ qt_add_qml_module(NodeLink
         resources/View/ZoomManager.qml
         resources/View/ImagesFlickable.qml
         resources/View/ContainerView.qml
+        resources/View/ContainerOverview.qml
 
         resources/View/Logics/Calculation.js
         resources/View/Logics/BasicLinkCalculator.js

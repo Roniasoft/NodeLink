@@ -15,6 +15,8 @@ InteractiveNodeView {
     //! Container
     property Container container;
 
+    property bool      isNodeMinimal:  sceneSession.zoomManager.zoomFactor < sceneSession.zoomManager.minimalZoomNode
+
     /* Object properties
     * ****************************************************************************************/
     width: container.guiConfig.width
@@ -38,6 +40,7 @@ InteractiveNodeView {
         color: Qt.darker(container?.guiConfig?.color ?? "transparent", 10)
         height: 35
         width: Math.min(containerTitle.width, parent.width)
+        visible: !containerView.isNodeMinimal
         border.width: 2
         radius: 5
         clip: true
