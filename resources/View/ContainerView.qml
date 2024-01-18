@@ -126,6 +126,7 @@ InteractiveNodeView {
                 //! Updating container position
                 container.guiConfig.position.x += deltaX;
                 container.guiConfig.position.y += deltaY;
+
                 if(NLStyle.snapEnabled)
                     container.guiConfig.position = scene.snappedPosition(container.guiConfig.position);
                 container.guiConfig.positionChanged();
@@ -138,6 +139,7 @@ InteractiveNodeView {
                     if(NLStyle.snapEnabled)
                         obj.guiConfig.position = scene.snappedPosition(obj.guiConfig.position);
                     obj.guiConfig.positionChanged();
+                    containerView.dimensionChanged()
                 })
 
                 prevX = mouse.x - deltaX;
