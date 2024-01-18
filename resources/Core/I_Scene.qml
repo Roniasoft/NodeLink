@@ -76,9 +76,11 @@ QSObject {
             if (scene._qsRepo._isLoading) {
                 Object.values(nodes).forEach(node => nodeRemoved(node));
                 Object.values(links).forEach(link => linkRemoved(link));
+                Object.values(containers).forEach(container => containerRemoved(container));
             } else {
                 Object.values(nodes).forEach(node => nodeAdded(node));
                 Object.values(links).forEach(link => linkAdded(link));
+                Object.values(containers).forEach(container => containerAdded(container));
             }
         }
     }
@@ -98,6 +100,10 @@ QSObject {
         containers[container._qsUuid] = container;
         containersChanged();
         containerAdded(container);
+
+        scene.selectionModel.clear();
+        scene.selectionModel.selectContainer(container);
+
         return container;
     }
 

@@ -8,6 +8,7 @@ import NodeLink
  * ************************************************************************************************/
 ContainerView {
     id: containerOverview
+
     /* Property Declarations
      * ****************************************************************************************/
     //! container is selected or not
