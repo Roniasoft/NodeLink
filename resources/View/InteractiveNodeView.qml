@@ -71,24 +71,6 @@ I_NodeView {
 
     /* Children
     * ****************************************************************************************/
-    //! When node is selected, width, height, x, and y
-    //! changed must be sent into rubber bandd.
-    Connections {
-        target: node.guiConfig
-
-        function onPositionChanged() {
-            dimensionChanged();
-        }
-
-        function onWidthChanged() {
-            dimensionChanged();
-        }
-
-        function onHeightChanged() {
-            dimensionChanged();
-        }
-    }
-
     //! Delete handlers
     //! *****************
 
@@ -653,10 +635,10 @@ I_NodeView {
     /* Functions
     * ****************************************************************************************/
     //! Handle dimension change
-    function dimensionChanged() {
+    function dimensionChanged(containsNothing) {
         if(root.isSelected)
             scene?.selectionModel?.selectedObjectChanged();
-        else {
+        else if (!containsNothing) {
             scene?.selectionModel?.clearAllExcept(node._qsUuid)
             scene?.selectionModel?.selectNode(node)
         }

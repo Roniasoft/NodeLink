@@ -431,4 +431,23 @@ InteractiveNodeView {
                 nodeView.edit = false;
         }
     }
+
+    //! When node is selected, width, height, x, and y
+    //! changed must be sent into rubber bandd.
+    Connections {
+        target: node.guiConfig
+
+        function onPositionChanged() {
+            dimensionChanged(true);
+        }
+
+        function onWidthChanged() {
+            dimensionChanged(true);
+        }
+
+        function onHeightChanged() {
+            dimensionChanged(true);
+        }
+    }
+
 }
