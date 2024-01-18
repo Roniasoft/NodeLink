@@ -51,12 +51,12 @@ InteractiveNodeView {
     //! container title
     Rectangle {
         id: containerRect
-        anchors.left: parent.left
+        anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.top
         anchors.bottomMargin: 5
         border.color: containerTitle.activeFocus ? container.guiConfig.color : NLStyle.primaryBorderColor
         color: Qt.darker(container?.guiConfig?.color ?? "transparent", 10)
-        height: 35
+        height: container.guiConfig.containerTextHeight
         width: Math.min(containerTitle.width, parent.width)
         visible: !containerView.isNodeMinimal
         border.width: 2
@@ -74,6 +74,7 @@ InteractiveNodeView {
             height: parent.height
             font.pixelSize: 15
             readOnly: container.guiConfig.locked
+            enabled: isSelected
         }
     }
 
@@ -109,6 +110,7 @@ InteractiveNodeView {
             updateInnerItems();
             scene.selectionModel.clearAllExcept(container._qsUuid);
             scene.selectionModel.selectContainer(container);
+            containerTitle.focus = false
         }
 
         onDoubleClicked: (mouse) => {

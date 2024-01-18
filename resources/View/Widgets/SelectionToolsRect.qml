@@ -30,6 +30,9 @@ Rectangle {
     //! Find all selected Containers
     property var selectedContainer: Object.values(selectionModel?.selectedModel ?? ({})).filter(obj => obj?.objectType === NLSpec.ObjectType.Container)
 
+    //! If only one container is selected
+    property bool selectedContainerOnly: layout.selectedContainerOnly
+
     /* Object Properties
      * ****************************************************************************************/
     radius: NLStyle.radiusAmount.itemButton

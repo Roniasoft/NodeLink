@@ -52,7 +52,7 @@ Item {
     //! selected object tool rect
     SelectionToolsRect {
         anchors.bottom: parent.top
-        anchors.bottomMargin: 5
+        anchors.bottomMargin: selectedContainerOnly ? Object.values(scene.selectionModel.selectedModel)[0].guiConfig.containerTextHeight + 5 : 5
         anchors.horizontalCenter: parent.horizontalCenter
         //! This prevents header item from moving over NodeView
         transformOrigin: Item.Bottom
