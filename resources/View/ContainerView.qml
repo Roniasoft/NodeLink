@@ -7,7 +7,7 @@ import NodeLink
  * Container View
  * ************************************************************************************************/
 
-Item {
+InteractiveNodeView {
     id: containerView
 
     /* Property Declarations
@@ -15,107 +15,24 @@ Item {
     //! Container
     property Container container;
 
-    //! Scene
-    property I_Scene        scene
-
-    //! SceneSession
-    property SceneSession   sceneSession
-
-    //! Is container resizable or not
-    property bool isResizable: !container.guiConfig.locked
-
-    //! Is container currently selected
-    property bool isSelected: scene?.selectionModel?.isSelected(container?._qsUuid ?? "") ?? false
-
-    //! viewProperties encompasses all view properties that are not included
-    //! in either the scene or the scene session.
-    property QtObject   viewProperties: null
-
     /* Object properties
     * ****************************************************************************************/
     width: container.guiConfig.width
     height: container.guiConfig.height
     x: container.guiConfig.position.x
     y: container.guiConfig.position.y
+    node: container
+    z: 0
+    isContainer: true
+    isResizable: !container.guiConfig.locked
 
     /* Children
     * ****************************************************************************************/
-    //! When container is selected, width, height, x, and y
-    //! changed must be sent into rubber bandd.
-    Connections {
-        target: container.guiConfig
-
-        function onPositionChanged() {
-            dimensionChanged();
-        }
-
-        function onWidthChanged() {
-            dimensionChanged();
-        }
-
-        function onHeightChanged() {
-            dimensionChanged();
-        }
-    }
-
-    Keys.onDeletePressed: {
-        if (!isSelected)
-            return;
-
-        if (sceneSession.isDeletePromptEnable)
-            deletePopup.open();
-         else
-            delTimer.start();
-    }
-
-    //! Use Key to manage shift pressed to handle multiObject selection
-    Keys.onPressed: (event)=> {
-        if (event.key === Qt.Key_Shift)
-            sceneSession.isShiftModifierPressed = true;
-    }
-
-    Keys.onReleased: (event)=> {
-        if (event.key === Qt.Key_Shift)
-            sceneSession.isShiftModifierPressed = false;
-    }
-
-    ConfirmPopUp {
-        id: deletePopup
-        confirmText: "Are you sure you want to delete " +
-                                     (Object.keys(scene.selectionModel.selectedModel).length > 1 ?
-                                         "these items?" : "this item?");
-        sceneSession: containerView.sceneSession
-        onAccepted: delTimer.start();
-    }
-
-    Timer {
-        id: delTimer
-        repeat: false
-        running: false
-        interval: 100
-        onTriggered: {
-            scene.deleteSelectedObjects();
-        }
-    }
-
-    Rectangle {
-        id: backgroundRect
-        width: parent.width
-        height: parent.height - containerTitle.height - 5
-        anchors.bottom: parent.bottom
-        color: Qt.darker(container?.guiConfig?.color ?? "transparent", 10)
-        border.color: container.guiConfig.color
-        border.width: NLStyle.node.borderWidth
-        opacity: isSelected ? 1 : 0.8
-        radius: 5
-    }
-
-
     //! container title
     Rectangle {
         id: containerRect
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.bottom: backgroundRect.top
+        anchors.left: parent.left
+        anchors.bottom: parent.top
         anchors.bottomMargin: 5
         border.color: containerTitle.activeFocus ? container.guiConfig.color : NLStyle.primaryBorderColor
         color: Qt.darker(container?.guiConfig?.color ?? "transparent", 10)
@@ -135,6 +52,7 @@ Item {
             font.family: NLStyle.fontType.roboto
             height: parent.height
             font.pixelSize: 15
+            readOnly: container.guiConfig.locked
         }
     }
 
@@ -146,34 +64,36 @@ Item {
         property real    prevY:      container.guiConfig.position.y
         property bool    isDraging:  false
 
-        anchors.fill: backgroundRect
+        anchors.fill: parent
         anchors.margins: 10
         hoverEnabled: true
         preventStealing: true
         enabled: !sceneSession.connectingMode &&
-                 !sceneSession.isCtrlPressed && !container.guiConfig.locked
+                 !sceneSession.isCtrlPressed
         // To hide cursor when is disable
         visible: enabled
 
         //! Manage zoom in containerView and pass it to zoomManager
         onWheel: (wheel) => {
-                     //! active zoom with no modifier.
-                     if(wheel.modifiers === sceneSession.zoomModifier) {
-                         sceneSession.zoomManager.zoomcontainerSignal(
-                             Qt.point(wheel.x, wheel.y),
-                             this,
-                             wheel.angleDelta.y);
-                     }
-                 }
+            //! active zoom with no modifier.
+            if(wheel.modifiers === sceneSession.zoomModifier) {
+                sceneSession.zoomManager.zoomcontainerSignal(
+                    Qt.point(wheel.x, wheel.y),
+                    this,
+                    wheel.angleDelta.y);
+            }
+        }
+
+        onClicked: (mouse) => {
+            updateInnerItems();
+            scene.selectionModel.clearAllExcept(container._qsUuid);
+            scene.selectionModel.selectContainer(container);
+        }
 
         onDoubleClicked: (mouse) => {
             updateInnerItems();
-            // Clear all selected containers
             scene.selectionModel.clearAllExcept(container._qsUuid);
-
-            // Select current container
             scene.selectionModel.selectContainer(container);
-
             isDraging = false;
         }
 
@@ -183,19 +103,21 @@ Item {
 
         onPressed: (mouse) => {
             updateInnerItems()
-            isDraging = true;
-            prevX = mouse.x;
-            prevY = mouse.y;
-            _selectionTimer.start();
+            if (!container.guiConfig.locked) {
+                isDraging = true;
+                prevX = mouse.x;
+                prevY = mouse.y;
+                _selectionTimer.start();
+            }
         }
 
         onReleased: (mouse) => {
-            isDraging = false;
-                        ;
+            if (!container.guiConfig.locked)
+                isDraging = false;
         }
 
         onPositionChanged: (mouse) => {
-            if (isDraging) {
+            if (isDraging && !container.guiConfig.locked) {
                 var deltaX = mouse.x - prevX;
                 var deltaY = mouse.y - prevY;
                 //! Updating container position
@@ -206,25 +128,17 @@ Item {
                     container.guiConfig.position.x =  Math.ceil(container.guiConfig.position.x / 20) * 20;
                 }
                 container.guiConfig.positionChanged();
-                //! Updating inner nodes position
-                Object.values(container.nodes).forEach(node => {
-                    node.guiConfig.position.x += deltaX;
-                    node.guiConfig.position.y += deltaY;
+
+                var allObjects = [...Object.values(container.nodes), ...Object.values(container.containersInside)];
+                //! Updating inner nodes and containers position
+                allObjects.forEach(obj => {
+                    obj.guiConfig.position.x += deltaX;
+                    obj.guiConfig.position.y += deltaY;
                     if(NLStyle.snapEnabled){
-                        node.guiConfig.position.y =  Math.ceil(node.guiConfig.position.y / 20) * 20;
-                        node.guiConfig.position.x =  Math.ceil(node.guiConfig.position.x / 20) * 20;
+                        obj.guiConfig.position.y =  Math.round(obj.guiConfig.position.y / 20) * 20;
+                        obj.guiConfig.position.x =  Math.round(obj.guiConfig.position.x / 20) * 20;
                     }
-                    node.guiConfig.positionChanged();
-                })
-                //! Updating inner containers position
-                Object.values(container.containersInside).forEach(container => {
-                    container.guiConfig.position.x += deltaX;
-                    container.guiConfig.position.y += deltaY;
-                    if(NLStyle.snapEnabled){
-                        container.guiConfig.position.y =  Math.ceil(container.guiConfig.position.y / 20) * 20;
-                        container.guiConfig.position.x =  Math.ceil(container.guiConfig.position.x / 20) * 20;
-                    }
-                    container.guiConfig.positionChanged();
+                    obj.guiConfig.positionChanged();
                 })
 
                 prevX = mouse.x - deltaX;
@@ -267,379 +181,8 @@ Item {
         }
     }
 
-
-    //! Top Side Mouse Area
-    MouseArea {
-        id: topMouseArea
-        width: parent.width
-        hoverEnabled: true
-        enabled: isResizable && !sceneSession.connectingMode
-        height: 20
-        cursorShape: Qt.SizeVerCursor
-        anchors.top: backgroundRect.top
-        anchors.topMargin: -10
-        anchors.horizontalCenter: parent.horizontalCenter
-        preventStealing: true
-
-        //! Resize properties
-        property bool   isDraging:  false
-        property int    prevY:      0
-
-        onPressed: (mouse)=> {
-            isDraging = true;
-            prevY = mouse.y;
-        }
-
-        onReleased: {
-            isDraging = false;
-
-        }
-
-        onPositionChanged: (mouse)=> {
-            if (isDraging) {
-                var deltaY = mouse.y - prevY;
-                var correctedDeltaY = Math.floor(deltaY);
-
-                container.guiConfig.position.y += correctedDeltaY;
-                container.guiConfig.height -= correctedDeltaY;
-                prevY = mouse.y - deltaY;
-                if(container.guiConfig.height < 70){
-                    container.guiConfig.height = 70;
-                    if(deltaY>0){
-                        isDraging = false
-                    }
-                }
-            }
-        }
-    }
-
-    //! Bottom Side Mouse Area
-    MouseArea {
-        id: bottomMouseArea
-        width: parent.width
-        hoverEnabled: true
-        height: 20
-        enabled: isResizable && !sceneSession.connectingMode
-        cursorShape: Qt.SizeVerCursor
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: -10
-        anchors.horizontalCenter: parent.horizontalCenter
-        preventStealing: true
-
-        //! Resize properties
-        property bool   isDraging:  false
-        property int    prevY:      0
-
-        onPressed: (mouse)=> {
-            isDraging = true;
-            prevY = mouse.y;
-        }
-
-        onReleased: {
-            isDraging = false;
-
-        }
-
-        onPositionChanged: (mouse)=> {
-            if (isDraging) {
-                var deltaY = mouse.y - prevY;
-                container.guiConfig.height += deltaY;
-                prevY = mouse.y - deltaY;
-                if(container.guiConfig.height <= 70){
-                    container.guiConfig.height = 70
-                }
-            }
-        }
-    }
-
-    //! Left Side Mouse Area
-    MouseArea {
-        id: leftMouseArea
-        width: 20
-        cursorShape: Qt.SizeHorCursor
-        hoverEnabled: true
-        enabled: isResizable && !sceneSession.connectingMode
-        height: parent.height
-        anchors.left: parent.left
-        anchors.leftMargin: -10
-        anchors.verticalCenter: parent.verticalCenter
-        preventStealing: true
-
-
-        //! Resize properties
-        property bool   isDraging:  false
-        property real    prevX:      0
-
-        onPressed: (mouse)=> {
-            isDraging = true;
-            prevX = mouse.x;
-        }
-
-        onReleased: {
-            isDraging = false;
-        }
-
-        onPositionChanged: (mouse)=> {
-            if (isDraging) {
-                var deltaX = mouse.x - prevX;
-                var correctedDeltaX = Math.floor(deltaX);
-
-                container.guiConfig.position.x += correctedDeltaX;
-                container.guiConfig.width -= correctedDeltaX;
-                prevX = mouse.x - deltaX;
-
-                if(container.guiConfig.width < 100){
-                    container.guiConfig.width = 100
-                    if(deltaX>0){
-                        isDraging = false
-                    }
-                }
-            }
-        }
-    }
-
-    //! Right Side Mouse Area
-    MouseArea {
-        id: rightMouseArea
-        width: 12
-        cursorShape: Qt.SizeHorCursor
-        hoverEnabled: true
-        enabled: isResizable && !sceneSession.connectingMode
-        height: parent.height
-        anchors.right: parent.right
-        anchors.rightMargin: -10
-        anchors.verticalCenter: parent.verticalCenter
-        preventStealing: true
-
-        //! Resize properties
-        property bool   isDraging:  false
-        property int    prevX:      0
-
-        onPressed: (mouse)=> {
-            isDraging = true;
-            prevX = mouse.x;
-        }
-
-        onReleased: {
-            isDraging = false;
-        }
-
-        onPositionChanged: (mouse)=> {
-            if (isDraging) {
-                var deltaX = mouse.x - prevX;
-                container.guiConfig.width += deltaX
-                prevX = mouse.x - deltaX;
-                if(container.guiConfig.width < 100){
-                    container.guiConfig.width = 100
-                }
-            }
-        }
-    }
-
-    //! Resize by corners
-    //! *****************
-
-    //! Upper right sizing area
-    MouseArea {
-        id: rightTopCornerMouseArea
-        width: 20
-        height: 20
-        enabled: isResizable && !sceneSession.connectingMode
-        cursorShape: Qt.SizeBDiagCursor
-        hoverEnabled: true
-        anchors.right: parent.right
-        anchors.top: backgroundRect.top
-        anchors.rightMargin: -10
-        anchors.bottomMargin: -10
-        preventStealing: true
-
-        property bool   isDraging:  false
-        property int    prevX:      0
-        property int    prevY:      0
-
-        onPressed: (mouse)=> {
-            isDraging = true;
-            prevX = mouse.x;
-            prevY = mouse.y;
-        }
-
-        onReleased: {
-            isDraging = false;
-        }
-
-        onPositionChanged: (mouse)=> {
-            if (isDraging) {
-                var deltaX = mouse.x - prevX;
-                container.guiConfig.width += deltaX
-                prevX = mouse.x - deltaX;
-                if(container.guiConfig.width < 100){
-                    container.guiConfig.width = 100
-                }
-                var deltaY = mouse.y - prevY
-                container.guiConfig.position.y += deltaY;
-                container.guiConfig.height -= deltaY;
-                prevY = mouse.y - deltaY;
-                if(container.guiConfig.height <= 70){
-                    container.guiConfig.height = 70
-                    if(deltaY>0){
-                        isDraging = false
-                    }
-                }
-            }
-        }
-    }
-
-    //! Lower right sizing area
-    MouseArea {
-        id: rightDownCornerMouseArea
-        width: 20
-        height: 20
-        enabled: isResizable && !sceneSession.connectingMode
-        cursorShape: Qt.SizeFDiagCursor
-        hoverEnabled: true
-        anchors.right: parent.right
-        anchors.bottom: parent.bottom
-        anchors.rightMargin: -10
-        anchors.bottomMargin: -10
-        preventStealing: true
-
-        property bool   isDraging:  false
-        property int    prevX:      0
-        property int    prevY:      0
-
-        onPressed: (mouse)=> {
-            isDraging = true;
-            prevX = mouse.x;
-            prevY = mouse.y;
-        }
-
-        onReleased: {
-            isDraging = false;
-        }
-
-        onPositionChanged: (mouse)=> {
-            if (isDraging) {
-                var deltaX = mouse.x - prevX;
-                container.guiConfig.width += deltaX
-                prevX = mouse.x - deltaX;
-                if(container.guiConfig.width < 100){
-                    container.guiConfig.width = 100
-                }
-                var deltaY = mouse.y - prevY
-                container.guiConfig.height += deltaY;
-                prevY = mouse.y - deltaY;
-                if(container.guiConfig.height <= 70){
-                    container.guiConfig.height = 70
-                }
-            }
-        }
-    }
-
-    //! Upper left sizing area
-    MouseArea {
-        id: leftTopCornerMouseArea
-        width: 20
-        height: 20
-        enabled: isResizable && !sceneSession.connectingMode
-        cursorShape: Qt.SizeFDiagCursor
-        hoverEnabled: true
-        anchors.left: parent.left
-        anchors.top: backgroundRect.top
-        anchors.rightMargin: -10
-        anchors.bottomMargin: -10
-        preventStealing: true
-
-        property bool   isDraging:  false
-        property int    prevX:      0
-        property int    prevY:      0
-
-        onPressed: (mouse)=> {
-            isDraging = true;
-            prevX = mouse.x;
-            prevY = mouse.y;
-        }
-
-        onReleased: {
-            isDraging = false;
-        }
-
-        onPositionChanged: (mouse)=> {
-            if (isDraging) {
-                var deltaX = mouse.x - prevX;
-                container.guiConfig.width -= deltaX
-                container.guiConfig.position.x += deltaX;
-                prevX = mouse.x - deltaX;
-                if(container.guiConfig.width < 100){
-                    container.guiConfig.width = 100
-                    if(deltaX>0){
-                        isDraging = false
-                    }
-                }
-                var deltaY = mouse.y - prevY
-                container.guiConfig.position.y += deltaY;
-                container.guiConfig.height -= deltaY;
-                prevY = mouse.y - deltaY;
-                if(container.guiConfig.height <= 70){
-                    container.guiConfig.height = 70
-                    if(deltaY>0){
-                        isDraging = false
-                    }
-                }
-            }
-        }
-    }
-
-    //! Lower left sizing area
-    MouseArea {
-        id: leftDownCornerMouseArea
-        width: 20
-        height: 20
-        enabled: isResizable && !sceneSession.connectingMode
-        cursorShape: Qt.SizeBDiagCursor
-        hoverEnabled: true
-        anchors.left: parent.left
-        anchors.bottom: parent.bottom
-        anchors.rightMargin: -10
-        anchors.bottomMargin: -10
-        preventStealing: true
-
-        //! Movment properties
-        property bool   isDraging:  false
-        property int    prevX:      0
-        property int    prevY:      0
-
-        onPressed: (mouse)=> {
-            isDraging = true;
-            prevX = mouse.x;
-            prevY = mouse.y;
-        }
-
-        onReleased: {
-            isDraging = false;
-        }
-
-        onPositionChanged: (mouse)=> {
-            if (isDraging) {
-                var deltaX = mouse.x - prevX;
-                container.guiConfig.width -= deltaX
-                container.guiConfig.position.x += deltaX;
-                prevX = mouse.x - deltaX;
-                if(container.guiConfig.width < 100){
-                    container.guiConfig.width = 100
-                    if(deltaX>0){
-                        isDraging = false
-                    }
-                }
-                var deltaY = mouse.y - prevY
-                container.guiConfig.height += deltaY;
-                prevY = mouse.y - deltaY;
-                if(container.guiConfig.height <= 70){
-                    container.guiConfig.height = 70
-                }
-            }
-        }
-    }
-
+    /* Functions
+    * ****************************************************************************************/
     //! Updating inner added or removed items
     function updateInnerItems() {
         //! removing nodes that are no longer in bounds
@@ -662,15 +205,6 @@ Item {
             if (isInsideBound(containerInside))
                 container.addContainerInside(containerInside)
         })
-    }
-    //! Handle dimension change
-    function dimensionChanged() {
-        if(containerView.isSelected)
-            scene?.selectionModel?.selectedObjectChanged();
-        else {
-            scene?.selectionModel?.clearAllExcept(container._qsUuid)
-            scene?.selectionModel?.selectContainer(container)
-        }
     }
 
     //! If given item is inside container or not

@@ -12,7 +12,7 @@ Menu {
     /* Property Declarations
      * ****************************************************************************************/
     required property I_Scene scene
-    required property Node    node
+    required property var     node
 
     property SceneSession   sceneSession: null
 
@@ -43,7 +43,7 @@ Menu {
     ContextMenuItem {
         name: "Edit"
         iconStr: "\uf044"
-        enabled: !node.guiConfig.locked
+        enabled: !node?.guiConfig?.locked ?? false
         onClicked: {
             editNode();
         }
@@ -65,7 +65,7 @@ Menu {
         name: "Lock Node"
         iconStr: "\uf30d"
         checkable: true
-        checked: node.guiConfig.locked
+        checked: node?.guiConfig?.locked ?? null
         onClicked: {
             node.guiConfig.locked = checked;
         }

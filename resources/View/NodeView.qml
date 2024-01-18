@@ -431,35 +431,4 @@ InteractiveNodeView {
                 nodeView.edit = false;
         }
     }
-
-    //! When node is selected, width, height, x, and y
-    //! changed must be sent into rubber bandd.
-    Connections {
-        target: node.guiConfig
-
-        function onPositionChanged() {
-            dimensionChanged();
-        }
-
-        function onWidthChanged() {
-            dimensionChanged();
-        }
-
-        function onHeightChanged() {
-            dimensionChanged();
-        }
-    }
-
-    /* Functions
-     * ****************************************************************************************/
-
-    //! Handle dimension change
-    function dimensionChanged() {
-        if(nodeView.isSelected)
-            scene?.selectionModel?.selectedObjectChanged();
-        else {
-            scene?.selectionModel?.clearAllExcept(node._qsUuid)
-            scene?.selectionModel?.selectNode(node)
-        }
-    }
 }

@@ -71,6 +71,23 @@ I_NodeView {
 
     /* Children
     * ****************************************************************************************/
+    //! When node is selected, width, height, x, and y
+    //! changed must be sent into rubber bandd.
+    Connections {
+        target: node.guiConfig
+
+        function onPositionChanged() {
+            dimensionChanged();
+        }
+
+        function onWidthChanged() {
+            dimensionChanged();
+        }
+
+        function onHeightChanged() {
+            dimensionChanged();
+        }
+    }
 
     //! Delete handlers
     //! *****************
@@ -124,13 +141,15 @@ I_NodeView {
 
         //! Change visibility of top ports when contain mouse changed.
         onContainsMouseChanged: {
-            var topPorts = Object.values(node.ports).filter(port => port.portSide === NLSpec.PortPositionSide.Top).map(port => port._qsUuid);
+            if(!isContainer) {
+                var topPorts = Object.values(node.ports).filter(port => port.portSide === NLSpec.PortPositionSide.Top).map(port => port._qsUuid);
 
-            topPorts.forEach(qsUuid => {
-                                  sceneSession.portsVisibility[qsUuid] = containsMouse;
-                              });
+                topPorts.forEach(qsUuid => {
+                                      sceneSession.portsVisibility[qsUuid] = containsMouse;
+                                  });
 
-            sceneSession.portsVisibilityChanged();
+                sceneSession.portsVisibilityChanged();
+            }
         }
 
         //! Resize properties
@@ -179,13 +198,15 @@ I_NodeView {
 
         //! Change visibility of bottom ports when contain mouse changed.
         onContainsMouseChanged: {
-            var bottomPorts = Object.values(node.ports).filter(port => port.portSide === NLSpec.PortPositionSide.Bottom).map(port => port._qsUuid);
+            if(!isContainer) {
+                var bottomPorts = Object.values(node.ports).filter(port => port.portSide === NLSpec.PortPositionSide.Bottom).map(port => port._qsUuid);
 
-            bottomPorts.forEach(qsUuid => {
-                                  sceneSession.portsVisibility[qsUuid] = containsMouse;
-                              });
+                bottomPorts.forEach(qsUuid => {
+                                      sceneSession.portsVisibility[qsUuid] = containsMouse;
+                                  });
 
-            sceneSession.portsVisibilityChanged();
+                sceneSession.portsVisibilityChanged();
+            }
         }
 
         //! Resize properties
@@ -228,13 +249,15 @@ I_NodeView {
 
         //! Change visibility of left ports when contain mouse changed.
         onContainsMouseChanged: {
-            var leftPorts = Object.values(node.ports).filter(port => port.portSide === NLSpec.PortPositionSide.Left).map(port => port._qsUuid);
+            if(!isContainer) {
+                var leftPorts = Object.values(node.ports).filter(port => port.portSide === NLSpec.PortPositionSide.Left).map(port => port._qsUuid);
 
-            leftPorts.forEach(qsUuid => {
-                                  sceneSession.portsVisibility[qsUuid] = containsMouse;
-                              });
+                leftPorts.forEach(qsUuid => {
+                                      sceneSession.portsVisibility[qsUuid] = containsMouse;
+                                  });
 
-            sceneSession.portsVisibilityChanged();
+                sceneSession.portsVisibilityChanged();
+            }
         }
 
         //! Resize properties
@@ -284,13 +307,15 @@ I_NodeView {
 
         //! Change visibility of right ports when contain mouse changed.
         onContainsMouseChanged: {
-            var rightPorts = Object.values(node.ports).filter(port => port.portSide === NLSpec.PortPositionSide.Right).map(port => port._qsUuid);
+            if(!isContainer) {
+                var rightPorts = Object.values(node.ports).filter(port => port.portSide === NLSpec.PortPositionSide.Right).map(port => port._qsUuid);
 
-            rightPorts.forEach(qsUuid => {
-                                  sceneSession.portsVisibility[qsUuid] = containsMouse;
-                              });
+                rightPorts.forEach(qsUuid => {
+                                      sceneSession.portsVisibility[qsUuid] = containsMouse;
+                                  });
 
-            sceneSession.portsVisibilityChanged();
+                sceneSession.portsVisibilityChanged();
+            }
         }
 
         //! Resize properties
@@ -534,7 +559,7 @@ I_NodeView {
         spacing: 5         // this can also be defined in the style file
 
         Repeater {
-            model: Object.values(node.ports).filter(port => port.portSide === NLSpec.PortPositionSide.Top);
+            model: (!isContainer) ? Object.values(node.ports).filter(port => port.portSide === NLSpec.PortPositionSide.Top) : [];
             delegate: PortView {
                 port: modelData
                 scene: root.scene
@@ -559,7 +584,7 @@ I_NodeView {
         spacing: 5         // this can also be defined in the style file
 
         Repeater {
-            model: Object.values(node.ports).filter(port => port.portSide === NLSpec.PortPositionSide.Left);
+            model: (!isContainer) ? Object.values(node.ports).filter(port => port.portSide === NLSpec.PortPositionSide.Left) : [];
             delegate: PortView {
                 port: modelData
                 scene: root.scene
@@ -584,7 +609,7 @@ I_NodeView {
         spacing: 5         // this can also be defined in the style file
 
         Repeater {
-            model: Object.values(node.ports).filter(port => port.portSide === NLSpec.PortPositionSide.Right);
+            model: (!isContainer) ? Object.values(node.ports).filter(port => port.portSide === NLSpec.PortPositionSide.Right) : [];
             delegate: PortView {
                 port: modelData
                 scene: root.scene
@@ -609,7 +634,7 @@ I_NodeView {
         spacing: 5          // this can also be defined in the style file
 
         Repeater {
-            model: Object.values(node.ports).filter(port => port.portSide === NLSpec.PortPositionSide.Bottom);
+            model: (!isContainer) ? Object.values(node.ports).filter(port => port.portSide === NLSpec.PortPositionSide.Bottom) : [];
             delegate: PortView {
                 port: modelData
                 scene: root.scene
@@ -622,6 +647,18 @@ I_NodeView {
                 globalX: root.x + positionMapped.x
                 globalY: root.y + positionMapped.y
             }
+        }
+    }
+
+    /* Functions
+    * ****************************************************************************************/
+    //! Handle dimension change
+    function dimensionChanged() {
+        if(root.isSelected)
+            scene?.selectionModel?.selectedObjectChanged();
+        else {
+            scene?.selectionModel?.clearAllExcept(node._qsUuid)
+            scene?.selectionModel?.selectNode(node)
         }
     }
 }
