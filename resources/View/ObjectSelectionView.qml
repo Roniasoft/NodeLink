@@ -110,10 +110,13 @@ Item {
                             pos: obj.guiConfig.position
                         })
             );
+
+                       sceneSession.isMoving = true
         }
 
         onReleased: (mouse) => {
             _timer.start();
+            sceneSession.isMoving = false
         }
 
         onPositionChanged: (mouse) => {
@@ -208,6 +211,7 @@ Item {
 
     //! calculate X, Y, width and height of rubber band
     function calculateDimensions() {
+        //TODO: this calls alot
         var firstObj = Object.values(scene.selectionModel.selectedModel)[0];
         if (firstObj === undefined)
             return;

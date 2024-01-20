@@ -51,6 +51,9 @@ QtObject {
     //! and 'false' to delete the selected object without additional confirmation.
     property bool  isDeletePromptEnable: true
 
+    //! To block events while moving selected nodes
+    property bool isMoving: false
+
     //! Pan and flick button
     property int panButton: Qt.RightButton
 
