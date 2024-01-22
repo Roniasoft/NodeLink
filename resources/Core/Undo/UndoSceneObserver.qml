@@ -26,6 +26,7 @@ Item {
 
     Component.onCompleted: _timer.start();
 
+
     /* Childeren
      * ****************************************************************************************/
     Connections {
@@ -54,6 +55,7 @@ Item {
         }
     }
 
+
     //! Node Loggers
     Repeater {
         model: Object.values(root.scene.nodes)
@@ -61,6 +63,7 @@ Item {
         delegate: UndoNodeObserver {
             node: modelData
             undoStack: root.undoStack
+            undoSceneObserver: root
         }
 
     }
@@ -72,7 +75,15 @@ Item {
         delegate: UndoLinkObserver {
             link: modelData
             undoStack: root.undoStack
+            undoSceneObserver: root
         }
 
+    }
+
+    function startTimer(){
+        if (_timer.running) {
+            _timer.stop()
+        }
+        root._timer.start();
     }
 }
