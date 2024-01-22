@@ -4,6 +4,8 @@ import NodeLink
 import QtQuick.Controls
 import QtQuick.Dialogs
 
+import ColorTools
+
 /*! ***********************************************************************************************
  * A color picker containing 5 colors and one custome color picker (first cell from right)
  * ************************************************************************************************/
@@ -13,8 +15,8 @@ Rectangle {
 
     /* Property Declarations
      * ****************************************************************************************/
-    property string customeColor: colorDialog.selectedColor
-    property string currentColor: colorDialog.selectedColor
+    property string customeColor: colorDialog.color
+    property string currentColor: colorDialog.color
     property int currentIndex: -1
 
     property var    colorItems:   []
@@ -105,14 +107,16 @@ Rectangle {
     }
 
     //!qml color dialouge, for user to choose the color themeselves
-    ColorDialog {
+    ColorPickerDialog {
         id: colorDialog
-        options: ColorDialog.NoButtons
-        title: "Please Choose a Color"
-        selectedColor: colorPickerRect.currentColor
-        onSelectedColorChanged: {
+//        options: ColorDialog.NoButtons
+//        title: "Please Choose a Color"
+//        selectedColor: colorPickerRect.currentColor
+        width: 200
+        height: 500
+        onColorChanged: {
             if (colorDialog.visible)
-                colorPickerRect.colorChanged(colorDialog.selectedColor, colorPickerRect.currentIndex);
+                colorPickerRect.colorChanged(colorDialog.color, colorPickerRect.currentIndex);
         }
         onAccepted: {
             colorPickerRect.colorChanged(customeColor, 0);
