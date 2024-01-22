@@ -109,11 +109,18 @@ Rectangle {
     //!qml color dialouge, for user to choose the color themeselves
     ColorPickerDialog {
         id: colorDialog
-//        options: ColorDialog.NoButtons
-//        title: "Please Choose a Color"
-//        selectedColor: colorPickerRect.currentColor
+        color: colorPickerRect.currentColor
         width: 250
         height: 520
+
+        background: Rectangle {
+            anchors.fill: parent
+            color: NLStyle.primaryBackgroundColor
+            border.color: NLStyle.primaryColor
+            border.width: 2
+            radius: 5
+
+        }
         onColorChanged: {
             if (colorDialog.visible)
                 colorPickerRect.colorChanged(colorDialog.color, colorPickerRect.currentIndex);
