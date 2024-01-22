@@ -112,8 +112,8 @@ Rectangle {
 //        options: ColorDialog.NoButtons
 //        title: "Please Choose a Color"
 //        selectedColor: colorPickerRect.currentColor
-        width: 200
-        height: 500
+        width: 250
+        height: 520
         onColorChanged: {
             if (colorDialog.visible)
                 colorPickerRect.colorChanged(colorDialog.color, colorPickerRect.currentIndex);
