@@ -29,6 +29,7 @@ option(BUILD_DEBUG_POSTFIX_D "Append d suffix to debug libraries" OFF)
 
 # QtQuickStream to save and load project.
 add_subdirectory(QtQuickStream)
+add_subdirectory(ColorPicker)
 
 find_package(Qt6
   COMPONENTS
@@ -198,6 +199,7 @@ target_include_directories(NodeLink
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Source>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/NodeLink>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Utils>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/ColorPicker>
 )
 
 #Definitions of preprocessor macros
@@ -208,6 +210,7 @@ target_link_libraries(NodeLink
   PRIVATE
     ${Qt}::Quick ${Qt}::Concurrent
     QtQuickStreamplugin
+    ColorPickerplugin
 )
 
 set_target_properties(NodeLink PROPERTIES
