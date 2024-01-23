@@ -107,6 +107,8 @@ qt_add_qml_module(NodeLink
         resources/Core/Undo/UndoNodeObserver.qml
         resources/Core/Undo/UndoNodeGuiObserver.qml
         resources/Core/Undo/UndoLinkObserver.qml
+        resources/Core/Undo/UndoContainerObserver.qml
+        resources/Core/Undo/UndoContainerGuiObserver.qml
         resources/Core/Undo/HashCompareString.qml
 
         resources/View/Components/Buttons/NLBaseButton.qml
