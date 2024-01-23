@@ -15,9 +15,6 @@ Item {
 
     property UndoStack           undoStack
 
-    property var                 undoSceneObserver
-
-
     /* Childeren
      * ****************************************************************************************/
     Connections {
@@ -26,28 +23,19 @@ Item {
         enabled: !NLSpec.undo.blockObservers
 
         function onPositionChanged() {
-            startTimer()
+            undoStack.updateUndoStack();
         }
 
         function onWidthChanged() {
-            startTimer()
+            undoStack.updateUndoStack();
         }
 
         function onHeightChanged() {
-            startTimer()
+            undoStack.updateUndoStack();
         }
 
         function onColorChanged() {
-            startTimer()
+            undoStack.updateUndoStack();
         }
-    }
-
-    /* Functions
-     * ****************************************************************************************/
-    function startTimer() {
-        if (undoSceneObserver._timer.running) {
-            undoSceneObserver._timer.stop()
-        }
-        undoSceneObserver._timer.start();
     }
 }

@@ -63,7 +63,6 @@ Item {
         delegate: UndoContainerObserver {
             container: modelData
             undoStack: root.undoStack
-            undoSceneObserver: root
         }
 
     }

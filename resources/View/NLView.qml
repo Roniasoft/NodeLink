@@ -101,9 +101,9 @@ Item {
         NLCore._copiedLinks = ({})
         NLCore._copiedContainers = ({})
 
-        var selectedNodes = Object.values(selectionModel?.selectedModel ?? ({})).filter(obj => obj?.objectType === NLSpec.ObjectType.Node)
-        var selectedLinks = Object.values(selectionModel?.selectedModel ?? ({})).filter(obj => obj?.objectType === NLSpec.ObjectType.Link)
-        var selectedContainers = Object.values(selectionModel?.selectedModel ?? ({})).filter(obj => obj?.objectType === NLSpec.ObjectType.Container)
+        var selectedNodes = Object.values(scene.selectionModel?.selectedModel ?? ({})).filter(obj => obj?.objectType === NLSpec.ObjectType.Node)
+        var selectedLinks = Object.values(scene.selectionModel?.selectedModel ?? ({})).filter(obj => obj?.objectType === NLSpec.ObjectType.Link)
+        var selectedContainers = Object.values(scene.selectionModel?.selectedModel ?? ({})).filter(obj => obj?.objectType === NLSpec.ObjectType.Container)
 
         selectedNodes.forEach(node => {NLCore._copiedNodes[node._qsUuid] = node;});
         selectedLinks.forEach(link => {NLCore._copiedLinks[link._qsUuid] = link;});
@@ -193,6 +193,19 @@ Item {
         scene.addNode(node);
 
         return node;
+    }
+
+    //! Creating copied containers
+    function createCopiedContainers(diffX, diffY) {
+        Object.values(NLCore._copiedContainers).forEach(container => {
+            var newContainer = scene.createContainer();
+            newContainer.cloneFrom(container);
+
+            newContainer.guiConfig.position.x += diffX;
+            newContainer.guiConfig.position.y += diffY;
+
+            scene.addContainer(newContainer);
+        })
     }
 
     //! Creating coped links

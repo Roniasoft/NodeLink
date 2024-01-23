@@ -15,8 +15,6 @@ Item {
 
     property UndoStack  undoStack
 
-    property var        undoSceneObserver
-
     /* Childeren
      * ****************************************************************************************/
     Connections {
@@ -26,30 +24,20 @@ Item {
 
 
         function onTitleChanged() {
-            startTimer()
+            undoStack.updateUndoStack();
         }
 
         function onNodesChanged() {
-            startTimer()
+            undoStack.updateUndoStack();
         }
 
         function onContainersInsideChanged() {
-            startTimer()
+            undoStack.updateUndoStack();
         }
     }
 
     UndoContainerGuiObserver {
         guiConfig: root.container?.guiConfig ?? null
         undoStack: root.undoStack
-        undoSceneObserver: root.undoSceneObserver
-    }
-
-    /* Functions
-     * ****************************************************************************************/
-    function startTimer() {
-        if (undoSceneObserver._timer.running) {
-            undoSceneObserver._timer.stop()
-        }
-        undoSceneObserver._timer.start();
     }
 }

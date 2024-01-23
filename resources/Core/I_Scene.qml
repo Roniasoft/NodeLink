@@ -366,7 +366,6 @@ QSObject {
 
     function copyNodes() {
         copyCalled();
-        NLCore._copiedContainersChanged();
     }
 
     function pasteNodes() {
