@@ -35,7 +35,7 @@ Rectangle {
     onGlobalPosChanged: {
         port._position = globalPos;
 
-        if (sceneSession) {
+        if (sceneSession && !sceneSession.isRubberBandMoving) {
             sceneSession.portsVisibility[port._qsUuid] = false;
             sceneSession.portsVisibilityChanged();
         }
