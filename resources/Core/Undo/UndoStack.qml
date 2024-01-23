@@ -32,9 +32,12 @@ QtObject {
 
     property var    correctRepo:    scene?._qsRepo ?? NLCore.defaultRepo
 
+    /* Signals
+     * ****************************************************************************************/
+    signal stacksUpdated();
+
     /* Functions
      * ****************************************************************************************/
-
     //! Update stackFlow Model
     function updateStacks() {
         let dumpedRepo = dumpRepo(scene);
@@ -49,6 +52,7 @@ QtObject {
         //insert object in first of stack
         undoStack.unshift(dumpedRepo);
         undoStackChanged();
+        stacksUpdated();
     }
 
     //! Redo operation
@@ -61,6 +65,7 @@ QtObject {
         redoStackChanged();
         undoStackChanged();
         setSceneObject(sceneModel);
+        stacksUpdated();
     }
 
     //! Undo Operation
@@ -75,6 +80,7 @@ QtObject {
         redoStackChanged();
         undoStackChanged();
         setSceneObject(sceneModel);
+        stacksUpdated();
     }
 
     //! Dump repo for stack
