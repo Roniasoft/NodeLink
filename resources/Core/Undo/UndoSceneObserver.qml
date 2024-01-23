@@ -9,21 +9,11 @@ import NodeLink
 Item {
     id: root
 
-    /* Property Properties
+    /* Property Declarations
      * ****************************************************************************************/
     required property I_Scene       scene
 
-    required property UndoStack undoStack
-
-    property Timer _timer : Timer {
-        repeat: false
-        interval: 300
-        onTriggered: {
-            undoStack.updateStacks();
-        }
-    }
-
-    Component.onCompleted: _timer.start();
+    required property UndoStack     undoStack
 
     /* Childeren
      * ****************************************************************************************/
@@ -32,24 +22,15 @@ Item {
         enabled: !NLSpec.undo.blockObservers
 
         function onTitleChanged() {
-            if (_timer.running) {
-                _timer.stop()
-            }
-            root._timer.start();
+            undoStack.updateUndoStack();
         }
 
         function onNodesChanged() {
-            if (_timer.running) {
-                _timer.stop()
-            }
-             root._timer.start();
+            undoStack.updateUndoStack();
         }
 
         function onLinksChanged() {
-            if (_timer.running) {
-                _timer.stop()
-            }
-            root._timer.start();
+            undoStack.updateUndoStack();
         }
     }
 

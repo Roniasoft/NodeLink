@@ -11,7 +11,7 @@ import QtQuickStream
 QSObject {
     id: scene
 
-    /* Property Properties
+    /* Property Declarations
      * ****************************************************************************************/
     //! Scene Title
     property string         title:          "<Untitled>"

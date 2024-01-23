@@ -13,7 +13,14 @@ QtObject {
      * *******************************************************************************************/
     signal undoRedoDone()
 
-    /* Property Properties
+    signal updateUndoStack();
+
+    onUpdateUndoStack: {
+        if (!NLSpec.undo.blockObservers)
+            timer.restart();
+    }
+
+    /* Property Declarations
      * ****************************************************************************************/
     //! Target scene
     required property I_Scene       scene
@@ -29,6 +36,18 @@ QtObject {
 
     //! Redo stack
     property var    redoStack:      []
+
+    property Timer timer : Timer {
+        repeat: false
+        interval: 300
+        onTriggered: {
+            root.updateStacks();
+        }
+    }
+
+    /* Object Properties
+     * ****************************************************************************************/
+    Component.onCompleted: timer.start();
 
     /* Functions
      * ****************************************************************************************/
