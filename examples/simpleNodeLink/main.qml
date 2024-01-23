@@ -133,4 +133,37 @@ Window {
 //            window.scene = Qt.binding(function() { return NLCore.defaultRepo.qsRootObject;});
         }
     }
+
+    //! Copy nodes shortcut
+    Shortcut {
+        sequence: "Ctrl+C"
+        onActivated: {
+            view.copyNodes();
+        }
+    }
+
+    //! Paste nodes shortcut
+    Shortcut {
+        sequence: "Ctrl+V"
+        onActivated: {
+            view.pasteNodes()
+        }
+    }
+
+    //! Select all nodes and links
+    Shortcut {
+        sequence: "Ctrl+A"
+        onActivated: scene?.selectionModel.selectAll(scene.nodes, scene.links);
+    }
+
+    //! Clones all selected nodes
+    Shortcut {
+        sequence: "Ctrl+D"
+        onActivated: {
+            Object.keys(scene?.selectionModel.selectedModel ?? []).forEach(key => {
+                if (Object.keys(scene.nodes).includes(key))
+                    scene?.cloneNode(key);
+            });
+        }
+    }
 }
