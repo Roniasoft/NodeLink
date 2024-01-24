@@ -139,12 +139,13 @@ Rectangle {
         NLToolButton {
             id: duplicateButton
             text: "\uf24d"
-            visible: layout.selectedANodeOnly
+            visible: layout.selectedANodeOnly || layout.selectedAContainerOnly
             Layout.preferredHeight: 30
             Layout.preferredWidth: 30
             Layout.topMargin: 2
             Layout.bottomMargin: 2
-            onClicked: scene.cloneNode(layout.selectedObject?._qsUuid);
+            onClicked: layout.selectedANodeOnly ? scene.cloneNode(layout.selectedObject?._qsUuid) :
+                                                  scene.cloneContainer(layout.selectedObject?._qsUuid);
         }
 
         //! Adding image button

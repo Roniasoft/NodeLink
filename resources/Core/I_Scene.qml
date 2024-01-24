@@ -185,6 +185,27 @@ QSObject {
     }
 
     //! duplicator (third button)
+    //! returns cloned Container
+    function cloneContainer(nodeUuid: string) {
+        var baseContainer = containers[nodeUuid];
+
+        // Create container
+        var container = createContainer();
+        container._qsRepo = NLCore.defaultRepo;
+
+        // Clone container
+        container.cloneFrom(baseContainer);
+
+        // Customize cloned container position.
+        container.guiConfig.position.x += 50;
+        container.guiConfig.position.y += 50;
+
+        // Add container into containers array to update ui
+        return addContainer(container);
+    }
+
+    //! duplicator (third button)
+    //! returns cloned node
     function cloneNode(nodeUuid: string) {
         var baseNode = nodes[nodeUuid];
 
@@ -200,8 +221,8 @@ QSObject {
         node.guiConfig.position.x += 50;
         node.guiConfig.position.y += 50;
 
-        // Add node into nodes array to updata ui
-        addNode(node);
+        // Add node into nodes array to update ui
+        return addNode(node);
     }
 
     //! On port added
