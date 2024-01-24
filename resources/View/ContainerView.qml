@@ -106,20 +106,6 @@ InteractiveNodeView {
             }
         }
 
-        onClicked: (mouse) => {
-            updateInnerItems();
-            scene.selectionModel.clearAllExcept(container._qsUuid);
-            scene.selectionModel.selectContainer(container);
-            containerTitle.focus = false
-        }
-
-        onDoubleClicked: (mouse) => {
-            updateInnerItems();
-            scene.selectionModel.clearAllExcept(container._qsUuid);
-            scene.selectionModel.selectContainer(container);
-            isDraging = false;
-        }
-
         cursorShape: (containerMouseArea.containsMouse)
                      ? (isDraging ? Qt.ClosedHandCursor : Qt.OpenHandCursor)
                      : Qt.ArrowCursor
@@ -128,7 +114,7 @@ InteractiveNodeView {
             updateInnerItems()
             if (!container.guiConfig.locked) {
                 isDraging = true;
-                prevX = mouse.x;
+                prevX = mouse.x; // should be fixed during movement as this is relative to parent
                 prevY = mouse.y;
                 _selectionTimer.start();
             }
@@ -147,8 +133,13 @@ InteractiveNodeView {
                 container.guiConfig.position.x += deltaX;
                 container.guiConfig.position.y += deltaY;
 
-                if(NLStyle.snapEnabled)
+                if (NLStyle.snapEnabled) {
+                    var x_old = container.guiConfig.position.x;
+                    var y_old = container.guiConfig.position.y;
                     container.guiConfig.position = scene.snappedPosition(container.guiConfig.position);
+                    deltaX +=  container.guiConfig.position.x - x_old
+                    deltaY +=  container.guiConfig.position.y - y_old
+                }
                 container.guiConfig.positionChanged();
 
                 var allObjects = [...Object.values(container.nodes), ...Object.values(container.containersInside)];
@@ -156,13 +147,10 @@ InteractiveNodeView {
                 allObjects.forEach(obj => {
                     obj.guiConfig.position.x += deltaX;
                     obj.guiConfig.position.y += deltaY;
-                    if(NLStyle.snapEnabled)
+                    if (false && NLStyle.snapEnabled) // disabled for now, might be changed before activating to make sure remain inside
                         obj.guiConfig.position = scene.snappedPosition(obj.guiConfig.position);
                     obj.guiConfig.positionChanged();
                 })
-
-                prevX = mouse.x - deltaX;
-                prevY = mouse.y - deltaY;
 
                 if((container.guiConfig.position.x < 0  && deltaX < 0) ||
                    (container.guiConfig.position.y < 0 && deltaY < 0))
