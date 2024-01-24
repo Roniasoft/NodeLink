@@ -11,7 +11,7 @@ import QtQuickStream
 QSObject {
     id: scene
 
-    /* Property Properties
+    /* Property Declarations
      * ****************************************************************************************/
     //! Scene Title
     property string         title:          "<Untitled>"
@@ -23,6 +23,9 @@ QSObject {
     //! Keep Connection models
     //! map <UUID, Link>
     property var            links:          ({})
+
+    //! map <UUID, Container>
+    property var            containers:     ({})
 
     //! Scene Selection Model
     property SelectionModel selectionModel: null
@@ -52,6 +55,18 @@ QSObject {
     //! Link Removed
     signal linkRemoved(Link link)
 
+    //! Container added
+    signal containerAdded(Container container)
+
+    //! Container Removed
+    signal containerRemoved(Container container)
+
+    //! Copy Nodes 
+    signal copyCalled();
+
+    //! Paste Node
+    signal pasteCalled();
+
     //! This signals can be and should be used to request changes in content x/y/width/height, since
     //! direct changes of SceneGuiConfig.content* won't effect Flickable contents.
     //! contentMoveRequested() is mainly used by NodesOverview
@@ -69,11 +84,44 @@ QSObject {
             if (correctRepo._isLoading) {
                 Object.values(nodes).forEach(node => nodeRemoved(node));
                 Object.values(links).forEach(link => linkRemoved(link));
+                Object.values(containers).forEach(container => containerRemoved(container));
             } else {
                 Object.values(nodes).forEach(node => nodeAdded(node));
                 Object.values(links).forEach(link => linkAdded(link));
+                Object.values(containers).forEach(container => containerAdded(container));
             }
         }
+    }
+
+    //! Creates a new container
+    function createContainer() {
+        let obj = QSSerializer.createQSObject("Container", ["NodeLink"], NLCore.defaultRepo);
+        obj._qsRepo = scene._qsRepo;
+        return obj;
+    }
+
+    //! Adds a container to container map
+    function addContainer(container: Container) {
+        if (containers[container._qsUuid] === container) { return; }
+
+        // Add to local administration
+        containers[container._qsUuid] = container;
+        containersChanged();
+        containerAdded(container);
+
+        scene.selectionModel.clear();
+        scene.selectionModel.selectContainer(container);
+
+        return container;
+    }
+
+    //! Deletes a container from scene
+    function deleteContainer(containerUUId: string) {
+        // Remove the deleted object from selected model
+        selectionModel.remove(containerUUId);
+        containerRemoved(containers[containerUUId]);
+        delete containers[containerUUId];
+        containersChanged();
     }
 
     //! Checks if scene is empty or not
@@ -150,6 +198,27 @@ QSObject {
     }
 
     //! duplicator (third button)
+    //! returns cloned Container
+    function cloneContainer(nodeUuid: string) {
+        var baseContainer = containers[nodeUuid];
+
+        // Create container
+        var container = createContainer();
+        container._qsRepo = NLCore.defaultRepo;
+
+        // Clone container
+        container.cloneFrom(baseContainer);
+
+        // Customize cloned container position.
+        container.guiConfig.position.x += 50;
+        container.guiConfig.position.y += 50;
+
+        // Add container into containers array to update ui
+        return addContainer(container);
+    }
+
+    //! duplicator (third button)
+    //! returns cloned node
     function cloneNode(nodeUuid: string) {
         var baseNode = nodes[nodeUuid];
 
@@ -165,8 +234,8 @@ QSObject {
         node.guiConfig.position.x += 50;
         node.guiConfig.position.y += 50;
 
-        // Add node into nodes array to updata ui
-        addNode(node);
+        // Add node into nodes array to update ui
+        return addNode(node);
     }
 
     //! On port added
@@ -267,6 +336,9 @@ QSObject {
                 if (!value.guiConfig.locked)
                     scene.deleteNode(value._qsUuid);
             }
+            if(value.objectType === NLSpec.ObjectType.Container) {
+                scene.deleteContainer(value._qsUuid);
+            }
             if(value.objectType === NLSpec.ObjectType.Link) {
                 scene.unlinkNodes(value.inputPort._qsUuid, value.outputPort._qsUuid)
             }
@@ -284,7 +356,9 @@ QSObject {
         var rBRightX = rBLeftX + containerItem.width;
         var rBBottomY = rBTopY + containerItem.height;
 
-        var foundObj = Object.values(nodes).filter(node => {
+        var allObjects = [...Object.values(nodes), ...Object.values(containers)];
+
+        var foundObj = allObjects.filter(node => {
             // Key points of Node to generate line equations and it's limits.
             var position = node.guiConfig.position
 
@@ -326,113 +400,10 @@ QSObject {
     }
 
     function copyNodes() {
-        NLCore._copiedNodes = ({})
-        NLCore._copiedLinks = ({})
-
-        var selectedNodes = Object.values(selectionModel?.selectedModel ?? ({})).filter(obj => obj?.objectType === NLSpec.ObjectType.Node)
-        var selectedLinks = Object.values(selectionModel?.selectedModel ?? ({})).filter(obj => obj?.objectType === NLSpec.ObjectType.Link)
-
-        selectedNodes.forEach(node => {NLCore._copiedNodes[node._qsUuid] = node;});
-        selectedLinks.forEach(link => {NLCore._copiedLinks[link._qsUuid] = link;});
-
-        NLCore._copiedNodesChanged()
-        NLCore._copiedLinksChanged();
+        copyCalled();
     }
 
-    //! Function to paste nodes. Currently only works for nodes and not links
     function pasteNodes() {
-        //! Top Left of the nodes rectangle that will be pasted
-        var topLeftX = (scene.sceneGuiConfig._mousePosition.x >= 0) ? scene.sceneGuiConfig._mousePosition.x : scene.sceneGuiConfig.contentX
-        var topLeftY = (scene.sceneGuiConfig._mousePosition.y >= 0) ? scene.sceneGuiConfig._mousePosition.y : scene.sceneGuiConfig.contentY
-
-        var minX = Number.POSITIVE_INFINITY
-        var minY = Number.POSITIVE_INFINITY
-        var maxX = Number.NEGATIVE_INFINITY
-        var maxY = Number.NEGATIVE_INFINITY
-
-        //! Finding topleft and bottom right of the copied node rectangle
-        Object.values(NLCore._copiedNodes).forEach(node1 => {
-            minX = Math.min(minX, node1.guiConfig.position.x)
-            maxX = Math.max(maxX, node1.guiConfig.position.x + node1.guiConfig.width)
-            // Check y position
-            minY = Math.min(minY, node1.guiConfig.position.y)
-            maxY = Math.max(maxY, node1.guiConfig.position.y + node1.guiConfig.height)
-        });
-
-        //! Mapping previous copied rect to paste the new one
-        var diffX = topLeftX - minX;
-        var diffY = topLeftY - minY;
-
-        //! Handling exception: if mapped bottom right is too big for flickable
-        if (maxX + diffX >= scene.sceneGuiConfig.contentWidth) {
-            var tempXDiff = maxX + diffX - scene.sceneGuiConfig.contentWidth
-            topLeftX -= tempXDiff
-            diffX = topLeftX - minX
-        }
-
-        if (maxX + diffY >= scene.sceneGuiConfig.contentHeight) {
-            var tempYDiff = maxY + diffY - scene.sceneGuiConfig.contentHeight
-            topLeftY -= tempYDiff
-            diffY = topLeftY - minY
-        }
-
-        //! Making a map of ports, copied node port to pasted node port
-        var allPorts =  ({});
-        var keys1;
-        var keys2;
-
-        //! Calling function to create desired Nodes, and mapping ports
-        Object.values(NLCore._copiedNodes).forEach( node => {
-
-            var copiedNode = createCopyNode(node, diffX, diffY)
-            keys1 = Object.keys(node.ports);
-            keys2 = Object.keys(copiedNode.ports);
-            for (var i = 0; i < keys1.length; ++i) {
-                var id1 = keys1[i];
-                var id2 = keys2[i]
-                var port1Value = node.ports[id1];
-                var port2Value = copiedNode.ports[id2];
-
-                allPorts[port1Value] = port2Value;
-            }
-        })
-
-        //! Calling function to create links
-        createCopiedLinks(allPorts);
+        pasteCalled();
     }
-
-    //! Creating coped nodes
-    function createCopyNode(baseNode, diffX, diffY) {
-        var node = QSSerializer.createQSObject(nodeRegistry.nodeTypes[baseNode.type],
-                                                       nodeRegistry.imports, NLCore.defaultRepo);
-        node._qsRepo = NLCore.defaultRepo;
-        node.cloneFrom(baseNode);
-
-        // Fixing node position.
-        node.guiConfig.position.x += diffX;
-        node.guiConfig.position.y += diffY;
-        // Add node into nodes array to updata ui
-        addNode(node);
-
-        return node;
-    }
-
-    //! Creating coped links
-    function createCopiedLinks(allPorts) {
-        Object.values(NLCore._copiedLinks).forEach( link => {
-            var matchedInputPort;
-            var matchedOutputPort;
-            Object.keys(allPorts).forEach(port => {
-                if(String(link.inputPort) === String(port))
-                    matchedInputPort = allPorts[port];
-
-                if(String(link.outputPort) === String(port))
-                    matchedOutputPort = allPorts[port];
-            })
-            var copiedLink = createLink(matchedInputPort._qsUuid, matchedOutputPort._qsUuid)
-            copiedLink._qsRepo = NLCore.defaultRepo;
-            copiedLink.cloneFrom(link);
-        })
-    }
-
 }

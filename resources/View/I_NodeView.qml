@@ -13,8 +13,8 @@ Rectangle {
 
     /* Property Declarations
     * ****************************************************************************************/
-    //! Current node
-    property Node     node
+    //! Current node (or container)
+    property var     node
 
     //! Scene is the main model containing information about all nodes/links
     property I_Scene  scene
@@ -35,6 +35,8 @@ Rectangle {
     //! Correct position based on zoomPoint and zoomFactor
     property vector2d       positionMapped: node.guiConfig?.position ?? Qt.vector2d(0, 0)
 
+    //! Whether the object is a container or not
+    property bool           isContainer:    false
     /* Object Properties
     * ****************************************************************************************/
 

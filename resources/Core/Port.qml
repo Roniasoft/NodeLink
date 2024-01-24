@@ -19,7 +19,7 @@ QSObject {
     property int    portSide:   NLSpec.PortPositionSide.Top
 
     //! Type of port, input or output
-    property int    portType:   NLSpec.PortType.Input
+    property int    portType:   NLSpec.PortType.InAndOut
 
     //! Port is enable or not
     property bool enable: true

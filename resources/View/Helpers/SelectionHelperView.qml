@@ -100,7 +100,14 @@ Item {
                                                   selectionRubberBandItem.width,
                                                   selectionRubberBandItem.height);
             var selectedObj = scene.findNodesInContainerItem(selectionRubberBandRect);
-            selectedObj.forEach(node => scene.selectionModel.selectNode(node));
+            selectedObj.forEach(node =>  {
+
+                if (node.objectType === NLSpec.ObjectType.Node)
+                    scene.selectionModel.selectNode(node)
+                else if (node.objectType === NLSpec.ObjectType.Container) {
+                    scene.selectionModel.selectContainer(node)
+                                    }
+            });
 
             if (!sceneSession.marqueeSelectionMode)
                 resetMarqueeDimensions();

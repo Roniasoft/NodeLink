@@ -27,6 +27,12 @@ Rectangle {
     //! Find all selected links
     property var selectedLink: Object.values(selectionModel?.selectedModel ?? ({})).filter(obj => obj?.objectType === NLSpec.ObjectType.Link)
 
+    //! Find all selected Containers
+    property var selectedContainer: Object.values(selectionModel?.selectedModel ?? ({})).filter(obj => obj?.objectType === NLSpec.ObjectType.Container)
+
+    //! If only one container is selected
+    property bool selectedContainerOnly: layout.selectedContainerOnly
+
     /* Object Properties
      * ****************************************************************************************/
     radius: NLStyle.radiusAmount.itemButton
@@ -49,11 +55,13 @@ Rectangle {
         //! To display a representative property of links
         property var selectedObject: Object.values(selectionModel?.selectedModel ?? ({}))?.find((obj, index) => index === 0);
 
-        property bool selectedNodeOnly: selectedNode.length > 0 && selectedLink.length === 0
-        property bool selectedLinkOnly: selectedLink.length > 0 && selectedNode.length === 0
+        property bool selectedNodeOnly: selectedNode.length > 0 && selectedLink.length === 0 && selectedContainer.length === 0
+        property bool selectedLinkOnly: selectedLink.length > 0 && selectedNode.length === 0 && selectedContainer.length === 0
+        property bool selectedContainerOnly: selectedContainer.length > 0 && selectedNode.length === 0 && selectedLink.length === 0
 
-        property bool selectedANodeOnly: selectedNode.length === 1 && selectedLink.length === 0
-        property bool selectedALinkOnly: selectedLink.length === 1 && selectedNode.length === 0
+        property bool selectedANodeOnly: selectedNode.length === 1 && selectedLink.length === 0 && selectedContainer.length === 0
+        property bool selectedALinkOnly: selectedLink.length === 1 && selectedNode.length === 0 && selectedContainer.length === 0
+        property bool selectedAContainerOnly: selectedContainer.length === 1 && selectedNode.length === 0 && selectedLink.length === 0
 
         //! Custom Tool  buttons
         Repeater {
@@ -131,12 +139,13 @@ Rectangle {
         NLToolButton {
             id: duplicateButton
             text: "\uf24d"
-            visible: layout.selectedANodeOnly
+            visible: layout.selectedANodeOnly || layout.selectedAContainerOnly
             Layout.preferredHeight: 30
             Layout.preferredWidth: 30
             Layout.topMargin: 2
             Layout.bottomMargin: 2
-            onClicked: scene.cloneNode(layout.selectedObject?._qsUuid);
+            onClicked: layout.selectedANodeOnly ? scene.cloneNode(layout.selectedObject?._qsUuid) :
+                                                  scene.cloneContainer(layout.selectedObject?._qsUuid);
         }
 
         //! Adding image button
@@ -196,7 +205,7 @@ Rectangle {
             //! returns true on empty selection as well
             function areAllLocked () {
                return Object.values(selectionModel.selectedModel).every(obj => {
-                    if (obj.objectType === NLSpec.ObjectType.Node && !obj.guiConfig.locked)
+                    if ((obj.objectType === NLSpec.ObjectType.Node || obj.objectType === NLSpec.ObjectType.Container) && !obj.guiConfig.locked)
                         return false;
                     return true;
                 });
@@ -446,7 +455,6 @@ Rectangle {
                 running: false
                 interval: 100
                 onTriggered: scene.deleteSelectedObjects();
-
             }
 
             //! Delete popup to confirm deletion process

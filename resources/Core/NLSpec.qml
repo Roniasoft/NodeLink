@@ -14,6 +14,7 @@ QtObject {
     enum ObjectType {
         Node = 0,
         Link = 1,
+        Container = 2,
 
         Unknown = 99
     }
@@ -39,8 +40,9 @@ QtObject {
 
     //! Port type data flow.
     enum PortType {
-        Input   = 0,
-        Output  = 1
+        Input    = 0,
+        Output   = 1,
+        InAndOut = 2
     }
 
     //! Type of link

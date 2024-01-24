@@ -4,40 +4,38 @@ import QtQml
 import NodeLink
 
 /*! ***********************************************************************************************
- * The UndoNodeObserver update UndoStack when Node properties changed.
+ * The GuiConfigUndoObserver observe ContainerGuiConfig properties changes.
  * ************************************************************************************************/
 Item {
     id: root
 
     /* Property Properties
      * ****************************************************************************************/
-    property Node       node
+    property ContainerGuiConfig  guiConfig
 
-    property UndoStack  undoStack
+    property UndoStack           undoStack
 
     /* Childeren
      * ****************************************************************************************/
     Connections {
-        target: node
+        target: guiConfig
 
         enabled: !NLSpec.undo.blockObservers
 
-
-        function onTitleChanged() {
+        function onPositionChanged() {
             undoStack.updateUndoStack();
         }
 
-        function onTypeChanged() {
+        function onWidthChanged() {
             undoStack.updateUndoStack();
         }
 
-        function onPortsChanged() {
+        function onHeightChanged() {
             undoStack.updateUndoStack();
         }
-    }
 
-    UndoNodeGuiObserver {
-      guiConfig: root.node?.guiConfig ?? null
-      undoStack: root.undoStack
+        function onColorChanged() {
+            undoStack.updateUndoStack();
+        }
     }
 }

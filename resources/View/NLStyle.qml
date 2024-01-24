@@ -27,8 +27,8 @@ QtObject {
     }
 
     readonly property QtObject overview: QtObject {
-        property real width: 300
-        property real height: 300
+        property real width: 250
+        property real height: 250
     }
 
     //! Defualt Scene contents dimension.
@@ -119,6 +119,12 @@ QtObject {
     ]
 
     readonly property string unknown: "Unknown"
+
+    //! Background grid properties
+    readonly property QtObject backgroundGrid: QtObject {
+        readonly property int spacing:    20
+        readonly property double opacity: 0.65
+    }
 
     //! Radius
     readonly property QtObject radiusAmount: QtObject {

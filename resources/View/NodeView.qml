@@ -350,10 +350,8 @@ InteractiveNodeView {
                 prevX = mouse.x - deltaX;
                 var deltaY = mouse.y - prevY;
                 node.guiConfig.position.y += deltaY;
-                if(NLStyle.snapEnabled){
-                    node.guiConfig.position.y =  Math.ceil(node.guiConfig.position.y / 20) * 20;
-                    node.guiConfig.position.x =  Math.ceil(node.guiConfig.position.x / 20) * 20;
-                }
+                if(NLStyle.snapEnabled)
+                    node.guiConfig.position = scene.snappedPosition(node.guiConfig.position)
                 node.guiConfig.positionChanged();
                 prevY = mouse.y - deltaY;
 
@@ -440,28 +438,16 @@ InteractiveNodeView {
         target: node.guiConfig
 
         function onPositionChanged() {
-            dimensionChanged();
+            dimensionChanged(true);
         }
 
         function onWidthChanged() {
-            dimensionChanged();
+            dimensionChanged(true);
         }
 
         function onHeightChanged() {
-            dimensionChanged();
+            dimensionChanged(true);
         }
     }
 
-    /* Functions
-     * ****************************************************************************************/
-
-    //! Handle dimension change
-    function dimensionChanged() {
-        if(nodeView.isSelected)
-            scene?.selectionModel?.selectedObjectChanged();
-        else {
-            scene?.selectionModel?.clearAllExcept(node._qsUuid)
-            scene?.selectionModel?.selectNode(node)
-        }
-    }
 }

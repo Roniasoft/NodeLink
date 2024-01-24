@@ -124,10 +124,10 @@ I_Scene {
         // Just a input port can be link to output port
         var portAObj = findPort(portA);
         var portBObj = findPort(portB);
-        if (portAObj.portType !== NLSpec.PortType.Output ||
-            portBObj.portType !== NLSpec.PortType.Input) {
-            return false
-        }
+        if (portAObj.portType === NLSpec.PortType.Input)
+            return false;
+        if (portBObj.portType === NLSpec.PortType.Output)
+            return false;
 
         // Find exist links with portA as input port and portB as output port.
         var sameLinks = Object.values(links).filter(link =>

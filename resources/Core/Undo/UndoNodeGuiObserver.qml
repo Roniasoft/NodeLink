@@ -15,14 +15,6 @@ Item {
 
     property UndoStack      undoStack
 
-    property Timer _timer : Timer {
-        repeat: false
-        interval: 300
-        onTriggered: {
-            undoStack.updateStacks();
-        }
-    }
-
     /* Childeren
      * ****************************************************************************************/
 
@@ -32,38 +24,23 @@ Item {
         enabled: !NLSpec.undo.blockObservers
 
         function onLogoUrlChanged() {
-            if (_timer.running) {
-                _timer.stop()
-            }
-            _timer.start();
+            undoStack.updateUndoStack();
         }
 
         function onPositionChanged() {
-            if (_timer.running) {
-                _timer.stop()
-            }
-            _timer.start();
+            undoStack.updateUndoStack();
         }
 
         function onWidthChanged() {
-            if (_timer.running) {
-                _timer.stop()
-            }
-            _timer.start();
+             undoStack.updateUndoStack();
         }
 
         function onHeightChanged() {
-            if (_timer.running) {
-                _timer.stop()
-            }
-            _timer.start();
+           undoStack.updateUndoStack();
         }
 
         function onColorChanged() {
-            if (_timer.running) {
-                _timer.stop()
-            }
-            _timer.start();
+            undoStack.updateUndoStack();
         }
     }
 }

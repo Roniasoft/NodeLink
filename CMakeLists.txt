@@ -29,6 +29,7 @@ option(BUILD_DEBUG_POSTFIX_D "Append d suffix to debug libraries" OFF)
 
 # QtQuickStream to save and load project.
 add_subdirectory(QtQuickStream)
+add_subdirectory(ColorPicker)
 
 find_package(Qt6
   COMPONENTS
@@ -98,6 +99,8 @@ qt_add_qml_module(NodeLink
         resources/Core/SelectionSpecificTool.qml
         resources/Core/NLUtils.qml
         resources/Core/ImagesModel.qml
+        resources/Core/Container.qml
+        resources/Core/ContainerGuiConfig.qml
 
         resources/Core/Undo/UndoCore.qml
         resources/Core/Undo/UndoStack.qml
@@ -105,6 +108,8 @@ qt_add_qml_module(NodeLink
         resources/Core/Undo/UndoNodeObserver.qml
         resources/Core/Undo/UndoNodeGuiObserver.qml
         resources/Core/Undo/UndoLinkObserver.qml
+        resources/Core/Undo/UndoContainerObserver.qml
+        resources/Core/Undo/UndoContainerGuiObserver.qml
         resources/Core/Undo/HashCompareString.qml
 
         resources/View/Components/Buttons/NLBaseButton.qml
@@ -156,6 +161,8 @@ qt_add_qml_module(NodeLink
         resources/View/Helpers/LinkHelperView.qml
         resources/View/ZoomManager.qml
         resources/View/ImagesFlickable.qml
+        resources/View/ContainerView.qml
+        resources/View/ContainerOverview.qml
 
         resources/View/Logics/Calculation.js
         resources/View/Logics/BasicLinkCalculator.js
@@ -192,6 +199,7 @@ target_include_directories(NodeLink
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Source>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/NodeLink>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Utils>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/ColorPicker>
 )
 
 #Definitions of preprocessor macros
@@ -202,6 +210,7 @@ target_link_libraries(NodeLink
   PRIVATE
     ${Qt}::Quick ${Qt}::Concurrent
     QtQuickStreamplugin
+    ColorPickerplugin
 )
 
 set_target_properties(NodeLink PROPERTIES

@@ -12,8 +12,8 @@ BackgroundGridsCPP {
 
     /* Private Property Declarations
      * ****************************************************************************************/
-    spacing: 20
-    opacity: 0.65
+    spacing: NLStyle.backgroundGrid.spacing
+    opacity: NLStyle.backgroundGrid.opacity
 
 
     /* Functions

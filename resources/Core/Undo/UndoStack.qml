@@ -9,11 +9,7 @@ import NodeLink
 QtObject {
     id: root
 
-    /*! Signals
-     * *******************************************************************************************/
-    signal undoRedoDone()
-
-    /* Property Properties
+    /* Property Declarations
      * ****************************************************************************************/
     //! Target scene
     required property I_Scene       scene
@@ -32,9 +28,32 @@ QtObject {
 
     property var    correctRepo:    scene?._qsRepo ?? NLCore.defaultRepo
 
+    property Timer timer : Timer {
+        repeat: false
+        interval: 300
+        onTriggered: {
+            root.updateStacks();
+        }
+    }
+
     /* Signals
      * ****************************************************************************************/
     signal stacksUpdated();
+
+    signal undoRedoDone()
+
+    signal updateUndoStack();
+
+
+
+    /* Object Properties
+     * ****************************************************************************************/
+    Component.onCompleted: timer.start();
+
+    onUpdateUndoStack: {
+        if (!NLSpec.undo.blockObservers)
+            timer.restart();
+    }
 
     /* Functions
      * ****************************************************************************************/

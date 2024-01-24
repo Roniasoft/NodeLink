@@ -39,6 +39,8 @@ Menu {
 
     signal nodeAdded(nodeUUid : string);
 
+    signal containerAdded(containerUUid: string)
+
     /* Children
      * ****************************************************************************************/
 
@@ -49,11 +51,30 @@ Menu {
             name: scene.nodeRegistry.nodeNames[modelData]
             iconStr: scene.nodeRegistry.nodeIcons[modelData]
             onClicked: {    // \todo: move this implementation out of primitive comp.
-                var nodeUuid = contextMenu.createNode(Number(modelData));
-                if (nodeUuid)
-                    nodeAdded(nodeUuid);
+                if (scene.nodeRegistry.nodeNames[modelData] !== "Container") {
+                    var nodeUuid = contextMenu.createNode(Number(modelData));
+                    if (nodeUuid)
+                        nodeAdded(nodeUuid);
+                }
+                else {
+                    var containerUuid = contextMenu.createContainer(Number(modelData));
+                    if (containerUuid)
+                        containerAdded(containerUuid);
+                }
             }
         }
+    }
+
+    //! Creates and adds a container
+    function createContainer(nodeType : int) {
+        var qsType = scene.nodeRegistry.nodeTypes[nodeType];
+        var container = QSSerializer.createQSObject(qsType, scene.nodeRegistry.imports, NLCore.defaultRepo);
+        container._qsRepo = NLCore.defaultRepo._qsRepo;
+        container.guiConfig.position = nodePosition;
+        container.guiConfig.color = scene.nodeRegistry.nodeColors[nodeType];
+        scene.addContainer(container);
+
+        return container._qsUuid;
     }
 
     //! Create a node with node type and its position
@@ -71,8 +92,10 @@ Menu {
         // Correct position with zoompoint and zoom factor into real position.
         var positionMapped = nodePosition
 
-        node.guiConfig.position = positionMapped;
-
+        if (NLStyle.snapEnabled)
+            node.guiConfig.position = scene.snappedPosition(positionMapped);
+        else
+            node.guiConfig.position = positionMapped
 
         node.guiConfig.color = scene.nodeRegistry.nodeColors[nodeType];
         node.guiConfig.colorIndex = 0;
