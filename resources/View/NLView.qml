@@ -116,13 +116,17 @@ Item {
 
     //! Function to paste nodes. Currently only works for nodes and not links
     function pasteNodes() {
+        var copiedNodes = ({});
+
         var minX = Number.POSITIVE_INFINITY
         var minY = Number.POSITIVE_INFINITY
         var maxX = Number.NEGATIVE_INFINITY
         var maxY = Number.NEGATIVE_INFINITY
 
+        var allObjects = [...Object.values(NLCore._copiedNodes), ...Object.values(NLCore._copiedContainers)];
+
         //! Finding topleft and bottom right of the copied node rectangle
-        Object.values(NLCore._copiedNodes).forEach(node1 => {
+        allObjects.forEach(node1 => {
             minX = Math.min(minX, node1.guiConfig.position.x)
             maxX = Math.max(maxX, node1.guiConfig.position.x + node1.guiConfig.width)
             // Check y position
@@ -172,11 +176,14 @@ Item {
 
                 allPorts[port1Value] = port2Value;
             }
+            copiedNodes[copiedNode._qsUuid] = copiedNode;
         })
         //! Calling function to create Containers
-        createCopiedContainers(diffX, diffY);
+        var copiedContainers = createCopiedContainers(diffX, diffY);
         //! Calling function to create links
         createCopiedLinks(allPorts);
+
+        scene?.selectionModel.selectAll(copiedNodes, ({}), copiedContainers);
     }
 
     //! Creating coped nodes
@@ -197,6 +204,8 @@ Item {
 
     //! Creating copied containers
     function createCopiedContainers(diffX, diffY) {
+        var copiedContainers = ({});
+
         Object.values(NLCore._copiedContainers).forEach(container => {
             var newContainer = scene.createContainer();
             newContainer.cloneFrom(container);
@@ -205,7 +214,11 @@ Item {
             newContainer.guiConfig.position.y += diffY;
 
             scene.addContainer(newContainer);
+            copiedContainers[newContainer._qsUuid] = newContainer;
+
         })
+
+        return copiedContainers;
     }
 
     //! Creating coped links
