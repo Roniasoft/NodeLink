@@ -65,7 +65,7 @@ Menu {
         name: "Lock Node"
         iconStr: "\uf30d"
         checkable: true
-        checked: node?.guiConfig?.locked ?? null
+        checked: node?.guiConfig?.locked ?? false
         onClicked: {
             node.guiConfig.locked = checked;
         }
