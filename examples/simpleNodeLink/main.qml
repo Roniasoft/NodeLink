@@ -164,10 +164,22 @@ Window {
     Shortcut {
         sequence: "Ctrl+D"
         onActivated: {
+            var copiedNodes = ({});
+            var copiedContainers = ({});
             Object.keys(scene?.selectionModel.selectedModel ?? []).forEach(key => {
-                if (Object.keys(scene.nodes).includes(key))
-                    scene?.cloneNode(key);
+                if (Object.keys(scene.nodes).includes(key)){
+
+                    var copiedNode = scene?.cloneNode(key);
+                    copiedNodes[copiedNode._qsUuid] = copiedNode;
+                }
+
+                if (Object.keys(scene?.containers).includes(key)){
+                    var copiedContainer = scene?.cloneContainer(key);
+                    copiedContainers[copiedContainer._qsUuid] = copiedContainer;
+                }
             });
+
+            scene?.selectionModel.selectAll(copiedNodes, ({}), copiedContainers);
         }
     }
 }
