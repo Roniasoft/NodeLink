@@ -24,6 +24,9 @@ QSObject {
     //! map <UUID, Link>
     property var            links:          ({})
 
+    //! map <UUID, Container>
+    property var            containers:     ({})
+
     //! Scene Selection Model
     property SelectionModel selectionModel: null
 
@@ -50,6 +53,12 @@ QSObject {
     //! Link Removed
     signal linkRemoved(Link link)
 
+    //! Container added
+    signal containerAdded(Container container)
+
+    //! Container Removed
+    signal containerRemoved(Container container)
+
     //! Copy Nodes 
     signal copyCalled();
 
@@ -73,11 +82,44 @@ QSObject {
             if (scene._qsRepo._isLoading) {
                 Object.values(nodes).forEach(node => nodeRemoved(node));
                 Object.values(links).forEach(link => linkRemoved(link));
+                Object.values(containers).forEach(container => containerRemoved(container));
             } else {
                 Object.values(nodes).forEach(node => nodeAdded(node));
                 Object.values(links).forEach(link => linkAdded(link));
+                Object.values(containers).forEach(container => containerAdded(container));
             }
         }
+    }
+
+    //! Creates a new container
+    function createContainer() {
+        let obj = QSSerializer.createQSObject("Container", ["NodeLink"], NLCore.defaultRepo);
+        obj._qsRepo = scene._qsRepo;
+        return obj;
+    }
+
+    //! Adds a container to container map
+    function addContainer(container: Container) {
+        if (containers[container._qsUuid] === container) { return; }
+
+        // Add to local administration
+        containers[container._qsUuid] = container;
+        containersChanged();
+        containerAdded(container);
+
+        scene.selectionModel.clear();
+        scene.selectionModel.selectContainer(container);
+
+        return container;
+    }
+
+    //! Deletes a container from scene
+    function deleteContainer(containerUUId: string) {
+        // Remove the deleted object from selected model
+        selectionModel.remove(containerUUId);
+        containerRemoved(containers[containerUUId]);
+        delete containers[containerUUId];
+        containersChanged();
     }
 
     //! Adds a node the to nodes map
@@ -143,6 +185,27 @@ QSObject {
     }
 
     //! duplicator (third button)
+    //! returns cloned Container
+    function cloneContainer(nodeUuid: string) {
+        var baseContainer = containers[nodeUuid];
+
+        // Create container
+        var container = createContainer();
+        container._qsRepo = NLCore.defaultRepo;
+
+        // Clone container
+        container.cloneFrom(baseContainer);
+
+        // Customize cloned container position.
+        container.guiConfig.position.x += 50;
+        container.guiConfig.position.y += 50;
+
+        // Add container into containers array to update ui
+        return addContainer(container);
+    }
+
+    //! duplicator (third button)
+    //! returns cloned node
     function cloneNode(nodeUuid: string) {
         var baseNode = nodes[nodeUuid];
 
@@ -158,8 +221,8 @@ QSObject {
         node.guiConfig.position.x += 50;
         node.guiConfig.position.y += 50;
 
-        // Add node into nodes array to updata ui
-        addNode(node);
+        // Add node into nodes array to update ui
+        return addNode(node);
     }
 
     //! On port added
@@ -259,6 +322,9 @@ QSObject {
                 if (!value.guiConfig.locked)
                     scene.deleteNode(value._qsUuid);
             }
+            if(value.objectType === NLSpec.ObjectType.Container) {
+                scene.deleteContainer(value._qsUuid);
+            }
             if(value.objectType === NLSpec.ObjectType.Link) {
                 scene.unlinkNodes(value.inputPort._qsUuid, value.outputPort._qsUuid)
             }
@@ -276,7 +342,9 @@ QSObject {
         var rBRightX = rBLeftX + containerItem.width;
         var rBBottomY = rBTopY + containerItem.height;
 
-        var foundObj = Object.values(nodes).filter(node => {
+        var allObjects = [...Object.values(nodes), ...Object.values(containers)];
+
+        var foundObj = allObjects.filter(node => {
             // Key points of Node to generate line equations and it's limits.
             var position = node.guiConfig.position
 

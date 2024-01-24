@@ -18,9 +18,10 @@ Item {
     //! viewProperties encompasses all view properties that are not included in either the scene or the scene session.
     property QtObject viewProperties: null
 
-    //! Default Link and Node views
+    //! Default Link and Node and Container views
     property string nodeViewUrl: scene?.nodeRegistry?.nodeView ?? ""
     property string linkViewUrl: scene?.nodeRegistry?.linkView ?? ""
+    property string containerViewUrl: scene?.nodeRegistry?.containerView ?? ""
 
 
     //! NodeView map as an internal map
@@ -29,12 +30,17 @@ Item {
     //! LinkView map as an internal map
     property var _linkViewMap: ({})
 
+    //! LinkView map as an internal map
+    property var _containerViewMap: ({})
 
     //! Node view component
     property Component nodeViewComponent: Qt.createComponent(nodeViewUrl);
 
     //! Link view component
     property Component linkViewComponent: Qt.createComponent(linkViewUrl);
+
+    //! Container view component
+    property Component containerViewComponent: Qt.createComponent(containerViewUrl);
 
     /*  Object Properties
     * ****************************************************************************************/
@@ -50,6 +56,35 @@ Item {
     //! Connection to manage node model changes.
     Connections {
         target: scene
+
+        //! containerRepeater updated when a container added
+        function onContainerAdded(containerObj: Container) {
+            if (Object.keys(_containerViewMap).includes(containerObj._qsUuid))
+                return;
+
+            //! NodeViews should be child of NodesRect so they also get the zoom factor through
+            //! scaling
+            const objView = containerViewComponent.createObject(root, {
+                                                           scene: root.scene,
+                                                           sceneSession: root.sceneSession,
+                                                           container: containerObj,
+                                                           viewProperties: root.viewProperties
+                                                       });
+            _containerViewMap[containerObj._qsUuid] = objView;
+        }
+
+        //! nodeRepeater updated when a container Removed
+        function onContainerRemoved(containerObj: Container) {
+            if (!Object.keys(_containerViewMap).includes(containerObj._qsUuid))
+                return;
+
+            // Destroy object
+            let containerViewObj = _containerViewMap[containerObj._qsUuid];
+            containerViewObj.destroy();
+
+            // Delete from map
+            delete _containerViewMap[containerObj._qsUuid];
+        }
 
         //! nodeRepeater updated when a node added
         function onNodeAdded(nodeObj: Node) {

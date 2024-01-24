@@ -438,28 +438,16 @@ InteractiveNodeView {
         target: node.guiConfig
 
         function onPositionChanged() {
-            dimensionChanged();
+            dimensionChanged(true);
         }
 
         function onWidthChanged() {
-            dimensionChanged();
+            dimensionChanged(true);
         }
 
         function onHeightChanged() {
-            dimensionChanged();
+            dimensionChanged(true);
         }
     }
 
-    /* Functions
-     * ****************************************************************************************/
-
-    //! Handle dimension change
-    function dimensionChanged() {
-        if(nodeView.isSelected)
-            scene?.selectionModel?.selectedObjectChanged();
-        else {
-            scene?.selectionModel?.clearAllExcept(node._qsUuid)
-            scene?.selectionModel?.selectNode(node)
-        }
-    }
 }

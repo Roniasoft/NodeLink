@@ -38,4 +38,8 @@ QSObject {
     //! Use 'qrc:/' format for registration.
     property string linkView: "LinkView.qml"
 
+    //! Container view url
+    //! Use 'qrc:/' format for registration.
+    property string containerView: "ContainerView.qml"
+
 }

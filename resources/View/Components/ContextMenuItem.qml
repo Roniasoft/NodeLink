@@ -52,7 +52,7 @@ MenuItem {
                 text: menuItem.iconStr
                 font.family: NLStyle.fontType.font6Pro
                 font.pixelSize: 14
-                font.weight: 400
+                font.weight: 300
 
             }
         }

@@ -25,6 +25,8 @@ QSCore {
     //! Shallow Copied links, to be used in paste when needed
     property var     _copiedLinks: ({})
 
+    property var     _copiedContainers: ({})
+
     /* Object Properties
      * ****************************************************************************************/
 

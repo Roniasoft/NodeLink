@@ -14,6 +14,7 @@ QtObject {
     enum ObjectType {
         Node = 0,
         Link = 1,
+        Container = 2,
 
         Unknown = 99
     }

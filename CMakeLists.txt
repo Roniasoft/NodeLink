@@ -99,6 +99,8 @@ qt_add_qml_module(NodeLink
         resources/Core/SelectionSpecificTool.qml
         resources/Core/NLUtils.qml
         resources/Core/ImagesModel.qml
+        resources/Core/Container.qml
+        resources/Core/ContainerGuiConfig.qml
 
         resources/Core/Undo/UndoCore.qml
         resources/Core/Undo/UndoStack.qml
@@ -106,6 +108,8 @@ qt_add_qml_module(NodeLink
         resources/Core/Undo/UndoNodeObserver.qml
         resources/Core/Undo/UndoNodeGuiObserver.qml
         resources/Core/Undo/UndoLinkObserver.qml
+        resources/Core/Undo/UndoContainerObserver.qml
+        resources/Core/Undo/UndoContainerGuiObserver.qml
         resources/Core/Undo/HashCompareString.qml
 
         resources/View/Components/Buttons/NLBaseButton.qml
@@ -157,6 +161,8 @@ qt_add_qml_module(NodeLink
         resources/View/Helpers/LinkHelperView.qml
         resources/View/ZoomManager.qml
         resources/View/ImagesFlickable.qml
+        resources/View/ContainerView.qml
+        resources/View/ContainerOverview.qml
 
         resources/View/Logics/Calculation.js
         resources/View/Logics/BasicLinkCalculator.js

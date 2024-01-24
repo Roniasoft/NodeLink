@@ -24,6 +24,7 @@ I_NodesRect {
     //! Registre nodeView and LinkView classes.
     nodeViewUrl: "NodeViewOverview.qml"
     linkViewUrl: "LinkViewOverview.qml"
+    containerViewUrl: "ContainerOverview.qml"
 
     viewProperties: QtObject {
         property vector2d nodeRectTopLeft:     root.nodeRectTopLeft

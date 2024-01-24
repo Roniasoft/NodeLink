@@ -55,4 +55,15 @@ Item {
         }
 
     }
+
+    //! Containers Loggers
+    Repeater {
+        model: Object.values(root.scene.containers)
+
+        delegate: UndoContainerObserver {
+            container: modelData
+            undoStack: root.undoStack
+        }
+
+    }
 }
