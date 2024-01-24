@@ -5,16 +5,13 @@ import NodeLink
 /*! ***********************************************************************************************
  * Container for group items
  * ************************************************************************************************/
-QSObject {
+I_Node {
     id: root
 
     /* Property Declarations
     * ****************************************************************************************/
     //! Name
     property string title: "Untitled"
-
-    //! Object type
-    property int   objectType:     NLSpec.ObjectType.Container
 
     //! Nodes inside container
     property var    nodes: ({})
@@ -27,15 +24,18 @@ QSObject {
         _qsRepo: root._qsRepo
     }
 
-    /* Signals
+    /* Object Properties
     * ****************************************************************************************/
-    signal cloneFrom(container: Container);
+    objectType:     NLSpec.ObjectType.Container
 
     /* Children
     * ****************************************************************************************/
     //! Override function
     //! Manage the cloning of containers, enabling each subclass to copy its own properties.
     onCloneFrom: function (container)  {
+        // Copy direct properties
+        title = container.title;
+
         root.guiConfig?.setProperties(container.guiConfig);
     }
 
