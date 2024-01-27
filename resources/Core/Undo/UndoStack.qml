@@ -28,6 +28,9 @@ QtObject {
 
     property var    correctRepo:    scene?._qsRepo ?? NLCore.defaultRepo
 
+    //! Defined limit for undo stack
+    property int    undoMax:        6
+
     property Timer timer : Timer {
         repeat: false
         interval: 300
@@ -39,9 +42,7 @@ QtObject {
     /* Signals
      * ****************************************************************************************/
     signal stacksUpdated();
-
     signal undoRedoDone()
-
     signal updateUndoStack();
 
     /* Object Properties
@@ -68,6 +69,12 @@ QtObject {
 
         //insert object in first of stack
         undoStack.unshift(dumpedRepo);
+
+        //! Delete the last element of undo stack if exceeds a certain points
+        if (undoStack.length > undoMax) {
+            undoStack.pop();
+        }
+
         undoStackChanged();
         stacksUpdated();
     }
