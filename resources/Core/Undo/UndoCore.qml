@@ -13,7 +13,7 @@ QtObject {
      * ****************************************************************************************/
 
     //! Scene, for some reasons if the type changes to Scene the app crashes
-    required property I_Scene scene
+    required property var scene
 
     //! Undo/Redo Stacks
     property UndoStack undoStack : UndoStack {

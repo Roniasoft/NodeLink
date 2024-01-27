@@ -127,4 +127,13 @@ QtObject {
         NLSpec.undo.blockObservers = false;
         undoRedoDone();
     }
+
+    //! Resetting all stacks
+    function resetStacks() {
+        undoStack = [];
+        redoStack = [];
+        redoStackChanged();
+        undoStackChanged();
+        stacksUpdated();
+    }
 }
