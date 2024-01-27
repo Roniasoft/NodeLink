@@ -275,7 +275,7 @@ QSObject {
 
     //! Finds the node according given portId
     function findNodeId(portId: string) : string {
-        return Object.values(nodes).find( node => node.findPort(portId) !== null )?._qsUuid;
+        return Object.values(nodes).find( node => node.findPort(portId) !== null )?._qsUuid ?? "";
     }
 
     //! Finds Node using its ID
