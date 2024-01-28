@@ -217,6 +217,14 @@ I_NodesScene {
         hoverEnabled: sceneSession.marqueeSelectionMode
         acceptedButtons: sceneSession.marqueeSelectionButton
 
+        //! Shortcut, alt+left click for deleting selected link
+        onClicked: {
+            if (mouse.button === Qt.LeftButton && mouse.modifiers & Qt.AltModifier) {
+                if (scene.selectionModel.lastSelectedObject(NLSpec.ObjectType.Link))
+                    delTimer.start();
+            }
+        }
+
         onPositionChanged: (mouse) => {
                                // Update marquee selection
                                wasDragged = true;
