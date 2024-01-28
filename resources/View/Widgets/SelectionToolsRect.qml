@@ -165,12 +165,15 @@ Rectangle {
                 id: imageChose
                 title: "Please choose a file"
                 nameFilters: ["Image files (*.png *.jpg *.jpeg *.bmp *.gif)"]
+                fileMode: FileDialog.OpenFiles
 
                 onAccepted: {
-                    var imageUrl = imageChose.currentFile.toString();
-                    imageUrl = imageUrl.replace('file:///', '');
-                    var base64Image = nlUtils.imageURLToImageString(imageUrl)
-                    layout.selectedObject.imagesModel.addImage("data:image/jpeg;base64," + base64Image)
+                    selectedFiles.forEach(file => {
+                        var imageUrl = file.toString();
+                        imageUrl = imageUrl.replace('file:///', '');
+                        var base64Image = nlUtils.imageURLToImageString(imageUrl)
+                        layout.selectedObject.imagesModel.addImage("data:image/jpeg;base64," + base64Image)
+                    })
                 }
 
             }
