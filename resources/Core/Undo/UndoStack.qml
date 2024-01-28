@@ -44,8 +44,6 @@ QtObject {
 
     signal updateUndoStack();
 
-
-
     /* Object Properties
      * ****************************************************************************************/
     Component.onCompleted: timer.start();

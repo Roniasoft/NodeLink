@@ -95,8 +95,8 @@ QSObject {
 
     //! Creates a new container
     function createContainer() {
-        let obj = QSSerializer.createQSObject("Container", ["NodeLink"], NLCore.defaultRepo);
-        obj._qsRepo = scene._qsRepo;
+        let obj = QSSerializer.createQSObject("Container", ["NodeLink"], correctRepo);
+        obj._qsRepo = correctRepo;
         return obj;
     }
 
@@ -126,7 +126,7 @@ QSObject {
 
     //! Checks if scene is empty or not
     function isSceneEmpty() : bool {
-        if (Object.keys(nodes).length === 0 && Object.keys(links).length === 0)
+        if (Object.keys(nodes).length === 0 && Object.keys(links).length === 0 && Object.keys(containers).length === 0)
             return true;
         return false;
     }
@@ -204,7 +204,7 @@ QSObject {
 
         // Create container
         var container = createContainer();
-        container._qsRepo = NLCore.defaultRepo;
+        container._qsRepo = correctRepo;
 
         // Clone container
         container.cloneFrom(baseContainer);
