@@ -68,4 +68,9 @@ QtObject {
         Dot    = 2
     }
 
+    //! Node Types
+    enum NodeType {
+        CustomNode = 6
+    }
+
 }

@@ -66,7 +66,8 @@ QtObject {
         "\uf04b",       // Root
         "\uf54b",       // Step
         "\ue57f",       // Transition
-        "\uf2db"        // Macro
+        "\uf2db",       // Macro
+        "\uf04b"        // Custom
     ]
 
     readonly property var nodeColors: [
@@ -74,7 +75,8 @@ QtObject {
         "#333",       // Root
         "#3D9798",    // Step
         "#625192",    // Transition
-        "#9D9E57"     // Macro
+        "#9D9E57",    // Macro
+        "#333",       // Custom
     ]
 
     //! Direction icon of links
@@ -103,7 +105,8 @@ QtObject {
         "RootNode",             // Root
         "StepNode",             // Step
         "TransitionNode",       // Transition
-        "MacroNode"             // Macro
+        "MacroNode",            // Macro
+        "RootNode",             // Custom
     ]
 
     //! Node type string list to show nodeTypes text.
@@ -113,6 +116,7 @@ QtObject {
         "Step",             // Step
         "Transition",       // Transition
         "Macro",            // Macro
+        "Root",             // Custom
         "Link",             // Link
 
         "Unknown"             // Unknown
