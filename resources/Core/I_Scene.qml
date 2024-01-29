@@ -144,6 +144,9 @@ QSObject {
         scene.selectionModel.clear();
         scene.selectionModel.selectNode(node);
 
+        //! Create Port is called from NLCore, where the qsRepo assigned is NLCore's qsRepo
+        //! We need scene's ports to have the same qsRepo as scene, if we don't include the following lines,
+        //! Once a file is loaded, all ports are disabled and all links have disappeared
         Object.values(node.ports).forEach(port => {
             port._qsRepo = correctRepo
         })
