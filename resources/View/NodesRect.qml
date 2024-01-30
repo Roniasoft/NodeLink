@@ -35,23 +35,25 @@ I_NodesRect {
             sceneSession: root.sceneSession
             node: modelData
 
-            onImagesNumberChanged: imageFlickable.adjustingY();
+            onImagesNumberChanged: {
+                imageFlickable.adjustingY();
+            }
 
             Connections {
                 property SelectionModel selectionModel: root.scene.selectionModel
                 target: selectionModel
                 function onSelectedModelChanged() {
-                    imageFlickable.adjustingY();
+                        imageFlickable.adjustingY();
                 }
             }
 
+            //! Adjusting image flickable place
             function adjustingY() {
                 if (imageFlickable.imagesNumber !== 0) {
                     if (!objectSelectionView.hasSelectedObject)
                         imageFlickable.y = Qt.binding(function() { return modelData.guiConfig.position.y - height - 5;});
                     Object.values(selectionModel.selectedModel).forEach(node =>{
                         if (imageFlickable.node === node) {
-                            console.log("hey me is called")
                             imageFlickable.y = Qt.binding(function() { return modelData.guiConfig.position.y - height - 49;});
                             return;
                         }
