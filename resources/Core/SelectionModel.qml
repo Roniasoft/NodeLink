@@ -107,15 +107,18 @@ QtObject {
         clear();
 
         Object.values(nodes).forEach(node => {
-            selectNode(node);
+            selectedModel[node._qsUuid] = node;
         });
 
         Object.values(links).forEach(link => {
-            selectLink(link);
+            selectedModel[link._qsUuid] = link;
         })
 
         Object.values(containers).forEach(container => {
-            selectContainer(container);
+            selectedModel[container._qsUuid] = container;
         })
+
+        selectedModelChanged();
+
     }
 }
