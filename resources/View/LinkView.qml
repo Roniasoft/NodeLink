@@ -77,15 +77,40 @@ I_LinkView {
         keyButtons: [MessageDialog.Ok]
     }
 
+    //! Bubble icon to appear when there is desciption but no editMode is enabled
+    Text {
+        id: descriptionIcon
+        property bool bubbleVisibility: false
+        text: '\ue32e'
+        font.pixelSize: 25
+        x: linkMidPoint.x
+        y: linkMidPoint.y
+        color: NLStyle.primaryTextColor
+        font.family: NLStyle.fontType.font6Pro
+        visible: link.guiConfig.description.length > 0 && !descriptionText.visible
+
+        MouseArea {
+            anchors.fill: parent
+            onClicked: {
+                descriptionIcon.bubbleVisibility = false
+                descriptionText.descriptionVisibility = true
+                descriptionText.forceActiveFocus();
+            }
+        }
+
+    }
+
     // Description view
     NLTextArea {
         id: descriptionText
+
+        property bool descriptionVisibility: true
+
         x: linkMidPoint.x
         y: linkMidPoint.y
 
         text: link.guiConfig.description
-        visible: link.guiConfig.description.length > 0 || link.guiConfig._isEditableDescription
-
+        visible: (link.guiConfig.description.length > 0 || link.guiConfig._isEditableDescription) && descriptionVisibility
 
         color: NLStyle.primaryTextColor
         font.family: NLStyle.fontType.roboto
@@ -95,6 +120,10 @@ I_LinkView {
         onTextChanged: {
             if (link && link.description !== text)
                 link.guiConfig.description = text;
+            if (link.description === "") {
+                descriptionIcon.bubbleVisibility = false
+                descriptionText.descriptionVisibility = true
+            }
         }
 
         leftPadding: 10
@@ -105,6 +134,14 @@ I_LinkView {
             border.width: 3
             border.color: isSelected ? link.guiConfig.color : "transparent"
             color: "#1e1e1e"
+        }
+
+        Connections {
+            target: link.guiConfig
+            function on_IsEditableDescriptionChanged () {
+                if (link.guiConfig._isEditableDescription)
+                descriptionText.descriptionVisibility = true;
+            }
         }
 
         onFocusChanged: {
@@ -122,6 +159,11 @@ I_LinkView {
                     link.guiConfig._isEditableDescription = true;
             } else if (focus) {
                link.guiConfig._isEditableDescription = true;
+            }
+
+            if(!focus) {
+                descriptionIcon.bubbleVisibility = true;
+                descriptionText.descriptionVisibility = false;
             }
         }
     }
