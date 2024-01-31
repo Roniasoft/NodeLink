@@ -59,7 +59,7 @@ I_NodesScene {
                         sceneSession.isShiftModifierPressed = true;
                         if(event.key === Qt.Key_Control)
                         sceneSession.isCtrlPressed = true;
-
+                        // beware of Alt selection as it may be used by user for removing connections
                     }
 
     Keys.onReleased: (event)=> {
@@ -115,6 +115,12 @@ I_NodesScene {
     contentItem: NodesRect {
         scene: flickable.scene
         sceneSession: flickable.sceneSession
+    }
+
+    //! Shortcut for going to center
+    Shortcut {
+        sequence: "F"
+        onActivated: goToCenter();
     }
 
     //! Context Menu for adding a new node (for now)
@@ -216,6 +222,14 @@ I_NodesScene {
         z: -1 //! Below contents and above background
         hoverEnabled: sceneSession.marqueeSelectionMode
         acceptedButtons: sceneSession.marqueeSelectionButton
+
+        //! Shortcut, alt+left click for deleting selected link
+        onClicked:(mouse)=> {
+            if (mouse.button === Qt.LeftButton && mouse.modifiers & Qt.AltModifier) {
+                if (scene.selectionModel.lastSelectedObject(NLSpec.ObjectType.Link))
+                    delTimer.start();
+            }
+        }
 
         onPositionChanged: (mouse) => {
                                // Update marquee selection
@@ -574,6 +588,7 @@ I_NodesScene {
         if (scene.selectionModel.isSelected(link?._qsUuid) && modifier === Qt.ShiftModifier) {
             scene.selectionModel.remove(link._qsUuid);
         } else {
+            // TODO: bug with shift selection! beware of Alt
             scene.selectionModel.selectLink(link);
         }
     }
@@ -610,5 +625,38 @@ I_NodesScene {
 
         contentX = Math.max(0, Math.min(contentWidth - width, contentX));
         contentY = Math.max(0, Math.min(contentHeight - height, contentY));
+    }
+
+    //! Function to update ui to the center of the selected Rect
+    function goToCenter() {
+        var minX = Number.POSITIVE_INFINITY;
+        var minY = Number.POSITIVE_INFINITY;
+        var maxX = Number.NEGATIVE_INFINITY;
+        var maxY = Number.NEGATIVE_INFINITY;
+
+        if (Object.values(scene.selectionModel.selectedModel).length === 0)
+            return;
+
+        // Iterate through selected components
+        Object.values(scene.selectionModel.selectedModel).forEach(comp =>{
+            // Update min and max values
+            if(comp.objectType === NLSpec.ObjectType.Node || comp.objectType === NLSpec.ObjectType.Container ) {
+                minX = Math.min(minX, comp.guiConfig.position.x);
+                minY = Math.min(minY, comp.guiConfig.position.y);
+                maxX = Math.max(maxX, comp.guiConfig.position.x + comp.guiConfig.width);
+                maxY = Math.max(maxY, comp.guiConfig.position.y + comp.guiConfig.height);
+            }
+        })
+
+        var topLeftX = contentX * (1 / flickableScale) +
+            (scene.sceneGuiConfig.sceneViewWidth * (1 / flickableScale))  / 2 - (maxX - minX) / 2
+        var topLeftY = contentY * (1 / flickableScale) +
+            (scene.sceneGuiConfig.sceneViewHeight * (1 / flickableScale)) / 2 - (maxY - minY) / 2
+
+        var diffX = topLeftX - minX;
+        var diffY = topLeftY - minY;
+
+        flickable.contentX -= diffX * flickableScale;
+        flickable.contentY -= diffY * flickableScale;
     }
 }

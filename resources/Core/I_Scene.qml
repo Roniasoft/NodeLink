@@ -292,24 +292,12 @@ QSObject {
 
     //! Finds the node according given portId
     function findNodeId(portId: string) : string {
-        let foundNodeId = "";
-        Object.values(nodes).find(node => {
-            if (node.findPort(portId) !== null) {
-                foundNodeId = node._qsUuid;
-            }
-        });
-        return foundNodeId;
+        return Object.values(nodes).find( node => node.findPort(portId) !== null )?._qsUuid ?? "";
     }
 
     //! Finds Node using its ID
     function findNodeByItsId(nodeId: string) : Node {
-        var foundNode;
-        Object.values(nodes).forEach(node => {
-            if (node._qsUuid === nodeId) {
-                foundNode = node;
-            }
-        });
-        return foundNode;
+        return Object.values(nodes).find(node => node._qsUuid === nodeId);
     }
 
     //! Finds the exact node according to the given portId

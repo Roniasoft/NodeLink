@@ -13,7 +13,7 @@ I_LinkView {
     /*  Object Properties
     * ****************************************************************************************/
 
-    z: isSelected ? 10 : 0
+    z: isSelected ? 10 : 1
 
     onIsSelectedChanged: {
         if(isSelected)
@@ -77,15 +77,34 @@ I_LinkView {
         keyButtons: [MessageDialog.Ok]
     }
 
+    //! Bubble icon to appear when there is desciption but editMode is not enabled
+    Text {
+        id: descriptionIcon
+        text: '\ue32e'
+        font.pixelSize: 25
+        x: linkMidPoint.x
+        y: linkMidPoint.y
+        color: NLStyle.primaryTextColor
+        font.family: NLStyle.fontType.font6Pro
+        visible: link.guiConfig.description.length > 0 && !link.guiConfig._isEditableDescription
+
+        MouseArea {
+            anchors.fill: parent
+            onClicked: {
+                link.guiConfig._isEditableDescription = true
+            }
+        }
+    }
+
     // Description view
     NLTextArea {
         id: descriptionText
+
         x: linkMidPoint.x
         y: linkMidPoint.y
 
         text: link.guiConfig.description
-        visible: link.guiConfig.description.length > 0 || link.guiConfig._isEditableDescription
-
+        visible: (link.guiConfig.description.length > 0 || link.guiConfig._isEditableDescription) && !descriptionIcon.visible
 
         color: NLStyle.primaryTextColor
         font.family: NLStyle.fontType.roboto

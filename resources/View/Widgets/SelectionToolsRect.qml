@@ -140,6 +140,7 @@ Rectangle {
             id: duplicateButton
             text: "\uf24d"
             visible: layout.selectedANodeOnly || layout.selectedAContainerOnly
+            enabled: layout.selectedANodeOnly ? selectedNode[0].type !== NLSpec.NodeType.CustomNode : true
             Layout.preferredHeight: 30
             Layout.preferredWidth: 30
             Layout.topMargin: 2
@@ -165,12 +166,15 @@ Rectangle {
                 id: imageChose
                 title: "Please choose a file"
                 nameFilters: ["Image files (*.png *.jpg *.jpeg *.bmp *.gif)"]
+                fileMode: FileDialog.OpenFiles
 
                 onAccepted: {
-                    var imageUrl = imageChose.currentFile.toString();
-                    imageUrl = imageUrl.replace('file:///', '');
-                    var base64Image = nlUtils.imageURLToImageString(imageUrl)
-                    layout.selectedObject.imagesModel.addImage("data:image/jpeg;base64," + base64Image)
+                    selectedFiles.forEach(file => {
+                        var imageUrl = file.toString();
+                        imageUrl = imageUrl.replace('file:///', '');
+                        var base64Image = nlUtils.imageURLToImageString(imageUrl)
+                        layout.selectedObject.imagesModel.addImage("data:image/jpeg;base64," + base64Image)
+                    })
                 }
 
             }
@@ -433,8 +437,12 @@ Rectangle {
             id: deleteButton
             text: "\uf2ed"
 
-            enabled: !layout.selectedNodeOnly || (layout.selectedObject?.objectType === NLSpec.ObjectType.Node  &&
-                                           !layout.selectedObject?.guiConfig?.locked)
+            enabled: !layout.selectedNodeOnly ||
+                     (layout.selectedObject?.objectType === NLSpec.ObjectType.Node &&
+                      !layout.selectedObject?.guiConfig?.locked &&
+                      !selectedNode.some(function(node) {
+                          return node.type === NLSpec.NodeType.CustomNode;
+                      }))
 
             Layout.preferredHeight: 30
             Layout.preferredWidth: 30
