@@ -13,7 +13,7 @@ I_LinkView {
     /*  Object Properties
     * ****************************************************************************************/
 
-    z: isSelected ? 10 : 0
+    z: isSelected ? 10 : 1
 
     onIsSelectedChanged: {
         if(isSelected)
