@@ -59,7 +59,7 @@ I_NodesScene {
                         sceneSession.isShiftModifierPressed = true;
                         if(event.key === Qt.Key_Control)
                         sceneSession.isCtrlPressed = true;
-
+                        // beware of Alt selection as it may be used by user for removing connections
                     }
 
     Keys.onReleased: (event)=> {
@@ -218,7 +218,7 @@ I_NodesScene {
         acceptedButtons: sceneSession.marqueeSelectionButton
 
         //! Shortcut, alt+left click for deleting selected link
-        onClicked: {
+        onClicked:(mouse)=> {
             if (mouse.button === Qt.LeftButton && mouse.modifiers & Qt.AltModifier) {
                 if (scene.selectionModel.lastSelectedObject(NLSpec.ObjectType.Link))
                     delTimer.start();
@@ -582,6 +582,7 @@ I_NodesScene {
         if (scene.selectionModel.isSelected(link?._qsUuid) && modifier === Qt.ShiftModifier) {
             scene.selectionModel.remove(link._qsUuid);
         } else {
+            // TODO: bug with shift selection! beware of Alt
             scene.selectionModel.selectLink(link);
         }
     }
