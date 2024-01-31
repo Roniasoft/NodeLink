@@ -117,6 +117,12 @@ I_NodesScene {
         sceneSession: flickable.sceneSession
     }
 
+    //! Shortcut for going to center
+    Shortcut {
+        sequence: "F"
+        onActivated: goToCenter();
+    }
+
     //! Context Menu for adding a new node (for now)
     ContextMenu {
         id: contextMenu
@@ -610,5 +616,38 @@ I_NodesScene {
 
         contentX = Math.max(0, Math.min(contentWidth - width, contentX));
         contentY = Math.max(0, Math.min(contentHeight - height, contentY));
+    }
+
+    //! Function to update ui to the center of the selected Rect
+    function goToCenter() {
+        var minX = Number.POSITIVE_INFINITY;
+        var minY = Number.POSITIVE_INFINITY;
+        var maxX = Number.NEGATIVE_INFINITY;
+        var maxY = Number.NEGATIVE_INFINITY;
+
+        if (Object.values(scene.selectionModel.selectedModel).length === 0)
+            return;
+
+        // Iterate through selected components
+        Object.values(scene.selectionModel.selectedModel).forEach(comp =>{
+            // Update min and max values
+            if(comp.objectType === NLSpec.ObjectType.Node || comp.objectType === NLSpec.ObjectType.Container ) {
+                minX = Math.min(minX, comp.guiConfig.position.x);
+                minY = Math.min(minY, comp.guiConfig.position.y);
+                maxX = Math.max(maxX, comp.guiConfig.position.x + comp.guiConfig.width);
+                maxY = Math.max(maxY, comp.guiConfig.position.y + comp.guiConfig.height);
+            }
+        })
+
+        var topLeftX = contentX * (1 / flickableScale) +
+            (scene.sceneGuiConfig.sceneViewWidth * (1 / flickableScale))  / 2 - (maxX - minX) / 2
+        var topLeftY = contentY * (1 / flickableScale) +
+            (scene.sceneGuiConfig.sceneViewHeight * (1 / flickableScale)) / 2 - (maxY - minY) / 2
+
+        var diffX = topLeftX - minX;
+        var diffY = topLeftY - minY;
+
+        flickable.contentX -= diffX * flickableScale;
+        flickable.contentY -= diffY * flickableScale;
     }
 }
