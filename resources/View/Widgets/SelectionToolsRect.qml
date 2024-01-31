@@ -145,9 +145,8 @@ Rectangle {
             Layout.preferredWidth: 30
             Layout.topMargin: 2
             Layout.bottomMargin: 2
-            onClicked: {layout.selectedANodeOnly ? scene.cloneNode(layout.selectedObject?._qsUuid) :
+            onClicked: layout.selectedANodeOnly ? scene.cloneNode(layout.selectedObject?._qsUuid) :
                                                   scene.cloneContainer(layout.selectedObject?._qsUuid);
-            }
         }
 
         //! Adding image button

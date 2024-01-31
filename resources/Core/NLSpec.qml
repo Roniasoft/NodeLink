@@ -70,7 +70,8 @@ QtObject {
 
     //! Node Types
     enum NodeType {
-        CustomNode = 6
+        CustomNode = 98,
+        Unknown  = 99
     }
 
 }
