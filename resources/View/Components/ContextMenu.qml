@@ -45,7 +45,9 @@ Menu {
      * ****************************************************************************************/
 
     Repeater {
-        model:  Object.keys(scene.nodeRegistry?.nodeTypes ?? ({}))
+        model: Object.keys(scene.nodeRegistry?.nodeTypes ?? ({})).filter(function(key) {
+                return key !== NLSpec.NodeType.CustomNode.toString();
+            })
 
         delegate: ContextMenuItem {
             name: scene.nodeRegistry.nodeNames[modelData]

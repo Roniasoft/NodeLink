@@ -140,6 +140,7 @@ Rectangle {
             id: duplicateButton
             text: "\uf24d"
             visible: layout.selectedANodeOnly || layout.selectedAContainerOnly
+            enabled: layout.selectedANodeOnly ? selectedNode[0].type !== NLSpec.NodeType.CustomNode : true
             Layout.preferredHeight: 30
             Layout.preferredWidth: 30
             Layout.topMargin: 2
@@ -436,8 +437,12 @@ Rectangle {
             id: deleteButton
             text: "\uf2ed"
 
-            enabled: !layout.selectedNodeOnly || (layout.selectedObject?.objectType === NLSpec.ObjectType.Node  &&
-                                           !layout.selectedObject?.guiConfig?.locked)
+            enabled: !layout.selectedNodeOnly ||
+                     (layout.selectedObject?.objectType === NLSpec.ObjectType.Node &&
+                      !layout.selectedObject?.guiConfig?.locked &&
+                      !selectedNode.some(function(node) {
+                          return node.type === NLSpec.NodeType.CustomNode;
+                      }))
 
             Layout.preferredHeight: 30
             Layout.preferredWidth: 30
