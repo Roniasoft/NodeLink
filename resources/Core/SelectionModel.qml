@@ -60,17 +60,25 @@ QtObject {
     }
 
     //! Select object nodes (Add Node object to SelectionModel)
-    function selectNode(node: Node) {
+    function selectNode(node: Node, notifySelectedObject = true) {
         //! clear selection model when selection changed.
         selectedModel[node._qsUuid] = node;
-        selectedModelChanged();
+
+        //! If notifySelectedObject set to false, the selecter objecte must be handle this event.
+        //! and call the selectedModelChanged() signal.
+        if (notifySelectedObject)
+            selectedModelChanged();
     }
 
     //! Select container
-    function selectContainer(container: Container) {
+    function selectContainer(container: Containe, notifySelectedObject = true) {
         //! clear selection model when selection changed.
         selectedModel[container._qsUuid] = container;
-        selectedModelChanged();
+
+        //! If notifySelectedObject set to false, the selecter objected must be handle this event.
+        //! and call the selectedModelChanged() signal.
+        if (notifySelectedObject)
+            selectedModelChanged();
     }
 
     //! Select Link objects  (Add link object to SelectionModel)

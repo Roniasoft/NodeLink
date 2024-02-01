@@ -103,11 +103,14 @@ Item {
             selectedObj.forEach(node =>  {
 
                 if (node.objectType === NLSpec.ObjectType.Node)
-                    scene.selectionModel.selectNode(node)
+                    scene.selectionModel.selectNode(node, false);
                 else if (node.objectType === NLSpec.ObjectType.Container) {
-                    scene.selectionModel.selectContainer(node)
+                    scene.selectionModel.selectContainer(node, false);
                                     }
             });
+
+            if (selectedObj.length > 0)
+                scene.selectionModel.selectedModelChanged();
 
             if (!sceneSession.marqueeSelectionMode)
                 resetMarqueeDimensions();
