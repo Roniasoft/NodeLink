@@ -87,9 +87,6 @@ Item {
     Rectangle {
         id: userViewRect
 
-        //! Top Left position of node rect (pos of the node in the top left corner)
-        property vector2d     nodeRectTopLeft: root.nodeRectTopLeft
-
         //! Scale used for mapping scene -> overview. Min is used to avoid complication in link drawings
         property real         customScaleFactor: root.overviewScaleFactor / (sceneSession?.zoomManager?.zoomFactor ?? 1.0)
 
