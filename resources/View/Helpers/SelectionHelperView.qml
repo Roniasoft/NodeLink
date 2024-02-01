@@ -102,11 +102,12 @@ Item {
             var selectedObj = scene.findNodesInContainerItem(selectionRubberBandRect);
             selectedObj.forEach(node =>  {
 
-                if (node.objectType === NLSpec.ObjectType.Node)
+                if (node.objectType === NLSpec.ObjectType.Node) {
                     scene.selectionModel.selectNode(node, false);
-                else if (node.objectType === NLSpec.ObjectType.Container) {
+
+                } else if (node.objectType === NLSpec.ObjectType.Container) {
                     scene.selectionModel.selectContainer(node, false);
-                                    }
+                }
             });
 
             if (selectedObj.length > 0)
