@@ -32,13 +32,14 @@ QSObject {
 
     //! Scene GUI Config and Properties
     property SceneGuiConfig sceneGuiConfig: SceneGuiConfig {
-        _qsRepo: correctRepo
+        _qsRepo: sceneActiveRepo
     }
 
     //! Each scene requires its own NodeRegistry.
     property NLNodeRegistry nodeRegistry: null
 
-    property var            correctRepo:  scene?._qsRepo ?? NLCore.defaultRepo
+    //! Used defaultRepo as default or use scene repo if set.
+    property var            sceneActiveRepo:  scene?._qsRepo ?? NLCore.defaultRepo
 
     /* Signals
      * ****************************************************************************************/
@@ -79,9 +80,9 @@ QSObject {
     //! Check the repository if the model is loading the call the nodes add/remove
     //! related signals to sync the UI
     property Connections _initializeCon : Connections {
-        target: correctRepo
+        target: sceneActiveRepo
         function onIsLoadingChanged() {
-            if (correctRepo._isLoading) {
+            if (sceneActiveRepo._isLoading) {
                 Object.values(nodes).forEach(node => nodeRemoved(node));
                 Object.values(links).forEach(link => linkRemoved(link));
                 Object.values(containers).forEach(container => containerRemoved(container));
@@ -95,8 +96,8 @@ QSObject {
 
     //! Creates a new container
     function createContainer() {
-        let obj = QSSerializer.createQSObject("Container", ["NodeLink"], correctRepo);
-        obj._qsRepo = correctRepo;
+        let obj = QSSerializer.createQSObject("Container", ["NodeLink"], sceneActiveRepo);
+        obj._qsRepo = sceneActiveRepo;
         return obj;
     }
 
@@ -155,8 +156,8 @@ QSObject {
                                 title: string,
                                 xPos : real, yPos : real) : string {
         //! Create a Node with custom node type
-        var node = QSSerializer.createQSObject(nodeTypeName, imports, correctRepo);
-        node._qsRepo = correctRepo;
+        var node = QSSerializer.createQSObject(nodeTypeName, imports, sceneActiveRepo);
+        node._qsRepo = sceneActiveRepo;
         node.type = nodeType;
         node.guiConfig.position.x = xPos;
         node.guiConfig.position.y = yPos;
@@ -201,7 +202,7 @@ QSObject {
 
         // Create container
         var container = createContainer();
-        container._qsRepo = correctRepo;
+        container._qsRepo = sceneActiveRepo;
 
         // Clone container
         container.cloneFrom(baseContainer);
@@ -221,8 +222,8 @@ QSObject {
 
         // Create node
         var node = QSSerializer.createQSObject(nodeRegistry.nodeTypes[baseNode.type],
-                                               nodeRegistry.imports, correctRepo);
-        node._qsRepo = correctRepo;
+                                               nodeRegistry.imports, sceneActiveRepo);
+        node._qsRepo = sceneActiveRepo;
 
         // Clone node
         node.cloneFrom(baseNode);
@@ -246,7 +247,7 @@ QSObject {
             obj.guiConfig.colorIndex = 0;
             obj.inputPort  = findPort(portA);
             obj.outputPort = findPort(portB);
-            obj._qsRepo = correctRepo;
+            obj._qsRepo = sceneActiveRepo;
             links[obj._qsUuid] = obj;
             linksChanged();
 

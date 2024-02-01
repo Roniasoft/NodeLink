@@ -26,7 +26,7 @@ QtObject {
     //! Redo stack
     property var    redoStack:      []
 
-    property var    correctRepo:    scene?._qsRepo ?? NLCore.defaultRepo
+    property var    sceneActiveRepo: scene?.sceneActiveRepo ?? NLCore.defaultRepo
 
     //! Defined limit for undo stack
     property int    undoMax:        6
@@ -109,7 +109,7 @@ QtObject {
 
     //! Dump repo for stack
     function dumpRepo(scene : I_Scene) : string {
-        let repoDump = correctRepo.dumpRepo()
+        let repoDump = sceneActiveRepo.dumpRepo()
         return JSON.stringify(repoDump, null, 4);
     }
 
@@ -123,12 +123,12 @@ QtObject {
 
         // Update imports if necessary
         var nodeLinkImport = "NodeLink";
-        if(!correctRepo._allImports.includes(nodeLinkImport)) {
-            correctRepo._localImports.push(nodeLinkImport);
-            correctRepo._localImportsChanged();
+        if(!sceneActiveRepo._allImports.includes(nodeLinkImport)) {
+            sceneActiveRepo._localImports.push(nodeLinkImport);
+            sceneActiveRepo._localImportsChanged();
         }
 
-        correctRepo.loadRepo(fileObjects);
+        sceneActiveRepo.loadRepo(fileObjects);
 
         // Unblock Observers
         NLSpec.undo.blockObservers = false;
