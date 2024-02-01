@@ -64,7 +64,7 @@ QtObject {
         //! clear selection model when selection changed.
         selectedModel[node._qsUuid] = node;
 
-        //! If notifySelectedObject set to false, the selecter objecte must be handle this event.
+        //! If notifySelectedObject is set to false, the selector object must handle this event..
         //! and call the selectedModelChanged() signal.
         if (notifySelectedObject)
             selectedModelChanged();
@@ -75,7 +75,7 @@ QtObject {
         //! clear selection model when selection changed.
         selectedModel[container._qsUuid] = container;
 
-        //! If notifySelectedObject set to false, the selecter objected must be handle this event.
+        //! If notifySelectedObject is set to false, the selector object must handle this event..
         //! and call the selectedModelChanged() signal.
         if (notifySelectedObject)
             selectedModelChanged();
