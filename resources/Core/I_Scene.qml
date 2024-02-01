@@ -236,10 +236,6 @@ QSObject {
         return addNode(node);
     }
 
-    //! On port added
-    function onPortAdded(portUUId : string) {
-    }
-
     //! Link two nodes (via their ports) - portA is the upstream and portB the downstream one
     function createLink(portA : string, portB : string) {
 
