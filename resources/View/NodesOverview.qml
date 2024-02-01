@@ -38,6 +38,7 @@ Item {
     //! Top Left position of node rect (pos of the node in the top left corner)
     property real         nodeRectTopLeftX: Math.min(...nodes.map(node => node.guiConfig.position.x ), NLStyle.scene.defaultContentX)
     property real         nodeRectTopLeftY: Math.min(...nodes.map(node => node.guiConfig.position.y), NLStyle.scene.defaultContentY)
+    property vector2d     nodeRectTopLeft: Qt.vector2d(nodeRectTopLeftX, nodeRectTopLeftY)
 
     //! Bottom Right position of node rect (pos of the node in the bottom right corner)
     property real         nodeRectBottomRightX: Math.max(...nodes.map(node => node.guiConfig.position.x + node.guiConfig.width), NLStyle.scene.defaultContentX + 1000)
