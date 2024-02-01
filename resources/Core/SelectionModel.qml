@@ -111,8 +111,13 @@ QtObject {
     }
 
     //! Selects all nodes and links in the scene
+    //! todo: check the nodes, links and containers length, Is this necessary?
     function selectAll(nodes, links, containers) {
-        clear();
+        // Clear all objects whitout notification
+        // clear() function send a notification
+        Object.entries(selectedModel).forEach(([key, value]) => {
+                delete selectedModel[key];
+        });
 
         Object.values(nodes).forEach(node => {
             selectedModel[node._qsUuid] = node;
