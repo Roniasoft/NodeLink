@@ -28,6 +28,22 @@ NLPopUp {
 
     /* Children
     * ****************************************************************************************/
+    //! Close Button
+    NLIconButtonRound {
+        id: closeButton
+        text: "\uf00d"
+        textColor: NLStyle.primaryTextColor
+        backColor: NLStyle.primaryRed
+        size: 50
+        anchors.top: parent.top
+        anchors.topMargin: height / -2 - imageViewer.topPadding
+        anchors.right: parent.right
+        anchors.rightMargin: width / -2 - imageViewer.rightPadding
+        onClicked: {
+            imageViewer.close()
+        }
+    }
+
     //! Image shown in popup
     Image {
         id: popupImage
@@ -39,30 +55,38 @@ NLPopUp {
     }
 
     //! Left arrow icon
-    NLIconButton {
+    NLIconButtonRound {
         id: leftArrow
         text: "\uf104"
         textColor: NLStyle.primaryTextColor
-        iconPixelSize: 30
+        backColor: NLStyle.backgroundGray
+        opacity: enabled ? 0.9 : 0.4
+        size: 50
         anchors.verticalCenter: parent.verticalCenter
         anchors.left: parent.left
         anchors.leftMargin: 20
+        enabled: images.indexOf(shownImage) - 1 >= 0
         onClicked: {
+            keyManager.focus = true;
             if (images.indexOf(shownImage) - 1 >= 0)
                 shownImage = images[images.indexOf(shownImage) - 1];
         }
     }
 
     //! Right arrow icon
-    NLIconButton {
+    NLIconButtonRound {
         id: rightArrow
         text: "\uf105"
         textColor: NLStyle.primaryTextColor
-        iconPixelSize: 30
+        backColor: NLStyle.backgroundGray
+        opacity: enabled ? 0.9 : 0.4
+        size: 50
         anchors.verticalCenter: parent.verticalCenter
         anchors.right: parent.right
         anchors.rightMargin: 20
+        enabled: images.indexOf(shownImage) + 1 < images.length
         onClicked: {
+            keyManager.focus = true;
             if (images.indexOf(shownImage) + 1 < images.length)
                 shownImage = images[images.indexOf(shownImage) + 1];
         }
@@ -70,6 +94,7 @@ NLPopUp {
 
     //! Item is a placeholder for keys item to work
     Item {
+        id: keyManager
         anchors.fill: parent
         focus: true
         Keys.onPressed: (event)=> {
