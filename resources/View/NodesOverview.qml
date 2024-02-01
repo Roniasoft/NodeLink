@@ -33,19 +33,21 @@ Item {
     //! OverView background color
     property string       backColor:    "#20262d"
 
+    property var nodes: Object.values(scene?.nodes ?? ({}))
+
     //! Top Left position of node rect (pos of the node in the top left corner)
-    property vector2d     nodeRectTopLeft: Qt.vector2d(Math.min(...Object.values(scene?.nodes ?? ({})).map(node => node.guiConfig.position.x ), NLStyle.scene.defaultContentX),
-                                                       Math.min(...Object.values(scene?.nodes ?? ({})).map(node => node.guiConfig.position.y), NLStyle.scene.defaultContentY))
+    property real         nodeRectTopLeftX: Math.min(...nodes.map(node => node.guiConfig.position.x ), NLStyle.scene.defaultContentX)
+    property real         nodeRectTopLeftY: Math.min(...nodes.map(node => node.guiConfig.position.y), NLStyle.scene.defaultContentY)
 
     //! Bottom Right position of node rect (pos of the node in the bottom right corner)
-    property vector2d     nodeRectBottomRight: Qt.vector2d(Math.max(...Object.values(scene?.nodes ?? ({})).map(node => node.guiConfig.position.x + node.guiConfig.width), NLStyle.scene.defaultContentX + 1000),
-                                                           Math.max(...Object.values(scene?.nodes ?? ({})).map(node => node.guiConfig.position.y + node.guiConfig.height), NLStyle.scene.defaultContentY + 1000))
+    property real         nodeRectBottomRightX: Math.max(...nodes.map(node => node.guiConfig.position.x + node.guiConfig.width), NLStyle.scene.defaultContentX + 1000)
+    property real         nodeRectBottomRightY: Math.max(...nodes.map(node => node.guiConfig.position.y + node.guiConfig.height), NLStyle.scene.defaultContentY + 1000)
 
     //! Overview scale in x direction
-    property real         overviewXScaleFactor: width / (nodeRectBottomRight.x - nodeRectTopLeft.x)
+    property real         overviewXScaleFactor: width / (nodeRectBottomRightX - nodeRectTopLeftX)
 
     //! Overview scale in y direction
-    property real         overviewYScaleFactor: height / (nodeRectBottomRight.y - nodeRectTopLeft.y)
+    property real         overviewYScaleFactor: height / (nodeRectBottomRightY - nodeRectTopLeftY)
 
     //! Scale used for mapping scene -> overview. Min is used to avoid complication in link drawings
     property real         overviewScaleFactor:  Math.min( overviewXScaleFactor > 1 ? 1 : overviewXScaleFactor,
@@ -93,8 +95,8 @@ Item {
         visible: interactive
         color: "transparent"
         border.color: NLStyle.primaryColor
-        x: ((scene?.sceneGuiConfig?.contentX / (sceneSession?.zoomManager.zoomFactor) - nodeRectTopLeft.x) ?? 0) * root.overviewScaleFactor
-        y: ((scene?.sceneGuiConfig?.contentY / (sceneSession?.zoomManager.zoomFactor) - nodeRectTopLeft.y) ?? 0) * root.overviewScaleFactor
+        x: ((scene?.sceneGuiConfig?.contentX / (sceneSession?.zoomManager.zoomFactor) - nodeRectTopLeftX) ?? 0) * root.overviewScaleFactor
+        y: ((scene?.sceneGuiConfig?.contentY / (sceneSession?.zoomManager.zoomFactor) - nodeRectTopLeftY) ?? 0) * root.overviewScaleFactor
         width: (scene?.sceneGuiConfig?.sceneViewWidth ?? 0) * customScaleFactor
         height: (scene?.sceneGuiConfig?.sceneViewHeight ?? 0) * customScaleFactor
     }
