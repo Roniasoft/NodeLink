@@ -42,6 +42,7 @@ NLPopUp {
         onClicked: {
             imageViewer.close()
         }
+        z: popupImage.z + 1
     }
 
     //! Image shown in popup
