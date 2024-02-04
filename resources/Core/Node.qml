@@ -44,10 +44,9 @@ I_Node  {
     /* Slots
      * ****************************************************************************************/
 
-    //! Override function
+    //! adds functionionality for this layer
     //! Handle clone node operation
     onCloneFrom: function (baseNode)  {
-
         // Copy direct properties in root.
         title = baseNode.title;
         type  = baseNode.type;

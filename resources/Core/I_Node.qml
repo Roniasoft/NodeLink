@@ -23,10 +23,9 @@ QSObject {
     /* Slots
      * ****************************************************************************************/
 
-    //! Override function
+    //! will be called for all subclasses as well! add new object in each subclass
     //! Manage the cloning of nodes, enabling each subclass to copy its own properties.
     onCloneFrom: function (baseNode)  {
-
         // Copy direct properties in root.
         objectType = baseNode.objectType;
         nodeData?.setProperties(baseNode.nodeData);
