@@ -17,7 +17,11 @@ Rectangle {
 
     property SelectionModel selectionModel: scene?.selectionModel ?? null
 
+    property var selectedItems : Object.values(selectionModel?.selectedModel ?? ({}))
+
     property I_Node         node
+
+    property bool selectedAlone : selectedItems.length === 1 && node === selectedItems[0]
 
     /* Object Properties
     * ****************************************************************************************/

@@ -14,6 +14,10 @@ QtObject {
     //! Uuids of all exist objects in scene.
     property var existObjects: []
 
+    //! If notifySelectedObject is set to false, the selector object must handle this event..
+    //! and call the selectedModelChanged() signal.
+    property bool notifySelectedObject : true
+
     onExistObjectsChanged: checkSelectedObjects();
 
     /* Signals
@@ -26,10 +30,19 @@ QtObject {
 
     //! Check all selected objects when necessary, i.e undo/redo
     function checkSelectedObjects () {
+        notifySelectedObject = false;
+        var changed = false;
         Object.keys(selectedModel).forEach(uuid => {
-                                 if (!existObjects.includes(uuid))
-                                        remove(uuid);
+                                if (!existObjects.includes(uuid)) {
+                                    remove(uuid);
+                                    changed = true;
+                                }
                              });
+
+        notifySelectedObject = true;
+
+        if (changed)
+            selectedModelChanged();
     }
 
     //! Clear all objects from selection model
@@ -38,11 +51,14 @@ QtObject {
         Object.entries(selectedModel).forEach(([key, value]) => {
                 delete selectedModel[key];
         });
-        selectedModelChanged();
+
+        if (notifySelectedObject)
+            selectedModelChanged();
     }
 
 
     //! Clear all objects (except one with qsUuid) from selection model
+    //! never sends signal for selection model change! as it will be followed by another event
     function clearAllExcept(qsUuid : string) {
         // delete all objects
         Object.entries(selectedModel).forEach(([key, value]) => {
@@ -53,30 +69,28 @@ QtObject {
 
     //! Remove an object from selection model
     function remove(qsUuid : string) {
-        if(isSelected(qsUuid)) {
+        if (isSelected(qsUuid)) {
             delete selectedModel[qsUuid];
-            selectedModelChanged();
+
+            if (notifySelectedObject)
+                selectedModelChanged();
         }
     }
 
     //! Select object nodes (Add Node object to SelectionModel)
-    function selectNode(node: Node, notifySelectedObject = true) {
+    function selectNode(node: Node) {
         //! clear selection model when selection changed.
         selectedModel[node._qsUuid] = node;
 
-        //! If notifySelectedObject is set to false, the selector object must handle this event..
-        //! and call the selectedModelChanged() signal.
         if (notifySelectedObject)
             selectedModelChanged();
     }
 
     //! Select container
-    function selectContainer(container: Containe, notifySelectedObject = true) {
+    function selectContainer(container: Container) {
         //! clear selection model when selection changed.
         selectedModel[container._qsUuid] = container;
 
-        //! If notifySelectedObject is set to false, the selector object must handle this event..
-        //! and call the selectedModelChanged() signal.
         if (notifySelectedObject)
             selectedModelChanged();
     }
@@ -88,7 +102,8 @@ QtObject {
 
         // Add Link object into selected model.
         selectedModel[link._qsUuid] = link;
-        selectedModelChanged();
+        if (notifySelectedObject)
+            selectedModelChanged();
     }
 
     //! Check an object is selected or not
@@ -111,27 +126,27 @@ QtObject {
     }
 
     //! Selects all nodes and links in the scene
-    //! todo: check the nodes, links and containers length, Is this necessary?
     function selectAll(nodes, links, containers) {
-        // Clear all objects whitout notification
-        // clear() function send a notification
-        Object.entries(selectedModel).forEach(([key, value]) => {
-                delete selectedModel[key];
-        });
+        var notifySelectedObjectSession = notifySelectedObject;
+        notifySelectedObject = false;
+
+        clear();
 
         Object.values(nodes).forEach(node => {
-            selectedModel[node._qsUuid] = node;
+            selectNode(node);
         });
 
         Object.values(links).forEach(link => {
-            selectedModel[link._qsUuid] = link;
+            selectLink(link);
         })
 
         Object.values(containers).forEach(container => {
-            selectedModel[container._qsUuid] = container;
+            selectContainer(container);
         })
 
-        selectedModelChanged();
+        notifySelectedObject = notifySelectedObjectSession;
 
+        if (notifySelectedObject)
+            selectedModelChanged();
     }
 }

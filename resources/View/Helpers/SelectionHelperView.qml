@@ -91,6 +91,9 @@ Item {
         running: false
 
         onTriggered: {
+            // Disable sending signals temporarily for performance improvement
+            scene.selectionModel.notifySelectedObject = false;
+
             // clear selection model
             scene.selectionModel.clear();
 
@@ -101,17 +104,17 @@ Item {
                                                   selectionRubberBandItem.height);
             var selectedObj = scene.findNodesInContainerItem(selectionRubberBandRect);
             selectedObj.forEach(node =>  {
-
                 if (node.objectType === NLSpec.ObjectType.Node) {
-                    scene.selectionModel.selectNode(node, false);
+                    scene.selectionModel.selectNode(node);
 
                 } else if (node.objectType === NLSpec.ObjectType.Container) {
-                    scene.selectionModel.selectContainer(node, false);
+                    scene.selectionModel.selectContainer(node);
                 }
-            });
+            }); // todo: why don't we select the LINKS?
 
-            if (selectedObj.length > 0)
-                scene.selectionModel.selectedModelChanged();
+            scene.selectionModel.notifySelectedObject = true;
+            // todo: should we check actual change?
+            scene.selectionModel.selectedModelChanged();
 
             if (!sceneSession.marqueeSelectionMode)
                 resetMarqueeDimensions();
