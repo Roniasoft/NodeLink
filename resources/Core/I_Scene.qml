@@ -229,6 +229,64 @@ QSObject {
     function onPortAdded(portUUId : string) {
     }
 
+    //! Copies the inside properties of the current scene and returns a new scene
+    function copyScene () {
+        var scene = QSSerializer.createQSObject("Scene",
+                    ["NodeLink"], NLCore.defaultRepo);
+        scene.nodeRegistry = nodeRegistry
+
+        var allPorts =  ({});
+        var keys1;
+        var keys2;
+
+        //! Copying nodes
+        Object.values(nodes).forEach(node => {
+            var newNode = QSSerializer.createQSObject(scene.nodeRegistry.nodeTypes[node.type],
+                                                   scene.nodeRegistry.imports, NLCore.defaultRepo);
+            newNode._qsRepo = NLCore.defaultRepo;
+            newNode.cloneFrom(node);
+            scene.addNode(newNode)
+
+            //! Creating a map of ports, used for creating links later
+            keys1 = Object.keys(node.ports);
+            keys2 = Object.keys(newNode.ports);
+            for (var i = 0; i < keys1.length; ++i) {
+                var id1 = keys1[i];
+                var id2 = keys2[i]
+                var port1Value = node.ports[id1];
+                var port2Value = newNode.ports[id2];
+
+                allPorts[port1Value] = port2Value;
+            }
+        })
+
+        //! Copying containers
+        Object.values(containers).forEach(container => {
+            var newContainer = QSSerializer.createQSObject("Container", scene.nodeRegistry.imports, NLCore.defaultRepo);
+            newContainer._qsRepo = NLCore.defaultRepo;
+            newContainer.cloneFrom(container);
+            scene.addContainer(newContainer);
+        })
+
+        //! Copying links
+        Object.values(links).forEach( link => {
+            var matchedInputPort;
+            var matchedOutputPort;
+            Object.keys(allPorts).forEach(port => {
+                if(String(link.inputPort) === String(port))
+                    matchedInputPort = allPorts[port];
+
+                if(String(link.outputPort) === String(port))
+                    matchedOutputPort = allPorts[port];
+            })
+            var copiedLink = scene.createLink(matchedInputPort._qsUuid, matchedOutputPort._qsUuid)
+            copiedLink._qsRepo = NLCore.defaultRepo;
+            copiedLink.cloneFrom(link);
+        })
+
+        return scene;
+    }
+
     //! Link two nodes (via their ports) - portA is the upstream and portB the downstream one
     function createLink(portA : string, portB : string) {
 
