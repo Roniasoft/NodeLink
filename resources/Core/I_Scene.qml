@@ -141,6 +141,7 @@ QSObject {
         nodes[node._qsUuid] = node;
         nodesChanged();
         nodeAdded(node);
+        node.nodeCompleted()
 
         scene.selectionModel.clear();
         scene.selectionModel.selectNode(node);
@@ -164,7 +165,6 @@ QSObject {
         node.guiConfig.color = nodeColor;
         node.guiConfig.colorIndex = 0;
         node.title = title;
-        node.nodeCompleted();
         scene.addNode(node)
 
         return node._qsUuid;
