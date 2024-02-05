@@ -59,6 +59,10 @@ I_Node  {
      * ****************************************************************************************/
     signal portAdded(var portId);
 
+    //! Emit when all node properties set to node.
+    //! This signal call afetr component.onCompleted signal.
+    signal nodeCompleted();
+
     /* Functions
      * ****************************************************************************************/
 

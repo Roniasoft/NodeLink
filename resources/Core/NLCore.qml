@@ -49,9 +49,12 @@ QSCore {
     }
 
     //! Create port
-    function createPort() {
-        let obj = QSSerializer.createQSObject("Port", ["NodeLink"], defaultRepo);
-        obj._qsRepo = defaultRepo;
+    function createPort(qsRepo = null) {
+        if (!qsRepo)
+            qsRepo = defaultRepo;
+
+        let obj = QSSerializer.createQSObject("Port", ["NodeLink"], qsRepo);
+        obj._qsRepo = qsRepo;
         return obj;
     }
 

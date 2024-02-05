@@ -32,11 +32,14 @@ QSObject {
 
     //! Scene GUI Config and Properties
     property SceneGuiConfig sceneGuiConfig: SceneGuiConfig {
-        _qsRepo: scene._qsRepo
+        _qsRepo: sceneActiveRepo
     }
 
     //! Each scene requires its own NodeRegistry.
     property NLNodeRegistry nodeRegistry: null
+
+    //! Used defaultRepo as default or use scene repo if set.
+    property var            sceneActiveRepo:  scene?._qsRepo ?? NLCore.defaultRepo
 
     /* Signals
      * ****************************************************************************************/
@@ -77,9 +80,9 @@ QSObject {
     //! Check the repository if the model is loading the call the nodes add/remove
     //! related signals to sync the UI
     property Connections _initializeCon : Connections {
-        target: scene._qsRepo
+        target: sceneActiveRepo
         function onIsLoadingChanged() {
-            if (scene._qsRepo._isLoading) {
+            if (sceneActiveRepo._isLoading) {
                 Object.values(nodes).forEach(node => nodeRemoved(node));
                 Object.values(links).forEach(link => linkRemoved(link));
                 Object.values(containers).forEach(container => containerRemoved(container));
@@ -93,8 +96,8 @@ QSObject {
 
     //! Creates a new container
     function createContainer() {
-        let obj = QSSerializer.createQSObject("Container", ["NodeLink"], NLCore.defaultRepo);
-        obj._qsRepo = scene._qsRepo;
+        let obj = QSSerializer.createQSObject("Container", ["NodeLink"], sceneActiveRepo);
+        obj._qsRepo = sceneActiveRepo;
         return obj;
     }
 
@@ -122,6 +125,13 @@ QSObject {
         containersChanged();
     }
 
+    //! Checks if scene is empty or not
+    function isSceneEmpty() : bool {
+        if (Object.keys(nodes).length === 0 && Object.keys(links).length === 0 && Object.keys(containers).length === 0)
+            return true;
+        return false;
+    }
+
     //! Adds a node the to nodes map
     function addNode(node: Node) {
         //Sanity check
@@ -134,7 +144,7 @@ QSObject {
 
         scene.selectionModel.clear();
         scene.selectionModel.selectNode(node);
-        node.onPortAdded.connect(onPortAdded);
+
         return node;
     }
 
@@ -146,14 +156,15 @@ QSObject {
                                 title: string,
                                 xPos : real, yPos : real) : string {
         //! Create a Node with custom node type
-        var node = QSSerializer.createQSObject(nodeTypeName, imports, NLCore.defaultRepo);
-        node._qsRepo = NLCore.defaultRepo;
+        var node = QSSerializer.createQSObject(nodeTypeName, imports, sceneActiveRepo);
+        node._qsRepo = sceneActiveRepo;
         node.type = nodeType;
         node.guiConfig.position.x = xPos;
         node.guiConfig.position.y = yPos;
         node.guiConfig.color = nodeColor;
         node.guiConfig.colorIndex = 0;
         node.title = title;
+        node.nodeCompleted();
         scene.addNode(node)
 
         return node._qsUuid;
@@ -191,7 +202,7 @@ QSObject {
 
         // Create container
         var container = createContainer();
-        container._qsRepo = NLCore.defaultRepo;
+        container._qsRepo = sceneActiveRepo;
 
         // Clone container
         container.cloneFrom(baseContainer);
@@ -211,8 +222,8 @@ QSObject {
 
         // Create node
         var node = QSSerializer.createQSObject(nodeRegistry.nodeTypes[baseNode.type],
-                                               nodeRegistry.imports, NLCore.defaultRepo);
-        node._qsRepo = NLCore.defaultRepo;
+                                               nodeRegistry.imports, sceneActiveRepo);
+        node._qsRepo = sceneActiveRepo;
 
         // Clone node
         node.cloneFrom(baseNode);
@@ -225,14 +236,10 @@ QSObject {
         return addNode(node);
     }
 
-    //! On port added
-    function onPortAdded(portUUId : string) {
-    }
-
     //! Copies the inside properties of the current scene and returns a new scene
     function copyScene () {
         var scene = QSSerializer.createQSObject("Scene",
-                    ["NodeLink"], NLCore.defaultRepo);
+                    ["NodeLink"], sceneActiveRepo);
         scene.nodeRegistry = nodeRegistry
 
         var allPorts =  ({});
@@ -242,8 +249,8 @@ QSObject {
         //! Copying nodes
         Object.values(nodes).forEach(node => {
             var newNode = QSSerializer.createQSObject(scene.nodeRegistry.nodeTypes[node.type],
-                                                   scene.nodeRegistry.imports, NLCore.defaultRepo);
-            newNode._qsRepo = NLCore.defaultRepo;
+                                                   scene.nodeRegistry.imports, sceneActiveRepo);
+            newNode._qsRepo = sceneActiveRepo;
             newNode.cloneFrom(node);
             scene.addNode(newNode)
 
@@ -262,8 +269,8 @@ QSObject {
 
         //! Copying containers
         Object.values(containers).forEach(container => {
-            var newContainer = QSSerializer.createQSObject("Container", scene.nodeRegistry.imports, NLCore.defaultRepo);
-            newContainer._qsRepo = NLCore.defaultRepo;
+            var newContainer = QSSerializer.createQSObject("Container", scene.nodeRegistry.imports, sceneActiveRepo);
+            newContainer._qsRepo = sceneActiveRepo;
             newContainer.cloneFrom(container);
             scene.addContainer(newContainer);
         })
@@ -280,7 +287,7 @@ QSObject {
                     matchedOutputPort = allPorts[port];
             })
             var copiedLink = scene.createLink(matchedInputPort._qsUuid, matchedOutputPort._qsUuid)
-            copiedLink._qsRepo = NLCore.defaultRepo;
+            copiedLink._qsRepo = sceneActiveRepo;
             copiedLink.cloneFrom(link);
         })
 
@@ -294,6 +301,7 @@ QSObject {
             obj.guiConfig.colorIndex = 0;
             obj.inputPort  = findPort(portA);
             obj.outputPort = findPort(portB);
+            obj._qsRepo = sceneActiveRepo;
             links[obj._qsUuid] = obj;
             linksChanged();
 

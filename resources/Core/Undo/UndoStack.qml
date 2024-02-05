@@ -9,17 +9,6 @@ import NodeLink
 QtObject {
     id: root
 
-    /*! Signals
-     * *******************************************************************************************/
-    signal undoRedoDone()
-
-    signal updateUndoStack();
-
-    onUpdateUndoStack: {
-        if (!NLSpec.undo.blockObservers)
-            timer.restart();
-    }
-
     /* Property Declarations
      * ****************************************************************************************/
     //! Target scene
@@ -37,6 +26,11 @@ QtObject {
     //! Redo stack
     property var    redoStack:      []
 
+    property var    sceneActiveRepo: scene?.sceneActiveRepo ?? NLCore.defaultRepo
+
+    //! Defined limit for undo stack
+    property int    undoMax:        6
+
     property Timer timer : Timer {
         repeat: false
         interval: 300
@@ -45,13 +39,23 @@ QtObject {
         }
     }
 
+    /* Signals
+     * ****************************************************************************************/
+    signal stacksUpdated();
+    signal undoRedoDone()
+    signal updateUndoStack();
+
     /* Object Properties
      * ****************************************************************************************/
     Component.onCompleted: timer.start();
 
+    onUpdateUndoStack: {
+        if (!NLSpec.undo.blockObservers)
+            timer.restart();
+    }
+
     /* Functions
      * ****************************************************************************************/
-
     //! Update stackFlow Model
     function updateStacks() {
         let dumpedRepo = dumpRepo(scene);
@@ -65,7 +69,14 @@ QtObject {
 
         //insert object in first of stack
         undoStack.unshift(dumpedRepo);
+
+        //! Delete the last element of undo stack if exceeds a certain points
+        if (undoStack.length > undoMax) {
+            undoStack.pop();
+        }
+
         undoStackChanged();
+        stacksUpdated();
     }
 
     //! Redo operation
@@ -78,6 +89,7 @@ QtObject {
         redoStackChanged();
         undoStackChanged();
         setSceneObject(sceneModel);
+        stacksUpdated();
     }
 
     //! Undo Operation
@@ -92,11 +104,12 @@ QtObject {
         redoStackChanged();
         undoStackChanged();
         setSceneObject(sceneModel);
+        stacksUpdated();
     }
 
     //! Dump repo for stack
     function dumpRepo(scene : I_Scene) : string {
-        let repoDump = NLCore.defaultRepo.dumpRepo()
+        let repoDump = sceneActiveRepo.dumpRepo()
         return JSON.stringify(repoDump, null, 4);
     }
 
@@ -110,15 +123,24 @@ QtObject {
 
         // Update imports if necessary
         var nodeLinkImport = "NodeLink";
-        if(!NLCore.defaultRepo._allImports.includes(nodeLinkImport)) {
-            NLCore.defaultRepo._localImports.push(nodeLinkImport);
-            NLCore.defaultRepo._localImportsChanged();
+        if(!sceneActiveRepo._allImports.includes(nodeLinkImport)) {
+            sceneActiveRepo._localImports.push(nodeLinkImport);
+            sceneActiveRepo._localImportsChanged();
         }
 
-        NLCore.defaultRepo.loadRepo(fileObjects);
+        sceneActiveRepo.loadRepo(fileObjects);
 
         // Unblock Observers
         NLSpec.undo.blockObservers = false;
         undoRedoDone();
+    }
+
+    //! Resetting all stacks
+    function resetStacks() {
+        undoStack = [];
+        redoStack = [];
+        redoStackChanged();
+        undoStackChanged();
+        stacksUpdated();
     }
 }

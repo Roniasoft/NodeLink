@@ -70,8 +70,8 @@ Menu {
     //! Creates and adds a container
     function createContainer(nodeType : int) {
         var qsType = scene.nodeRegistry.nodeTypes[nodeType];
-        var container = QSSerializer.createQSObject(qsType, scene.nodeRegistry.imports, NLCore.defaultRepo);
-        container._qsRepo = NLCore.defaultRepo._qsRepo;
+        var container = QSSerializer.createQSObject(qsType, scene.nodeRegistry.imports, scene?._qsRepo ?? NLCore.defaultRepo);
+        container._qsRepo = scene?._qsRepo ?? NLCore.defaultRepo._qsRepo;
         container.guiConfig.position = nodePosition;
         container.guiConfig.color = scene.nodeRegistry.nodeColors[nodeType];
         scene.addContainer(container);
@@ -87,8 +87,8 @@ Menu {
             return null;
         }
 
-        var node = QSSerializer.createQSObject(qsType, scene.nodeRegistry.imports, NLCore.defaultRepo);
-        node._qsRepo = NLCore.defaultRepo;
+        var node = QSSerializer.createQSObject(qsType, scene.nodeRegistry.imports, scene?._qsRepo ?? NLCore.defaultRepo);
+        node._qsRepo = scene?._qsRepo ?? NLCore.defaultRepo;
         node.type = nodeType;
 
         // Correct position with zoompoint and zoom factor into real position.
