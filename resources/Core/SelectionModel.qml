@@ -14,6 +14,10 @@ QtObject {
     //! Uuids of all exist objects in scene.
     property var existObjects: []
 
+    //! If notifySelectedObject is set to false, the selector object must handle this event..
+    //! and call the selectedModelChanged() signal.
+    property bool notifySelectedObject : true
+
     onExistObjectsChanged: checkSelectedObjects();
 
     /* Signals
@@ -26,10 +30,19 @@ QtObject {
 
     //! Check all selected objects when necessary, i.e undo/redo
     function checkSelectedObjects () {
+        notifySelectedObject = false;
+        var changed = false;
         Object.keys(selectedModel).forEach(uuid => {
-                                 if (!existObjects.includes(uuid))
-                                        remove(uuid);
+                                if (!existObjects.includes(uuid)) {
+                                    remove(uuid);
+                                    changed = true;
+                                }
                              });
+
+        notifySelectedObject = true;
+
+        if (changed)
+            selectedModelChanged();
     }
 
     //! Clear all objects from selection model
@@ -38,11 +51,14 @@ QtObject {
         Object.entries(selectedModel).forEach(([key, value]) => {
                 delete selectedModel[key];
         });
-        selectedModelChanged();
+
+        if (notifySelectedObject)
+            selectedModelChanged();
     }
 
 
     //! Clear all objects (except one with qsUuid) from selection model
+    //! never sends signal for selection model change! as it will be followed by another event
     function clearAllExcept(qsUuid : string) {
         // delete all objects
         Object.entries(selectedModel).forEach(([key, value]) => {
@@ -53,9 +69,11 @@ QtObject {
 
     //! Remove an object from selection model
     function remove(qsUuid : string) {
-        if(isSelected(qsUuid)) {
+        if (isSelected(qsUuid)) {
             delete selectedModel[qsUuid];
-            selectedModelChanged();
+
+            if (notifySelectedObject)
+                selectedModelChanged();
         }
     }
 
@@ -63,14 +81,18 @@ QtObject {
     function selectNode(node: Node) {
         //! clear selection model when selection changed.
         selectedModel[node._qsUuid] = node;
-        selectedModelChanged();
+
+        if (notifySelectedObject)
+            selectedModelChanged();
     }
 
     //! Select container
     function selectContainer(container: Container) {
         //! clear selection model when selection changed.
         selectedModel[container._qsUuid] = container;
-        selectedModelChanged();
+
+        if (notifySelectedObject)
+            selectedModelChanged();
     }
 
     //! Select Link objects  (Add link object to SelectionModel)
@@ -80,7 +102,8 @@ QtObject {
 
         // Add Link object into selected model.
         selectedModel[link._qsUuid] = link;
-        selectedModelChanged();
+        if (notifySelectedObject)
+            selectedModelChanged();
     }
 
     //! Check an object is selected or not
@@ -104,6 +127,9 @@ QtObject {
 
     //! Selects all nodes and links in the scene
     function selectAll(nodes, links, containers) {
+        var notifySelectedObjectSession = notifySelectedObject;
+        notifySelectedObject = false;
+
         clear();
 
         Object.values(nodes).forEach(node => {
@@ -117,5 +143,10 @@ QtObject {
         Object.values(containers).forEach(container => {
             selectContainer(container);
         })
+
+        notifySelectedObject = notifySelectedObjectSession;
+
+        if (notifySelectedObject)
+            selectedModelChanged();
     }
 }

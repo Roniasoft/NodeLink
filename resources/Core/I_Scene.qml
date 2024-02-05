@@ -362,19 +362,22 @@ QSObject {
 
     //! Delete all selected objects (Node + Link)
     function  deleteSelectedObjects() {
+        scene.selectionModel.notifySelectedObject = false;
         // Delete objects
         Object.entries(scene.selectionModel.selectedModel).forEach(([key, value]) => {
-            if(value.objectType === NLSpec.ObjectType.Node) {
+            if (value.objectType === NLSpec.ObjectType.Node) {
                 if (!value.guiConfig.locked)
                     scene.deleteNode(value._qsUuid);
             }
-            if(value.objectType === NLSpec.ObjectType.Container) {
+            if (value.objectType === NLSpec.ObjectType.Container) {
                 scene.deleteContainer(value._qsUuid);
             }
-            if(value.objectType === NLSpec.ObjectType.Link) {
+            if (value.objectType === NLSpec.ObjectType.Link) {
                 scene.unlinkNodes(value.inputPort._qsUuid, value.outputPort._qsUuid)
             }
         });
+
+        scene.selectionModel.notifySelectedObject = true;
 		// Clear the selection
         scene.selectionModel.clear();
     }
