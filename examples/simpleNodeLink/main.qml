@@ -157,7 +157,7 @@ Window {
     //! Select all nodes and links
     Shortcut {
         sequence: "Ctrl+A"
-        onActivated: scene?.selectionModel.selectAll(scene.nodes, scene.links);
+        onActivated: scene?.selectionModel.selectAll(scene.nodes, scene.links, scene.containers);
     }
 
     //! Clones all selected nodes

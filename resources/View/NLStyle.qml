@@ -21,6 +21,10 @@ QtObject {
 
     readonly property string primaryBorderColor:     "#363636"
 
+    readonly property string backgroundGray:         "#2A2A2A"
+
+    readonly property string primaryRed:             "#8b0000"
+
     readonly property QtObject portView: QtObject {
         property int size:          18
         property int borderSize:    2

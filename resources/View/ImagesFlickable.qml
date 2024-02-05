@@ -17,7 +17,11 @@ Rectangle {
 
     property SelectionModel selectionModel: scene?.selectionModel ?? null
 
+    property var selectedItems : Object.values(selectionModel?.selectedModel ?? ({}))
+
     property I_Node         node
+
+    property bool selectedAlone : selectedItems.length === 1 && node === selectedItems[0]
 
     /* Object Properties
     * ****************************************************************************************/
@@ -88,14 +92,9 @@ Rectangle {
 
                 onClicked: (mouse) => {
                     if (mouse.button === Qt.LeftButton) {
+                        imageViewer.shownImage = nodeImage.image
                         imageViewer.visible = true
                     }
-
-//                    if (isNodeEditable && mouse.button === Qt.RightButton) {
-//                        scene.selectionModel.clearAllExcept(node._qsUuid);
-//                        scene.selectionModel.selectNode(node);
-//                        root.nodeContextMenu.popup(mouse.x, mouse.y);
-//                    }
                 }
             }
 
@@ -148,22 +147,10 @@ Rectangle {
             }
 
             //! Image in its actual size
-            NLPopUp {
+            ImageViewer {
                 id: imageViewer
-                parent: Overlay.overlay
-                x: Math.round((parent.width - width) / 2)
-                y: Math.round((parent.height - height) / 2)
-                width: Math.min(popupImage.sourceSize.width, 850)
-                height: Math.min(popupImage.sourceSize.height, 650)
-
-                Image {
-                    id: popupImage
-
-                    anchors.fill: parent
-                    anchors.centerIn: parent
-                    fillMode: Image.PreserveAspectFit
-                    source: nodeImage.image
-                }
+                images: node.imagesModel.imagesSources
+                shownImage: nodeImage.image
             }
 
         }
