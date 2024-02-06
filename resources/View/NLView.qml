@@ -190,7 +190,7 @@ Item {
     function createCopyNode(baseNode, diffX, diffY) {
         var node = QSSerializer.createQSObject(scene.nodeRegistry.nodeTypes[baseNode.type],
                                                        scene.nodeRegistry.imports, NLCore.defaultRepo);
-        node._qsRepo = NLCore.defaultRepo;
+        node._qsRepo = scene._qsRepo;
         node.cloneFrom(baseNode);
 
         // Fixing node position.
@@ -234,7 +234,7 @@ Item {
                     matchedOutputPort = allPorts[port];
             })
             var copiedLink = scene.createLink(matchedInputPort._qsUuid, matchedOutputPort._qsUuid)
-            copiedLink._qsRepo = NLCore.defaultRepo;
+            copiedLink._qsRepo = scene._qsRepo;
             copiedLink.cloneFrom(link);
         })
     }
