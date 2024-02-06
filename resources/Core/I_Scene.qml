@@ -442,6 +442,30 @@ QSObject {
         return foundObj;
     }
 
+    //! Finds all the links amongs certain nodes
+    function findLinksAmongstNodes(nonLinkObjects) {
+        var allPorts =  ({});
+        var foundLinks = [];
+
+        //! Making a map of all ports
+        nonLinkObjects.forEach (node => {
+            if (node.objectType === NLSpec.ObjectType.Node) {
+                Object.values(node.ports).forEach(port => {
+                    allPorts[port._qsUuid] = port;
+                })
+            }
+        })
+
+        //! Checking if a link is amongst specified nodes
+        Object.values(links).forEach(link => {
+            if(Object.keys(allPorts).includes(link.inputPort._qsUuid) && Object.keys(allPorts).includes(link.outputPort._qsUuid)) {
+                foundLinks.push(link);
+            }
+        })
+
+        return foundLinks;
+    }
+
     function copyNodes() {
         copyCalled();
     }

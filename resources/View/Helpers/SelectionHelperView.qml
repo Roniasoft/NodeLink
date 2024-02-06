@@ -110,7 +110,13 @@ Item {
                 } else if (node.objectType === NLSpec.ObjectType.Container) {
                     scene.selectionModel.selectContainer(node);
                 }
-            }); // todo: why don't we select the LINKS?
+            });
+            // todo: why don't we select the LINKS?
+            var selectedLinks = scene.findLinksAmongstNodes(selectedObj);
+
+            selectedLinks.forEach(link => {
+                scene.selectionModel.selectLink(link);
+            })
 
             scene.selectionModel.notifySelectedObject = true;
             // todo: should we check actual change?
