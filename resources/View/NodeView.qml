@@ -179,7 +179,6 @@ InteractiveNodeView {
                 color: NLStyle.primaryTextColor
                 text: node.guiConfig.description
                 readOnly: !nodeView.edit
-                wrapMode:TextEdit.WrapAnywhere
                 onTextChanged: {
                     if (node && node.guiConfig.description !== text)
                         node.guiConfig.description = text;

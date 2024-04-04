@@ -26,6 +26,7 @@ T.TextField {
     //! placeholderTextColor is the actual text color with a 0.5 opacity (alpha is set to 0.5)
     placeholderTextColor: Qt.hsla(control.color.hslHue, control.color.hslSaturation, control.color.hslLightness, 0.5)
     verticalAlignment: TextInput.AlignVCenter
+    wrapMode: Text.WordWrap
 
     background: Rectangle {
         color: "transparent"
@@ -48,6 +49,5 @@ T.TextField {
         elide: Text.ElideRight
         renderType: control.renderType
     }
-
 
 }

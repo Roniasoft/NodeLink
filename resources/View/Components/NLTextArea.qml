@@ -26,6 +26,7 @@ T.TextArea {
     placeholderTextColor: Qt.hsla(control.color.hslHue, control.color.hslSaturation, control.color.hslLightness, 0.5)
     selectionColor: control.palette.highlight
     selectedTextColor: control.palette.highlightedText
+    wrapMode: Text.WordWrap
 
     background: Rectangle {
         color: "transparent"

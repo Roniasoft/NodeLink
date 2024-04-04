@@ -106,7 +106,7 @@ NodeView {
             color: NLStyle.primaryTextColor
             text: node?.nodeData?.data
             readOnly: !nodeView.edit || (node.type === CSpecs.NodeType.Result)
-            wrapMode:TextEdit.WrapAnywhere
+
             onTextChanged: {
                 if (node && (node.nodeData?.data ?? "") !== text) {
                     if (node.type === CSpecs.NodeType.Source) {
