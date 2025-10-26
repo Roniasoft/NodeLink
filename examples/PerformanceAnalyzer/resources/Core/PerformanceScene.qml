@@ -211,4 +211,18 @@ I_Scene {
         return true;
     }
 
+    function clearScene() {
+        var nodeIds = Object.keys(nodes)
+        for (var i = 0; i < nodeIds.length; i++) {
+            scene.deleteNode(nodeIds[i])
+        }
+
+        var linkIds = Object.keys(links)
+        for (var i = 0; i < linkIds.length; i++) {
+            scene.deleteNode(linkIds[i])
+        }
+
+        console.log("Scene cleared")
+    }
+
 }
