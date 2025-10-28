@@ -3,14 +3,20 @@ import QtQuick.Layouts
 import QtQuick.Controls
 import NodeLink
 
+
 /*! ***********************************************************************************************
  * Side Menu
  * ************************************************************************************************/
 Item {
     id: sideMenu1
 
-    property I_Scene      scene
+    property I_Scene scene
     property SceneSession sceneSession
+
+    FontLoader {
+        source: "qrc:/NodeLink/resources/fonts/Font Awesome 6 Pro-Solid-900.otf"
+    }
+
 
     /* Children
      * ****************************************************************************************/
@@ -24,24 +30,24 @@ Item {
             position: "top"
             Layout.preferredHeight: 34
             Layout.preferredWidth: 34
-            NLToolTip{
+            NLToolTip {
                 visible: parent.hovered
                 text: "Zoom in"
             }
 
-            onClicked: sceneSession.zoomManager.zoomInSignal();
+            onClicked: sceneSession.zoomManager.zoomInSignal()
         }
         SideMenuButton {
             text: "\uf2f9"
             position: "middle"
             Layout.preferredHeight: 34
             Layout.preferredWidth: 34
-            NLToolTip{
+            NLToolTip {
                 visible: parent.hovered
                 text: "Reset zoom"
             }
 
-            onClicked: sceneSession.zoomManager.resetZoomSignal(1.0);
+            onClicked: sceneSession.zoomManager.resetZoomSignal(1.0)
         }
 
         SideMenuButton {
@@ -54,7 +60,7 @@ Item {
                 text: "Zoom to fit"
             }
 
-            onClicked: sceneSession.zoomManager.zoomToFit();
+            onClicked: sceneSession.zoomManager.zoomToFit()
         }
 
         SideMenuButton {
@@ -62,12 +68,12 @@ Item {
             position: "bottom"
             Layout.preferredHeight: 34
             Layout.preferredWidth: 34
-            NLToolTip{
+            NLToolTip {
                 visible: parent.hovered
                 text: "Zoom out"
             }
 
-            onClicked: sceneSession.zoomManager.zoomOutSignal();
+            onClicked: sceneSession.zoomManager.zoomOutSignal()
         }
     }
 
@@ -82,13 +88,13 @@ Item {
             Layout.preferredHeight: 34
             Layout.preferredWidth: 34
             enabled: scene?._undoCore?.undoStack.isValidUndo ?? false
-            NLToolTip{
+            NLToolTip {
                 visible: parent.hovered
                 text: "Undo"
             }
 
             onClicked: {
-                scene._undoCore.undoStack.undo();
+                scene._undoCore.undoStack.undo()
             }
         }
         SideMenuButton {
@@ -97,13 +103,13 @@ Item {
             Layout.preferredHeight: 34
             Layout.preferredWidth: 34
             enabled: scene?._undoCore?.undoStack.isValidRedo ?? false
-            NLToolTip{
+            NLToolTip {
                 visible: parent.hovered
                 text: "Redo"
             }
 
             onClicked: {
-                scene._undoCore.undoStack.redo();
+                scene._undoCore.undoStack.redo()
             }
         }
     }
@@ -122,7 +128,7 @@ Item {
             Layout.preferredWidth: 34
             checkable: true
             onCheckedChanged: NLStyle.snapEnabled = snapGrid.checked
-            NLToolTip{
+            NLToolTip {
                 visible: parent.hovered
                 text: "Snap to grid"
             }
@@ -132,7 +138,7 @@ Item {
             position: "middle"
             Layout.preferredHeight: 34
             Layout.preferredWidth: 34
-            NLToolTip{
+            NLToolTip {
                 visible: parent.hovered
                 text: "Auto Format"
             }
@@ -140,12 +146,13 @@ Item {
                 // do reorder for all nodes if nothing is selected
                 // what should we if just one connection is selected?
                 // we need to be sure that every node is visited
-                var leftmostNode = Object.values(scene.selectionModel.selectedModel).reduce(
-                    (minNode, currentNode) => currentNode.guiConfig.position.x < minNode.guiConfig.position.x ? currentNode : minNode
-                );
+                var leftmostNode = Object.values(
+                            scene.selectionModel.selectedModel).reduce(
+                            (minNode, currentNode) => currentNode.guiConfig.position.x
+                            < minNode.guiConfig.position.x ? currentNode : minNode)
 
-                scene.automaticNodeReorder(scene.selectionModel.selectedModel, leftmostNode._qsUuid, true);
-
+                scene.automaticNodeReorder(scene.selectionModel.selectedModel,
+                                           leftmostNode._qsUuid, true)
             }
         }
 
@@ -157,12 +164,14 @@ Item {
             Layout.preferredWidth: 34
 
             checkable: true
-            visible:  sceneSession && sceneSession.enabledOverview
-            enabled:  sceneSession && sceneSession.enabledOverview
-            checked:  sceneSession && sceneSession.enabledOverview  && sceneSession.visibleOverview
+            visible: sceneSession && sceneSession.enabledOverview
+            enabled: sceneSession && sceneSession.enabledOverview
+            checked: sceneSession && sceneSession.enabledOverview
+                     && sceneSession.visibleOverview
 
-            NLToolTip{
-                text: (((sceneSession?.visibleOverview ?? false) ? "Hide " : "Show ") +"the overview")
+            NLToolTip {
+                text: (((sceneSession?.visibleOverview
+                         ?? false) ? "Hide " : "Show ") + "the overview")
                 visible: parent.hovered
             }
 
@@ -180,7 +189,7 @@ Item {
             position: "only"
             Layout.preferredHeight: 34
             Layout.preferredWidth: 34
-            NLToolTip{
+            NLToolTip {
                 visible: parent.hovered
                 text: "Help"
             }

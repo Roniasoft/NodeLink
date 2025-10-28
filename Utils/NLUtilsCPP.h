@@ -1,7 +1,9 @@
 #pragma once
 
 #include <QObject>
-#include <QtQmlIntegration>
+#include <QQmlEngine>
+#include <QQmlComponent>
+#include <QQmlContext>
 
 class NLUtilsCPP : public QObject
 {
