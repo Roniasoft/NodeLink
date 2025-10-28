@@ -6,29 +6,32 @@ import QtQuick.Layouts
 
 import NodeLink
 
+
 /*! ***********************************************************************************************
  * The NL Popup is the interface/base class that should be extended by notification popups.
  * ************************************************************************************************/
 Popup {
     id: popup
 
+
     /* Property Declarations
      * ****************************************************************************************/
-    property bool           titleBar:   false
+    property bool titleBar: false
 
     //! Title of popup
-    property string         title:      "Title"
+    property string title: "Title"
 
     //! icon of popup
-    property string         icon:       ""
+    property string icon: ""
+
 
     /* Object Properties
      * ****************************************************************************************/
-    Material.roundedScale: Material.SmallScale
+    // Material.roundedScale: Material.SmallScale
     visible: false
-//    Material.elevation: 10
 
-    width:  467
+    //    Material.elevation: 10
+    width: 467
     height: 427
 
     leftPadding: 12
@@ -39,9 +42,9 @@ Popup {
     focus: visible
     closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
 
+
     /* Children
      * ****************************************************************************************/
-
     Row {
         id: titlebarRow
 
@@ -74,27 +77,30 @@ Popup {
             font.family: NLStyle.fontType.roboto
             color: "#4890e2"
         }
-
     }
 
     //! Customize dim background (for modal popups)
     Overlay.modal: Rectangle {
         color: "#44444444"
-        Behavior on opacity { NumberAnimation { duration: 150 } }
+        Behavior on opacity {
+            NumberAnimation {
+                duration: 150
+            }
+        }
     }
 
     //! overriden to add border and the background color to match the other widgets as the popup.Material.dialogColor is readonly
     background: Rectangle {
         // FullScale doesn't make sense for Popup.
         radius: 15
-        color:  "#161314"
+        color: "#161314"
         border.color: "#4890e2"
         border.width: 2
 
         layer.enabled: popup.Material.elevation > 0
-        layer.effect: RoundedElevationEffect {
-            elevation: popup.Material.elevation
-            roundedScale: popup.background.radius
-        }
+        // layer.effect: RoundedElevationEffect {
+        //     elevation: popup.Material.elevation
+        //     roundedScale: popup.background.radius
+        // }
     }
 }

@@ -1,8 +1,10 @@
 #ifndef HASHCOMPARESTRINGCPP_H
 #define HASHCOMPARESTRINGCPP_H
 
-#include <qqmlintegration.h>
 #include <QObject>
+#include <QQmlEngine>
+#include <QQmlComponent>
+#include <QQmlContext>
 
 /*! ***********************************************************************************************
  * HashCompareStringCPP compare two important strings.

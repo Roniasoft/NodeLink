@@ -1,6 +1,7 @@
 #include "NLUtilsCPP.h"
 
 #include <QKeySequence>
+#include <QDir>
 
 /*! Default constructor
  * ************************************************************************************************/
