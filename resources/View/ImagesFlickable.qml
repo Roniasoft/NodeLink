@@ -3,25 +3,30 @@ import QtQuick.Controls
 
 import NodeLink
 
+
 /*! ***********************************************************************************************
  * Images Flickable appearing on top of each node that has images
  * ************************************************************************************************/
 Rectangle {
     id: root
 
+
     /* Property Declarations
     * ****************************************************************************************/
-    property I_Scene        scene
+    property I_Scene scene
 
-    property SceneSession   sceneSession
+    property SceneSession sceneSession
 
     property SelectionModel selectionModel: scene?.selectionModel ?? null
 
-    property var selectedItems : Object.values(selectionModel?.selectedModel ?? ({}))
+    property var selectedItems: Object.values(
+                                    selectionModel?.selectedModel ?? ({}))
 
-    property I_Node         node
+    property I_Node node
 
-    property bool selectedAlone : selectedItems.length === 1 && node === selectedItems[0]
+    property bool selectedAlone: selectedItems.length === 1
+                                 && node === selectedItems[0]
+
 
     /* Object Properties
     * ****************************************************************************************/
@@ -47,9 +52,9 @@ Rectangle {
             width: parent.height * nodeImage.aspectRatio
             height: parent.height
             color: "transparent"
-            property int   radius: 5
+            radius: 5
             property color bgColor: "#1e1e1e"
-            property int   drawRadius: radius > 0 ? radius : width / 2
+            property int drawRadius: radius > 0 ? radius : width / 2
 
             Image {
                 id: nodeImage
@@ -73,7 +78,8 @@ Rectangle {
                     ctx.fill()
                     ctx.beginPath()
                     ctx.globalCompositeOperation = 'source-out'
-                    ctx.roundedRect(0, 0, width, height, imageItem.drawRadius, imageItem.drawRadius)
+                    ctx.roundedRect(0, 0, width, height, imageItem.drawRadius,
+                                    imageItem.drawRadius)
                     ctx.fill()
                 }
             }
@@ -90,12 +96,12 @@ Rectangle {
                     iconRect.visible = false
                 }
 
-                onClicked: (mouse) => {
-                    if (mouse.button === Qt.LeftButton) {
-                        imageViewer.shownImage = nodeImage.image
-                        imageViewer.visible = true
-                    }
-                }
+                onClicked: mouse => {
+                               if (mouse.button === Qt.LeftButton) {
+                                   imageViewer.shownImage = nodeImage.image
+                                   imageViewer.visible = true
+                               }
+                           }
             }
 
             //! delete button for image
@@ -112,8 +118,9 @@ Rectangle {
                 textColor: "#fb464c"
                 visible: false
                 onClicked: {
-                    if (nodeImage.image === node.imagesModel.imagesSources[node.imagesModel.coverImageIndex])
-                        node.imagesModel.coverImageIndex = -1;
+                    if (nodeImage.image
+                            === node.imagesModel.imagesSources[node.imagesModel.coverImageIndex])
+                        node.imagesModel.coverImageIndex = -1
                     node.imagesModel.deleteImage(nodeImage.image)
                 }
 
@@ -130,7 +137,8 @@ Rectangle {
 
                 anchors.top: nodeImage.top
                 anchors.left: nodeImage.left
-                fontWeight: (node.imagesModel.imagesSources[node.imagesModel.coverImageIndex] === nodeImage.image) ? 900 : 400
+                fontWeight: (node.imagesModel.imagesSources[node.imagesModel.coverImageIndex]
+                             === nodeImage.image) ? 900 : 400
 
                 size: 20
                 text: "\uf005"
@@ -138,12 +146,13 @@ Rectangle {
                 backColor: "transparent"
                 textColor: "yellow"
                 onClicked: {
-                    if (node.imagesModel.imagesSources[node.imagesModel.coverImageIndex] !== nodeImage.image)
-                        node.imagesModel.coverImageIndex = node.imagesModel.imagesSources.indexOf(nodeImage.image);
+                    if (node.imagesModel.imagesSources[node.imagesModel.coverImageIndex]
+                            !== nodeImage.image)
+                        node.imagesModel.coverImageIndex = node.imagesModel.imagesSources.indexOf(
+                                    nodeImage.image)
                     else
-                        node.imagesModel.coverImageIndex = -1;
+                        node.imagesModel.coverImageIndex = -1
                 }
-
             }
 
             //! Image in its actual size
@@ -152,7 +161,6 @@ Rectangle {
                 images: node.imagesModel.imagesSources
                 shownImage: nodeImage.image
             }
-
         }
     }
 }
