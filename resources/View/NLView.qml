@@ -189,8 +189,8 @@ Item {
     //! Creating coped nodes
     function createCopyNode(baseNode, diffX, diffY) {
         var node = QSSerializer.createQSObject(scene.nodeRegistry.nodeTypes[baseNode.type],
-                                                       scene.nodeRegistry.imports, NLCore.defaultRepo);
-        node._qsRepo = scene._qsRepo;
+                                                       scene.nodeRegistry.imports, baseNode._qsRepo);
+        node._qsRepo = baseNode._qsRepo;
         node.cloneFrom(baseNode);
 
         // Fixing node position.
