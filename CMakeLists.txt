@@ -68,7 +68,7 @@ qt_add_library(NodeLink STATIC)
 set_source_files_properties(
     resources/Core/NLCore.qml
     resources/Core/NLSpec.qml
-    resources/Core/Undo/HashCompareString.qml
+    # resources/Core/Undo/HashCompareString.qml
     resources/View/NLStyle.qml
 
     PROPERTIES
@@ -110,7 +110,7 @@ qt_add_qml_module(NodeLink
         resources/Core/Undo/UndoLinkObserver.qml
         resources/Core/Undo/UndoContainerObserver.qml
         resources/Core/Undo/UndoContainerGuiObserver.qml
-        resources/Core/Undo/HashCompareString.qml
+        # resources/Core/Undo/HashCompareString.qml
 
         resources/View/Components/Buttons/NLBaseButton.qml
         resources/View/Components/Buttons/NLButton.qml

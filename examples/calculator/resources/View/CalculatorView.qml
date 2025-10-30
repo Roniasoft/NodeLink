@@ -30,7 +30,7 @@ Item {
         anchors.fill: parent
         scene: view.scene
         sceneSession: view.sceneSession
-        contentItem: NodesRect {
+        sceneContent: NodesRect {
             scene: view.scene
             sceneSession: view.sceneSession
             nodeViewComponent: Qt.createComponent("CalculatorNodeView.qml")
