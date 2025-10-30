@@ -12,7 +12,8 @@
 class HashCompareStringCPP : public QObject
 {
     Q_OBJECT
-    QML_ELEMENT
+    QML_NAMED_ELEMENT(HashCompareString)
+    QML_SINGLETON
 
 public:
 
@@ -20,12 +21,8 @@ public:
      * ****************************************************************************************/
     explicit HashCompareStringCPP(QObject *parent = nullptr);
 
-protected slots:
-    /* Protected Slots
-     * ****************************************************************************************/
-
     //! Compare two string models.
-    bool compareStringModels(QString strModelFirst, QString strModelSecound);
+    Q_INVOKABLE bool compareStringModels(QString strModelFirst, QString strModelSecound);
 };
 
 #endif // HASHCOMPARESTRINGCPP_H
