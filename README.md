@@ -175,5 +175,17 @@ NodeLink Simple Example:
   
 ## License
 
-This library is licensed under the [Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0). See the [LICENSE](LICENSE) file for details.
+This project is licensed under the **Apache License, Version 2.0**.
+
+You are free to:
+- **Use** the library in both open-source and commercial projects.
+- **Modify** and **redistribute** it under the same license.
+- **Include** it as part of larger Qt/QML applications.
+
+When redistributing or using this library, you must:
+- Include a copy of the [LICENSE](LICENSE) file.
+- Provide proper attribution (e.g., link to this repository or mention "NodeLink by RONIA").
+
+For the full terms and conditions, see the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0).
+
 
