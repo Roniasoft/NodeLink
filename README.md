@@ -118,8 +118,8 @@ Build with Qt Creator
 
 Troubleshooting
 ----------
-Missing Qt modules: make sure your Qt installation includes QtQuick, QtQuick.Controls, and other listed modules.
-Submodule folders empty: run git submodule update --init --recursive.
+Missing Qt modules: make sure your Qt installation includes QtQuick, QtQuick.Controls, and other listed modules.  
+Submodule folders empty: run git submodule update --init --recursive.  
 CMake errors: delete build/ and re-run CMake to get a clean configure.  
 
 Contribution
