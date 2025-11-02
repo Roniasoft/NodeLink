@@ -87,14 +87,16 @@ Item {
             position: "top"
             Layout.preferredHeight: 34
             Layout.preferredWidth: 34
-            enabled: scene?._undoCore?.undoStack.isValidUndo ?? false
+            // enabled: scene?._undoCore?.undoStack.isValidUndo ?? false
             NLToolTip {
                 visible: parent.hovered
                 text: "Undo"
             }
 
             onClicked: {
-                scene._undoCore.undoStack.undo()
+                if(scene?._undoCore?.undoStack.isValidUndo){
+                    scene._undoCore.undoStack.undo()
+                }
             }
         }
         SideMenuButton {
@@ -102,14 +104,16 @@ Item {
             position: "bottom"
             Layout.preferredHeight: 34
             Layout.preferredWidth: 34
-            enabled: scene?._undoCore?.undoStack.isValidRedo ?? false
+            // enabled: scene?._undoCore?.undoStack.isValidRedo ?? false
             NLToolTip {
                 visible: parent.hovered
                 text: "Redo"
             }
 
             onClicked: {
-                scene._undoCore.undoStack.redo()
+                if(scene?._undoCore?.undoStack.isValidRedo){
+                    scene._undoCore.undoStack.redo()
+                }
             }
         }
     }
