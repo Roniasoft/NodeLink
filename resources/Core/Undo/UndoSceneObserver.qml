@@ -33,7 +33,7 @@ Item {
 
     //! Link Loggers
     Repeater {
-        model: Object.values(root.scene.links)
+        model: Object.values(root.scene.links).filter(link => link !== null && link !== undefined)
 
         delegate: UndoLinkObserver {
             link: modelData

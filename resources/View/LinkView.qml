@@ -73,7 +73,7 @@ I_LinkView {
         id: infoPopup
 
         confirmText: "Can not be deleted! the scene is not editable"
-        sceneSession: root.sceneSession
+        sceneSession: linkView.sceneSession
         keyButtons: [MessageDialog.Ok]
     }
 

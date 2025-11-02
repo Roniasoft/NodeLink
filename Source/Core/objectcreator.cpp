@@ -80,7 +80,8 @@ QQuickItem* ObjectCreator::createNode(
 }
 
 QVariantList ObjectCreator::createNodes(
-    QVariantList nodeArray,
+    const QString &name,
+    QVariantList itemArray,
     QQuickItem *parentItem,
     const QString &componentUrl,
     const QVariantMap &baseProperties)
@@ -88,7 +89,7 @@ QVariantList ObjectCreator::createNodes(
     QVariantList createdItems;
     QElapsedTimer timer;
     timer.start();
-    int count = nodeArray.count();
+    int count = itemArray.count();
 
     if (!parentItem || count <= 0) {
         return createdItems;
@@ -114,7 +115,7 @@ QVariantList ObjectCreator::createNodes(
 
     for (int i = 0; i < count; ++i) {
         QVariantMap properties = baseProperties;
-        properties["node"] = nodeArray[i];
+        properties[name] = itemArray[i];
         QObject *obj = component->createWithInitialProperties(properties);
 
         if (obj) {
@@ -128,6 +129,6 @@ QVariantList ObjectCreator::createNodes(
             }
         }
     }
-    qDebug() << "Creating" << count << "Nodes took " << timer.elapsed() << "ms";
+    qDebug() << "Creating" << count << name << "took" << timer.elapsed() << "ms";
     return createdItems;
 }
