@@ -31,7 +31,7 @@ Dependencies
   - Git ≥ 2.20 (to handle submodules comfortably)
 
 ### Qt / QML
-- **Qt:** ≥ 6.4.0 (project tested with Qt 6.4+).  
+- **Qt:** ≥ 6.2.4 (project tested with Qt 6.4+).  
 - Required Qt modules (used by NodeLink QML components):
   - `QtQuick`
   - `QtQuick.Controls`
