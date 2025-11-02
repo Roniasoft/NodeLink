@@ -158,7 +158,7 @@ QSObject {
     property Connections _initializeCon : Connections {
         target: _sceneActiveRepoObject
         function onIsLoadingChanged() {
-            if (sceneActiveRepo._isLoading) {
+            if (_sceneActiveRepoObject._isLoading) {
                 Object.values(nodes).forEach(node => nodeRemoved(node));
                 Object.values(links).forEach(link => linkRemoved(link));
                 Object.values(containers).forEach(container => containerRemoved(container));
