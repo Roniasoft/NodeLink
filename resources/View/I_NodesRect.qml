@@ -90,6 +90,7 @@ Item {
 
         function onNodesAdded(nodeArray: list<Node>) {
             let createdViews = objectCreator.createNodes(
+                "node",
                 nodeArray,
                 root,
                 nodeViewUrl,
@@ -100,8 +101,6 @@ Item {
                     // "node": will be added inside cpp class
                 }
             );
-            console.log("node array:", nodeArray.length, nodeArray)
-            console.log("created view:", createdViews.length, createdViews)
             for (var i = 0; i < createdViews.length; i++) {
                 _nodeViewMap[nodeArray[i]._qsUuid] = createdViews[i];
             }
@@ -173,14 +172,35 @@ Item {
             if (Object.keys(_linkViewMap).includes(linkObj._qsUuid))
                 return;
 
-            const objView = linkViewComponent.createObject(root, {
-                                                                 link: linkObj,
-                                                                 scene: root.scene,
-                                                                 sceneSession: root.sceneSession,
-                                                                 viewProperties: root.viewProperties
-                                                             });
-            // Object is ready immediately
+            const objView = objectCreator.createNode(
+                              root,
+                              linkViewUrl,
+                              {
+                                  "link": linkObj,
+                                  "scene": root.scene,
+                                  "sceneSession": root.sceneSession,
+                                  "viewProperties": root.viewProperties
+                              }
+                              );
             _linkViewMap[linkObj._qsUuid] = objView;
+        }
+
+        //! linkRepeater updated when a link added
+        function onLinksAdded(linkArray: list<Link>) {
+            const createdLinks = objectCreator.createNodes(
+                              "link",
+                              linkArray,
+                              root,
+                              linkViewUrl,
+                              {
+                                  "scene": root.scene,
+                                  "sceneSession": root.sceneSession,
+                                  "viewProperties": root.viewProperties
+                              }
+                              );
+            for (var i = 0; i < createdLinks.length; i++) {
+                _linkViewMap[linkArray[i]._qsUuid] = createdLinks[i];
+            }
         }
 
         //! linkRepeater updated when a link Removed

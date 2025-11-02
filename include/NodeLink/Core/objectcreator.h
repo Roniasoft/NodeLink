@@ -24,11 +24,13 @@ public:
         const QVariantMap &properties
         );
     
-    Q_INVOKABLE QVariantList createNodes(QVariantList createdItems,
-                                         QQuickItem *parentItem,
-                                         const QString &componentUrl,
-                                         const QVariantMap &baseProperties
-                                         );
+    Q_INVOKABLE QVariantList createNodes(
+        const QString &name,
+        QVariantList itemArray,
+        QQuickItem *parentItem,
+        const QString &componentUrl,
+        const QVariantMap &baseProperties
+        );
 
 private:
     QQmlEngine *m_engine;

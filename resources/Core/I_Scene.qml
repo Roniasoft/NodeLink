@@ -63,6 +63,9 @@ QSObject {
     //! Link added
     signal linkAdded(Link link)
 
+    //! Links added
+    signal linksAdded(var links)
+
     //! Link Removed
     signal linkRemoved(Link link)
 
@@ -368,10 +371,10 @@ QSObject {
 
             Object.keys(nodes[nodeUUId].ports).forEach(portId => {
                Object.entries(links).forEach(([key, value]) => {
-                                                 if (value.inputPort._qsUuid === portId ||
-                                                     value.outputPort._qsUuid === portId) {
-                                                     affectedLinks.add(key);
-                                                 }
+                                                     if ((value.inputPort && value.inputPort._qsUuid === portId) ||
+                                                         (value.outputPort && value.outputPort._qsUuid === portId)) {
+                                                         affectedLinks.add(key);
+                                                     }
                                              });
            });
 
@@ -538,6 +541,42 @@ QSObject {
         })
 
         return scene;
+    }
+
+    //! Adds multiple links at once
+    function createLinks(linkDataArray) {
+        if (!linkDataArray || linkDataArray.length === 0) {
+            return;
+        }
+
+        var addedLinks = [];
+
+        for (var i = 0; i < linkDataArray.length; i++) {
+            var linkData = linkDataArray[i];
+
+            // Create the link object
+            let obj = NLCore.createLink();
+            obj.guiConfig.colorIndex = linkData.colorIndex !== undefined ? linkData.colorIndex : 0;
+            obj.inputPort = findPort(linkData.portA);
+            obj.outputPort = findPort(linkData.portB);
+            obj._qsRepo = sceneActiveRepo;
+
+            // Check if link already exists
+            if (links[obj._qsUuid] === obj) {
+                continue;
+            }
+
+            // Add to local administration
+            links[obj._qsUuid] = obj;
+            addedLinks.push(obj);
+        }
+
+        if (addedLinks.length > 0) {
+            linksChanged();
+            linksAdded(addedLinks);
+        }
+
+        return addedLinks;
     }
 
     //! Link two nodes (via their ports) - portA is the upstream and portB the downstream one

@@ -204,35 +204,43 @@ I_Scene {
     //!     - A link must be established between two specific links
     //!     - Link can not be duplicate
     //!     - A node cannot establish a link with itself
-    function canLinkNodes(portA : string, portB : string): bool {
-
-        //! Sanity check
+    function canLinkNodes(portA: string, portB: string): bool {
+        // Sanity check
         if (portA.length === 0 || portB.length === 0)
             return false;
 
-        // Find exist links with portA as input port and portB as output port.
-        var sameLinks = Object.values(links).filter(link =>
-            HashCompareString.compareStringModels(link.inputPort._qsUuid, portA) &&
-            HashCompareString.compareStringModels(link.outputPort._qsUuid, portB));
-
-        if (sameLinks.length > 0)
-            return false;
-
-        // A node cannot establish a link with itself
+        // Find nodes first (cheaper than iterating all links)
         var nodeA = findNodeId(portA);
         var nodeB = findNodeId(portB);
-        if (HashCompareString.compareStringModels(nodeA, nodeB)
-                    || nodeA.length === 0 || nodeB.length === 0) {
+
+        // Early exit: empty node IDs or same node
+        if (nodeA.length === 0 || nodeB.length === 0 ||
+            HashCompareString.compareStringModels(nodeA, nodeB)) {
             return false;
         }
 
-        //! Just a input port can be link to output port, or input to inAndOut port
+        // Check port types (cheaper than iterating links)
         var portAObj = findPort(portA);
         var portBObj = findPort(portB);
-        if (portAObj.portType === NLSpec.PortType.Input)
+
+        if (!portAObj || !portBObj)
             return false;
-        if (portBObj.portType === NLSpec.PortType.Output)
+
+        // Input port cannot be source, output port cannot be destination
+        if (portAObj.portType === NLSpec.PortType.Input ||
+            portBObj.portType === NLSpec.PortType.Output)
             return false;
+
+        // Check for existing link (most expensive operation - do last)
+        var linkKeys = Object.keys(links);
+        for (var i = 0; i < linkKeys.length; i++) {
+            var link = links[linkKeys[i]];
+            if (link &&
+                HashCompareString.compareStringModels(link.inputPort._qsUuid, portA) &&
+                HashCompareString.compareStringModels(link.outputPort._qsUuid, portB)) {
+                return false;
+            }
+        }
 
         return true;
     }

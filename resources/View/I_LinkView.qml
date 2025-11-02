@@ -25,7 +25,7 @@ Canvas {
     property QtObject   viewProperties: null
 
     //! Main LinkView model
-    property Link       link:       Link {}
+    property var        link:       Link {}
 
     //! Link input port
     property Port       inputPort: link.inputPort
