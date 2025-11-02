@@ -30,16 +30,23 @@ QSObject {
     //! Scene Selection Model
     property SelectionModel selectionModel: null
 
-    //! Scene GUI Config and Properties
-    property SceneGuiConfig sceneGuiConfig: SceneGuiConfig {
-        _qsRepo: sceneActiveRepo
-    }
-
     //! Each scene requires its own NodeRegistry.
     property NLNodeRegistry nodeRegistry: null
 
     //! Used defaultRepo as default or use scene repo if set.
     property var            sceneActiveRepo:  scene?._qsRepo ?? NLCore.defaultRepo
+    
+    //! Helper property to ensure proper type for Connections target
+    //! This is needed because Connections.target requires QObject* and var type can't be inferred
+    //! Using null initialization and setting in Component.onCompleted to avoid type errors
+    property QtObject _sceneActiveRepoObject: null
+
+    //! Scene GUI Config and Properties
+    //! Defined after sceneActiveRepo to ensure proper type inference
+    property SceneGuiConfig sceneGuiConfig: SceneGuiConfig {
+        id: _sceneGuiConfig
+        // _qsRepo will be set in Component.onCompleted to ensure proper type
+    }
 
     /* Signals
      * ****************************************************************************************/
@@ -74,19 +81,100 @@ QSObject {
     signal contentMoveRequested(diff: vector2d)
     signal contentResizeRequested(diff: vector2d)
 
+    /* Component Lifecycle
+     * ****************************************************************************************/
+    Component.onCompleted: {
+        // Initialize sceneActiveRepo - use scene's repo if available, otherwise keep defaultRepo
+        // This ensures the repo is stored and won't be lost during undo/redo operations
+        if (scene?._qsRepo) {
+            sceneActiveRepo = scene._qsRepo;
+        }
+        // If scene._qsRepo is not available, sceneActiveRepo remains as NLCore.defaultRepo (set above)
+        
+        // Set _sceneActiveRepoObject for Connections target with proper type
+        _sceneActiveRepoObject = sceneActiveRepo;
+        
+        // Set _qsRepo for sceneGuiConfig after initialization to ensure proper type
+        if (_sceneGuiConfig) {
+            _sceneGuiConfig._qsRepo = sceneActiveRepo;
+        }
+    }
+
+    // Keep sceneActiveRepo in sync with scene._qsRepo when it becomes available
+    // Using Connections to listen to repoChanged signal (NOTIFY signal for _qsRepo property)
+    // Strategy: Update when scene._qsRepo becomes valid, but preserve sceneActiveRepo if scene._qsRepo becomes null
+    // This prevents losing the repo value during undo/redo operations
+    property Connections _repoSyncCon : Connections {
+        target: scene
+        function onRepoChanged() {
+            if (scene?._qsRepo) {
+                // If scene._qsRepo becomes valid, update sceneActiveRepo
+                // This handles the case where scene._qsRepo is set after component completion
+                sceneActiveRepo = scene._qsRepo;
+                // Update _sceneActiveRepoObject for Connections target
+                _sceneActiveRepoObject = sceneActiveRepo;
+                // Also update sceneGuiConfig._qsRepo to keep it in sync
+                if (_sceneGuiConfig) {
+                    _sceneGuiConfig._qsRepo = sceneActiveRepo;
+                }
+            }
+            // If scene._qsRepo becomes null, we don't update sceneActiveRepo to preserve it
+            // This prevents losing the repo value during undo/redo operations
+        }
+    }
+
+    // After undo/redo operations, sync sceneActiveRepo with scene._qsRepo
+    // This is critical because loadRepo may reset qsRootObject and scene._qsRepo
+    property Connections _undoRedoSyncCon : Connections {
+        target: scene?._undoCore?.undoStack ?? null
+        function onUndoRedoDone() {
+            // After undo/redo, ensure sceneActiveRepo is synchronized with scene._qsRepo
+            // This ensures sceneActiveRepo is always valid after loadRepo completes
+            if (scene?._qsRepo) {
+                sceneActiveRepo = scene._qsRepo;
+                // Update _sceneActiveRepoObject for Connections target
+                _sceneActiveRepoObject = sceneActiveRepo;
+                // Also update sceneGuiConfig._qsRepo to keep it in sync
+                if (_sceneGuiConfig) {
+                    _sceneGuiConfig._qsRepo = sceneActiveRepo;
+                }
+            } else if (!sceneActiveRepo) {
+                // Fallback: if both are null, use defaultRepo (shouldn't happen, but safety)
+                sceneActiveRepo = NLCore.defaultRepo;
+                _sceneActiveRepoObject = sceneActiveRepo;
+                if (_sceneGuiConfig) {
+                    _sceneGuiConfig._qsRepo = sceneActiveRepo;
+                }
+            }
+            // If scene._qsRepo is null but sceneActiveRepo is valid, preserve sceneActiveRepo
+        }
+    }
+
     /* Functions
      * ****************************************************************************************/
 
     //! Check the repository if the model is loading the call the nodes add/remove
     //! related signals to sync the UI
     property Connections _initializeCon : Connections {
-        target: sceneActiveRepo
+        target: _sceneActiveRepoObject
         function onIsLoadingChanged() {
             if (sceneActiveRepo._isLoading) {
                 Object.values(nodes).forEach(node => nodeRemoved(node));
                 Object.values(links).forEach(link => linkRemoved(link));
                 Object.values(containers).forEach(container => containerRemoved(container));
             } else {
+                // After loading completes (e.g., after undo/redo), sync sceneActiveRepo with scene._qsRepo
+                // This ensures sceneActiveRepo is always valid after loadRepo completes
+                if (scene?._qsRepo) {
+                    sceneActiveRepo = scene._qsRepo;
+                    // Update _sceneActiveRepoObject for Connections target
+                    _sceneActiveRepoObject = sceneActiveRepo;
+                    // Also update sceneGuiConfig._qsRepo to keep it in sync
+                    if (_sceneGuiConfig) {
+                        _sceneGuiConfig._qsRepo = sceneActiveRepo;
+                    }
+                }
+                
                 Object.values(nodes).forEach(node => nodeAdded(node));
                 Object.values(links).forEach(link => linkAdded(link));
                 Object.values(containers).forEach(container => containerAdded(container));

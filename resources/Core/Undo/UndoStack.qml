@@ -26,7 +26,7 @@ QtObject {
     //! Redo stack
     property var    redoStack:      []
 
-    property var    sceneActiveRepo: scene?.sceneActiveRepo ?? NLCore.defaultRepo
+    property var    sceneActiveRepo: NLCore.defaultRepo
 
     //! Defined limit for undo stack
     property int    undoMax:        6
@@ -47,7 +47,12 @@ QtObject {
 
     /* Object Properties
      * ****************************************************************************************/
-    Component.onCompleted: timer.start();
+    Component.onCompleted:{
+        if (scene?.sceneActiveRepo) {
+                sceneActiveRepo = scene.sceneActiveRepo
+            }
+        timer.start()
+    }
 
     onUpdateUndoStack: {
         if (!NLSpec.undo.blockObservers)
