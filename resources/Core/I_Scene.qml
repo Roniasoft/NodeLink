@@ -66,6 +66,9 @@ QSObject {
     //! Link Removed
     signal linkRemoved(Link link)
 
+    //! Nodes Removed
+    signal nodesRemoved(var nodes)
+
     //! Container added
     signal containerAdded(Container container)
 
@@ -343,6 +346,49 @@ QSObject {
         scene.addNode(node)
 
         return node._qsUuid;
+    }
+
+    //! Deletes multiple nodes from the scene
+    function deleteNodes(nodeUUIds: list<string>) {
+        if (!nodeUUIds || nodeUUIds.length === 0) {
+            return;
+        }
+
+        var removedNodes = [];
+        var affectedLinks = new Set();
+
+        for (var i = 0; i < nodeUUIds.length; i++) {
+            var nodeUUId = nodeUUIds[i];
+
+            if (!nodes[nodeUUId]) {
+                continue;
+            }
+
+            selectionModel.remove(nodeUUId);
+
+            Object.keys(nodes[nodeUUId].ports).forEach(portId => {
+               Object.entries(links).forEach(([key, value]) => {
+                                                 if (value.inputPort._qsUuid === portId ||
+                                                     value.outputPort._qsUuid === portId) {
+                                                     affectedLinks.add(key);
+                                                 }
+                                             });
+           });
+
+            removedNodes.push(nodes[nodeUUId]);
+            delete nodes[nodeUUId];
+        }
+
+        affectedLinks.forEach(linkKey => {
+                                  linkRemoved(links[linkKey]);
+                                  delete links[linkKey];
+                              });
+
+        if (removedNodes.length > 0) {
+            nodesRemoved(removedNodes);
+            linksChanged();
+            nodesChanged();
+        }
     }
 
     //! Deletes a node from the scene

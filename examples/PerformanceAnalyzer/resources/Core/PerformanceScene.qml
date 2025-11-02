@@ -270,15 +270,9 @@ I_Scene {
 
     function clearScene() {
         var nodeIds = Object.keys(nodes)
-        for (var i = 0; i < nodeIds.length; i++) {
-            scene.deleteNode(nodeIds[i])
-        }
-
+        scene.deleteNodes(nodeIds)
         var linkIds = Object.keys(links)
-        for (var i = 0; i < linkIds.length; i++) {
-            scene.deleteNode(linkIds[i])
-        }
-
+        scene.deleteNodes(linkIds)
         console.log("Scene cleared")
     }
 

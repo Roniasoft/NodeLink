@@ -30,13 +30,9 @@ public:
                                          const QVariantMap &baseProperties
                                          );
 
-    Q_INVOKABLE void destroyObject(const QVariant &var);
-    Q_INVOKABLE void destroyObjects(const QVariantList &objects);
-
 private:
     QQmlEngine *m_engine;
     QHash<QString, QQmlComponent*> m_components;
-    QVector<QObject*> m_createdObjects;
 
     QQmlComponent* getOrCreateComponent(const QString &componentUrl);
 };
