@@ -77,7 +77,7 @@ QtObject {
     signal updateMarqueeSelection(var mouse)
 
     //! Sets port visibility
-    function setPortVisibility(portId: string, visible: Boolean) {
+    function setPortVisibility(portId: string, visible: bool) {
         portsVisibility[portId] = visible
         portsVisibilityChanged()
     }

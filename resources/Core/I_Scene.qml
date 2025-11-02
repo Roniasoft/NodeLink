@@ -133,7 +133,7 @@ QSObject {
     }
 
     //! Adds a node the to nodes map
-    function addNode(node: Node) {
+    function addNode(node: Node) : Node {
         //Sanity check
         if (nodes[node._qsUuid] === node) { return; }
 
@@ -295,7 +295,7 @@ QSObject {
     }
 
     //! Link two nodes (via their ports) - portA is the upstream and portB the downstream one
-    function createLink(portA : string, portB : string) {
+    function createLink(portA : string, portB : string) : QtObject {
 
             let obj = NLCore.createLink();
             obj.guiConfig.colorIndex = 0;
@@ -411,7 +411,7 @@ QSObject {
             var nodeBottomY = nodeTopY + node.guiConfig.height;
             // Checking the equations of the containerItem lines and nodes
             // and their intersection using the obtained limits
-            var isSelected = (rBRightX > nodeLeftX && rBRightX < nodeRightX &&
+            return (rBRightX > nodeLeftX && rBRightX < nodeRightX &&
                 rBBottomY < nodeBottomY && rBBottomY > nodeTopY) ||
             (rBLeftX < nodeLeftX && rBRightX > nodeRightX &&
                 rBBottomY > nodeTopY && rBBottomY < nodeBottomY) ||
@@ -434,9 +434,6 @@ QSObject {
             (nodeLeftX <= rBRightX && nodeLeftX >= rBLeftX &&
                 nodeTopY >= rBTopY && nodeBottomY <= rBBottomY);
 
-            // Return the found node that is inside the container.
-            if(isSelected)
-                return node;
         });
 
         return foundObj;

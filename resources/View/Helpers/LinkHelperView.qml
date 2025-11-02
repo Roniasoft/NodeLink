@@ -221,8 +221,12 @@ Item {
                 }
             });
 
-            if (foundNodeIds)
+            if (foundNodeIds.length > 0) {
+                //! TODO
+                //! should be coerced to void because the function called is insufficiently annotated.
+                //! The original value is retained. This will change in a future version of Qt.
                 finalPortId = findClosestPortInNodes(inputPortId, foundNodeIds, gMouse)
+            }
             return finalPortId;
         }
 
@@ -261,7 +265,7 @@ Item {
         }
 
         //! Calculates the ManhattenDisance between two points
-        function calculateManhattanDistance(point1 : vector2d, point2 : vector2d) {
+        function calculateManhattanDistance(point1 : vector2d, point2 : vector2d) : double {
             return Math.abs(point1.x - point2.x) + Math.abs(point1.y - point2.y);
         }
 

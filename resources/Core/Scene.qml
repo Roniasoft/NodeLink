@@ -193,6 +193,9 @@ I_Scene {
             nodeY.parents[nodeX._qsUuid] = nodeX;
             nodeY.parentsChanged()
 
+            //! TODO
+            //! should be coerced to void because the function called is insufficiently annotated.
+            //! The original value is retained. This will change in a future version of Qt.
             // Create link
             createLink(portA, portB)
         }
