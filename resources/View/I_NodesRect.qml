@@ -129,6 +129,34 @@ Item {
             _nodeViewMap[nodeObj._qsUuid] = nodeView;
         }
 
+        // ! nodeRepeater updated when several nodes Removed
+        function onNodesRemoved(nodeArray: list<Node>) {
+            var viewsToDestroy = [];
+
+            for (var i = 0; i < nodeArray.length; i++) {
+                var nodeObj = nodeArray[i];
+                if (_nodeViewMap[nodeObj._qsUuid]) {
+                    viewsToDestroy.push(_nodeViewMap[nodeObj._qsUuid]);
+                }
+            }
+
+            if (viewsToDestroy.length > 0) {
+                for (let i = 0; i < viewsToDestroy.length; ++i) {
+                    const view = viewsToDestroy[i];
+                    if (view && view.destroy) {
+                        view.destroy();
+                    }
+                }
+                viewsToDestroy = [];
+            }
+
+            for (var i = 0; i < nodeArray.length; i++) {
+                var nodeObj = nodeArray[i];
+                if (_nodeViewMap[nodeObj._qsUuid]) {
+                    delete _nodeViewMap[nodeObj._qsUuid];
+                }
+            }
+        }
 
         //! nodeRepeater updated when a node Removed
         function onNodeRemoved(nodeObj: Node) {
@@ -136,7 +164,7 @@ Item {
                 return;
 
             let nodeViewObj = _nodeViewMap[nodeObj._qsUuid];
-            objectCreator.destroyObject(nodeViewObj);
+            nodeViewObj.destroy()
             delete _nodeViewMap[nodeObj._qsUuid];
         }
 

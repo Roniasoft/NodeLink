@@ -66,5 +66,6 @@ Rectangle {
         id: contentLoader
         anchors.fill: parent
         sourceComponent: contentItem
+        asynchronous: true
     }
 }

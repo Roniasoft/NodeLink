@@ -9,7 +9,6 @@ ObjectCreator::ObjectCreator(QObject *parent)
 
 ObjectCreator::~ObjectCreator()
 {
-    qDeleteAll(m_createdObjects);
     qDeleteAll(m_components);
 }
 
@@ -23,7 +22,7 @@ QQmlComponent* ObjectCreator::getOrCreateComponent(const QString &componentUrl)
         qWarning() << "QML engine not initialized!";
         return nullptr;
     }
-    qDebug() << "the component:" << componentUrl;
+    qDebug() << "Will use the component:" << "qrc:/NodeLink/resources/View/" + componentUrl;
     QQmlComponent *component = new QQmlComponent(
         m_engine,
         "qrc:/NodeLink/resources/View/" + componentUrl,
@@ -70,8 +69,8 @@ QQuickItem* ObjectCreator::createNode(
     if (obj) {
         QQuickItem *item = qobject_cast<QQuickItem*>(obj);
         if (item) {
+            QQmlEngine::setObjectOwnership(obj, QQmlEngine::JavaScriptOwnership);
             item->setParentItem(parentItem);
-            m_createdObjects.append(obj);
             return item;
         }
         delete obj;
@@ -121,8 +120,8 @@ QVariantList ObjectCreator::createNodes(
         if (obj) {
             QQuickItem *item = qobject_cast<QQuickItem*>(obj);
             if (item) {
+                QQmlEngine::setObjectOwnership(obj, QQmlEngine::JavaScriptOwnership);
                 item->setParentItem(parentItem);
-                m_createdObjects.append(obj);
                 createdItems.append(QVariant::fromValue(item));
             } else {
                 delete obj;
@@ -131,24 +130,4 @@ QVariantList ObjectCreator::createNodes(
     }
     qDebug() << "Creating" << count << "Nodes took " << timer.elapsed() << "ms";
     return createdItems;
-}
-
-void ObjectCreator::destroyObject(const QVariant &var)
-{
-    QObject *obj = qvariant_cast<QObject*>(var);
-    if (!obj) return;
-
-    m_createdObjects.removeAll(obj);
-    obj->deleteLater();
-}
-
-void ObjectCreator::destroyObjects(const QVariantList &objects)
-{
-    for (const QVariant &var : objects) {
-        QObject *obj = qvariant_cast<QObject*>(var);
-        if (!obj) return;
-
-        m_createdObjects.removeAll(obj);
-        obj->deleteLater();
-    }
 }
