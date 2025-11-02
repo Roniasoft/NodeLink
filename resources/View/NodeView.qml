@@ -15,7 +15,7 @@ InteractiveNodeView {
     property bool         edit
 
     //! Node is in minimal state or not (based in zoom factor)
-    property bool         isNodeMinimal:  sceneSession.zoomManager.zoomFactor < sceneSession.zoomManager.minimalZoomNode
+    property bool         isNodeMinimal:  sceneSession?.zoomManager?.zoomFactor < sceneSession?.zoomManager?.minimalZoomNode
 
     //! nodeMouseArea
     //! Simply capture mouse area properties and avoid overwriting anything carelessly.
@@ -280,7 +280,7 @@ InteractiveNodeView {
         anchors.margins: 10
         hoverEnabled: true
         preventStealing: true
-        enabled: !nodeView.edit && !sceneSession.connectingMode &&
+        enabled: !nodeView.edit && sceneSession && !sceneSession.connectingMode &&
                  !node.guiConfig.locked && !sceneSession.isCtrlPressed &&
                  isNodeEditable
 

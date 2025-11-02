@@ -61,7 +61,7 @@ Rectangle {
         anchors.fill: parent
         anchors.margins: -2
 
-        enabled: !sceneSession.connectingMode
+        enabled: sceneSession && !sceneSession.connectingMode
         propagateComposedEvents: true
 
         onPressed: mouse => {

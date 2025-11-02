@@ -113,7 +113,7 @@ I_NodeView {
         id: topMouseArea
         width: parent.width
         hoverEnabled: true
-        enabled: isResizable && !sceneSession.connectingMode
+        enabled: isResizable && sceneSession && !sceneSession.connectingMode
         height: 20
         cursorShape: Qt.SizeVerCursor
         anchors.top: parent.top
@@ -171,7 +171,7 @@ I_NodeView {
         width: parent.width
         hoverEnabled: true
         height: 20
-        enabled: isResizable && !sceneSession.connectingMode
+        enabled: isResizable && sceneSession && !sceneSession.connectingMode
         cursorShape: Qt.SizeVerCursor
         anchors.bottom: parent.bottom
         anchors.bottomMargin: -10
@@ -222,7 +222,7 @@ I_NodeView {
         width: 20
         cursorShape: Qt.SizeHorCursor
         hoverEnabled: true
-        enabled: isResizable && !sceneSession.connectingMode
+        enabled: isResizable && sceneSession && !sceneSession.connectingMode
         height: parent.height
         anchors.left: parent.left
         anchors.leftMargin: -10
@@ -280,7 +280,7 @@ I_NodeView {
         width: 12
         cursorShape: Qt.SizeHorCursor
         hoverEnabled: true
-        enabled: isResizable && !sceneSession.connectingMode
+        enabled: isResizable && sceneSession && !sceneSession.connectingMode
         height: parent.height
         anchors.right: parent.right
         anchors.rightMargin: -10
@@ -333,7 +333,7 @@ I_NodeView {
         id: rightTopCornerMouseArea
         width: 20
         height: 20
-        enabled: isResizable && !sceneSession.connectingMode
+        enabled: isResizable && sceneSession && !sceneSession.connectingMode
         cursorShape: Qt.SizeBDiagCursor
         hoverEnabled: true
         anchors.right: parent.right
@@ -383,7 +383,7 @@ I_NodeView {
         id: rightDownCornerMouseArea
         width: 20
         height: 20
-        enabled: isResizable && !sceneSession.connectingMode
+        enabled: isResizable && sceneSession && !sceneSession.connectingMode
         cursorShape: Qt.SizeFDiagCursor
         hoverEnabled: true
         anchors.right: parent.right
@@ -429,7 +429,7 @@ I_NodeView {
         id: leftTopCornerMouseArea
         width: 20
         height: 20
-        enabled: isResizable && !sceneSession.connectingMode
+        enabled: isResizable && sceneSession && !sceneSession.connectingMode
         cursorShape: Qt.SizeFDiagCursor
         hoverEnabled: true
         anchors.left: parent.left
@@ -483,7 +483,7 @@ I_NodeView {
         id: leftDownCornerMouseArea
         width: 20
         height: 20
-        enabled: isResizable && !sceneSession.connectingMode
+        enabled: isResizable && sceneSession && !sceneSession.connectingMode
         cursorShape: Qt.SizeBDiagCursor
         hoverEnabled: true
         anchors.left: parent.left
