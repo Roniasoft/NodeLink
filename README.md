@@ -19,8 +19,24 @@ Platforms
 Dependencies
 ------------
 
-* Qt > 6.4.0 (Will test on lower version soon)
-* CMake 3.8
+### C++ / Build
+- **C++ standard:** C++17 (project is tested with C++17-compatible toolchains).  
+- **CMake:** ≥ 3.8 (recommended: 3.20+).  
+- **Compilers (examples):**
+  - Linux: GCC ≥ 7.0 or Clang ≥ 7.0
+  - Windows: MSVC 2019 (Visual Studio 2019) or MinGW (if supported)
+  - macOS: Apple Clang 
+- **Optional / recommended tools:**
+  - `nproc` or similar for parallel `make -j`
+  - Git ≥ 2.20 (to handle submodules comfortably)
+
+### Qt / QML
+- **Qt:** ≥ 6.2.4 (project tested with Qt 6.2.4+).  
+- Required Qt modules (used by NodeLink QML components):
+  - `QtQuick`
+  - `QtQuick.Controls`
+  - `QtQml`
+  - `QtQuick.Layouts`
 
 
 Current State (v0.9.0)
@@ -59,24 +75,52 @@ Calculator Example
 Building
 ========
 
-Linux
------
+### 0. Quick notes
+- The repo uses Git **submodules** for some dependencies. You must clone/update submodules to get a working tree.  
+- You can build from command-line (CMake + make / ninja) or with **Qt Creator**.
+
+### 1. Clone repository (including submodules)
+Recommended (single step):
+```bash
+git clone --recursive git@github.com:Roniasoft/NodeLink.git
+cd NodeLink
 ```
-  git clone git@github.com:Roniasoft/NodeLink.git
-  cd NodeLink
+If you already cloned without --recursive:
+```bash
+git submodule update --init --recursive
+```  
+
+If you want to update submodules to their remote branches later:
+```bash
+git submodule update --remote --merge
+```  
+
+(Linux / macOS — command-line example)
+-----
+```bash
   mkdir build
   cd build
-  cmake ..
-  make -j && make install
-```
+  cmake .. -DCMAKE_BUILD_TYPE=Release
+  make -j$(nproc)
+  sudo make install
+```  
+Notes:
+To change install location use **-DCMAKE_INSTALL_PREFIX=/your/path**.  
 
-Qt Creator
+
+Build with Qt Creator
 ----------
 
 1. Open `CMakeLists.txt` as project.
 2. `Build -> Run CMake`
 3. `Build -> Build All`
 4. Click the button `Run`
+
+Troubleshooting
+----------
+Missing Qt modules: make sure your Qt installation includes QtQuick, QtQuick.Controls, and other listed modules.  
+Submodule folders empty: run git submodule update --init --recursive.  
+CMake errors: delete build/ and re-run CMake to get a clean configure.  
 
 Contribution
 ============
@@ -131,5 +175,17 @@ NodeLink Simple Example:
   
 ## License
 
-This library is licensed under the [Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0). See the [LICENSE](LICENSE) file for details.
+This project is licensed under the **Apache License, Version 2.0**.
+
+You are free to:
+- **Use** the library in both open-source and commercial projects.
+- **Modify** and **redistribute** it under the same license.
+- **Include** it as part of larger Qt/QML applications.
+
+When redistributing or using this library, you must:
+- Include a copy of the [LICENSE](LICENSE) file.
+- Provide proper attribution (e.g., link to this repository or mention "NodeLink by RONIA").
+
+For the full terms and conditions, see the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0).
+
 
