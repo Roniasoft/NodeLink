@@ -42,5 +42,9 @@ Item {
         function onColorChanged() {
             undoStack.updateUndoStack();
         }
+
+        function onDescriptionChanged() {
+            undoStack.updateUndoStack();
+        }
     }
 }

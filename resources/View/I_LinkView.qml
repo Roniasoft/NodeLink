@@ -52,11 +52,20 @@ Canvas {
     property string     linkColor: Object.keys(sceneSession?.linkColorOverrideMap ?? ({})).includes(link?._qsUuid ?? "") ? sceneSession.linkColorOverrideMap[link._qsUuid] : link.guiConfig.color
 
     //! Canvas Dimensions
-    property real topLeftX: Math.min(...link.controlPoints.map(controlpoint => controlpoint.x), inputPos.x, outputPos.x)
-    property real topLeftY: Math.min(...link.controlPoints.map(controlpoint => controlpoint.y), inputPos.y, outputPos.y)
+    function safePoints() {
+        if (Array.isArray(link.controlPoints)) {
+            return link.controlPoints;
+        } else if (link.controlPoints) {
+            return [link.controlPoints];
+        } else {
+            return [];
+        }
+    }
 
-    property real bottomRightX: Math.max(...link.controlPoints.map(controlpoint => controlpoint.x), inputPos.x, outputPos.x)
-    property real bottomRightY: Math.max(...link.controlPoints.map(controlpoint => controlpoint.y), inputPos.y, outputPos.y)
+    property real topLeftX: Math.min(...safePoints().map(p => p.x), inputPos.x, outputPos.x)
+    property real topLeftY: Math.min(...safePoints().map(p => p.y), inputPos.y, outputPos.y)
+    property real bottomRightX: Math.max(...safePoints().map(p => p.x), inputPos.x, outputPos.x)
+    property real bottomRightY: Math.max(...safePoints().map(p => p.y), inputPos.y, outputPos.y)
 
     //! Length of arrow
     property real arrowHeadLength: 10;
