@@ -128,7 +128,7 @@ Window {
     //! Load
     FileDialog {
         id: loadDialog
-        currentFile: "QtQuickStream.QQS.json"
+        // currentFile: "QtQuickStream.QQS.json"
         fileMode: FileDialog.OpenFile
         nameFilters: [ "QtQuickStream Files (*.QQS.json)" ]
         onAccepted: {
