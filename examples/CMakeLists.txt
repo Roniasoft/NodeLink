@@ -1,4 +1,5 @@
 add_subdirectory(simpleNodeLink)
 add_subdirectory(calculator)
+add_subdirectory(chatbot)
 add_subdirectory(PerformanceAnalyzer)
 
