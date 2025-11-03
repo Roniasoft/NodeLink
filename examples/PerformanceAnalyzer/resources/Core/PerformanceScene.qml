@@ -157,12 +157,15 @@ Scene {
 
 
     function clearScene() {
+        console.time("Scene_clear")
+        scene.selectionModel.clear()
         var nodeIds = Object.keys(nodes)
         scene.deleteNodes(nodeIds)
         var linkIds = Object.keys(links)
         scene.deleteNodes(linkIds)
         links = []
-        console.log("Scene cleared")
+        gc()
+        console.timeEnd("Scene_clear")
     }
 
 }

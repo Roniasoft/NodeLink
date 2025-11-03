@@ -39,7 +39,7 @@ Window {
         anchors.topMargin: 50
         anchors.rightMargin: 50
         width: 220
-        height: 260
+        height: 340
         color: "#2d2d2d"
         border.color: "#3e3e3e"
         radius: 8
@@ -115,6 +115,15 @@ Window {
                     scene.clearScene()
                     statusText.text = "Scene cleared"
                     statusText.color = "#cccccc"
+                }
+            }
+            Button {
+                text: "Select All"
+                width: parent.width - 30
+                onClicked: {
+                    console.time("selection")
+                    scene.selectionModel.selectAll(scene.nodes, scene.links, scene.containers)
+                    console.timeEnd("selection")
                 }
             }
         }
