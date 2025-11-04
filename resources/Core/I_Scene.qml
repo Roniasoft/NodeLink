@@ -302,33 +302,7 @@ QSObject {
             }
         }
 
-        return addedNodes;
-    }
-
-    function onNodesAdded(nodeObjects: list<Node>) {
-        const newNodes = nodeObjects.filter(nodeObj =>
-            !Object.keys(_nodeViewMap).includes(nodeObj._qsUuid)
-        );
-
-        if (newNodes.length === 0)
-            return;
-
-        // Create all node views at once
-        const objViews = objectCreator.createNodes(
-            newNodes.length,
-            root,
-            nodeViewUrl,
-            {
-                "scene": root.scene,
-                "sceneSession": root.sceneSession,
-                "viewProperties": root.viewProperties
-                // "node": will be added inside cpp class
-            }
-        );
-
-        for (let i = 0; i < objViews.length; i++) {
-            _nodeViewMap[newNodes[i]._qsUuid] = objViews[i];
-        }
+        return;
     }
 
     //! Create a node with node type and its position
@@ -384,11 +358,14 @@ QSObject {
 
         affectedLinks.forEach(linkKey => {
                                   linkRemoved(links[linkKey]);
+                                  links[linkKey].destroy();
                                   delete links[linkKey];
                               });
 
         if (removedNodes.length > 0) {
             nodesRemoved(removedNodes);
+            // Destroy removed nodes
+            removedNodes.forEach(node => node.destroy());
             linksChanged();
             nodesChanged();
         }
@@ -735,8 +712,7 @@ QSObject {
                 nodeTopY >= rBTopY && nodeBottomY <= rBBottomY);
 
             // Return the found node that is inside the container.
-            if(isSelected)
-                return node;
+            return isSelected;
         });
 
         return foundObj;

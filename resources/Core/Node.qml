@@ -75,7 +75,11 @@ I_Node  {
         portAdded(port._qsUuid);
     }
 
-    function deletePort(port) {
+    function deletePort(port : Port) {
+        var portId = port._qsUuid
+        var portObj = ports[portId]
+        portObj.destroy()
+        delete port[portId]
     }
 
 

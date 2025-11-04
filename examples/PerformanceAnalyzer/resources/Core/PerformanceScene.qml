@@ -47,7 +47,7 @@ Scene {
     //! Adds multiple links at once
     function createLinks(linkDataArray) {
         if (!linkDataArray || linkDataArray.length === 0) {
-            return [];
+            return;
         }
 
         var addedLinks = [];
@@ -86,8 +86,6 @@ Scene {
             linksChanged();
             linksAdded(addedLinks);
         }
-
-        return addedLinks;
     }
 
     //! function to create multiple pairs at once
@@ -164,7 +162,6 @@ Scene {
         var linkIds = Object.keys(links)
         scene.deleteNodes(linkIds)
         links = []
-        gc()
         console.timeEnd("Scene_clear")
     }
 

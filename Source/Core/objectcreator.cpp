@@ -40,7 +40,7 @@ QQmlComponent* ObjectCreator::getOrCreateComponent(const QString &componentUrl)
     return component;
 }
 
-QQuickItem* ObjectCreator::createNode(
+QQuickItem* ObjectCreator::createItem(
     QQuickItem *parentItem,
     const QString &componentUrl,
     const QVariantMap &properties)
@@ -79,7 +79,7 @@ QQuickItem* ObjectCreator::createNode(
     return nullptr;
 }
 
-QVariantList ObjectCreator::createNodes(
+QVariantList ObjectCreator::createItems(
     const QString &name,
     QVariantList itemArray,
     QQuickItem *parentItem,
