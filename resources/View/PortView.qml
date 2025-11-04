@@ -50,7 +50,8 @@ Rectangle {
     color: "#8b6cef"
     border.color: "#363636"
     scale: mouseArea.containsMouse ? 1.1 : 1
-    opacity: (sceneSession && (sceneSession?.portsVisibility[port?._qsUuid] ?? false)) ? 1 : 0
+
+    opacity: 1    // always visible
 
     // Behavior on opacity {NumberAnimation{duration: 100}}
     Behavior on scale {NumberAnimation{}}
@@ -96,5 +97,59 @@ Rectangle {
             scene.selectionModel.remove(inputPortNodeId);
         else
             scene.selectionModel.selectNode(inputPortNode);
+    }
+
+
+    Text {
+        id: portTitle
+        text: port.title
+        color: "white"
+        font.pixelSize: NLStyle.portView.fontSize * (sceneSession ? (1 / sceneSession.zoomManager.zoomFactor) : 1)
+        wrapMode: Text.NoWrap
+        elide: Text.ElideRight
+        verticalAlignment: Text.AlignVCenter
+        horizontalAlignment: Text.AlignLeft
+
+        anchors.verticalCenter: parent.verticalCenter
+
+        // default: label on right
+        anchors.left: parent.right
+        anchors.leftMargin: 4
+
+
+        Component.onCompleted: {
+            positionLabel()
+        }
+
+        function positionLabel() {
+            anchors.left = undefined
+            anchors.right = undefined
+            anchors.top = undefined
+            anchors.bottom = undefined
+            anchors.leftMargin = 0
+            anchors.rightMargin = 0
+            anchors.topMargin = 0
+            anchors.bottomMargin = 0
+
+            switch (port.portSide) {
+            case NLSpec.PortPositionSide.Left:
+                anchors.left = parent.right
+                anchors.leftMargin = 4
+                break
+            case NLSpec.PortPositionSide.Right:
+                anchors.right = parent.left
+                anchors.rightMargin = 4
+                break
+            case NLSpec.PortPositionSide.Top:
+                anchors.top = parent.bottom
+                anchors.topMargin = 2
+                break
+            case NLSpec.PortPositionSide.Bottom:
+                anchors.bottom = parent.top
+                anchors.bottomMargin = 2
+                break
+            }
+        }
+
     }
 }
