@@ -80,18 +80,24 @@ Item {
             if (!Object.keys(_containerViewMap).includes(containerObj._qsUuid))
                 return;
 
-            // Destroy object
-            let containerViewObj = _containerViewMap[containerObj._qsUuid];
-            containerViewObj.destroy();
+            let containerObjId = containerObj._qsUuid;
 
-            // Delete from map
-            delete _containerViewMap[containerObj._qsUuid];
+            let containerViewObj = _containerViewMap[containerObjId];
+            if (containerViewObj) {
+                containerViewObj.destroy();
+            }
+
+            delete _containerViewMap[containerObjId];
         }
 
         function onNodesAdded(nodeArray: list<Node>) {
-            let createdViews = objectCreator.createNodes(
+            var jsArray = [];
+                for (var i = 0; i < nodeArray.length; i++) {
+                    jsArray.push(nodeArray[i]);
+                }
+            let createdViews = objectCreator.createItems(
                 "node",
-                nodeArray,
+                jsArray,
                 root,
                 nodeViewUrl,
                 {
@@ -114,7 +120,7 @@ Item {
 
             //! NodeViews should be child of NodesRect so they also get the zoom factor through
             //! scaling, url:"qrc:/NodeLink/resources/View/NodeView.qml"
-            let nodeView = objectCreator.createNode(
+            let nodeView = objectCreator.createItem(
                     root,
                     nodeViewUrl,
                     {
@@ -149,22 +155,34 @@ Item {
                 viewsToDestroy = [];
             }
 
-            for (var i = 0; i < nodeArray.length; i++) {
-                var nodeObj = nodeArray[i];
-                if (_nodeViewMap[nodeObj._qsUuid]) {
-                    delete _nodeViewMap[nodeObj._qsUuid];
+            for (let i = 0; i < nodeArray.length; i++) {
+                let nodeObj = nodeArray[i];
+                let nodePorts = nodeObj.ports
+                Object.entries(nodePorts).forEach(
+                            ([portId, port]) => {
+                                nodeObj.deletePort(port)
+                            });
+                var nodeObjId = nodeObj._qsUuid;
+                nodeObj.destroy()
+                if (_nodeViewMap[nodeObjId]) {
+                    delete _nodeViewMap[nodeObjId];
                 }
             }
         }
 
         //! nodeRepeater updated when a node Removed
         function onNodeRemoved(nodeObj: Node) {
-            if (!_nodeViewMap[nodeObj._qsUuid])
+            let nodeObjId = nodeObj._qsUuid;
+
+            if (!_nodeViewMap[nodeObjId])
                 return;
 
-            let nodeViewObj = _nodeViewMap[nodeObj._qsUuid];
-            nodeViewObj.destroy()
-            delete _nodeViewMap[nodeObj._qsUuid];
+            let nodeViewObj = _nodeViewMap[nodeObjId];
+            if (nodeViewObj) {
+                nodeViewObj.destroy();
+            }
+
+            delete _nodeViewMap[nodeObjId];
         }
 
         //! linkRepeater updated when a link added
@@ -172,7 +190,7 @@ Item {
             if (Object.keys(_linkViewMap).includes(linkObj._qsUuid))
                 return;
 
-            const objView = objectCreator.createNode(
+            const objView = objectCreator.createItem(
                               root,
                               linkViewUrl,
                               {
@@ -187,9 +205,13 @@ Item {
 
         //! linkRepeater updated when a link added
         function onLinksAdded(linkArray: list<Link>) {
-            const createdLinks = objectCreator.createNodes(
+            var jsArray = [];
+                for (var i = 0; i < linkArray.length; i++) {
+                    jsArray.push(linkArray[i]);
+                }
+            const createdLinks = objectCreator.createItems(
                               "link",
-                              linkArray,
+                              jsArray,
                               root,
                               linkViewUrl,
                               {
@@ -205,15 +227,19 @@ Item {
 
         //! linkRepeater updated when a link Removed
         function onLinkRemoved(linkObj: Link) {
-            if (!Object.keys(_linkViewMap).includes(linkObj._qsUuid))
+            let linkObjId = linkObj._qsUuid;
+
+            if (!Object.keys(_linkViewMap).includes(linkObjId))
                 return;
 
-            // Destroy object
-            let nodeViewObj = _linkViewMap[linkObj._qsUuid];
-            nodeViewObj.destroy();
+            // Destroy view object
+            let linkViewObj = _linkViewMap[linkObjId];
+            if (linkViewObj) {
+                linkViewObj.destroy();
+            }
 
             // Delete from map
-            delete _linkViewMap[linkObj._qsUuid];
+            delete _linkViewMap[linkObjId];
         }
     }
 }

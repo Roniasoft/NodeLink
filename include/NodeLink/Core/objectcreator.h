@@ -18,13 +18,13 @@ public:
     explicit ObjectCreator(QObject *parent = nullptr);
     ~ObjectCreator();
 
-    Q_INVOKABLE QQuickItem* createNode(
+    Q_INVOKABLE QQuickItem* createItem(
         QQuickItem *parentItem,
         const QString &componentUrl,
         const QVariantMap &properties
         );
     
-    Q_INVOKABLE QVariantList createNodes(
+    Q_INVOKABLE QVariantList createItems(
         const QString &name,
         QVariantList itemArray,
         QQuickItem *parentItem,
