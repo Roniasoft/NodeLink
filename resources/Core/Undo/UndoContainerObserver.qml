@@ -13,27 +13,51 @@ Item {
      * ****************************************************************************************/
     property Container  container
 
-    property UndoStack  undoStack
+    property CommandStack  undoStack
 
     /* Childeren
      * ****************************************************************************************/
+    property var _cache: ({})
+
+    Component.onCompleted: {
+        if (container) {
+            _cache.title = container.title
+            _cache._init = true
+        }
+    }
+
+    function _ensureCache() {
+        if (!container) return
+        if (_cache._init) return
+        _cache.title = container.title
+        _cache._init = true
+    }
+
+    function pushProp(targetObj, key, oldV, newV) {
+        if (!undoStack || undoStack.isReplaying) return
+        if (oldV === undefined || newV === undefined) return
+        if (JSON.stringify(oldV) === JSON.stringify(newV)) return
+        var cmd = Qt.createQmlObject('import QtQuick; import NodeLink; import "Commands"; PropertyCommand {}', undoStack)
+        cmd.target = targetObj
+        cmd.key = key
+        cmd.oldValue = oldV
+        cmd.newValue = newV
+        undoStack.push(cmd)
+    }
+
     Connections {
         target: container
 
         enabled: !NLSpec.undo.blockObservers
 
-
         function onTitleChanged() {
-            undoStack.updateUndoStack();
+            _ensureCache()
+            let oldV = _cache.title
+            let newV = container.title
+            pushProp(container, "title", oldV, newV)
+            _cache.title = newV
         }
-
-        function onNodesChanged() {
-            undoStack.updateUndoStack();
-        }
-
-        function onContainersInsideChanged() {
-            undoStack.updateUndoStack();
-        }
+        // Structural changes (nodes/containersInside) are handled by scene commands
     }
 
     UndoContainerGuiObserver {

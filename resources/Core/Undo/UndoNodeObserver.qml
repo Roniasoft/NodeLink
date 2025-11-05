@@ -13,27 +13,61 @@ Item {
      * ****************************************************************************************/
     property Node       node
 
-    property UndoStack  undoStack
+    property CommandStack  undoStack
 
     /* Childeren
      * ****************************************************************************************/
+    property var _cache: ({})
+
+    Component.onCompleted: {
+        if (node) {
+            _cache.title = node.title
+            _cache.type = node.type
+            _cache._init = true
+        }
+    }
+
+    function _ensureCache() {
+        if (!node) return
+        if (_cache._init) return
+        _cache.title = node.title
+        _cache.type = node.type
+        _cache._init = true
+    }
+
+    function pushProp(targetObj, key, oldV, newV) {
+        if (!undoStack || undoStack.isReplaying) return
+        if (oldV === undefined || newV === undefined) return
+        if (JSON.stringify(oldV) === JSON.stringify(newV)) return
+        function setProp(obj, value) { if (obj) obj[key] = value }
+        var cmd = {
+            undo: function() { setProp(targetObj, oldV) },
+            redo: function() { setProp(targetObj, newV) }
+        }
+        undoStack.push(cmd)
+    }
+
     Connections {
         target: node
 
         enabled: !NLSpec.undo.blockObservers
 
-
         function onTitleChanged() {
-            undoStack.updateUndoStack();
+            _ensureCache()
+            let oldV = _cache.title
+            let newV = node.title
+            pushProp(node, "title", oldV, newV)
+            _cache.title = newV
         }
 
         function onTypeChanged() {
-            undoStack.updateUndoStack();
+            _ensureCache()
+            let oldV = _cache.type
+            let newV = node.type
+            pushProp(node, "type", oldV, newV)
+            _cache.type = newV
         }
-
-        function onPortsChanged() {
-            undoStack.updateUndoStack();
-        }
+        // Note: ports changes are structural; handled by link/scene commands
     }
 
     UndoNodeGuiObserver {

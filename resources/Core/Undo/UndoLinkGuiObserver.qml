@@ -4,27 +4,30 @@ import QtQml
 import NodeLink
 
 /*! ***********************************************************************************************
- * The GuiConfigUndoObserver observe ContainerGuiConfig properties changes.
+ * The GuiConfigUndoObserver observe LinkGuiConfig properties changes.
  * ************************************************************************************************/
 Item {
     id: root
 
     /* Property Properties
      * ****************************************************************************************/
-    property ContainerGuiConfig  guiConfig
+    property LinkGUIConfig  guiConfig
 
-    property CommandStack           undoStack
+    property CommandStack      undoStack
 
     /* Childeren
      * ****************************************************************************************/
+
+    // cache last values to compute old/new
     property var _cache: ({})
 
     Component.onCompleted: {
         if (guiConfig) {
-            _cache.position = guiConfig.position
-            _cache.width = guiConfig.width
-            _cache.height = guiConfig.height
+            _cache.description = guiConfig.description
             _cache.color = guiConfig.color
+            _cache.colorIndex = guiConfig.colorIndex
+            _cache.style = guiConfig.style
+            _cache.type = guiConfig.type
             _cache._init = true
         }
     }
@@ -32,10 +35,11 @@ Item {
     function _ensureCache() {
         if (!guiConfig) return
         if (_cache._init) return
-        _cache.position = guiConfig.position
-        _cache.width = guiConfig.width
-        _cache.height = guiConfig.height
+        _cache.description = guiConfig.description
+        _cache.colorIndex = guiConfig.colorIndex
+        _cache.style = guiConfig.style
         _cache.color = guiConfig.color
+        _cache.type = guiConfig.type
         _cache._init = true
     }
 
@@ -50,21 +54,6 @@ Item {
         if (!undoStack || undoStack.isReplaying) return
         if (oldV === undefined || newV === undefined) return
         const targetObj = guiConfig
-        if (key === "position") {
-            if (_positionsEqual(oldV, newV)) return
-            let oldCopy = _copyPos(oldV)
-            let newCopy = _copyPos(newV)
-            function setPos(val) {
-                if (!targetObj) return
-                targetObj.position = Qt.vector2d(val.x, val.y)
-            }
-            var cmdPos = {
-                undo: function() { setPos(oldCopy) },
-                redo: function() { setPos(newCopy) }
-            }
-            undoStack.push(cmdPos)
-            return
-        }
         if (JSON.stringify(oldV) === JSON.stringify(newV)) return
         function setProp(value) {
             if (!targetObj) return
@@ -81,36 +70,45 @@ Item {
         target: guiConfig
         enabled: !NLSpec.undo.blockObservers
 
-        function onPositionChanged() {
+
+        function onDescriptionChanged(){
             _ensureCache()
-            let oldV = _cache.position
-            let newV = guiConfig.position
-            pushProp("position", oldV, newV)
-            _cache.position = _copyPos(newV)
+            let oldV = _cache.description
+            let newV = guiConfig.description
+            pushProp("description", oldV, newV)
+            _cache.description = newV
         }
 
-        function onWidthChanged() {
-            _ensureCache()
-            let oldV = _cache.width
-            let newV = guiConfig.width
-            pushProp("width", oldV, newV)
-            _cache.width = newV
-        }
-
-        function onHeightChanged() {
-            _ensureCache()
-            let oldV = _cache.height
-            let newV = guiConfig.height
-            pushProp("height", oldV, newV)
-            _cache.height = newV
-        }
-
-        function onColorChanged() {
+        function onColorChanged(){
             _ensureCache()
             let oldV = _cache.color
             let newV = guiConfig.color
             pushProp("color", oldV, newV)
             _cache.color = newV
+        }
+
+        function onColorIndexChanged(){
+            _ensureCache()
+            let oldV = _cache.colorIndex
+            let newV = guiConfig.colorIndex
+            pushProp("colorIndex", oldV, newV)
+            _cache.colorIndex = newV
+        }
+
+        function onStyleChanged(){
+            _ensureCache()
+            let oldV =  _cache.style
+            let newV = guiConfig.style
+            pushProp("style", oldV, newV)
+            _cache.style = newV
+        }
+
+        function onTypeChanged(){
+            _ensureCache()
+            let oldV =  _cache.type
+            let newV = guiConfig.type
+            pushProp("type", oldV, newV)
+            _cache.type = newV
         }
     }
 }

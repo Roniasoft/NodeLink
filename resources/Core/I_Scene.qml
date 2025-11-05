@@ -201,6 +201,14 @@ QSObject {
         scene.selectionModel.clear();
         scene.selectionModel.selectContainer(container);
 
+        // Push command (skip during replay)
+        if (!scene._undoCore.undoStack.isReplaying) {
+            var cmdAddContainer = Qt.createQmlObject('import QtQuick; import NodeLink; import "Undo/Commands"; AddContainerCommand { }', scene._undoCore.undoStack)
+            cmdAddContainer.scene = scene
+            cmdAddContainer.container = container
+            scene._undoCore.undoStack.push(cmdAddContainer)
+        }
+
         return container;
     }
 
@@ -208,9 +216,17 @@ QSObject {
     function deleteContainer(containerUUId: string) {
         // Remove the deleted object from selected model
         selectionModel.remove(containerUUId);
-        containerRemoved(containers[containerUUId]);
+        var containerRef = containers[containerUUId];
+        containerRemoved(containerRef);
         delete containers[containerUUId];
         containersChanged();
+
+        if (!scene._undoCore.undoStack.isReplaying && containerRef) {
+            var cmdRemoveContainer = Qt.createQmlObject('import QtQuick; import NodeLink; import "Undo/Commands"; RemoveContainerCommand { }', scene._undoCore.undoStack)
+            cmdRemoveContainer.scene = scene
+            cmdRemoveContainer.container = containerRef
+            scene._undoCore.undoStack.push(cmdRemoveContainer)
+        }
     }
 
     //! Checks if scene is empty or not
@@ -233,6 +249,13 @@ QSObject {
 
         scene.selectionModel.clear();
         scene.selectionModel.selectNode(node);
+
+        if (!scene._undoCore.undoStack.isReplaying) {
+            var cmdAddNode = Qt.createQmlObject('import QtQuick; import NodeLink; import "Undo/Commands"; AddNodeCommand { }', scene._undoCore.undoStack)
+            cmdAddNode.scene = scene
+            cmdAddNode.node = node
+            scene._undoCore.undoStack.push(cmdAddNode)
+        }
 
         return node;
     }
@@ -263,8 +286,25 @@ QSObject {
         // Remove the deleted object from selected model
         selectionModel.remove(nodeUUId);
 
+        var nodeRef = nodes[nodeUUId];
+        if (!nodeRef) {
+            return;
+        }
+
+        // Capture connected links (pairs of input/output port UUIDs) before deletion
+        var connectedPairs = []
+        Object.keys(nodeRef.ports).forEach(portId => {
+            Object.entries(links).forEach(([key, value]) => {
+                const inputPortUuid  = value.inputPort._qsUuid;
+                const outputPortUuid = value.outputPort._qsUuid;
+                if (inputPortUuid === portId || outputPortUuid === portId) {
+                    connectedPairs.push({ inputPortUuid: inputPortUuid, outputPortUuid: outputPortUuid })
+                }
+            });
+        });
+
         //! delete the node ports from the portsPosition map
-        Object.keys(nodes[nodeUUId].ports).forEach(portId => {
+        Object.keys(nodeRef.ports).forEach(portId => {
 
             // delete related links
             Object.entries(links).forEach(([key, value]) => {
@@ -275,12 +315,20 @@ QSObject {
                 }
             });
         });
-        nodeRemoved(nodes[nodeUUId]);
+        nodeRemoved(nodeRef);
 
         delete nodes[nodeUUId];
 
         linksChanged();
         nodesChanged();
+
+        if (!scene._undoCore.undoStack.isReplaying && nodeRef) {
+            var cmdRemoveNode = Qt.createQmlObject('import QtQuick; import NodeLink; import "Undo/Commands"; RemoveNodeCommand { }', scene._undoCore.undoStack)
+            cmdRemoveNode.scene = scene
+            cmdRemoveNode.node = nodeRef
+            cmdRemoveNode.links = connectedPairs
+            scene._undoCore.undoStack.push(cmdRemoveNode)
+        }
     }
 
     //! duplicator (third button)
@@ -395,6 +443,13 @@ QSObject {
 
             // Add link into UI
             linkAdded(obj);
+            if (!scene._undoCore.undoStack.isReplaying) {
+                var cmdCreateLink = Qt.createQmlObject('import QtQuick; import NodeLink; import "Undo/Commands"; CreateLinkCommand { }', scene._undoCore.undoStack)
+                cmdCreateLink.scene = scene
+                cmdCreateLink.inputPortUuid = portA
+                cmdCreateLink.outputPortUuid = portB
+                scene._undoCore.undoStack.push(cmdCreateLink)
+            }
             return obj;
     }
 
@@ -425,6 +480,14 @@ QSObject {
             }
         });
         linksChanged();
+
+        if (!scene._undoCore.undoStack.isReplaying) {
+            var cmdUnlink = Qt.createQmlObject('import QtQuick; import NodeLink; import "Undo/Commands"; UnlinkCommand { }', scene._undoCore.undoStack)
+            cmdUnlink.scene = scene
+            cmdUnlink.inputPortUuid = portA
+            cmdUnlink.outputPortUuid = portB
+            scene._undoCore.undoStack.push(cmdUnlink)
+        }
     }
 
     //! Finds the node according given portId
