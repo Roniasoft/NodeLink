@@ -1,7 +1,7 @@
 import QtQuick
 import QtQuick.Controls
-import QtQml
 import NodeLink
+import QtQml
 
 
 /*! ***********************************************************************************************
@@ -17,10 +17,8 @@ QtObject {
     //! Scene, for some reasons if the type changes to Scene the app crashes
     required property I_Scene scene
 
-    //! Undo/Redo Stacks
-    property UndoStack undoStack: UndoStack {
-        scene: root.scene
-    }
+    //! Undo/Redo Stacks (command-based)
+    property CommandStack undoStack: CommandStack { }
 
     //! Observers
     property UndoSceneObserver undoSceneObserver: UndoSceneObserver {

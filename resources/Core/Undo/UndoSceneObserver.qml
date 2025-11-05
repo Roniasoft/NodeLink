@@ -13,26 +13,12 @@ Item {
      * ****************************************************************************************/
     required property I_Scene       scene
 
-    required property UndoStack     undoStack
+    required property CommandStack     undoStack
 
     /* Childeren
      * ****************************************************************************************/
-    Connections {
-        target:  scene
-        enabled: !NLSpec.undo.blockObservers
-
-        function onTitleChanged() {
-            undoStack.updateUndoStack();
-        }
-
-        function onNodesChanged() {
-            undoStack.updateUndoStack();
-        }
-
-        function onLinksChanged() {
-            undoStack.updateUndoStack();
-        }
-    }
+    // Scene-level updates are handled via specific commands in I_Scene and observers.
+    // No snapshot updates here.
 
     //! Node Loggers
     Repeater {
