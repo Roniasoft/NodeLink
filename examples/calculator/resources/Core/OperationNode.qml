@@ -70,6 +70,7 @@ Node {
     type: CSpecs.NodeType.Operation
     nodeData: OperationNodeData {}
 
+
     // Enable auto-sizing (enabled by default, but explicit is good)
     autoSize: true
 
