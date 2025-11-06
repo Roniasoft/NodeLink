@@ -100,6 +100,7 @@
 //     }
 // }
 
+
 import QtQuick
 import QtQuickStream
 
@@ -147,6 +148,9 @@ I_Node  {
 
     //! Padding for content
     property int contentPadding: 12
+
+    //! Base content width (space for operation/image in the middle)
+    property int baseContentWidth: 100
 
     /* Object Properties
     * ****************************************************************************************/
@@ -206,49 +210,45 @@ I_Node  {
         delete port[portId]
     }
 
-    //! Calculate optimal node size based on content and port titles
+    //! Calculate optimal node size based on content and port titles - SYMMETRIC VERSION
     function calculateOptimalSize() {
         if (!autoSize) return;
 
         var requiredWidth = minWidth;
         var requiredHeight = minHeight;
 
-        // Calculate width based on port titles
-        var maxLeftTitleWidth = calculateMaxPortTitleWidth(NLSpec.PortPositionSide.Left);
-        var maxRightTitleWidth = calculateMaxPortTitleWidth(NLSpec.PortPositionSide.Right);
+        // Find the longest port title from BOTH left and right sides
+        var maxTitleWidth = 0;
 
-        // Base node width + space for port titles on both sides
-        requiredWidth = Math.max(requiredWidth, minWidth + maxLeftTitleWidth + maxRightTitleWidth);
+        // Check all ports (both left and right)
+        Object.values(ports).forEach(function(port) {
+            if (port.title) {
+                var estimatedWidth = estimateTextWidth(port.title);
+                if (estimatedWidth > maxTitleWidth) {
+                    maxTitleWidth = estimatedWidth;
+                }
+            }
+        });
 
-        // Calculate height based on number of ports (adjust if needed)
+        // Symmetric formula: longest title + base content + longest title
+        // This ensures both sides have equal space for titles
+        requiredWidth = Math.max(minWidth, (maxTitleWidth * 2) + baseContentWidth);
+
+        // Calculate height based on number of ports
         var leftPortCount = getPortCountBySide(NLSpec.PortPositionSide.Left);
         var rightPortCount = getPortCountBySide(NLSpec.PortPositionSide.Right);
         var maxPortCount = Math.max(leftPortCount, rightPortCount);
 
-        // Adjust height based on number of ports
-        if (maxPortCount > 2) {
-            requiredHeight = Math.max(requiredHeight, minHeight + (maxPortCount - 2) * 25);
-        }
+        // Adjust height based on number of ports - keep it symmetric
+        var basePortHeight = 30; // Height per port
+        var minPortAreaHeight = Math.max(2, maxPortCount) * basePortHeight;
+        requiredHeight = Math.max(minHeight, minPortAreaHeight);
 
         // Update GUI config
         if (guiConfig) {
             guiConfig.width = requiredWidth;
             guiConfig.height = requiredHeight;
         }
-    }
-
-    //! Calculate maximum title width for ports on a specific side
-    function calculateMaxPortTitleWidth(side) {
-        var maxWidth = 0;
-        Object.values(ports).forEach(function(port) {
-            if (port.portSide === side && port.title) {
-                var estimatedWidth = estimateTextWidth(port.title);
-                if (estimatedWidth > maxWidth) {
-                    maxWidth = estimatedWidth;
-                }
-            }
-        });
-        return maxWidth;
     }
 
     //! Get port count by side
@@ -261,8 +261,9 @@ I_Node  {
     //! Estimate text width (simplified calculation)
     function estimateTextWidth(text) {
         if (!text) return 0;
-        // Rough estimation: ~8 pixels per character + some padding
-        return text.length * 8 + 20;
+        // Rough estimation: ~7 pixels per character for the font size used in ports
+        // This accounts for the actual rendered width better
+        return text.length * 7 + 15; // +15 for padding/margins
     }
 
     //! find port with portUuid
