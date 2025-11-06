@@ -1,4 +1,5 @@
 pragma Singleton
+
 import QtQuick
 
 QtObject {
@@ -12,6 +13,7 @@ QtObject {
     }
 
     enum OperationType {
+        Operation    = 0,
         Regex        = 1,
         
         Unknown      = 99
