@@ -7,10 +7,14 @@ Node {
     guiConfig.width: 150
     guiConfig.height: 100
 
-    Component.onCompleted: {
-        let port = NLCore.createPort()
-        port.portType = NLSpec.PortType.Output
-        port.portSide = NLSpec.PortPositionSide.Right
-        addPort(port)
+    Component.onCompleted: addPorts();
+
+    function addPorts () {
+        let _port1 = NLCore.createPort();
+
+        _port1.portType = NLSpec.PortType.Output
+        _port1.portSide = NLSpec.PortPositionSide.Right
+
+        addPort(_port1);
     }
 }
