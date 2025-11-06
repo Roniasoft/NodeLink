@@ -154,7 +154,6 @@
 //     }
 // }
 
-
 import QtQuick
 import QtQuick.Controls
 
@@ -186,12 +185,6 @@ Rectangle {
 
     //! GlobalPos is a 2d vector filled by globalX and globalY
     readonly property vector2d globalPos:      Qt.vector2d(globalX, globalY)
-
-    //! Text metrics for proper title width calculation
-    property TextMetrics textMetrics: TextMetrics {
-        font: portTitle.font
-        text: portTitle.text
-    }
 
     //! Whenever GlobalPos is changed, we should update the
     //!  related maps in scene/sceneSession
@@ -269,18 +262,11 @@ Rectangle {
         wrapMode: Text.NoWrap
         elide: Text.ElideRight
         verticalAlignment: Text.AlignVCenter
-        horizontalAlignment: Text.AlignLeft
 
         anchors.verticalCenter: parent.verticalCenter
 
-        // Update text metrics when text changes
-        onTextChanged: {
-            textMetrics.text = text;
-        }
-
         Component.onCompleted: {
             positionLabel()
-            textMetrics.text = text;
         }
 
         function positionLabel() {
@@ -296,13 +282,17 @@ Rectangle {
             switch (port.portSide) {
             case NLSpec.PortPositionSide.Left:
                 anchors.left = parent.right
-                anchors.leftMargin = 4
+                anchors.leftMargin = 8
                 horizontalAlignment = Text.AlignLeft
+                // Limit text width to prevent going into middle
+                width: Math.min(implicitWidth, (parent.parent.parent.width / 2) - 40)
                 break
             case NLSpec.PortPositionSide.Right:
                 anchors.right = parent.left
-                anchors.rightMargin = 4
+                anchors.rightMargin = 8
                 horizontalAlignment = Text.AlignRight
+                // Limit text width to prevent going into middle
+                width: Math.min(implicitWidth, (parent.parent.parent.width / 2) - 40)
                 break
             case NLSpec.PortPositionSide.Top:
                 anchors.top = parent.bottom

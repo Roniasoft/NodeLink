@@ -88,10 +88,35 @@ Node {
         let _port2 = NLCore.createPort();
         let _port3 = NLCore.createPort();
 
+        let _port4 = NLCore.createPort();
+        let _port5 = NLCore.createPort();
+        let _port6 = NLCore.createPort();
+        let _port7 = NLCore.createPort();
+
         _port1.portType = NLSpec.PortType.Input
         _port1.portSide = NLSpec.PortPositionSide.Left
         _port1.enable   = false;
-        _port1.title    = "inputqweqwewqeqweqweqweqweqweqweqweqweqwe21qwead12341";
+        _port1.title    = "inputqweqweqweqweq2341";
+
+        _port4.portType = NLSpec.PortType.Input
+        _port4.portSide = NLSpec.PortPositionSide.Left
+        _port4.enable   = false;
+        _port4.title    = "inputqweqweqweqweq2341";
+
+        _port5.portType = NLSpec.PortType.Input
+        _port5.portSide = NLSpec.PortPositionSide.Left
+        _port5.enable   = false;
+        _port5.title    = "inputqweqweqweqweq2341";
+
+        _port6.portType = NLSpec.PortType.Input
+        _port6.portSide = NLSpec.PortPositionSide.Left
+        _port6.enable   = false;
+        _port6.title    = "inputqweqweqweqweq2341";
+
+        _port7.portType = NLSpec.PortType.Input
+        _port7.portSide = NLSpec.PortPositionSide.Left
+        _port7.enable   = false;
+        _port7.title    = "inputqweqweqweqweq2341";
 
         _port2.portType = NLSpec.PortType.Input
         _port2.portSide = NLSpec.PortPositionSide.Left
@@ -105,5 +130,9 @@ Node {
         addPort(_port1);
         addPort(_port2);
         addPort(_port3);
+        addPort(_port4);
+        addPort(_port5);
+        addPort(_port6);
+        addPort(_port7);
     }
 }
