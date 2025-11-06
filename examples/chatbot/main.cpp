@@ -10,7 +10,7 @@ int main(int argc, char* argv[])
     QQuickStyle::setStyle("Material");
     engine.addImportPath(":/");
 
-    const QUrl url(u"qrc:/ChatBot/main.qml"_qs);
+    const QUrl url(u"qrc:/Chatbot/main.qml"_qs);
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
                      &app, [url](QObject *obj, const QUrl &objUrl) {
         if (!obj && url == objUrl)
