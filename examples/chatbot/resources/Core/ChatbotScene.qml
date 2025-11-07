@@ -32,7 +32,7 @@ I_Scene {
         ];
         nodeColors: [
             CSpecs.NodeType.Source      = "#444",
-            CSpecs.NodeType.Regex       = "#888",
+            CSpecs.NodeType.Regex       = "#C69C6D",
             CSpecs.NodeType.ResultTrue  = "#4caf50",
             CSpecs.NodeType.ResultFalse = "#f44336"
         ];
@@ -139,17 +139,11 @@ I_Scene {
         // initalize node data
         Object.values(nodes).forEach(node => {
             switch (node.type) {
-                case CSpecs.NodeType.Regex:
-                    {
-                        node.nodeData.data = null;
-                        node.nodeData.inputFirst = null;
-                    } break;
-
                 case CSpecs.NodeType.ResultTrue:
                 case CSpecs.NodeType.ResultFalse:
-                    {
-                        node.nodeData.data = null;
-                    } break;
+                {
+                    node.nodeData.data = null;
+                } break;
 
                 default:
                 {
@@ -186,7 +180,6 @@ I_Scene {
             }
 
             upadateNodeData(upstreamNode, downStreamNode);
-
         });
 
         while (notReadyLinks.length > 0) {
@@ -216,8 +209,7 @@ I_Scene {
         switch (downStreamNode.type) {
             case CSpecs.NodeType.Regex:
             {
-                if (!downStreamNode.nodeData.inputFirst)
-                downStreamNode.nodeData.inputFirst = upstreamNode.nodeData.data;
+                downStreamNode.inputFirst = upstreamNode.nodeData.data;
 
                 // Update downStreamNode data with specefic operation
                 downStreamNode.updataData();
@@ -226,11 +218,11 @@ I_Scene {
 
             case CSpecs.NodeType.ResultTrue:
             {
-                downStreamNode.nodeData.data = (upstreamNode.nodeData.data === "FOUND") ? "YES ..." : "";
+                downStreamNode.nodeData.data = (upstreamNode.matchedPattern === "FOUND") ? "YES ..." : "";
             } break;
             case CSpecs.NodeType.ResultFalse:
             {
-                downStreamNode.nodeData.data = (upstreamNode.nodeData.data === "NOT_FOUND") ? "NO !!!" : "";
+                downStreamNode.nodeData.data = (upstreamNode.matchedPattern === "NOT_FOUND") ? "NO !!!" : "";
             } break;
 
             default: {
