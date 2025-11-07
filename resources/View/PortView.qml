@@ -139,12 +139,16 @@ Rectangle {
 
         Component.onCompleted: {
             positionLabel()
+            reportSize()
 
             // Update text metrics when text changes
             port.titleChanged.connect(function() {
                 textMetrics.text = port.title;
             });
         }
+        onTextChanged: reportSize()
+        onFontChanged: reportSize()
+        onImplicitWidthChanged: reportSize()
 
         function positionLabel() {
             anchors.left = undefined
@@ -169,6 +173,11 @@ Rectangle {
                 anchors.bottomMargin = 2
                 horizontalAlignment = Text.AlignHCenter
             }
+        }
+
+        function reportSize() {
+            port._measuredTitleWidth = implicitWidth
+            if (port.node) port.node.requestRecalculateFromPort()
         }
     }
 
