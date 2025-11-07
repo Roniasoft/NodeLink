@@ -96,17 +96,12 @@ I_Node  {
         ports[port._qsUuid] = port;
         portsChanged();
 
-        // Connect to port title changes for auto-sizing
-        if (autoSize) {
-            port.titleChanged.connect(calculateOptimalSize);
-        }
+        port.titleChanged.connect(calculateOptimalSize);
 
         portAdded(port._qsUuid);
 
         // Recalculate size after adding port
-        if (autoSize) {
-            calculateOptimalSize();
-        }
+        calculateOptimalSize();
     }
 
     function deletePort(port : Port) {
@@ -121,7 +116,7 @@ I_Node  {
 
     //! Calculate optimal node size based on content and port titles - SYMMETRIC VERSION
     function calculateOptimalSize() {
-        if (!autoSize) return;
+        // if (!autoSize) return;
 
         var requiredWidth = minWidth;
         var requiredHeight = minHeight;
