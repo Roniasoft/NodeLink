@@ -90,13 +90,19 @@ I_Node  {
     /* Functions
      * ****************************************************************************************/
 
+    // Called by PortView after it measured label widths.
+    function requestRecalculateFromPort() {
+        // debounce to next tick
+        Qt.callLater(calculateOptimalSize)
+    }
+
     //! Adds a port and triggers size recalculation if autoSize is enabled
     function addPort(port : Port) {
         // Add to local administration
         ports[port._qsUuid] = port;
         portsChanged();
 
-        port.titleChanged.connect(calculateOptimalSize);
+        // port.titleChanged.connect(calculateOptimalSize);
 
         portAdded(port._qsUuid);
 
@@ -116,10 +122,9 @@ I_Node  {
 
     //! Calculate optimal node size based on content and port titles - SYMMETRIC VERSION
     function calculateOptimalSize() {
-        // if (!autoSize) return;
 
-        var requiredWidth = minWidth;
-        var requiredHeight = minHeight;
+        // var requiredWidth = minWidth;
+        // var requiredHeight = minHeight;
 
         // Find the longest port title from BOTH left and right sides
         var maxTitleWidth = 0;
@@ -127,7 +132,11 @@ I_Node  {
         // Check all ports (both left and right)
         Object.values(ports).forEach(function(port) {
             if (port.title) {
-                var estimatedWidth = estimateTextWidth(port.title);
+                // var estimatedWidth = estimateTextWidth(port.title);
+                var estimatedWidth = (typeof port._measuredTitleWidth === "number" && port._measuredTitleWidth > 0)
+                                     ? port._measuredTitleWidth
+                                     : estimateTextWidth(port.title)
+
                 if (estimatedWidth > maxTitleWidth) {
                     maxTitleWidth = estimatedWidth;
                 }
@@ -136,7 +145,7 @@ I_Node  {
 
         // Symmetric formula: longest title + base content + longest title
         // This ensures both sides have equal space for titles
-        requiredWidth = Math.max(minWidth, (maxTitleWidth * 2) + baseContentWidth);
+        var requiredWidth = Math.max(minWidth, (maxTitleWidth * 2) + baseContentWidth);
 
         // Calculate height based on number of ports
         var leftPortCount = getPortCountBySide(NLSpec.PortPositionSide.Left);
@@ -146,7 +155,7 @@ I_Node  {
         // Adjust height based on number of ports - keep it symmetric
         var basePortHeight = 30; // Height per port
         var minPortAreaHeight = Math.max(2, maxPortCount) * basePortHeight;
-        requiredHeight = Math.max(minHeight, minPortAreaHeight);
+        var requiredHeight = Math.max(minHeight, minPortAreaHeight);
 
         // Update calculated minimum dimensions
         calculatedMinWidth = requiredWidth;
@@ -201,18 +210,18 @@ I_Node  {
     }
 
     //! Handle port changes for auto-sizing
-    onPortsChanged: {
-        if (autoSize) {
-            calculateOptimalSize();
-        }
-    }
+    // onPortsChanged: {
+    //     if (autoSize) {
+    //         calculateOptimalSize();
+    //     }
+    // }
 
     //! Initial size calculation
-    Component.onCompleted: {
-        if (autoSize) {
-            // Small delay to ensure all ports are properly added
-            calculateOptimalSizeTimer.start();
-        }
-        nodeCompleted();
-    }
+    // Component.onCompleted: {
+    //     if (autoSize) {
+    //         // Small delay to ensure all ports are properly added
+    //         calculateOptimalSizeTimer.start();
+    //     }
+    //     nodeCompleted();
+    // }
 }
