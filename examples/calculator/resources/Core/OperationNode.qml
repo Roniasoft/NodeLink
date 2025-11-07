@@ -17,7 +17,7 @@ Node {
 
 
     // Enable auto-sizing (enabled by default, but explicit is good)
-    autoSize: true
+    autoSize: false
 
     // You can still set minimum sizes if needed
     minWidth: 120
@@ -37,7 +37,7 @@ Node {
         _port1.portType = NLSpec.PortType.Input
         _port1.portSide = NLSpec.PortPositionSide.Left
         _port1.enable   = false;
-        _port1.title    = "input 1";
+        _port1.title    = "inpuasdasdadasdasdasdt 1";
 
         _port2.portType = NLSpec.PortType.Input
         _port2.portSide = NLSpec.PortPositionSide.Left
