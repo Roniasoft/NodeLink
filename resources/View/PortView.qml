@@ -1,159 +1,3 @@
-// import QtQuick
-// import QtQuick.Controls
-
-// import NodeLink
-
-// /*! ***********************************************************************************************
-//  * Port view draw a port on the node based on Port model.
-//  * ************************************************************************************************/
-
-// Rectangle {
-//     id: root
-
-//     /* Property Declarations
-//     * ****************************************************************************************/
-//     //! Port Model
-//     property Port           port
-
-//     //! Scene
-//     property I_Scene          scene
-
-//     //! SceneSession
-//     property SceneSession   sceneSession: null
-
-//     //! GlobalX is set after positioning the port in the scene
-//     property real           globalX
-
-//     //! GlobalY is set after positioning the port in the scene
-//     property real           globalY
-
-//     //! GlobalPos is a 2d vector filled by globalX and globalY
-//     readonly property vector2d globalPos:      Qt.vector2d(globalX, globalY)
-
-//     //! Whenever GlobalPos is changed, we should update the
-//     //!  related maps in scene/sceneSession
-//     onGlobalPosChanged: {
-//         port._position = globalPos;
-
-//         if (sceneSession && !sceneSession.isRubberBandMoving) {
-//             sceneSession.portsVisibility[port._qsUuid] = false;
-//             sceneSession.portsVisibilityChanged();
-//         }
-//     }
-
-//     /* Object Properties
-//      * ****************************************************************************************/
-//     width: NLStyle.portView.size
-//     border.width: NLStyle.portView.borderSize
-//     height: width
-//     radius: width
-//     color: "#8b6cef"
-//     border.color: "#363636"
-//     scale: mouseArea.containsMouse ? 1.1 : 1
-//     // opacity: (sceneSession && (sceneSession?.portsVisibility[port._qsUuid] ?? false)) ? 1 : 0
-//     opacity: 1    // always visible
-
-//     // Behavior on opacity {NumberAnimation{duration: 100}}
-//     Behavior on scale {NumberAnimation{}}
-
-//     //! Mouse Area
-//     MouseArea {
-//         id: mouseArea
-//         anchors.fill: parent
-//         anchors.margins: -2
-
-//         enabled: !sceneSession.connectingMode
-//         propagateComposedEvents: true
-
-//         onPressed: mouse => {
-//             if (!port.enable)
-//                 return;
-
-//             selectionFunction(port._qsUuid);
-//             sceneSession.connectingMode = true;
-//             //Set mouse.accepeted to false to pass mouse events to last active parent
-//             mouse.accepted = false
-//         }
-
-//         onReleased: mouse => {
-//             sceneSession.connectingMode = false;
-//             //Set mouse.accepeted to false to pass mouse events to last active parent
-//             mouse.accepted = false
-//         }
-//     }
-
-//     //! Selects the port's parent node
-//     function selectionFunction(inputPortId) {
-//         const isModifiedOn = sceneSession.isShiftModifierPressed;
-//         var inputPortNodeId = scene.findNodeId(inputPortId)
-//         var inputPortNode = scene.findNode(inputPortId)
-
-//         if(!isModifiedOn)
-//             scene.selectionModel.clearAllExcept(inputPortNodeId);
-
-//         const isAlreadySel = scene.selectionModel.isSelected(inputPortNodeId);
-
-//         if(isAlreadySel && isModifiedOn)
-//             scene.selectionModel.remove(inputPortNodeId);
-//         else
-//             scene.selectionModel.selectNode(inputPortNode);
-//     }
-
-
-//     Text {
-//         id: portTitle
-//         text: port.title
-//         color: "white"
-//         font.pixelSize: NLStyle.portView.fontSize * (sceneSession ? (1 / sceneSession.zoomManager.zoomFactor) : 1)
-//         wrapMode: Text.NoWrap
-//         elide: Text.ElideRight
-//         verticalAlignment: Text.AlignVCenter
-//         horizontalAlignment: Text.AlignLeft
-
-//         anchors.verticalCenter: parent.verticalCenter
-
-//         // default: label on right
-//         anchors.left: parent.right
-//         anchors.leftMargin: 4
-
-
-//         Component.onCompleted: {
-//             positionLabel()
-//         }
-
-//         function positionLabel() {
-//             anchors.left = undefined
-//             anchors.right = undefined
-//             anchors.top = undefined
-//             anchors.bottom = undefined
-//             anchors.leftMargin = 0
-//             anchors.rightMargin = 0
-//             anchors.topMargin = 0
-//             anchors.bottomMargin = 0
-
-//             switch (port.portSide) {
-//             case NLSpec.PortPositionSide.Left:
-//                 anchors.left = parent.right
-//                 anchors.leftMargin = 4
-//                 break
-//             case NLSpec.PortPositionSide.Right:
-//                 anchors.right = parent.left
-//                 anchors.rightMargin = 4
-//                 break
-//             case NLSpec.PortPositionSide.Top:
-//                 anchors.top = parent.bottom
-//                 anchors.topMargin = 2
-//                 break
-//             case NLSpec.PortPositionSide.Bottom:
-//                 anchors.bottom = parent.top
-//                 anchors.bottomMargin = 2
-//                 break
-//             }
-//         }
-
-//     }
-// }
-
 import QtQuick
 import QtQuick.Controls
 
@@ -183,35 +27,57 @@ Rectangle {
     //! GlobalY is set after positioning the port in the scene
     property real           globalY
 
-    //! GlobalPos is a 2d vector filled by globalX and globalY
-    readonly property vector2d globalPos:      Qt.vector2d(globalX, globalY)
-
-    //! Whenever GlobalPos is changed, we should update the
-    //!  related maps in scene/sceneSession
-    onGlobalPosChanged: {
-        port._position = globalPos;
-
-        if (sceneSession && !sceneSession.isRubberBandMoving) {
-            sceneSession.portsVisibility[port._qsUuid] = false;
-            sceneSession.portsVisibilityChanged();
-        }
-    }
+    // This gets set from parent
+    property real nodeWidth: 0
 
     /* Object Properties
      * ****************************************************************************************/
+
     width: NLStyle.portView.size
-    border.width: NLStyle.portView.borderSize
-    height: width
-    radius: width
+    height: NLStyle.portView.size
+
+    radius: width / 2
     color: "#8b6cef"
+
     border.color: "#363636"
-    scale: mouseArea.containsMouse ? 1.1 : 1
 
     opacity: 1    // always visible
 
-    Behavior on scale {NumberAnimation{}}
+    border.width: NLStyle.portView.borderSize
 
-    //! Mouse Area
+
+    // TextMetrics to measure actual text width
+    TextMetrics {
+        id: textMetrics
+        font: portTitle.font
+        text: port.title
+    }
+
+    // Calculate available space based on node width and port side
+    function calculateAvailableSpace() {
+        if (nodeWidth <= 0) return 100;
+
+        var availableSpace = 0;
+        switch (port.portSide) {
+        case NLSpec.PortPositionSide.Left:
+        case NLSpec.PortPositionSide.Right:
+            // Each side gets half the node width minus port circle and margins
+            availableSpace = (nodeWidth / 2) - (width + 25);
+            break;
+        case NLSpec.PortPositionSide.Top:
+        case NLSpec.PortPositionSide.Bottom:
+            availableSpace = 80; // Fixed reasonable amount
+            break;
+        }
+        return Math.max(availableSpace, 20); // Minimum 20px
+    }
+
+    // Determine if we need to elide based on text width vs available space
+    function needsElide() {
+        var availableSpace = calculateAvailableSpace();
+        return textMetrics.width > availableSpace;
+    }
+
     MouseArea {
         id: mouseArea
         anchors.fill: parent
@@ -221,18 +87,14 @@ Rectangle {
         propagateComposedEvents: true
 
         onPressed: mouse => {
-            if (!port.enable)
-                return;
-
+            if (!port.enable) return;
             selectionFunction(port._qsUuid);
             sceneSession.connectingMode = true;
-            //Set mouse.accepeted to false to pass mouse events to last active parent
             mouse.accepted = false
         }
 
         onReleased: mouse => {
             sceneSession.connectingMode = false;
-            //Set mouse.accepeted to false to pass mouse events to last active parent
             mouse.accepted = false
         }
     }
@@ -254,19 +116,34 @@ Rectangle {
             scene.selectionModel.selectNode(inputPortNode);
     }
 
+    // DYNAMIC TEXT WITH PROPER ELIDE LOGIC
     Text {
         id: portTitle
         text: port.title
         color: "white"
         font.pixelSize: NLStyle.portView.fontSize * (sceneSession ? (1 / sceneSession.zoomManager.zoomFactor) : 1)
         wrapMode: Text.NoWrap
-        elide: Text.ElideRight
         verticalAlignment: Text.AlignVCenter
+
+        // Dynamic width: constrained only if text is too long
+        width: root.needsElide() ? root.calculateAvailableSpace() : implicitWidth
+
+        // Smart elide: only when needed, different modes per side
+        elide: root.needsElide() ? (
+            port.portSide === NLSpec.PortPositionSide.Left ? Text.ElideRight :
+            port.portSide === NLSpec.PortPositionSide.Right ? Text.ElideLeft :
+            Text.ElideMiddle
+        ) : Text.ElideNone
 
         anchors.verticalCenter: parent.verticalCenter
 
         Component.onCompleted: {
             positionLabel()
+
+            // Update text metrics when text changes
+            port.titleChanged.connect(function() {
+                textMetrics.text = port.title;
+            });
         }
 
         function positionLabel() {
@@ -274,37 +151,29 @@ Rectangle {
             anchors.right = undefined
             anchors.top = undefined
             anchors.bottom = undefined
-            anchors.leftMargin = 0
-            anchors.rightMargin = 0
-            anchors.topMargin = 0
-            anchors.bottomMargin = 0
 
-            switch (port.portSide) {
-            case NLSpec.PortPositionSide.Left:
+            if (port.portSide === NLSpec.PortPositionSide.Left) {
                 anchors.left = parent.right
                 anchors.leftMargin = 8
                 horizontalAlignment = Text.AlignLeft
-                // Limit text width to prevent going into middle
-                width: Math.min(implicitWidth, (parent.parent.parent.width / 2) - 40)
-                break
-            case NLSpec.PortPositionSide.Right:
+            } else if (port.portSide === NLSpec.PortPositionSide.Right) {
                 anchors.right = parent.left
                 anchors.rightMargin = 8
                 horizontalAlignment = Text.AlignRight
-                // Limit text width to prevent going into middle
-                width: Math.min(implicitWidth, (parent.parent.parent.width / 2) - 40)
-                break
-            case NLSpec.PortPositionSide.Top:
+            } else if (port.portSide === NLSpec.PortPositionSide.Top) {
                 anchors.top = parent.bottom
                 anchors.topMargin = 2
                 horizontalAlignment = Text.AlignHCenter
-                break
-            case NLSpec.PortPositionSide.Bottom:
+            } else if (port.portSide === NLSpec.PortPositionSide.Bottom) {
                 anchors.bottom = parent.top
                 anchors.bottomMargin = 2
                 horizontalAlignment = Text.AlignHCenter
-                break
             }
         }
+    }
+
+    // Update text width when node resizes
+    onNodeWidthChanged: {
+        portTitle.width = root.needsElide() ? root.calculateAvailableSpace() : portTitle.implicitWidth;
     }
 }
