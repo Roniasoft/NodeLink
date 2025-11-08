@@ -6,7 +6,7 @@ import QtQuickStream
  * Port is a QSObject model that manage port properties..
  * ************************************************************************************************/
 QSObject {
-
+    Component.onDestruction: _qsRepo?.unregisterObject(this)
     /* Property Declarations
      * ****************************************************************************************/
     //! Node (parent) of the port

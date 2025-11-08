@@ -13,7 +13,7 @@ Item {
     property PerformanceScene scene: null
 
     property SceneSession    sceneSession:   SceneSession {
-        enabledOverview: true;
+        enabledOverview: false;
         doNodesNeedImage: false
     }
 

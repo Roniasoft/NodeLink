@@ -1,5 +1,6 @@
 #include "objectcreator.h"
 #include <QDebug>
+#include <QElapsedTimer>
 
 ObjectCreator::ObjectCreator(QObject *parent)
     : QObject(parent)
