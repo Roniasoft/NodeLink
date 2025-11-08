@@ -17,6 +17,7 @@ I_Node  {
          _qsRepo: root._qsRepo
     }
 
+
     //! Title
     property string         title:      "<No Title>"
 
@@ -36,23 +37,6 @@ I_Node  {
     //! Manages node images
     property ImagesModel    imagesModel: ImagesModel {}
 
-    //! Auto size node based on content and port titles
-    property bool autoSize: true
-
-    //! Minimum node dimensions
-    property int minWidth: 100
-    property int minHeight: 70
-
-    //! Calculated minimum dimensions based on content
-    property int calculatedMinWidth: minWidth
-    property int calculatedMinHeight: minHeight
-
-    //! Padding for content
-    property int contentPadding: 12
-
-    //! Base content width (space for operation/image in the middle)
-    property int baseContentWidth: 100
-
     /* Object Properties
     * ****************************************************************************************/
     objectType: NLSpec.ObjectType.Node
@@ -69,14 +53,6 @@ I_Node  {
 
         root.imagesModel?.setProperties(baseNode.imagesModel);
         root.guiConfig?.setProperties(baseNode.guiConfig);
-
-        // Copy auto-size properties
-        autoSize = baseNode.autoSize;
-        minWidth = baseNode.minWidth;
-        minHeight = baseNode.minHeight;
-        baseContentWidth = baseNode.baseContentWidth;
-        calculatedMinWidth = baseNode.calculatedMinWidth;
-        calculatedMinHeight = baseNode.calculatedMinHeight;
     }
 
     /* Signals
@@ -90,24 +66,13 @@ I_Node  {
     /* Functions
      * ****************************************************************************************/
 
-    // Called by PortView after it measured label widths.
-    function requestRecalculateFromPort() {
-        // debounce to next tick
-        Qt.callLater(calculateOptimalSize)
-    }
-
-    //! Adds a port and triggers size recalculation if autoSize is enabled
+    //! Adds a node the to nodes map
     function addPort(port : Port) {
         // Add to local administration
         ports[port._qsUuid] = port;
         portsChanged();
 
-        // port.titleChanged.connect(calculateOptimalSize);
-
         portAdded(port._qsUuid);
-
-        // Recalculate size after adding port
-        calculateOptimalSize();
     }
 
     function deletePort(port : Port) {
@@ -120,108 +85,23 @@ I_Node  {
         delete port[portId]
     }
 
-    //! Calculate optimal node size based on content and port titles - SYMMETRIC VERSION
-    function calculateOptimalSize() {
-
-        // var requiredWidth = minWidth;
-        // var requiredHeight = minHeight;
-
-        // Find the longest port title from BOTH left and right sides
-        var maxTitleWidth = 0;
-
-        // Check all ports (both left and right)
-        Object.values(ports).forEach(function(port) {
-            if (port.title) {
-                // var estimatedWidth = estimateTextWidth(port.title);
-                var estimatedWidth = (typeof port._measuredTitleWidth === "number" && port._measuredTitleWidth > 0)
-                                     ? port._measuredTitleWidth
-                                     : estimateTextWidth(port.title)
-
-                if (estimatedWidth > maxTitleWidth) {
-                    maxTitleWidth = estimatedWidth;
-                }
-            }
-        });
-
-        // Symmetric formula: longest title + base content + longest title
-        // This ensures both sides have equal space for titles
-        var requiredWidth = Math.max(minWidth, (maxTitleWidth * 2) + baseContentWidth);
-
-        // Calculate height based on number of ports
-        var leftPortCount = getPortCountBySide(NLSpec.PortPositionSide.Left);
-        var rightPortCount = getPortCountBySide(NLSpec.PortPositionSide.Right);
-        var maxPortCount = Math.max(leftPortCount, rightPortCount);
-
-        // Adjust height based on number of ports - keep it symmetric
-        var basePortHeight = 30; // Height per port
-        var minPortAreaHeight = Math.max(2, maxPortCount) * basePortHeight;
-        var requiredHeight = Math.max(minHeight, minPortAreaHeight);
-
-        // Update calculated minimum dimensions
-        calculatedMinWidth = requiredWidth;
-        calculatedMinHeight = requiredHeight;
-
-        // Update GUI config
-        if (guiConfig) {
-            guiConfig.width = requiredWidth;
-            guiConfig.height = requiredHeight;
-        }
-    }
-
-    //! Get port count by side
-    function getPortCountBySide(side) {
-        return Object.values(ports).filter(function(port) {
-            return port.portSide === side;
-        }).length;
-    }
-
-    //! Estimate text width (simplified calculation)
-    function estimateTextWidth(text) {
-        if (!text) return 0;
-        // Rough estimation: ~7 pixels per character for the font size used in ports
-        // This accounts for the actual rendered width better
-        return text.length * 7 + 15; // +15 for padding/margins
-    }
-
     //! find port with portUuid
     function findPort(portId: string): Port {
         if (Object.keys(ports).includes(portId)) {
             return ports[portId];
         }
-        return null;
+            return null;
     }
 
     //! find port with specified port side.
     function findPortByPortSide(portSide : int) : Port {
-        let foundedPort = null;
-        Object.values(ports).find(port => {
-            if (port.portSide === portSide) {
-                foundedPort = port;
-            }
-        });
-        return foundedPort;
+                let foundedPort = null;
+                Object.values(ports).find(port => {
+                    if (port.portSide === portSide) {
+                        foundedPort = port;
+                    }
+                });
+
+                return foundedPort;
     }
-
-    //! Handle title changes for auto-sizing
-    onTitleChanged: {
-        if (autoSize) {
-            calculateOptimalSize();
-        }
-    }
-
-    //! Handle port changes for auto-sizing
-    // onPortsChanged: {
-    //     if (autoSize) {
-    //         calculateOptimalSize();
-    //     }
-    // }
-
-    //! Initial size calculation
-    // Component.onCompleted: {
-    //     if (autoSize) {
-    //         // Small delay to ensure all ports are properly added
-    //         calculateOptimalSizeTimer.start();
-    //     }
-    //     nodeCompleted();
-    // }
 }
