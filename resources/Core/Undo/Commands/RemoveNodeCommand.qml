@@ -1,16 +1,25 @@
 import QtQuick
 import NodeLink
 
+/*! ***********************************************************************************************
+ * RemoveNodeCommand
+ * ************************************************************************************************/
+
 QtObject {
     id: root
 
+    /* Property Declarations
+    * ****************************************************************************************/
     property var scene // I_Scene
     property var node  // Node
     // List of { inputPortUuid, outputPortUuid }
     property var links: []
 
+    /* Functions
+    * ****************************************************************************************/
     function redo() {
-        if (scene && node) scene.deleteNode(node._qsUuid)
+        if (scene && node)
+            scene.deleteNode(node._qsUuid)
     }
 
     function undo() {
@@ -28,5 +37,3 @@ QtObject {
         }
     }
 }
-
-

@@ -10,10 +10,8 @@ import QtQml
 QtObject {
     id: root
 
-
     /* Property Properties
      * ****************************************************************************************/
-
     //! Scene, for some reasons if the type changes to Scene the app crashes
     required property I_Scene scene
 

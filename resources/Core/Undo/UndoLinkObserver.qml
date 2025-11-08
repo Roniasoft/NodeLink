@@ -15,10 +15,10 @@ Item {
 
     property CommandStack  undoStack
 
-    /* Childeren
-     * ****************************************************************************************/
     property var _cache: ({})
 
+    /* Object Properties
+     * ****************************************************************************************/
     Component.onCompleted: {
         if (link) {
             _cache.title = link.title
@@ -27,23 +27,44 @@ Item {
         }
     }
 
+    /* Functions
+    * ****************************************************************************************/
     function _ensureCache() {
-        if (!link) return
-        if (_cache._init) return
+        if (!link)
+            return
+
+        if (_cache._init)
+            return
+
         _cache.title = link.title
         _cache.type = link.type
         _cache._init = true
     }
 
     function pushProp(targetObj, key, oldV, newV) {
-        if (!undoStack || undoStack.isReplaying) return
-        if (oldV === undefined || newV === undefined) return
-        if (JSON.stringify(oldV) === JSON.stringify(newV)) return
-        function setProp(obj, value) { if (obj) obj[key] = value }
-        var cmd = {
-            undo: function() { setProp(targetObj, oldV) },
-            redo: function() { setProp(targetObj, newV) }
+        if (!undoStack || undoStack.isReplaying)
+            return
+
+        if (oldV === undefined || newV === undefined)
+            return
+
+        if (JSON.stringify(oldV) === JSON.stringify(newV))
+            return
+
+        function setProp(obj, value) {
+            if (obj)
+                obj[key] = value
         }
+
+        var cmd = {
+            undo: function() {
+                setProp(targetObj, oldV)
+            },
+            redo: function() {
+                setProp(targetObj, newV)
+            }
+        }
+
         undoStack.push(cmd)
     }
 
