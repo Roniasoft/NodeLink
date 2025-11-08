@@ -54,6 +54,9 @@ QSObject {
     //! Node added
     signal nodeAdded(Node node)
 
+    //! Nodes added
+    signal nodesAdded(var nodes)
+
     //! Node Removed
     signal nodeRemoved(Node node)
 
@@ -237,7 +240,7 @@ QSObject {
     }
 
     //! Adds a node the to nodes map
-    function addNode(node: Node) {
+    function addNode(node: Node, autoSelect: bool) {
         //Sanity check
         if (nodes[node._qsUuid] === node) { return; }
 
@@ -247,8 +250,10 @@ QSObject {
         nodeAdded(node);
         node.nodeCompleted()
 
-        scene.selectionModel.clear();
-        scene.selectionModel.selectNode(node);
+        if (autoSelect) {
+            scene.selectionModel.clear();
+            scene.selectionModel.selectNode(node);
+        }
 
         if (!scene._undoCore.undoStack.isReplaying) {
             var cmdAddNode = Qt.createQmlObject('import QtQuick; import NodeLink; import "Undo/Commands"; AddNodeCommand { }', scene._undoCore.undoStack)
@@ -260,6 +265,65 @@ QSObject {
         return node;
     }
 
+    //! Adds multiple nodes at once
+    function addNodes(nodeArray: list<Node>, autoSelect: bool) {
+        if (!nodeArray || nodeArray.length === 0) {
+            return;
+        }
+
+        var addedNodes = []
+
+        for (var i = 0; i < nodeArray.length; i++) {
+            var node = nodeArray[i]
+
+            if (nodes[node._qsUuid] === node) {
+                continue;
+            }
+
+            // Add to local administration
+            nodes[node._qsUuid] = node;
+            addedNodes.push(node);
+            node.nodeCompleted()
+        }
+
+        if (addedNodes.length > 0) {
+            nodesChanged();
+            nodesAdded(addedNodes);
+
+            if (autoSelect && addedNodes.length > 0) {
+                scene.selectionModel.clear();
+                scene.selectionModel.selectNode(addedNodes[addedNodes.length - 1]);
+            }
+        }
+
+        return addedNodes;
+    }
+
+    function onNodesAdded(nodeObjects: list<Node>) {
+        const newNodes = nodeObjects.filter(nodeObj =>
+            !Object.keys(_nodeViewMap).includes(nodeObj._qsUuid)
+        );
+
+        if (newNodes.length === 0)
+            return;
+
+        // Create all node views at once
+        const objViews = objectCreator.createNodes(
+            newNodes.length,
+            root,
+            nodeViewUrl,
+            {
+                "scene": root.scene,
+                "sceneSession": root.sceneSession,
+                "viewProperties": root.viewProperties
+                // "node": will be added inside cpp class
+            }
+        );
+
+        for (let i = 0; i < objViews.length; i++) {
+            _nodeViewMap[newNodes[i]._qsUuid] = objViews[i];
+        }
+    }
 
     //! Create a node with node type and its position
     //! \todo: this method should be removed

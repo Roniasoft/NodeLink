@@ -42,6 +42,8 @@ Item {
     //! Container view component
     property Component containerViewComponent: Qt.createComponent(containerViewUrl);
 
+    ObjectCreator { id: objectCreator }
+
     /*  Object Properties
     * ****************************************************************************************/
     anchors.fill: parent
@@ -86,32 +88,55 @@ Item {
             delete _containerViewMap[containerObj._qsUuid];
         }
 
+        function onNodesAdded(nodeArray: list<Node>) {
+            let createdViews = objectCreator.createNodes(
+                nodeArray,
+                root,
+                nodeViewUrl,
+                {
+                    "scene": root.scene,
+                    "sceneSession": root.sceneSession,
+                    "viewProperties": root.viewProperties
+                    // "node": will be added inside cpp class
+                }
+            );
+            console.log("node array:", nodeArray.length, nodeArray)
+            console.log("created view:", createdViews.length, createdViews)
+            for (var i = 0; i < createdViews.length; i++) {
+                _nodeViewMap[nodeArray[i]._qsUuid] = createdViews[i];
+            }
+        }
+
+
         //! nodeRepeater updated when a node added
         function onNodeAdded(nodeObj: Node) {
             if (Object.keys(_nodeViewMap).includes(nodeObj._qsUuid))
                 return;
 
             //! NodeViews should be child of NodesRect so they also get the zoom factor through
-            //! scaling
-            const objView = nodeViewComponent.createObject(root, {
-                                                           scene: root.scene,
-                                                           sceneSession: root.sceneSession,
-                                                           node: nodeObj,
-                                                           viewProperties: root.viewProperties
-                                                       });
-            _nodeViewMap[nodeObj._qsUuid] = objView;
+            //! scaling, url:"qrc:/NodeLink/resources/View/NodeView.qml"
+            let nodeView = objectCreator.createNode(
+                    root,
+                    nodeViewUrl,
+                    {
+                        "scene": root.scene,
+                        "sceneSession": root.sceneSession,
+                        "node": nodeObj,
+                        "viewProperties": root.viewProperties
+                    }
+                    );
+
+            _nodeViewMap[nodeObj._qsUuid] = nodeView;
         }
+
 
         //! nodeRepeater updated when a node Removed
         function onNodeRemoved(nodeObj: Node) {
-            if (!Object.keys(_nodeViewMap).includes(nodeObj._qsUuid))
+            if (!_nodeViewMap[nodeObj._qsUuid])
                 return;
 
-            // Destroy object
             let nodeViewObj = _nodeViewMap[nodeObj._qsUuid];
-            nodeViewObj.destroy();
-
-            // Delete from map
+            objectCreator.destroyObject(nodeViewObj);
             delete _nodeViewMap[nodeObj._qsUuid];
         }
 
