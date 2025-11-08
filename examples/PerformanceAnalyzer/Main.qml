@@ -193,20 +193,26 @@ Window {
         interval: 1
         running: false
         onTriggered: {
-            scene.createPairNode(
-                Math.random() * scene.sceneGuiConfig.contentWidth,
-                Math.random() * scene.sceneGuiConfig.contentHeight,
-                "test_" + nodeCount
-            )
-            if (--nodeCount < 1) {
-                running = false
-                var elapsedTime = Date.now() - startTime
-                statusText.text = "Completed in " + elapsedTime + "ms"
-                statusText.color = "#4CAF50"
-                console.log("Elapsed time: " + elapsedTime + "ms")
+            // Create all node pairs in one batch(the timer is not neeeded here, kept just in case of having shorter diffs)
+            var pairs = []
+            for (var i = 0; i < nodeCount; i++) {
+                pairs.push({
+                    xPos: Math.random() * scene.sceneGuiConfig.contentWidth,
+                    yPos: Math.random() * scene.sceneGuiConfig.contentHeight,
+                    nodeName: "test_" + i
+                })
             }
+
+            scene.createPairNodes(pairs)
+
+            var elapsedTime = Date.now() - startTime
+            statusText.text = "Completed in " + elapsedTime + "ms"
+            statusText.color = "#4CAF50"
+            console.log("Elapsed time: " + elapsedTime + "ms")
+
+            running = false
         }
-        repeat: true
+        repeat: false
     }
 
     // Node monitoring timer

@@ -50,6 +50,63 @@ I_Scene {
         linkTwoNodes(startNode, endNode)
     }
 
+    //! function to create multiple pairs at once
+    function createPairNodes(pairs) {// pairs format: [{xPos, yPos, nodeName}, {xPos, yPos, nodeName}, ...]
+        var nodesToAdd = []
+        var linkPairs = []
+
+        for (var i = 0; i < pairs.length; i++) {
+            var pair = pairs[i]
+
+            // Create start node
+            var startNode = NLCore.createNode()
+            startNode.type = CSpecs.NodeType.StartNode
+            startNode._qsRepo = scene?._qsRepo ?? NLCore.defaultRepo
+            startNode.title = pair.nodeName + "_start"
+            startNode.guiConfig.position.x = pair.xPos
+            startNode.guiConfig.position.y = pair.yPos
+            startNode.guiConfig.color = "#444444"
+            startNode.guiConfig.width = 150
+            startNode.guiConfig.height = 100
+
+            var outputPort = NLCore.createPort()
+            outputPort.portType = NLSpec.PortType.Output
+            outputPort.portSide = NLSpec.PortPositionSide.Right
+            startNode.addPort(outputPort)
+
+            // Create end node
+            var endNode = NLCore.createNode()
+            endNode.type = CSpecs.NodeType.EndNode
+            endNode._qsRepo = scene?._qsRepo ?? NLCore.defaultRepo
+            endNode.title = pair.nodeName + "_end"
+            endNode.guiConfig.position.x = pair.xPos + 230
+            endNode.guiConfig.position.y = pair.yPos + 30
+            endNode.guiConfig.color = "#444444"
+            endNode.guiConfig.width = 150
+            endNode.guiConfig.height = 100
+
+            var inputPort = NLCore.createPort()
+            inputPort.portType = NLSpec.PortType.Input
+            inputPort.portSide = NLSpec.PortPositionSide.Left
+            endNode.addPort(inputPort)
+
+            nodesToAdd.push(startNode)
+            nodesToAdd.push(endNode)
+
+            //links are saved to be crated later, TODO: add ability to create links as well
+            linkPairs.push({
+                startNodeId: startNode._qsUuid,
+                endNodeId: endNode._qsUuid
+            })
+        }
+
+        addNodes(nodesToAdd, false)
+
+        for (var j = 0; j < linkPairs.length; j++) {
+            linkTwoNodes(linkPairs[j].startNodeId, linkPairs[j].endNodeId)
+        }
+    }
+
     function linkTwoNodes(nodeId1, nodeId2) {
         var node1 = nodes[nodeId1]
         var node2 = nodes[nodeId2]
@@ -105,7 +162,7 @@ I_Scene {
         inputPort.portType = NLSpec.PortType.Input
         inputPort.portSide = NLSpec.PortPositionSide.Left
         node.addPort(inputPort)
-        addNode(node)
+        addNode(node, false)
         return node._qsUuid
     }
 
@@ -124,7 +181,7 @@ I_Scene {
         outputPort.portType = NLSpec.PortType.Output
         outputPort.portSide = NLSpec.PortPositionSide.Right
         node.addPort(outputPort)
-        addNode(node)
+        addNode(node, false)
         return node._qsUuid
     }
 
