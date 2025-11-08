@@ -7,6 +7,7 @@ import NodeLink
  * Manages Node Images
  * ************************************************************************************************/
 QSObject {
+    Component.onDestruction: _qsRepo?.unregisterObject(this)
     /* Property Declarations
     * ****************************************************************************************/
     property var imagesSources:   []

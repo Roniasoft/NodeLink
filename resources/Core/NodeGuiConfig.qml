@@ -7,7 +7,7 @@ import QtQuickStream
  * The NodeGuiConfig is a QSObject that keep the Ui Node properties.
  * ************************************************************************************************/
 QSObject {
-
+    Component.onDestruction: _qsRepo?.unregisterObject(this)
     /* Property Properties
      * ****************************************************************************************/
 
