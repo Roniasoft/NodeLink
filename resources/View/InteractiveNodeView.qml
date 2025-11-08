@@ -27,6 +27,10 @@ I_NodeView {
     property int calculatedMinWidth: minWidth
     property int calculatedMinHeight: minHeight
 
+    //! Dynamic port spacing (these will be set by the derived nodeview)
+    property int minPortSpacing: 2
+    property int maxPortSpacing: 20
+    property int basePortHeight: 24
 
     //! Does the top/ bottom/ right / left borders have mouse?
     //! Note: Other MouseArea properties are not allowed.
@@ -163,8 +167,8 @@ I_NodeView {
                 var newHeight = node.guiConfig.height - correctedDeltaY;
                 var newY = node.guiConfig.position.y + correctedDeltaY;
 
-                // Enforce minimum height
-                var minHeight = root.autoSize ? root.calculatedMinHeight : root.minHeight;
+                // Enforce minimum height - ALWAYS use calculatedMinHeight regardless of autoSize
+                var minHeight = root.calculatedMinHeight;
                 if (newHeight < minHeight) {
                     newHeight = minHeight;
                     correctedDeltaY = node.guiConfig.height - minHeight;
@@ -281,8 +285,8 @@ I_NodeView {
                 var newWidth = node.guiConfig.width - correctedDeltaX;
                 var newX = node.guiConfig.position.x + correctedDeltaX;
 
-                // Only enforce minimum size when autoSize is enabled
-                var minWidth = root.autoSize ? root.calculatedMinWidth : root.minWidth;
+                // Enforce minimum height - ALWAYS use calculatedMinHeight regardless of autoSize
+                var minHeight = root.calculatedMinHeight;
                 if (newWidth < minWidth) {
                     newWidth = minWidth;
                     correctedDeltaX = node.guiConfig.width - minWidth;
@@ -453,7 +457,7 @@ I_NodeView {
 
                 // Enforce minimum dimensions
                 var minWidth = root.autoSize ? root.calculatedMinWidth : root.minWidth;
-                var minHeight = root.autoSize ? root.calculatedMinHeight : root.minHeight;
+                var minHeight = root.calculatedMinHeight;
 
                 if (newWidth < minWidth) {
                     newWidth = minWidth;
@@ -511,7 +515,7 @@ I_NodeView {
 
                 // Enforce minimum dimensions
                 var minWidth = root.autoSize ? root.calculatedMinWidth : root.minWidth;
-                var minHeight = root.autoSize ? root.calculatedMinHeight : root.minHeight;
+                var minHeight = root.calculatedMinHeight;
 
                 if (newWidth < minWidth) {
                     newWidth = minWidth;
@@ -573,7 +577,7 @@ I_NodeView {
 
                 // Enforce minimum dimensions
                 var minWidth = root.autoSize ? root.calculatedMinWidth : root.minWidth;
-                var minHeight = root.autoSize ? root.calculatedMinHeight : root.minHeight;
+                var minHeight = root.calculatedMinHeight;
 
                 if (newWidth < minWidth) {
                     newWidth = minWidth;
@@ -629,7 +633,27 @@ I_NodeView {
         anchors.left: parent.left
         anchors.verticalCenter: parent.verticalCenter
         anchors.margins: -(NLStyle.portView.size + NLStyle.portView.borderSize - root.border.width) / 2
-        spacing: 5
+        spacing: calculateLeftPortSpacing()
+
+        function calculateLeftPortSpacing() {
+            var leftPortCount = Object.values(node.ports).filter(port => port.portSide === NLSpec.PortPositionSide.Left).length;
+            if (leftPortCount <= 1) return root.maxPortSpacing;
+
+            // Use the calculatePortSpacing function from the derived view
+            if (typeof root.parent.calculatePortSpacing === 'function') {
+                return root.parent.calculatePortSpacing(leftPortCount);
+            }
+
+            // Fallback calculation
+            var availableHeight = root.height - (20 * 2); // Account for margins
+            var totalPortsHeight = leftPortCount * root.basePortHeight;
+            var remainingSpace = availableHeight - totalPortsHeight;
+
+            if (remainingSpace <= 0) return root.minPortSpacing;
+
+            var calculatedSpacing = remainingSpace / (leftPortCount - 1);
+            return Math.max(root.minPortSpacing, Math.min(root.maxPortSpacing, calculatedSpacing));
+        }
 
         Repeater {
             model: (!isContainer) ? Object.values(node.ports).filter(port => port.portSide === NLSpec.PortPositionSide.Left) : [];
@@ -655,7 +679,27 @@ I_NodeView {
         anchors.right: parent.right
         anchors.verticalCenter: parent.verticalCenter
         anchors.margins: -(NLStyle.portView.size + NLStyle.portView.borderSize - root.border.width) / 2
-        spacing: 5
+        spacing: calculateRightPortSpacing()
+
+        function calculateRightPortSpacing() {
+            var rightPortCount = Object.values(node.ports).filter(port => port.portSide === NLSpec.PortPositionSide.Right).length;
+            if (rightPortCount <= 1) return root.maxPortSpacing;
+
+            // Use the calculatePortSpacing function from the derived view
+            if (typeof root.parent.calculatePortSpacing === 'function') {
+                return root.parent.calculatePortSpacing(rightPortCount);
+            }
+
+            // Fallback calculation
+            var availableHeight = root.height - (20 * 2); // Account for margins
+            var totalPortsHeight = rightPortCount * root.basePortHeight;
+            var remainingSpace = availableHeight - totalPortsHeight;
+
+            if (remainingSpace <= 0) return root.minPortSpacing;
+
+            var calculatedSpacing = remainingSpace / (rightPortCount - 1);
+            return Math.max(root.minPortSpacing, Math.min(root.maxPortSpacing, calculatedSpacing));
+        }
 
         Repeater {
             model: (!isContainer) ? Object.values(node.ports).filter(port => port.portSide === NLSpec.PortPositionSide.Right) : [];
@@ -700,6 +744,29 @@ I_NodeView {
             }
         }
     }
+    /* Connections for dynamic spacing
+    * ****************************************************************************************/
+
+    // Update port spacing when node height changes
+    Connections {
+        target: node.guiConfig
+        function onHeightChanged() {
+            // Trigger recalculation of port spacing
+            leftColumnPort.spacing = leftColumnPort.calculateLeftPortSpacing();
+            rightColumnPort.spacing = rightColumnPort.calculateRightPortSpacing();
+        }
+    }
+
+    // Update port spacing when ports change
+    Connections {
+        target: node
+        function onPortsChanged() {
+            // Trigger recalculation of port spacing
+            leftColumnPort.spacing = leftColumnPort.calculateLeftPortSpacing();
+            rightColumnPort.spacing = rightColumnPort.calculateRightPortSpacing();
+        }
+    }
+
     /* Functions
     * ****************************************************************************************/
     //! Handle dimension change

@@ -53,6 +53,20 @@ Rectangle {
         text: port.title
     }
 
+    //! GlobalPos is a 2d vector filled by globalX and globalY
+    readonly property vector2d globalPos:      Qt.vector2d(globalX, globalY)
+
+    //! Whenever GlobalPos is changed, we should update the
+    //!  related maps in scene/sceneSession
+    onGlobalPosChanged: {
+        port._position = globalPos;
+
+        if (sceneSession && !sceneSession.isRubberBandMoving) {
+            sceneSession.portsVisibility[port._qsUuid] = false;
+            sceneSession.portsVisibilityChanged();
+        }
+    }
+
     // Calculate available space based on node width and port side
     function calculateAvailableSpace() {
         if (nodeWidth <= 0) return 100;
