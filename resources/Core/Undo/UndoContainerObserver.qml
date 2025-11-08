@@ -15,10 +15,10 @@ Item {
 
     property CommandStack  undoStack
 
-    /* Childeren
-     * ****************************************************************************************/
     property var _cache: ({})
 
+    /* Object Properties
+     * ****************************************************************************************/
     Component.onCompleted: {
         if (container) {
             _cache.title = container.title
@@ -26,17 +26,29 @@ Item {
         }
     }
 
+    /* Functions
+    * ****************************************************************************************/
     function _ensureCache() {
-        if (!container) return
-        if (_cache._init) return
+        if (!container)
+            return
+
+        if (_cache._init)
+            return
+
         _cache.title = container.title
         _cache._init = true
     }
 
     function pushProp(targetObj, key, oldV, newV) {
-        if (!undoStack || undoStack.isReplaying) return
-        if (oldV === undefined || newV === undefined) return
-        if (JSON.stringify(oldV) === JSON.stringify(newV)) return
+        if (!undoStack || undoStack.isReplaying)
+            return
+
+        if (oldV === undefined || newV === undefined)
+            return
+
+        if (JSON.stringify(oldV) === JSON.stringify(newV))
+            return
+
         var cmd = Qt.createQmlObject('import QtQuick; import NodeLink; import "Commands"; PropertyCommand {}', undoStack)
         cmd.target = targetObj
         cmd.key = key

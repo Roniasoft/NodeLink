@@ -1,8 +1,14 @@
 import QtQuick
 
+/*! ***********************************************************************************************
+ * PropertyCommand
+ * ************************************************************************************************/
+
 QtObject {
     id: root
 
+    /* Property Declarations
+    * ****************************************************************************************/
     // target object and property
     property var target
     property string key
@@ -12,8 +18,12 @@ QtObject {
     // Optional custom applier: function(t, value)
     property var apply
 
+    /* Functions
+    * ****************************************************************************************/
     function setProp(value) {
-        if (!target) return
+        if (!target)
+            return
+
         if (apply) {
             apply(target, value)
         } else {
@@ -21,9 +31,10 @@ QtObject {
         }
     }
 
-    function undo() { setProp(oldValue) }
-    function redo() { setProp(newValue) }
+    function undo() {
+        setProp(oldValue)
+    }
+    function redo() {
+        setProp(newValue)
+    }
 }
-
-
-

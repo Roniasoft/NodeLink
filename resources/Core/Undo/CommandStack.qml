@@ -1,10 +1,15 @@
 import QtQuick
 import NodeLink
 
+/*! ***********************************************************************************************
+ * CommandStack
+ * ************************************************************************************************/
+
 QtObject {
     id: stack
 
-    /* Properties */
+    /* Property Declarations
+    * ****************************************************************************************/
     property var undoStack: []
     property var redoStack: []
 
@@ -13,10 +18,6 @@ QtObject {
 
     // True while executing undo/redo to suppress observer-generated commands
     property bool isReplaying: false
-
-    /* Signals */
-    signal stacksUpdated()
-    signal undoRedoDone()
 
     // batch aggregation for rapid sequences (e.g., multi-select moves)
     property var _pendingCommands: []
@@ -28,6 +29,13 @@ QtObject {
         }
     }
 
+    /* Signals
+    * ****************************************************************************************/
+    signal stacksUpdated()
+    signal undoRedoDone()
+
+    /* Functions
+    * ****************************************************************************************/
     function clearRedo() {
         redoStack = []
         redoStackChanged()
@@ -41,7 +49,9 @@ QtObject {
         if (!appliedAlready) {
             isReplaying = true
             NLSpec.undo.blockObservers = true
-            try { cmd.redo() } finally {
+            try {
+                cmd.redo()
+            } finally {
                 NLSpec.undo.blockObservers = false
                 isReplaying = false
             }
@@ -53,7 +63,8 @@ QtObject {
     }
 
     function _finalizePending() {
-        if (_pendingCommands.length === 0) return
+        if (_pendingCommands.length === 0)
+            return
 
         // build a macro command
         const cmds = _pendingCommands.slice()
@@ -80,13 +91,17 @@ QtObject {
     }
 
     function undo() {
-        if (!isValidUndo) return
+        if (!isValidUndo)
+            return
+
         const cmd = undoStack.shift()
         undoStackChanged()
 
         isReplaying = true
         NLSpec.undo.blockObservers = true
-        try { cmd.undo() } finally {
+        try {
+            cmd.undo()
+        } finally {
             NLSpec.undo.blockObservers = false
             isReplaying = false
         }
@@ -98,13 +113,17 @@ QtObject {
     }
 
     function redo() {
-        if (!isValidRedo) return
+        if (!isValidRedo)
+            return
+
         const cmd = redoStack.shift()
         redoStackChanged()
 
         isReplaying = true
         NLSpec.undo.blockObservers = true
-        try { cmd.redo() } finally {
+        try {
+            cmd.redo()
+        } finally {
             NLSpec.undo.blockObservers = false
             isReplaying = false
         }

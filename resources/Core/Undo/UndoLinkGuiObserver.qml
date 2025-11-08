@@ -15,12 +15,11 @@ Item {
 
     property CommandStack      undoStack
 
-    /* Childeren
-     * ****************************************************************************************/
-
     // cache last values to compute old/new
     property var _cache: ({})
 
+    /* Object Properties
+     * ****************************************************************************************/
     Component.onCompleted: {
         if (guiConfig) {
             _cache.description = guiConfig.description
@@ -32,9 +31,15 @@ Item {
         }
     }
 
+    /* Functions
+    * ****************************************************************************************/
     function _ensureCache() {
-        if (!guiConfig) return
-        if (_cache._init) return
+        if (!guiConfig)
+            return
+
+        if (_cache._init)
+            return
+
         _cache.description = guiConfig.description
         _cache.colorIndex = guiConfig.colorIndex
         _cache.style = guiConfig.style
@@ -44,25 +49,47 @@ Item {
     }
 
     function _positionsEqual(a, b) {
-        if (!a || !b) return false
+        if (!a || !b)
+            return false
+
         return Math.abs(a.x - b.x) < 0.0001 && Math.abs(a.y - b.y) < 0.0001
     }
 
-    function _copyPos(p) { return { x: p.x, y: p.y } }
+    function _copyPos(p) {
+        return { x: p.x, y: p.y }
+    }
 
     function pushProp(key, oldV, newV, apply) {
-        if (!undoStack || undoStack.isReplaying) return
-        if (oldV === undefined || newV === undefined) return
+        if (!undoStack || undoStack.isReplaying)
+            return
+
+        if (oldV === undefined || newV === undefined)
+            return
+
         const targetObj = guiConfig
-        if (JSON.stringify(oldV) === JSON.stringify(newV)) return
+        if (JSON.stringify(oldV) === JSON.stringify(newV))
+            return
+
         function setProp(value) {
-            if (!targetObj) return
-            if (apply) { apply(targetObj, value) } else { targetObj[key] = value }
+            if (!targetObj)
+                return
+
+            if (apply) {
+                apply(targetObj, value)
+            } else {
+                targetObj[key] = value
+            }
         }
+
         var cmd = {
-            undo: function() { setProp(oldV) },
-            redo: function() { setProp(newV) }
+            undo: function() {
+                setProp(oldV)
+            },
+            redo: function() {
+                setProp(newV)
+            }
         }
+
         undoStack.push(cmd)
     }
 
