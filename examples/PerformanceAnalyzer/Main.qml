@@ -4,7 +4,7 @@ import QtQuick.Controls
 import NodeLink
 import PerformanceAnalyzer
 
-Window {
+ApplicationWindow {
     id: window
 
     visible: true
@@ -32,6 +32,11 @@ Window {
 
     property var startTime
 
+    BusyIndicator {
+        id: busyIndicator
+        running: false
+        anchors.centerIn: parent
+    }
     // Input control
     Rectangle {
         anchors.right: view.right
@@ -83,6 +88,7 @@ Window {
             }
 
             Button {
+                id: startButton
                 text: "Start Test"
                 width: parent.width - 30
                 onClicked: {
@@ -96,7 +102,10 @@ Window {
                     startTime = Date.now()
                     statusText.text = "Creating " + nodeCount + " pairs..."
                     statusText.color = "#4CAF50"
+                    enabled = false
+                    busyIndicator.running = true
                 }
+                onDoubleClicked: clicked()
             }
 
             Text {
@@ -116,6 +125,7 @@ Window {
                     statusText.text = "Scene cleared"
                     statusText.color = "#cccccc"
                 }
+                onDoubleClicked: clicked()
             }
             Button {
                 text: "Select All"
@@ -125,6 +135,7 @@ Window {
                     scene.selectionModel.selectAll(scene.nodes, scene.links, scene.containers)
                     console.timeEnd("selection")
                 }
+                onDoubleClicked: clicked()
             }
         }
     }
@@ -218,7 +229,8 @@ Window {
             statusText.text = "Completed in " + elapsedTime + "ms"
             statusText.color = "#4CAF50"
             console.log("Elapsed time: " + elapsedTime + "ms")
-
+            startButton.enabled = true
+            busyIndicator.running = false
             running = false
         }
         repeat: false

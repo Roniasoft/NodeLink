@@ -136,35 +136,17 @@ Item {
 
         // ! nodeRepeater updated when several nodes Removed
         function onNodesRemoved(nodeArray: list<Node>) {
-            var viewsToDestroy = [];
-
             for (var i = 0; i < nodeArray.length; i++) {
                 var nodeObj = nodeArray[i];
-                if (_nodeViewMap[nodeObj._qsUuid]) {
-                    viewsToDestroy.push(_nodeViewMap[nodeObj._qsUuid]);
-                }
-            }
-
-            if (viewsToDestroy.length > 0) {
-                for (let i = 0; i < viewsToDestroy.length; ++i) {
-                    const view = viewsToDestroy[i];
-                    if (view && view.destroy) {
-                        view.destroy();
-                    }
-                }
-                viewsToDestroy = [];
-            }
-
-            for (let i = 0; i < nodeArray.length; i++) {
-                let nodeObj = nodeArray[i];
+                var nodeObjId = nodeObj._qsUuid;
                 let nodePorts = nodeObj.ports
                 Object.entries(nodePorts).forEach(
                             ([portId, port]) => {
                                 nodeObj.deletePort(port)
                             });
-                var nodeObjId = nodeObj._qsUuid;
                 nodeObj.destroy()
                 if (_nodeViewMap[nodeObjId]) {
+                    _nodeViewMap[nodeObjId].destroy()
                     delete _nodeViewMap[nodeObjId];
                 }
             }

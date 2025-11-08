@@ -5,7 +5,7 @@ import QtQuickStream
  * The LinkGuiConfig is a QSObject that keep the Ui Link properties.
  * ************************************************************************************************/
 QSObject {
-
+    Component.onDestruction: _qsRepo?.unregisterObject(this)
     /* Property Properties
      * ****************************************************************************************/
 

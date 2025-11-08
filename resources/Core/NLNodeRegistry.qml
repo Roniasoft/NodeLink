@@ -5,7 +5,7 @@ import NodeLink
 import QtQuickStream
 
 QSObject {
-
+    Component.onDestruction: _qsRepo?.unregisterObject(this)
     /* Properties
      * ****************************************************************************************/
     //! Registre imports to create a node type

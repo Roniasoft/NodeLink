@@ -7,6 +7,7 @@ import QtQuickStream
  * Scene GUI Config. To store the visual properties of scene
  * ************************************************************************************************/
 QSObject {
+    Component.onDestruction: _qsRepo?.unregisterObject(this)
     /* Property Properties
      * ****************************************************************************************/
     //! Zoom factor

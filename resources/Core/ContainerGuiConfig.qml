@@ -7,6 +7,7 @@ import QtQuickStream
  * Container GUI Config.
  * ************************************************************************************************/
 QSObject {
+    Component.onDestruction: _qsRepo?.unregisterObject(this)
     /* Property Properties
      * ****************************************************************************************/
     //! Zoom factor

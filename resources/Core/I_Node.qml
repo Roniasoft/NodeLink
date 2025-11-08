@@ -7,7 +7,7 @@ import QtQuickStream
  *
  * ************************************************************************************************/
 QSObject {
-
+    Component.onDestruction: _qsRepo?.unregisterObject(this)
     //! Type
     property int            objectType:     NLSpec.ObjectType.Unknown
 

@@ -50,7 +50,7 @@ Rectangle {
     color: "#8b6cef"
     border.color: "#363636"
     scale: mouseArea.containsMouse ? 1.1 : 1
-    opacity: (sceneSession && (sceneSession?.portsVisibility[port._qsUuid] ?? false)) ? 1 : 0
+    opacity: (sceneSession && (sceneSession?.portsVisibility[port?._qsUuid] ?? false)) ? 1 : 0
 
     // Behavior on opacity {NumberAnimation{duration: 100}}
     Behavior on scale {NumberAnimation{}}

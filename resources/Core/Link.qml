@@ -7,7 +7,7 @@ import NodeLink
  * ************************************************************************************************/
 I_Node {
     id: root
-
+    Component.onDestruction: _qsRepo?.unregisterObject(this)
     /* Property Declarations
     * ****************************************************************************************/
 
