@@ -25,9 +25,33 @@ InteractiveNodeView {
     //! Node Context menu, required in image MouseArea
     property alias        nodeContextMenu: nodeContextMenu
 
+    //! Auto size node based on content and port titles
+    property bool autoSize: node.guiConfig.autoSize !== undefined ? node.guiConfig.autoSize : true
+
+    //! Minimum node dimensions
+    property int minWidth: node.guiConfig.minWidth !== undefined ? node.guiConfig.minWidth : 100
+    property int minHeight: node.guiConfig.minHeight !== undefined ? node.guiConfig.minHeight : 70
+
+    //! Calculated minimum dimensions based on content
+    property int calculatedMinWidth: minWidth
+    property int calculatedMinHeight: minHeight
+
+    //! Padding for content
+    property int contentPadding: 12
+
+    //! Base content width (space for operation/image in the middle)
+    property int baseContentWidth: node.guiConfig.baseContentWidth !== undefined ? node.guiConfig.baseContentWidth : 100
+
     /* Object Properties
      * ****************************************************************************************/
     opacity: isSelected ? 1 : isNodeMinimal ? 0.6 : 0.8
+
+    // Set initial size when node is created
+    Component.onCompleted: {
+        if (autoSize) {
+            Qt.callLater(calculateOptimalSize);
+        }
+    }
 
     /* Slots
      * ****************************************************************************************/
@@ -63,6 +87,73 @@ InteractiveNodeView {
         if (!nodeView.isSelected)
             nodeView.edit = false;
 
+    }
+
+    /* Functions
+     * ****************************************************************************************/
+
+    // Called by PortView after it measured label widths.
+    function requestRecalculateFromPort() {
+        // debounce to next tick
+        Qt.callLater(calculateOptimalSize)
+    }
+
+    //! Calculate optimal node size based on content and port titles - SYMMETRIC VERSION
+    function calculateOptimalSize() {
+        // Find the longest port title from BOTH left and right sides
+        var maxTitleWidth = 0;
+
+        // Check all ports (both left and right)
+        Object.values(node.ports).forEach(function(port) {
+            if (port.title) {
+                var estimatedWidth = (typeof port._measuredTitleWidth === "number" && port._measuredTitleWidth > 0)
+                                     ? port._measuredTitleWidth
+                                     : estimateTextWidth(port.title)
+
+                if (estimatedWidth > maxTitleWidth) {
+                    maxTitleWidth = estimatedWidth;
+                }
+            }
+        });
+
+        // Symmetric formula: longest title + base content + longest title
+        // This ensures both sides have equal space for titles
+        var requiredWidth = Math.max(minWidth, (maxTitleWidth * 2) + baseContentWidth);
+
+        // Calculate height based on number of ports
+        var leftPortCount = getPortCountBySide(NLSpec.PortPositionSide.Left);
+        var rightPortCount = getPortCountBySide(NLSpec.PortPositionSide.Right);
+        var maxPortCount = Math.max(leftPortCount, rightPortCount);
+
+        // Adjust height based on number of ports - keep it symmetric
+        var basePortHeight = 30; // Height per port
+        var minPortAreaHeight = Math.max(2, maxPortCount) * basePortHeight;
+        var requiredHeight = Math.max(minHeight, minPortAreaHeight);
+
+        // Update calculated minimum dimensions
+        calculatedMinWidth = requiredWidth;
+        calculatedMinHeight = requiredHeight;
+
+        // Update GUI config
+        if (node.guiConfig) {
+            node.guiConfig.width = requiredWidth;
+            node.guiConfig.height = requiredHeight;
+        }
+    }
+
+    //! Get port count by side
+    function getPortCountBySide(side) {
+        return Object.values(node.ports).filter(function(port) {
+            return port.portSide === side;
+        }).length;
+    }
+
+    //! Estimate text width (simplified calculation)
+    function estimateTextWidth(text) {
+        if (!text) return 0;
+        // Rough estimation: ~7 pixels per character for the font size used in ports
+        // This accounts for the actual rendered width better
+        return text.length * 7 + 15; // +15 for padding/margins
     }
 
     /* Children
@@ -422,6 +513,7 @@ InteractiveNodeView {
 
     }
 
+
     //! Reset some properties when selection model changed.
     Connections {
         target: scene.selectionModel
@@ -450,4 +542,37 @@ InteractiveNodeView {
         }
     }
 
+    /* Connections for Auto-sizing
+    * ****************************************************************************************/
+
+    //! Handle title changes for auto-sizing
+    Connections {
+        target: node
+        function onTitleChanged() {
+            if (autoSize) {
+                calculateOptimalSize();
+            }
+        }
+    }
+
+    //! Handle port changes for auto-sizing
+    Connections {
+        target: node
+        function onPortsChanged() {
+            if (autoSize) {
+                calculateOptimalSize();
+            }
+        }
+    }
+
+    //! Handle port additions for auto-sizing
+    Connections {
+        target: node
+        function onPortAdded(portId) {
+            if (autoSize) {
+                // Small delay to ensure port is properly initialized
+                Qt.callLater(calculateOptimalSize);
+            }
+        }
+    }
 }

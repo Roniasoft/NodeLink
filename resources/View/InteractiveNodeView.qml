@@ -20,6 +20,14 @@ I_NodeView {
     property bool         isNodeEditable: !node.guiConfig.locked && (sceneSession?.isSceneEditable ?? true)
 
 
+    //! Auto size properties (these will be set by the derived nodeview)
+    property bool autoSize: true
+    property int minWidth: 100
+    property int minHeight: 70
+    property int calculatedMinWidth: minWidth
+    property int calculatedMinHeight: minHeight
+
+
     //! Does the top/ bottom/ right / left borders have mouse?
     //! Note: Other MouseArea properties are not allowed.
     property bool         topBorderContainsMouse:    topMouseArea.containsMouse
@@ -156,7 +164,7 @@ I_NodeView {
                 var newY = node.guiConfig.position.y + correctedDeltaY;
 
                 // Enforce minimum height
-                var minHeight = node.autoSize ? node.calculatedMinHeight : node.minHeight;
+                var minHeight = root.autoSize ? root.calculatedMinHeight : root.minHeight;
                 if (newHeight < minHeight) {
                     newHeight = minHeight;
                     correctedDeltaY = node.guiConfig.height - minHeight;
@@ -214,10 +222,10 @@ I_NodeView {
                 var newHeight = node.guiConfig.height + deltaY;
 
                 // Enforce minimum height
-                if (node.autoSize) {
-                    newHeight = Math.max(newHeight, node.calculatedMinHeight);
+                if (root.autoSize) {
+                    newHeight = Math.max(newHeight, root.calculatedMinHeight);
                 } else {
-                    newHeight = Math.max(newHeight, node.minHeight);
+                    newHeight = Math.max(newHeight, root.minHeight);
                 }
 
                 node.guiConfig.height = newHeight;
@@ -274,7 +282,7 @@ I_NodeView {
                 var newX = node.guiConfig.position.x + correctedDeltaX;
 
                 // Only enforce minimum size when autoSize is enabled
-                var minWidth = node.autoSize ? node.calculatedMinWidth : node.minWidth;
+                var minWidth = root.autoSize ? root.calculatedMinWidth : root.minWidth;
                 if (newWidth < minWidth) {
                     newWidth = minWidth;
                     correctedDeltaX = node.guiConfig.width - minWidth;
@@ -332,11 +340,11 @@ I_NodeView {
                 var newWidth = node.guiConfig.width + deltaX;
 
                 // Only enforce minimum size when autoSize is enabled
-                if (node.autoSize) {
-                    newWidth = Math.max(newWidth, node.calculatedMinWidth);
+                if (root.autoSize) {
+                    newWidth = Math.max(newWidth, root.calculatedMinWidth);
                 } else {
                     // When autoSize is false, allow smaller sizes but enforce absolute minimum
-                    newWidth = Math.max(newWidth, node.minWidth);
+                    newWidth = Math.max(newWidth, root.minWidth);
                 }
 
                 node.guiConfig.width = newWidth;
@@ -385,8 +393,8 @@ I_NodeView {
                 var newHeight = node.guiConfig.height - deltaY;
 
                 // Enforce minimum dimensions
-                var minWidth = node.autoSize ? node.calculatedMinWidth : node.minWidth;
-                var minHeight = node.autoSize ? node.calculatedMinHeight : node.minHeight;
+                var minWidth = root.autoSize ? root.calculatedMinWidth : root.minWidth;
+                var minHeight = root.autoSize ? root.calculatedMinHeight : root.minHeight;
 
                 if (newWidth < minWidth) {
                     newWidth = minWidth;
@@ -444,8 +452,8 @@ I_NodeView {
                 var newHeight = node.guiConfig.height + deltaY;
 
                 // Enforce minimum dimensions
-                var minWidth = node.autoSize ? node.calculatedMinWidth : node.minWidth;
-                var minHeight = node.autoSize ? node.calculatedMinHeight : node.minHeight;
+                var minWidth = root.autoSize ? root.calculatedMinWidth : root.minWidth;
+                var minHeight = root.autoSize ? root.calculatedMinHeight : root.minHeight;
 
                 if (newWidth < minWidth) {
                     newWidth = minWidth;
@@ -502,8 +510,8 @@ I_NodeView {
                 var newHeight = node.guiConfig.height - deltaY;
 
                 // Enforce minimum dimensions
-                var minWidth = node.autoSize ? node.calculatedMinWidth : node.minWidth;
-                var minHeight = node.autoSize ? node.calculatedMinHeight : node.minHeight;
+                var minWidth = root.autoSize ? root.calculatedMinWidth : root.minWidth;
+                var minHeight = root.autoSize ? root.calculatedMinHeight : root.minHeight;
 
                 if (newWidth < minWidth) {
                     newWidth = minWidth;
@@ -564,8 +572,8 @@ I_NodeView {
                 var newHeight = node.guiConfig.height + deltaY;
 
                 // Enforce minimum dimensions
-                var minWidth = node.autoSize ? node.calculatedMinWidth : node.minWidth;
-                var minHeight = node.autoSize ? node.calculatedMinHeight : node.minHeight;
+                var minWidth = root.autoSize ? root.calculatedMinWidth : root.minWidth;
+                var minHeight = root.autoSize ? root.calculatedMinHeight : root.minHeight;
 
                 if (newWidth < minWidth) {
                     newWidth = minWidth;

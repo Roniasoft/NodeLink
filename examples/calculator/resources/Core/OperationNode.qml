@@ -17,11 +17,13 @@ Node {
 
 
     // Enable auto-sizing (enabled by default, but explicit is good)
-    autoSize: false
+    guiConfig.autoSize: true
 
     // You can still set minimum sizes if needed
-    minWidth: 120
-    minHeight: 80
+    guiConfig.minWidth: 120
+    guiConfig.minHeight: 80
+
+    guiConfig.baseContentWidth: 120
 
     Component.onCompleted: addPorts();
 
