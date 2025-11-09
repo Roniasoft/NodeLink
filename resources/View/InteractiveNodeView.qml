@@ -30,11 +30,6 @@ I_NodeView {
     property int calculatedMinWidth: minWidth
     property int calculatedMinHeight: minHeight
 
-    //! Dynamic port spacing (these will be set by the derived nodeview)
-    property int minPortSpacing: 2
-    property int maxPortSpacing: 20
-    property int basePortHeight: 24
-
     //! Does the top/ bottom/ right / left borders have mouse?
     //! Note: Other MouseArea properties are not allowed.
     property bool         topBorderContainsMouse:    topMouseArea.containsMouse
@@ -637,22 +632,7 @@ I_NodeView {
 
         function calculateLeftPortSpacing() {
             var leftPortCount = Object.values(node.ports).filter(port => port.portSide === NLSpec.PortPositionSide.Left).length;
-            if (leftPortCount <= 1) return root.maxPortSpacing;
-
-            // Use the calculatePortSpacing function from the derived view
-            if (typeof root.parent.calculatePortSpacing === 'function') {
-                return root.parent.calculatePortSpacing(leftPortCount);
-            }
-
-            // Fallback calculation
-            var availableHeight = root.height - (20 * 2); // Account for margins
-            var totalPortsHeight = leftPortCount * root.basePortHeight;
-            var remainingSpace = availableHeight - totalPortsHeight;
-
-            if (remainingSpace <= 0) return root.minPortSpacing;
-
-            var calculatedSpacing = remainingSpace / (leftPortCount - 1);
-            return Math.max(root.minPortSpacing, Math.min(root.maxPortSpacing, calculatedSpacing));
+            return root.calculatePortSpacing(leftPortCount);
         }
 
         Repeater {
@@ -683,22 +663,7 @@ I_NodeView {
 
         function calculateRightPortSpacing() {
             var rightPortCount = Object.values(node.ports).filter(port => port.portSide === NLSpec.PortPositionSide.Right).length;
-            if (rightPortCount <= 1) return root.maxPortSpacing;
-
-            // Use the calculatePortSpacing function from the derived view
-            if (typeof root.parent.calculatePortSpacing === 'function') {
-                return root.parent.calculatePortSpacing(rightPortCount);
-            }
-
-            // Fallback calculation
-            var availableHeight = root.height - (20 * 2); // Account for margins
-            var totalPortsHeight = rightPortCount * root.basePortHeight;
-            var remainingSpace = availableHeight - totalPortsHeight;
-
-            if (remainingSpace <= 0) return root.minPortSpacing;
-
-            var calculatedSpacing = remainingSpace / (rightPortCount - 1);
-            return Math.max(root.minPortSpacing, Math.min(root.maxPortSpacing, calculatedSpacing));
+            return root.calculatePortSpacing(rightPortCount);
         }
 
         Repeater {
