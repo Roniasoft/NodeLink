@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Dialogs
 import QtQuick.Controls
+import QtQuick.Layouts
 
 import QtQuickStream
 import NodeLink
@@ -48,9 +49,28 @@ Window {
      * ****************************************************************************************/
 
     //! ChatbotView
-    ChatbotView {
-        id: view
-        scene: window.scene
+    RowLayout {
         anchors.fill: parent
+        spacing: 4
+        anchors.margins: 4
+
+        //! Node-based view (left)
+        ChatbotView {
+            id: view
+            scene: window.scene
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+        }
+
+        //! Chat box (right)
+        Chatbox {
+            id: chatBox
+            Layout.preferredWidth: 400
+            Layout.fillHeight: true
+            onUserMessageSent: {
+                console.log("User message:", message)
+                // TODO: later connect this to RegexNode logic and show response
+            }
+        }
     }
 }
