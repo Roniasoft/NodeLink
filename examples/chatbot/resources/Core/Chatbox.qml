@@ -1,0 +1,120 @@
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Layouts
+
+Item {
+    id: chatBox
+    width: parent ? parent.width : 400
+    height: parent ? parent.height : 300
+
+    signal userMessageSent(string message)
+
+    ListModel {
+        id: messagesModel
+    }
+
+    ColumnLayout {
+        anchors.fill: parent
+        spacing: 16
+
+        // Scrollable chat history
+        ScrollView {
+            id: scrollView
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            clip: true
+
+            ColumnLayout {
+                id: messageList
+                width: scrollView.width
+                spacing: 40
+
+                Repeater {
+                    model: messagesModel
+
+                    delegate: Item {
+                        width: parent.width
+                        height: bubble.implicitHeight + 6
+
+                        RowLayout {
+                            width: parent.width
+                            Layout.alignment: model.isUser ? Qt.AlignRight : Qt.AlignLeft
+
+                            Rectangle {
+                                id: bubble
+                                color: model.isUser ? "#3A7AFE" : "#C69C6D"
+                                radius: 12
+                                Layout.preferredWidth: Math.min(parent.width * 0.7, messageText.paintedWidth + 16)
+                                Layout.preferredHeight: messageText.paintedHeight + 16
+                                anchors.margins: 10
+                                anchors.right: model.isUser ? parent.right : undefined
+                                anchors.left: model.isUser ? undefined : parent.left
+
+                                Text {
+                                    id: messageText
+                                    text: model.text
+                                    color: "white"
+                                    wrapMode: Text.WordWrap
+                                    font.pointSize: 10
+                                    anchors.fill: parent
+                                    anchors.margins: 8
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        RowLayout {
+            Layout.fillWidth: true
+            spacing: 6
+
+            TextField {
+                id: inputField
+                Layout.fillWidth: true
+                placeholderText: "Type your message..."
+                font.pointSize: 10
+                onAccepted: sendMessage()
+            }
+
+            Button {
+                text: "Send"
+                onClicked: sendMessage()
+            }
+        }
+    }
+
+    Component.onCompleted: {
+        messagesModel.append({ text: "Hello there! I'm a chatbot based on visual programming and built using the NodeLink.", isUser: false })
+        messagesModel.append({ text: "You can send me any message, and I'll check it using Regex nodes.", isUser: false })
+        messagesModel.append({ text: "Type something like: hello world :)", isUser: false })
+        Qt.callLater(scrollToBottom)
+    }
+
+    function scrollToBottom() {
+        if (scrollView.flickableItem) {
+            scrollView.flickableItem.contentY =
+                    Math.max(0, scrollView.flickableItem.contentHeight - scrollView.flickableItem.height);
+        }
+    }
+
+    function sendMessage() {
+        if (inputField.text.trim().length === 0)
+            return
+
+        let msg = inputField.text.trim()
+        inputField.text = ""
+
+        messagesModel.append({ text: msg, isUser: true })
+
+        chatBox.userMessageSent(msg)
+
+        Qt.callLater(scrollToBottom)
+    }
+
+    function addResponse(text) {
+        messagesModel.append({ text: text, isUser: false })
+        Qt.callLater(scrollToBottom)
+    }
+}
