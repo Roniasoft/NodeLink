@@ -218,11 +218,11 @@ I_Scene {
 
             case CSpecs.NodeType.ResultTrue:
             {
-                downStreamNode.nodeData.data = (upstreamNode.matchedPattern === "FOUND") ? "YES ..." : "";
+                downStreamNode.nodeData.data = (upstreamNode.matchedPattern === "FOUND") ? "HI ..." : "";
             } break;
             case CSpecs.NodeType.ResultFalse:
             {
-                downStreamNode.nodeData.data = (upstreamNode.matchedPattern === "NOT_FOUND") ? "NO !!!" : "";
+                downStreamNode.nodeData.data = (upstreamNode.matchedPattern === "NOT_FOUND") ? " :( " : "";
             } break;
 
             default: {
