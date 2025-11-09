@@ -15,50 +15,53 @@ Item {
 
     ColumnLayout {
         anchors.fill: parent
-        spacing: 16
+        spacing: 12
 
-        // Scrollable chat history
+        // Scrollable chat area
         ScrollView {
             id: scrollView
             Layout.fillWidth: true
             Layout.fillHeight: true
             clip: true
 
-            ColumnLayout {
+            Column {
                 id: messageList
                 width: scrollView.width
-                spacing: 40
+                spacing: 10
 
                 Repeater {
                     model: messagesModel
 
                     delegate: Item {
                         width: parent.width
-                        height: bubble.implicitHeight + 6
+                        implicitHeight: bubble.implicitHeight + dynamicSpacing
 
-                        RowLayout {
-                            width: parent.width
-                            Layout.alignment: model.isUser ? Qt.AlignRight : Qt.AlignLeft
+                        property int dynamicSpacing: {
+                            if (messageText.lineCount <= 1) return 36
+                            if (messageText.lineCount === 2) return 54
+                            if (messageText.lineCount === 3) return 70
+                            return 90
+                        }
 
-                            Rectangle {
-                                id: bubble
-                                color: model.isUser ? "#3A7AFE" : "#C69C6D"
-                                radius: 12
-                                Layout.preferredWidth: Math.min(parent.width * 0.7, messageText.paintedWidth + 16)
-                                Layout.preferredHeight: messageText.paintedHeight + 16
+                        Rectangle {
+                            id: bubble
+                            color: model.isUser ? "#3A7AFE" : "#C69C6D"
+                            radius: 12
+                            anchors.margins: 8
+                            anchors.right: model.isUser ? parent.right : undefined
+                            anchors.left: model.isUser ? undefined : parent.left
+                            width: Math.min(parent.width * 0.7, messageText.implicitWidth + 24)
+                            height: messageText.paintedHeight + 20
+
+                            Text {
+                                id: messageText
+                                text: model.text
+                                color: "white"
+                                wrapMode: Text.WordWrap
+                                font.pointSize: 11
                                 anchors.margins: 10
-                                anchors.right: model.isUser ? parent.right : undefined
-                                anchors.left: model.isUser ? undefined : parent.left
-
-                                Text {
-                                    id: messageText
-                                    text: model.text
-                                    color: "white"
-                                    wrapMode: Text.WordWrap
-                                    font.pointSize: 10
-                                    anchors.fill: parent
-                                    anchors.margins: 8
-                                }
+                                anchors.fill: parent
+                                width: bubble.width - 20
                             }
                         }
                     }
@@ -88,14 +91,14 @@ Item {
     Component.onCompleted: {
         messagesModel.append({ text: "Hello there! I'm a chatbot based on visual programming and built using the NodeLink.", isUser: false })
         messagesModel.append({ text: "You can send me any message, and I'll check it using Regex nodes.", isUser: false })
-        messagesModel.append({ text: "Type something like: hello world :)", isUser: false })
+        messagesModel.append({ text: "Type something like:   hello world :)   ", isUser: false })
         Qt.callLater(scrollToBottom)
     }
 
     function scrollToBottom() {
         if (scrollView.flickableItem) {
             scrollView.flickableItem.contentY =
-                    Math.max(0, scrollView.flickableItem.contentHeight - scrollView.flickableItem.height);
+                Math.max(0, scrollView.flickableItem.contentHeight - scrollView.flickableItem.height);
         }
     }
 
