@@ -41,14 +41,9 @@ QSObject {
     property bool autoSize: true
 
     //! Minimum node dimensions
-    property int minWidth: 100
-    property int minHeight: 70
+    property int minWidth: 120
+    property int minHeight: 80
 
     //! Base content width (space for operation/image in the middle)
     property int baseContentWidth: 100
-
-    //! Calculated minimum dimensions (read-only, for internal use)
-    property int calculatedMinWidth: minWidth
-    property int calculatedMinHeight: minHeight
-
 }
