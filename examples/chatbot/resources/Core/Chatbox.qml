@@ -17,7 +17,6 @@ Item {
         anchors.fill: parent
         spacing: 12
 
-        // Scrollable chat area
         ScrollView {
             id: scrollView
             Layout.fillWidth: true
@@ -40,28 +39,48 @@ Item {
                             if (messageText.lineCount <= 1) return 36
                             if (messageText.lineCount === 2) return 54
                             if (messageText.lineCount === 3) return 70
-                            return 90
+                            return 100
                         }
 
-                        Rectangle {
-                            id: bubble
-                            color: model.isUser ? "#3A7AFE" : "#C69C6D"
-                            radius: 12
+                        Row {
+                            width: parent.width
+                            spacing: 6
                             anchors.margins: 8
-                            anchors.right: model.isUser ? parent.right : undefined
-                            anchors.left: model.isUser ? undefined : parent.left
-                            width: Math.min(parent.width * 0.7, messageText.implicitWidth + 24)
-                            height: messageText.paintedHeight + 20
+                            layoutDirection: model.isUser ? Qt.RightToLeft : Qt.LeftToRight
 
-                            Text {
-                                id: messageText
-                                text: model.text
-                                color: "white"
-                                wrapMode: Text.WordWrap
-                                font.pointSize: 11
-                                anchors.margins: 10
-                                anchors.fill: parent
-                                width: bubble.width - 20
+                            Rectangle {
+                                width: 28
+                                height: 28
+                                radius: 14
+                                color: model.isUser ? "#3A7AFE" : "#C69C6D"
+                                anchors.verticalCenter: parent.verticalCenter
+
+                                Text {
+                                    anchors.centerIn: parent
+                                    text: model.isUser ? "U" : "B"
+                                    color: "white"
+                                    font.bold: true
+                                    font.pointSize: 10
+                                }
+                            }
+
+                            Rectangle {
+                                id: bubble
+                                color: model.isUser ? "#3A7AFE" : "#C69C6D"
+                                radius: 12
+                                width: Math.min(parent.width * 0.7, messageText.implicitWidth + 24)
+                                height: messageText.paintedHeight + 20
+
+                                Text {
+                                    id: messageText
+                                    text: model.text
+                                    color: "white"
+                                    wrapMode: Text.WordWrap
+                                    font.pointSize: 11
+                                    anchors.margins: 10
+                                    anchors.fill: parent
+                                    width: bubble.width - 20
+                                }
                             }
                         }
                     }
