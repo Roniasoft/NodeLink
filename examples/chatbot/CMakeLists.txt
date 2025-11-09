@@ -32,6 +32,7 @@ qt_add_qml_module(Chatbot
         resources/Core/ResultFalseNode.qml
         resources/Core/OperationNode.qml
         resources/Core/OperationNodeData.qml
+        resources/Core/Chatbox.qml
 
         resources/View/ChatbotView.qml
         resources/View/ChatbotNodeView.qml
