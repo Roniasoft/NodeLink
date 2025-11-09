@@ -17,7 +17,7 @@ Node {
 
 
     // Enable auto-sizing (enabled by default, but explicit is good)
-    guiConfig.autoSize: true
+    guiConfig.autoSize: false
 
     // You can still set minimum sizes if needed
     guiConfig.minWidth: 120

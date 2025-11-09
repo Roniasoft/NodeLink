@@ -27,9 +27,8 @@ InteractiveNodeView {
 
     //! Dynamic port spacing properties
     property int minPortSpacing: 2  // Minimum space between ports
-    property int maxPortSpacing: 20 // Maximum space between ports
+    property int maxPortSpacing: 200 // Maximum space between ports
     property int basePortHeight: 24 // Height per port including some margin
-
 
     /* Object Properties
      * ****************************************************************************************/
@@ -114,6 +113,7 @@ InteractiveNodeView {
         // Update calculated minimum dimensions
         calculatedMinWidth = requiredWidth;
         calculatedMinHeight = requiredHeight;
+        node.guiConfig.minHeight = calculatedMinHeight
 
         node.guiConfig.width = requiredWidth;
         node.guiConfig.height = requiredHeight;
@@ -138,7 +138,7 @@ InteractiveNodeView {
     function calculatePortSpacing(portCount) {
         if (portCount <= 1) return maxPortSpacing;
 
-        var availableHeight = node.guiConfig.height - (contentPadding * 2);
+        var availableHeight = node.guiConfig.height/* - (contentPadding * 2)*/;
         var totalPortsHeight = portCount * basePortHeight;
         var remainingSpace = availableHeight - totalPortsHeight;
 
@@ -556,7 +556,8 @@ InteractiveNodeView {
     Connections {
         target: node
         function onTitleChanged() {
-            calculateOptimalSize();
+            if(autoSize)
+                calculateOptimalSize();
         }
     }
 
@@ -564,7 +565,8 @@ InteractiveNodeView {
     Connections {
         target: node
         function onPortsChanged() {
-            calculateOptimalSize();
+            if(autoSize)
+                calculateOptimalSize();
         }
     }
 
@@ -573,7 +575,8 @@ InteractiveNodeView {
         target: node
         function onPortAdded(portId) {
             // Small delay to ensure port is properly initialized
-            Qt.callLater(calculateOptimalSize);
+            if(autoSize)
+                calculateOptimalSize();
         }
     }
 }
