@@ -35,12 +35,7 @@ Item {
                         width: parent.width
                         implicitHeight: bubble.implicitHeight + dynamicSpacing
 
-                        property int dynamicSpacing: {
-                            if (messageText.lineCount <= 1) return 36
-                            if (messageText.lineCount === 2) return 54
-                            if (messageText.lineCount === 3) return 70
-                            return 100
-                        }
+                        property int dynamicSpacing: Math.max(36, messageText.lineCount * 24)
 
                         Row {
                             width: parent.width
