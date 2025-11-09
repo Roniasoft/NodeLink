@@ -37,9 +37,7 @@ InteractiveNodeView {
 
     // Set initial size when node is created
     Component.onCompleted: {
-        if (autoSize) {
-            Qt.callLater(calculateOptimalSize);
-        }
+        Qt.callLater(calculateOptimalSize);
     }
 
     /* Slots
@@ -128,10 +126,12 @@ InteractiveNodeView {
         var maxPortCount = Math.max(leftPortCount, rightPortCount);
 
         var basePortHeight = 30; // Height per port
-        // Calculate minimum height required to fit all ports without overlapping
-        var minRequiredHeight = Math.max(minHeight, (maxPortCount * basePortHeight) + contentPadding * 2);
 
-        return minRequiredHeight;
+        // Calculate minimum height required to fit all ports without overlapping
+        var minPortAreaHeight = Math.max(2, maxPortCount) * basePortHeight;
+        var requiredHeight = Math.max(minHeight, minPortAreaHeight);
+
+        return requiredHeight;
     }
 
     //! Calculate optimal port spacing based on current node height and port count
@@ -556,9 +556,7 @@ InteractiveNodeView {
     Connections {
         target: node
         function onTitleChanged() {
-            if (autoSize) {
-                calculateOptimalSize();
-            }
+            calculateOptimalSize();
         }
     }
 
@@ -566,9 +564,7 @@ InteractiveNodeView {
     Connections {
         target: node
         function onPortsChanged() {
-            if (autoSize) {
-                calculateOptimalSize();
-            }
+            calculateOptimalSize();
         }
     }
 
@@ -576,10 +572,8 @@ InteractiveNodeView {
     Connections {
         target: node
         function onPortAdded(portId) {
-            if (autoSize) {
-                // Small delay to ensure port is properly initialized
-                Qt.callLater(calculateOptimalSize);
-            }
+            // Small delay to ensure port is properly initialized
+            Qt.callLater(calculateOptimalSize);
         }
     }
 }
