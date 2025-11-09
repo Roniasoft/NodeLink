@@ -20,10 +20,13 @@ I_NodeView {
     property bool         isNodeEditable: !node.guiConfig.locked && (sceneSession?.isSceneEditable ?? true)
 
 
-    //! Auto size properties (these will be set by the derived nodeview)
-    property bool autoSize: true
-    property int minWidth: 100
-    property int minHeight: 70
+    // Provide defaults that bind to model with fallbacks
+    property bool autoSize: node?.guiConfig?.autoSize ?? true
+    property int minWidth: node?.guiConfig?.minWidth ?? 100
+    property int minHeight: node?.guiConfig?.minHeight ?? 70
+    property int baseContentWidth: node?.guiConfig?.baseContentWidth ?? 100
+
+    // Calculated properties - these are view-only
     property int calculatedMinWidth: minWidth
     property int calculatedMinHeight: minHeight
 
@@ -164,11 +167,10 @@ I_NodeView {
                 var deltaY = mouse.y - prevY;
                 var correctedDeltaY = Math.floor(deltaY);
 
-                var newHeight = node.guiConfig.height - correctedDeltaY;
-                var newY = node.guiConfig.position.y + correctedDeltaY;
+                var newHeight = root.node.guiConfig.height - correctedDeltaY;
 
-                // Enforce minimum height - ALWAYS use calculatedMinHeight regardless of autoSize
-                var minHeight = root.calculatedMinHeight;
+                var minHeight = root.autoSize ? root.calculatedMinHeight : root.node.guiConfig.minHeight;
+
                 if (newHeight < minHeight) {
                     newHeight = minHeight;
                     correctedDeltaY = node.guiConfig.height - minHeight;
@@ -223,16 +225,16 @@ I_NodeView {
         onPositionChanged: (mouse)=> {
             if (isDraging) {
                 var deltaY = mouse.y - prevY;
-                var newHeight = node.guiConfig.height + deltaY;
 
-                // Enforce minimum height
-                if (root.autoSize) {
-                    newHeight = Math.max(newHeight, root.calculatedMinHeight);
-                } else {
-                    newHeight = Math.max(newHeight, root.minHeight);
+                var newHeight = root.node.guiConfig.height + deltaY;
+
+                var minHeight = root.autoSize ? root.calculatedMinHeight : root.node.guiConfig.minHeight;
+
+                if (newHeight < minHeight) {
+                    newHeight = minHeight;
                 }
 
-                node.guiConfig.height = newHeight;
+                root.node.guiConfig.height = newHeight;
                 prevY = mouse.y - deltaY;
             }
         }
@@ -282,14 +284,13 @@ I_NodeView {
                 var deltaX = mouse.x - prevX;
                 var correctedDeltaX = Math.floor(deltaX);
 
-                var newWidth = node.guiConfig.width - correctedDeltaX;
-                var newX = node.guiConfig.position.x + correctedDeltaX;
+                var newWidth = root.node.guiConfig.width - correctedDeltaX;
 
-                // Enforce minimum height - ALWAYS use calculatedMinHeight regardless of autoSize
-                var minHeight = root.calculatedMinHeight;
+                var minWidth = root.autoSize ? root.calculatedMinWidth : root.node.guiConfig.minWidth;
+
                 if (newWidth < minWidth) {
                     newWidth = minWidth;
-                    correctedDeltaX = node.guiConfig.width - minWidth;
+                    correctedDeltaX = root.node.guiConfig.width - minWidth;
                 }
 
                 node.guiConfig.position.x += correctedDeltaX;
@@ -341,14 +342,13 @@ I_NodeView {
         onPositionChanged: (mouse)=> {
             if (isDraging) {
                 var deltaX = mouse.x - prevX;
-                var newWidth = node.guiConfig.width + deltaX;
 
-                // Only enforce minimum size when autoSize is enabled
-                if (root.autoSize) {
-                    newWidth = Math.max(newWidth, root.calculatedMinWidth);
-                } else {
-                    // When autoSize is false, allow smaller sizes but enforce absolute minimum
-                    newWidth = Math.max(newWidth, root.minWidth);
+                var newWidth = root.node.guiConfig.width + deltaX;
+
+                var minWidth = root.autoSize ? root.calculatedMinWidth : root.node.guiConfig.minWidth;
+
+                if (newWidth < minWidth) {
+                    newWidth = minWidth;
                 }
 
                 node.guiConfig.width = newWidth;
@@ -393,20 +393,20 @@ I_NodeView {
                 var deltaX = mouse.x - prevX;
                 var deltaY = mouse.y - prevY;
 
-                var newWidth = node.guiConfig.width + deltaX;
-                var newHeight = node.guiConfig.height - deltaY;
+                var newWidth = root.node.guiConfig.width + deltaX;
+                var newHeight = root.node.guiConfig.height - deltaY;
 
                 // Enforce minimum dimensions
-                var minWidth = root.autoSize ? root.calculatedMinWidth : root.minWidth;
-                var minHeight = root.autoSize ? root.calculatedMinHeight : root.minHeight;
+                var minWidth = root.autoSize ? root.calculatedMinWidth : root.node.guiConfig.minWidth;
+                var minHeight = root.autoSize ? root.calculatedMinHeight : root.node.guiConfig.minHeight;
 
                 if (newWidth < minWidth) {
                     newWidth = minWidth;
-                    deltaX = newWidth - node.guiConfig.width;
+                    deltaX = newWidth - root.node.guiConfig.width;
                 }
                 if (newHeight < minHeight) {
                     newHeight = minHeight;
-                    deltaY = node.guiConfig.height - newHeight;
+                    deltaY = root.node.guiConfig.height - newHeight;
                 }
 
                 node.guiConfig.width = newWidth;
@@ -452,24 +452,24 @@ I_NodeView {
                 var deltaX = mouse.x - prevX;
                 var deltaY = mouse.y - prevY;
 
-                var newWidth = node.guiConfig.width + deltaX;
+                var newWidth = root.node.guiConfig.width + deltaX;
                 var newHeight = node.guiConfig.height + deltaY;
 
                 // Enforce minimum dimensions
-                var minWidth = root.autoSize ? root.calculatedMinWidth : root.minWidth;
-                var minHeight = root.calculatedMinHeight;
+                var minWidth = root.autoSize ? root.calculatedMinWidth : root.node.guiConfig.minWidth;
+                var minHeight = root.autoSize ? root.calculatedMinHeight : root.node.guiConfig.minHeight;
 
                 if (newWidth < minWidth) {
                     newWidth = minWidth;
-                    deltaX = newWidth - node.guiConfig.width;
+                    deltaX = newWidth - root.node.guiConfig.width;
                 }
                 if (newHeight < minHeight) {
                     newHeight = minHeight;
-                    deltaY = newHeight - node.guiConfig.height;
+                    deltaY = newHeight - root.node.guiConfig.height;
                 }
 
-                node.guiConfig.width = newWidth;
-                node.guiConfig.height = newHeight;
+                root.node.guiConfig.width = newWidth;
+                root.node.guiConfig.height = newHeight;
 
                 prevX = mouse.x - deltaX;
                 prevY = mouse.y - deltaY;
@@ -510,26 +510,26 @@ I_NodeView {
                 var deltaX = mouse.x - prevX;
                 var deltaY = mouse.y - prevY;
 
-                var newWidth = node.guiConfig.width - deltaX;
-                var newHeight = node.guiConfig.height - deltaY;
+                var newWidth = root.node.guiConfig.width - deltaX;
+                var newHeight = root.node.guiConfig.height - deltaY;
 
                 // Enforce minimum dimensions
-                var minWidth = root.autoSize ? root.calculatedMinWidth : root.minWidth;
-                var minHeight = root.calculatedMinHeight;
+                var minWidth = root.autoSize ? root.calculatedMinWidth : root.node.guiConfig.minWidth;
+                var minHeight = root.autoSize ? root.calculatedMinHeight : root.node.guiConfig.minHeight;
 
                 if (newWidth < minWidth) {
                     newWidth = minWidth;
-                    deltaX = node.guiConfig.width - minWidth;
+                    deltaX = root.node.guiConfig.width - minWidth;
                 }
                 if (newHeight < minHeight) {
                     newHeight = minHeight;
-                    deltaY = node.guiConfig.height - minHeight;
+                    deltaY = root.node.guiConfig.height - minHeight;
                 }
 
-                node.guiConfig.position.x += deltaX;
-                node.guiConfig.width = newWidth;
-                node.guiConfig.position.y += deltaY;
-                node.guiConfig.height = newHeight;
+                root.node.guiConfig.position.x += deltaX;
+                root.node.guiConfig.width = newWidth;
+                root.node.guiConfig.position.y += deltaY;
+                root.node.guiConfig.height = newHeight;
 
                 prevX = mouse.x - deltaX;
                 prevY = mouse.y - deltaY;
@@ -572,25 +572,25 @@ I_NodeView {
                 var deltaX = mouse.x - prevX;
                 var deltaY = mouse.y - prevY;
 
-                var newWidth = node.guiConfig.width - deltaX;
-                var newHeight = node.guiConfig.height + deltaY;
+                var newWidth = root.node.guiConfig.width - deltaX;
+                var newHeight = root.node.guiConfig.height + deltaY;
 
                 // Enforce minimum dimensions
-                var minWidth = root.autoSize ? root.calculatedMinWidth : root.minWidth;
-                var minHeight = root.calculatedMinHeight;
+                var minWidth = root.autoSize ? root.calculatedMinWidth : root.node.guiConfig.minWidth;
+                var minHeight = root.autoSize ? root.calculatedMinHeight : root.node.guiConfig.minHeight;
 
                 if (newWidth < minWidth) {
                     newWidth = minWidth;
-                    deltaX = node.guiConfig.width - minWidth;
+                    deltaX = root.node.guiConfig.width - minWidth;
                 }
                 if (newHeight < minHeight) {
                     newHeight = minHeight;
-                    deltaY = newHeight - node.guiConfig.height;
+                    deltaY = newHeight - root.node.guiConfig.height;
                 }
 
-                node.guiConfig.position.x += deltaX;
-                node.guiConfig.width = newWidth;
-                node.guiConfig.height = newHeight;
+                root.node.guiConfig.position.x += deltaX;
+                root.node.guiConfig.width = newWidth;
+                root.node.guiConfig.height = newHeight;
 
                 prevX = mouse.x - deltaX;
                 prevY = mouse.y - deltaY;
