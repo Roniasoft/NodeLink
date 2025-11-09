@@ -66,7 +66,7 @@ InteractiveNodeView {
         if(nodeView.edit && nodeView.isNodeMinimal)
             sceneSession.zoomManager.zoomToNodeSignal(node, sceneSession.zoomManager.nodeEditZoom);
 
-        if (!nodeView.edit) 
+        if (!nodeView.edit)
              nodeView.forceActiveFocus();
     }
 
