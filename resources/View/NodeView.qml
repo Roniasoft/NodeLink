@@ -25,24 +25,6 @@ InteractiveNodeView {
     //! Node Context menu, required in image MouseArea
     property alias        nodeContextMenu: nodeContextMenu
 
-    //! Auto size node based on content and port titles
-    property bool autoSize: node.guiConfig.autoSize !== undefined ? node.guiConfig.autoSize : true
-
-    //! Minimum node dimensions
-    property int minWidth: node.guiConfig.minWidth !== undefined ? node.guiConfig.minWidth : 100
-    property int minHeight: node.guiConfig.minHeight !== undefined ? node.guiConfig.minHeight : 70
-
-    //! Calculated minimum dimensions based on content
-    property int calculatedMinWidth: minWidth
-    property int calculatedMinHeight: minHeight
-
-    //! Padding for content
-    property int contentPadding: 12
-
-    //! Base content width (space for operation/image in the middle)
-    property int baseContentWidth: node.guiConfig.baseContentWidth !== undefined ? node.guiConfig.baseContentWidth : 100
-
-
     //! Dynamic port spacing properties
     property int minPortSpacing: 2  // Minimum space between ports
     property int maxPortSpacing: 20 // Maximum space between ports
@@ -107,6 +89,7 @@ InteractiveNodeView {
 
     //! Calculate optimal node size based on content and port titles - SYMMETRIC VERSION
     function calculateOptimalSize() {
+
         // Find the longest port title from BOTH left and right sides
         var maxTitleWidth = 0;
 
@@ -127,16 +110,6 @@ InteractiveNodeView {
         // This ensures both sides have equal space for titles
         var requiredWidth = Math.max(minWidth, (maxTitleWidth * 2) + baseContentWidth);
 
-        // Calculate height based on number of ports
-        var leftPortCount = getPortCountBySide(NLSpec.PortPositionSide.Left);
-        var rightPortCount = getPortCountBySide(NLSpec.PortPositionSide.Right);
-        var maxPortCount = Math.max(leftPortCount, rightPortCount);
-
-        // Adjust height based on number of ports - keep it symmetric
-        var basePortHeight = 30; // Height per port
-        var minPortAreaHeight = Math.max(2, maxPortCount) * basePortHeight;
-
-
         // Calculate height based on number of ports - use the new function
         var requiredHeight = calculateRequiredHeight();
 
@@ -144,11 +117,8 @@ InteractiveNodeView {
         calculatedMinWidth = requiredWidth;
         calculatedMinHeight = requiredHeight;
 
-        // Update GUI config
-        if (node.guiConfig) {
-            node.guiConfig.width = requiredWidth;
-            node.guiConfig.height = requiredHeight;
-        }
+        node.guiConfig.width = requiredWidth;
+        node.guiConfig.height = requiredHeight;
     }
 
     //! Calculate required height based on number of ports
@@ -157,6 +127,7 @@ InteractiveNodeView {
         var rightPortCount = getPortCountBySide(NLSpec.PortPositionSide.Right);
         var maxPortCount = Math.max(leftPortCount, rightPortCount);
 
+        var basePortHeight = 30; // Height per port
         // Calculate minimum height required to fit all ports without overlapping
         var minRequiredHeight = Math.max(minHeight, (maxPortCount * basePortHeight) + contentPadding * 2);
 
