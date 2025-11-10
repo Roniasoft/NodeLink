@@ -69,7 +69,10 @@ Window {
             Layout.fillHeight: true
             onUserMessageSent: {
                 console.log("User message:", message)
-                // TODO: later connect this to RegexNode logic and show response
+
+                Object.values(window.scene.nodes).forEach(node => {
+                    console.log("type: ", node.type)
+                })
             }
         }
     }
