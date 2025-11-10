@@ -113,7 +113,6 @@ InteractiveNodeView {
         // Update calculated minimum dimensions
         calculatedMinWidth = requiredWidth;
         calculatedMinHeight = requiredHeight;
-        node.guiConfig.minHeight = calculatedMinHeight
 
         node.guiConfig.width = requiredWidth;
         node.guiConfig.height = requiredHeight;
