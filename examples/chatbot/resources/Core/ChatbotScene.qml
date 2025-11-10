@@ -61,6 +61,8 @@ I_Scene {
         onTriggered: scene.updateData();
     }
 
+    signal botResponse(string text)
+
     //! Create a node with node type and its position
     function createCustomizeNode(nodeType : int, xPos : real, yPos : real) : string {
         var title = nodeRegistry.nodeNames[nodeType] + "_" + (Object.values(scene.nodes).filter(node => node.type === nodeType).length + 1);
@@ -219,10 +221,12 @@ I_Scene {
             case CSpecs.NodeType.ResultTrue:
             {
                 downStreamNode.nodeData.data = (upstreamNode.matchedPattern === "FOUND") ? "HI ..." : "";
+                botResponse(downStreamNode.nodeData.data)
             } break;
             case CSpecs.NodeType.ResultFalse:
             {
                 downStreamNode.nodeData.data = (upstreamNode.matchedPattern === "NOT_FOUND") ? " :( " : "";
+                botResponse(downStreamNode.nodeData.data)
             } break;
 
             default: {
