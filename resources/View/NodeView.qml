@@ -29,6 +29,7 @@ InteractiveNodeView {
     property int minPortSpacing: 2  // Minimum space between ports
     property int maxPortSpacing: 200 // Maximum space between ports
     property int basePortHeight: 24 // Height per port including some margin
+    property int cornerHandleSpace: 50;// Reserve space for corner resize handles (20px top and bottom)
 
     /* Object Properties
      * ****************************************************************************************/
@@ -118,26 +119,30 @@ InteractiveNodeView {
         node.guiConfig.height = requiredHeight;
     }
 
-    //! Calculate required height based on number of ports
+    //! Calculate required height based on number of ports with proper spacing
     function calculateRequiredHeight() {
         var leftPortCount = getPortCountBySide(NLSpec.PortPositionSide.Left);
         var rightPortCount = getPortCountBySide(NLSpec.PortPositionSide.Right);
         var maxPortCount = Math.max(leftPortCount, rightPortCount);
 
-        var basePortHeight = 30; // Height per port
+        if (maxPortCount <= 1) {
+            return Math.max(minHeight, minPortSpacing * 2 + basePortHeight);
+        }
 
-        // Calculate minimum height required to fit all ports without overlapping
-        var minPortAreaHeight = Math.max(2, maxPortCount) * basePortHeight;
-        var requiredHeight = Math.max(minHeight, minPortAreaHeight);
+        var totalPortsHeight = maxPortCount * basePortHeight;
 
-        return requiredHeight;
+        // Calculate the height needed to achieve at least minPortSpacing between ports
+        var requiredSpacingHeight = (maxPortCount - 1) * minPortSpacing;
+        var requiredHeight = totalPortsHeight + requiredSpacingHeight + (cornerHandleSpace * 2);
+
+        return Math.max(minHeight, requiredHeight);
     }
 
     //! Calculate optimal port spacing based on current node height and port count
     function calculatePortSpacing(portCount) {
         if (portCount <= 1) return maxPortSpacing;
 
-        var availableHeight = node.guiConfig.height/* - (contentPadding * 2)*/;
+        var availableHeight = node.guiConfig.height - (cornerHandleSpace  * 2);
         var totalPortsHeight = portCount * basePortHeight;
         var remainingSpace = availableHeight - totalPortsHeight;
 
