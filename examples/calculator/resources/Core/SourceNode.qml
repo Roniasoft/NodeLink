@@ -15,6 +15,8 @@ Node {
 
     nodeData: I_NodeData {}
 
+    guiConfig.autoSize: true
+
     guiConfig.width: 150
     guiConfig.height: 100
 

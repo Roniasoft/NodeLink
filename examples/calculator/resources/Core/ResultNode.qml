@@ -14,6 +14,8 @@ Node {
     type: CSpecs.NodeType.Result
     nodeData: I_NodeData {}
 
+    guiConfig.autoSize: true
+
     guiConfig.width: 150
     guiConfig.height: 100
 
@@ -36,6 +38,7 @@ Node {
         _port1.portType = NLSpec.PortType.Input
         _port1.portSide = NLSpec.PortPositionSide.Left
         _port1.enable   = false;
+        _port1.title    = "inpurt";
 
         addPort(_port1);
     }
