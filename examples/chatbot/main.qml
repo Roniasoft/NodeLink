@@ -44,7 +44,6 @@ Window {
                 })
             }
         })
-
     }
 
     /* Fonts
@@ -77,8 +76,6 @@ Window {
             Layout.preferredWidth: 400
             Layout.fillHeight: true
             onUserMessageSent: {
-                console.log("User message:", message)
-
                 let sourceNode = Object.values(window.scene.nodes).find(n => n.type === 0)
                 if (sourceNode) {
                     sourceNode.nodeData.data = message
