@@ -134,4 +134,11 @@ Item {
         messagesModel.append({ text: text, isUser: false })
         Qt.callLater(scrollToBottom)
     }
+
+    function addMessage(text, fromUser) {
+        if (text && text.trim() !== "") {
+            messagesModel.append({ text: text, isUser: fromUser })
+            Qt.callLater(scrollToBottom)
+        }
+    }
 }
