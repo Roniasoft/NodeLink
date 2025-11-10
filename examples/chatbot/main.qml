@@ -36,6 +36,15 @@ Window {
         NLCore.defaultRepo = NLCore.createDefaultRepo(["QtQuickStream", "Chatbot"])
         NLCore.defaultRepo.initRootObject("ChatbotScene");
         window.scene = Qt.binding(function() { return NLCore.defaultRepo.qsRootObject;});
+
+        Qt.callLater(() => {
+            if (window.scene) {
+                window.scene.botResponse.connect(function(msg) {
+                    chatBox.addMessage(msg, false)
+                })
+            }
+        })
+
     }
 
     /* Fonts
