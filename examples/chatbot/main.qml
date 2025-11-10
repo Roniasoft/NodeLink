@@ -73,6 +73,7 @@ Window {
                 let sourceNode = Object.values(window.scene.nodes).find(n => n.type === 0)
                 if (sourceNode) {
                     sourceNode.nodeData.data = message
+                    window.scene.updateData()
                 }
             }
         }
