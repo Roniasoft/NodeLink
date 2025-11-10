@@ -628,6 +628,12 @@ I_NodeView {
         anchors.left: parent.left
         anchors.verticalCenter: parent.verticalCenter
         anchors.margins: -(NLStyle.portView.size + NLStyle.portView.borderSize - root.border.width) / 2
+        
+
+        // Reserve space for corner handles
+        anchors.topMargin: 20
+        anchors.bottomMargin: 20
+
         spacing: calculateLeftPortSpacing()
 
         function calculateLeftPortSpacing() {
@@ -659,6 +665,11 @@ I_NodeView {
         anchors.right: parent.right
         anchors.verticalCenter: parent.verticalCenter
         anchors.margins: -(NLStyle.portView.size + NLStyle.portView.borderSize - root.border.width) / 2
+
+        // Reserve space for corner handles
+        anchors.topMargin: 20
+        anchors.bottomMargin: 20
+
         spacing: calculateRightPortSpacing()
 
         function calculateRightPortSpacing() {

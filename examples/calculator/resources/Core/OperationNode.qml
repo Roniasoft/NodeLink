@@ -20,7 +20,7 @@ Node {
     guiConfig.autoSize: false
 
     // You can still set minimum sizes if needed
-    guiConfig.minWidth: 120
+    guiConfig.minWidth: 150
     guiConfig.minHeight: 80
 
     guiConfig.baseContentWidth: 120
