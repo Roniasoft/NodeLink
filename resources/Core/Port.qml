@@ -29,4 +29,7 @@ QSObject {
 
     //Port title to be Always Visible
     property string title: "title"
+
+    //! Measured title width for auto-sizing (set by the view)
+    property real _measuredTitleWidth: -1
 }
