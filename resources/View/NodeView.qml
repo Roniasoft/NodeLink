@@ -69,203 +69,136 @@ InteractiveNodeView {
     * ****************************************************************************************/
 
     //! contentItem, All things that are shown in a nodeView.
-    contentItem: Item {
-        //! Header Item
+    Loader {
+        id: contentLoader
+        anchors.fill: parent
+        active: nodeView.edit || nodeView.isSelected || !nodeView.isNodeMinimal
+        sourceComponent: contentItemComponent
+    }
+
+    Component {
+        id: contentItemComponent
         Item {
-            id: titleItem
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.top: parent.top
-            anchors.margins: 12
-
-            visible: !nodeView.isNodeMinimal
-            height: 20
-
-            //! Icon
-            Text {
-                id: iconText
-                font.family: NLStyle.fontType.font6Pro
-                font.pixelSize: 20
-                anchors.left: parent.left
-                anchors.verticalCenter: parent.verticalCenter
-                text: scene.nodeRegistry.nodeIcons[node.type]
-                color: node.guiConfig.color
-                font.weight: 400
-            }
-
-            //! Title Text
-            NLTextArea {
-                id: titleTextArea
-
-                anchors.right: parent.right
-                anchors.left: iconText.right
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.leftMargin: 5
-                height: 40
-
-                rightPadding: 10
-
-                readOnly: !nodeView.edit
-                focus: false
-                placeholderText: qsTr("Enter title")
-                color: NLStyle.primaryTextColor
-                selectByMouse: true
-                text: node.title
-                verticalAlignment: Text.AlignVCenter
-                onTextChanged: {
-                    if (node && node.title !== text)
-                        node.title = text;
-                }
-
-                onPressed: (event) => {
-                               if (event.button === Qt.RightButton) {
-                                   nodeView.edit = false
-                                   nodeMouseArea.clicked(event)
-                               }
-                           }
-
-                smooth: true
-                antialiasing: true
-                font.pointSize: NLStyle.node.fontSizeTitle
-                font.bold: true
-
-                //! Connections to forceActiveFocus when
-                //! nodeView.edit is true
-                Connections {
-                    target: nodeView
-
-                    function onEditChanged() {
-                        if(nodeView.edit)
-                            titleTextArea.forceActiveFocus();
-                    }
-                }
-            }
-        }
-
-        //! ScrollView to manage scroll view in Text Area
-        ScrollView {
-            id: view
-
-            anchors.top: titleItem.bottom
-            anchors.right: parent.right
-            anchors.bottom: parent.bottom
-            anchors.left: parent.left
-            anchors.margins: 12
-            anchors.topMargin: 5
-
-            hoverEnabled: true
-            clip: true
-            focus: true
-            visible: !nodeView.isNodeMinimal
-
-            ScrollBar.vertical: ScrollBar {
-                id: scrollerV
-                parent: view.parent
-                anchors.top: view.top
-                anchors.right: view.right
-                anchors.bottom: view.bottom
-                width: 5
-                anchors.rightMargin: 1
-            }
-
-            ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
-
-            // Description Text
-            NLTextArea {
-                id: textArea
-
-                focus: false
-                placeholderText: qsTr("Enter description")
-                color: NLStyle.primaryTextColor
-                text: node.guiConfig.description
-                readOnly: !nodeView.edit
-                wrapMode:TextEdit.WrapAnywhere
-                onTextChanged: {
-                    if (node && node.guiConfig.description !== text)
-                        node.guiConfig.description = text;
-                }
-                smooth: true
-                antialiasing: true
-                font.bold: true
-                font.pointSize: NLStyle.node.fontSize
-
-                onPressed: (event) => {
-                               if (event.button === Qt.RightButton) {
-                                   nodeView.edit = false;
-                                   nodeMouseArea.clicked(event);
-                               }
-                           }
-                background: Rectangle {
-                    color: "transparent";
-                }
-            }
-        }
-
-        //! Minimal nodeview in low zoomFactor: forgrond
-        Rectangle {
-            id: minimalRectangle
             anchors.fill: parent
-            anchors.margins: 10
 
-            color: nodeView.isNodeMinimal ? "#282828" : "trasparent"
-            radius: NLStyle.radiusAmount.nodeView
-
-            //! OpacityAnimator use when nodeView.isNodeMinimal is false to set opacity = 0.7
-            OpacityAnimator {
-                target: minimalRectangle
-
-                from: minimalRectangle.opacity
-                to: 0.7
-                duration: 200
-                running: nodeView.isNodeMinimal
-            }
-
-            //! OpacityAnimator use when nodeView.isNodeMinimal is false to set opacity = 0
-            OpacityAnimator {
-                target: minimalRectangle
-
-                from: minimalRectangle.opacity
-                to: 0
-                duration: 200
-                running: !nodeView.isNodeMinimal
-            }
-
-            //! Node Image, if exists
-            Image {
-                id: nodeImageMinimal
-                width: parent.width
-                height: parent.height
-                anchors.centerIn: parent
-                fillMode: Image.PreserveAspectFit
-                source: (node.imagesModel.coverImageIndex !== -1) ? node.imagesModel.imagesSources[node.imagesModel.coverImageIndex] : ""
-                visible: node.imagesModel.coverImageIndex !== -1
-            }
-
-            //! Text Icon for when node has an image
-            Text {
-                font.family: NLStyle.fontType.font6Pro
-                font.pixelSize: 30
-                anchors.top: parent.top
+            // Header
+            Item {
+                id: titleItem
                 anchors.left: parent.left
-                anchors.margins: 3
-                text: scene?.nodeRegistry?.nodeIcons[node.type] ?? ""
-                color: node.guiConfig.color
-                font.weight: 400
-                visible: nodeView.isNodeMinimal && node.imagesModel.coverImageIndex !== -1
+                anchors.right: parent.right
+                anchors.top: parent.top
+                anchors.margins: 12
+                visible: !nodeView.isNodeMinimal
+                height: 20
+
+                Text {
+                    id: iconText
+                    font.family: NLStyle.fontType.font6Pro
+                    font.pixelSize: 20
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: scene.nodeRegistry.nodeIcons[node.type]
+                    color: node.guiConfig.color
+                    font.weight: 400
+                }
+
+                NLTextArea {
+                    id: titleTextArea
+                    anchors.right: parent.right
+                    anchors.left: iconText.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.leftMargin: 5
+                    height: 40
+                    rightPadding: 10
+                    readOnly: !nodeView.edit
+                    focus: false
+                    placeholderText: qsTr("Enter title")
+                    color: NLStyle.primaryTextColor
+                    selectByMouse: true
+                    text: node.title
+                    verticalAlignment: Text.AlignVCenter
+                    onTextChanged: { if(node && node.title !== text) node.title = text }
+                    smooth: true
+                    antialiasing: true
+                    font.pointSize: NLStyle.node.fontSizeTitle
+                    font.bold: true
+                }
             }
 
-            //! Text Icon for when node does not have an image
-            Text {
-                font.family: NLStyle.fontType.font6Pro
-                font.pixelSize: 60
-                anchors.centerIn: parent
-                text: scene?.nodeRegistry?.nodeIcons[node.type] ?? ""
-                color: node.guiConfig.color
-                font.weight: 400
-                visible: nodeView.isNodeMinimal && node.imagesModel.coverImageIndex === -1
+            // Scrollable description
+            ScrollView {
+                id: view
+                anchors.top: titleItem.bottom
+                anchors.bottom: parent.bottom
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.margins: 12
+                anchors.topMargin: 5
+                hoverEnabled: true
+                clip: true
+                visible: !nodeView.isNodeMinimal
+
+                ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+
+                NLTextArea {
+                    id: textArea
+                    focus: false
+                    placeholderText: qsTr("Enter description")
+                    color: NLStyle.primaryTextColor
+                    text: node.guiConfig.description
+                    readOnly: !nodeView.edit
+                    wrapMode: TextEdit.WrapAnywhere
+                    onTextChanged: { 
+                        if(node && node.guiConfig.description !== text)
+                         node.guiConfig.description = text 
+                    }
+                    smooth: true
+                    antialiasing: true
+                    font.bold: true
+                    font.pointSize: NLStyle.node.fontSize
+                    background: Rectangle { color: "transparent" }
+                }
             }
         }
+    }
+    //! Minimal nodeview in low zoomFactor: forgrond
+    Rectangle {
+        id: minimalRectangle
+        anchors.fill: parent
+        anchors.margins: 10
+        color: nodeView.isNodeMinimal ? "#282828" : "transparent"
+        radius: NLStyle.radiusAmount.nodeView
 
+        OpacityAnimator {
+            target: minimalRectangle
+            from: minimalRectangle.opacity
+            to: nodeView.isNodeMinimal ? 0.7 : 0
+            duration: 200
+            running: true
+        }
+
+        Image {
+            id: nodeImageMinimal
+            width: parent.width
+            height: parent.height
+            anchors.centerIn: parent
+            fillMode: Image.PreserveAspectFit
+            source: (node.imagesModel.coverImageIndex !== -1) ? node.imagesModel.imagesSources[node.imagesModel.coverImageIndex] : ""
+            visible: node.imagesModel.coverImageIndex !== -1
+        }
+
+        Text {
+            font.family: NLStyle.fontType.font6Pro
+            font.pixelSize: node.imagesModel.coverImageIndex !== -1 ? 30 : 60
+            anchors.centerIn: parent
+            anchors.top: parent.top
+            anchors.left: parent.left
+            anchors.margins: node.imagesModel.coverImageIndex !== -1 ? 3 : 0
+            text: scene?.nodeRegistry?.nodeIcons[node.type] ?? ""
+            color: node.guiConfig.color
+            font.weight: 400
+            visible: nodeView.isNodeMinimal
+        }
     }
 
     //! Manage node selection and position change.
