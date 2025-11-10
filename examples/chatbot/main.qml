@@ -70,9 +70,10 @@ Window {
             onUserMessageSent: {
                 console.log("User message:", message)
 
-                Object.values(window.scene.nodes).forEach(node => {
-                    console.log("type: ", node.type)
-                })
+                let sourceNode = Object.values(window.scene.nodes).find(n => n.type === 0)
+                if (sourceNode) {
+                    sourceNode.nodeData.data = message
+                }
             }
         }
     }
