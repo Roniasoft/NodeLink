@@ -725,4 +725,29 @@ QSObject {
     function pasteNodes() {
         pasteCalled();
     }
+
+    //! Snapped Position for when snap is enabled
+    function snappedPosition (position) {
+        return Qt.vector2d(Math.round(position.x / NLStyle.backgroundGrid.spacing) * NLStyle.backgroundGrid.spacing,
+                           Math.round(position.y / NLStyle.backgroundGrid.spacing) * NLStyle.backgroundGrid.spacing);
+    }
+
+    //! Snap all nodes and containers to grid
+   function snapAllNodesToGrid() {
+       // Snap all nodes
+       Object.values(nodes).forEach(node => {
+           if (node && node.guiConfig) {
+               node.guiConfig.position = snappedPosition(node.guiConfig.position);
+               node.guiConfig.positionChanged();
+           }
+       });
+
+       // Snap all containers
+       Object.values(containers).forEach(container => {
+           if (container && container.guiConfig) {
+               container.guiConfig.position = snappedPosition(container.guiConfig.position);
+               container.guiConfig.positionChanged();
+           }
+       });
+   }
 }
