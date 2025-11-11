@@ -12,19 +12,20 @@
 class ObjectCreator : public QObject
 {
     Q_OBJECT
-    QML_ELEMENT
+    QML_NAMED_ELEMENT(ObjectCreator)
+    QML_SINGLETON
 
 public:
     explicit ObjectCreator(QObject *parent = nullptr);
     ~ObjectCreator();
 
-    Q_INVOKABLE QQuickItem* createItem(
+    Q_INVOKABLE QVariantMap createItem(
         QQuickItem *parentItem,
         const QString &componentUrl,
         const QVariantMap &properties
         );
-    
-    Q_INVOKABLE QVariantList createItems(
+
+    Q_INVOKABLE QVariantMap createItems(
         const QString &name,
         QVariantList itemArray,
         QQuickItem *parentItem,

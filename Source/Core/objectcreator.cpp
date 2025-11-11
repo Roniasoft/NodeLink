@@ -23,10 +23,10 @@ QQmlComponent* ObjectCreator::getOrCreateComponent(const QString &componentUrl)
         qWarning() << "QML engine not initialized!";
         return nullptr;
     }
-    qDebug() << "Will use the component:" << "qrc:/NodeLink/resources/View/" + componentUrl;
+    qDebug() << "Will use the component:" << componentUrl;
     QQmlComponent *component = new QQmlComponent(
         m_engine,
-        "qrc:/NodeLink/resources/View/" + componentUrl,
+        componentUrl,
         QQmlComponent::Asynchronous,
         this
         );
@@ -41,14 +41,18 @@ QQmlComponent* ObjectCreator::getOrCreateComponent(const QString &componentUrl)
     return component;
 }
 
-QQuickItem* ObjectCreator::createItem(
+QVariantMap ObjectCreator::createItem(
     QQuickItem *parentItem,
     const QString &componentUrl,
     const QVariantMap &properties)
 {
+    QVariantMap result;
+    result["item"] = QVariant::fromValue<QQuickItem*>(nullptr);
+    result["needsPropertySet"] = false;
+
     if (!parentItem) {
         qWarning() << "Parent item is null!";
-        return nullptr;
+        return result;
     }
 
     if (!m_engine) {
@@ -57,43 +61,56 @@ QQuickItem* ObjectCreator::createItem(
 
     if (!m_engine) {
         qWarning() << "Could not get QML engine!";
-        return nullptr;
+        return result;
     }
 
     QQmlComponent *component = getOrCreateComponent(componentUrl);
     if (!component) {
-        return nullptr;
+        return result;
     }
 
-    QObject *obj = component->createWithInitialProperties(properties);
+    QObject *obj = nullptr;
+
+#if QT_VERSION > QT_VERSION_CHECK(6, 2, 4)
+    obj = component->createWithInitialProperties(properties, m_engine->rootContext());
+    result["needsPropertySet"] = false;
+#else
+    obj = component->create(m_engine->rootContext());
+    result["needsPropertySet"] = true;
+#endif
 
     if (obj) {
         QQuickItem *item = qobject_cast<QQuickItem*>(obj);
         if (item) {
             QQmlEngine::setObjectOwnership(obj, QQmlEngine::JavaScriptOwnership);
             item->setParentItem(parentItem);
-            return item;
+            result["item"] = QVariant::fromValue(item);
+            return result;
         }
         delete obj;
     }
 
-    return nullptr;
+    return result;
 }
 
-QVariantList ObjectCreator::createItems(
+QVariantMap ObjectCreator::createItems(
     const QString &name,
     QVariantList itemArray,
     QQuickItem *parentItem,
     const QString &componentUrl,
     const QVariantMap &baseProperties)
 {
+    QVariantMap result;
     QVariantList createdItems;
+    result["items"] = createdItems;
+    result["needsPropertySet"] = false;
+
     QElapsedTimer timer;
     timer.start();
     int count = itemArray.count();
 
     if (!parentItem || count <= 0) {
-        return createdItems;
+        return result;
     }
 
     if (!m_engine) {
@@ -102,7 +119,7 @@ QVariantList ObjectCreator::createItems(
 
     if (!m_engine) {
         qWarning() << "Could not get QML engine!";
-        return createdItems;
+        return result;
     }
 
     QQmlComponent *component = getOrCreateComponent(componentUrl);
@@ -111,13 +128,15 @@ QVariantList ObjectCreator::createItems(
         if (component) {
             qWarning() << component->errors();
         }
-        return createdItems;
+        return result;
     }
 
+#if QT_VERSION > QT_VERSION_CHECK(6, 2, 4)
+    result["needsPropertySet"] = false;
     for (int i = 0; i < count; ++i) {
         QVariantMap properties = baseProperties;
         properties[name] = itemArray[i];
-        QObject *obj = component->createWithInitialProperties(properties);
+        QObject *obj = component->createWithInitialProperties(properties, m_engine->rootContext());
 
         if (obj) {
             QQuickItem *item = qobject_cast<QQuickItem*>(obj);
@@ -130,6 +149,25 @@ QVariantList ObjectCreator::createItems(
             }
         }
     }
+#else
+    result["needsPropertySet"] = true;
+    for (int i = 0; i < count; ++i) {
+        QObject *obj = component->create(m_engine->rootContext());
+
+        if (obj) {
+            QQuickItem *item = qobject_cast<QQuickItem*>(obj);
+            if (item) {
+                QQmlEngine::setObjectOwnership(obj, QQmlEngine::JavaScriptOwnership);
+                item->setParentItem(parentItem);
+                createdItems.append(QVariant::fromValue(item));
+            } else {
+                delete obj;
+            }
+        }
+    }
+#endif
+
+    result["items"] = createdItems;
     qDebug() << "Creating" << count << name << "took" << timer.elapsed() << "ms";
-    return createdItems;
+    return result;
 }
