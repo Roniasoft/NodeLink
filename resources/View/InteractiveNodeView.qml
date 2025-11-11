@@ -131,19 +131,6 @@ I_NodeView {
         anchors.horizontalCenter: parent.horizontalCenter
         preventStealing: true
 
-        //! Change visibility of top ports when contain mouse changed.
-        onContainsMouseChanged: {
-            if(!isContainer) {
-                var topPorts = Object.values(node.ports).filter(port => port.portSide === NLSpec.PortPositionSide.Top).map(port => port._qsUuid);
-
-                topPorts.forEach(qsUuid => {
-                                          sceneSession.portsVisibility[qsUuid] = containsMouse;
-                                      });
-
-                sceneSession.portsVisibilityChanged();
-            }
-        }
-
         //! Resize properties
         property bool   isDraging:  false
         property int    prevY:      0
@@ -191,19 +178,6 @@ I_NodeView {
         anchors.horizontalCenter: parent.horizontalCenter
         preventStealing: true
 
-        //! Change visibility of bottom ports when contain mouse changed.
-        onContainsMouseChanged: {
-            if(!isContainer) {
-                var bottomPorts = Object.values(node.ports).filter(port => port.portSide === NLSpec.PortPositionSide.Bottom).map(port => port._qsUuid);
-
-                bottomPorts.forEach(qsUuid => {
-                                          sceneSession.portsVisibility[qsUuid] = containsMouse;
-                                      });
-
-                sceneSession.portsVisibilityChanged();
-            }
-        }
-
         //! Resize properties
         property bool   isDraging:  false
         property int    prevY:      0
@@ -247,19 +221,6 @@ I_NodeView {
         anchors.leftMargin: -10
         anchors.verticalCenter: parent.verticalCenter
         preventStealing: true
-
-        //! Change visibility of left ports when contain mouse changed.
-        onContainsMouseChanged: {
-            if(!isContainer) {
-                var leftPorts = Object.values(node.ports).filter(port => port.portSide === NLSpec.PortPositionSide.Left).map(port => port._qsUuid);
-
-                leftPorts.forEach(qsUuid => {
-                                      sceneSession.portsVisibility[qsUuid] = containsMouse;
-                                  });
-
-                sceneSession.portsVisibilityChanged();
-            }
-        }
 
         //! Resize properties
         property bool   isDraging:  false
@@ -307,19 +268,6 @@ I_NodeView {
         anchors.rightMargin: -10
         anchors.verticalCenter: parent.verticalCenter
         preventStealing: true
-
-        //! Change visibility of right ports when contain mouse changed.
-        onContainsMouseChanged: {
-            if(!isContainer) {
-                var rightPorts = Object.values(node.ports).filter(port => port.portSide === NLSpec.PortPositionSide.Right).map(port => port._qsUuid);
-
-                rightPorts.forEach(qsUuid => {
-                                      sceneSession.portsVisibility[qsUuid] = containsMouse;
-                                  });
-
-                sceneSession.portsVisibilityChanged();
-            }
-        }
 
         //! Resize properties
         property bool   isDraging:  false
@@ -740,7 +688,9 @@ I_NodeView {
             // Trigger recalculation of port spacing
             leftColumnPort.spacing = leftColumnPort.calculateLeftPortSpacing();
             rightColumnPort.spacing = rightColumnPort.calculateRightPortSpacing();
+
         }
+
     }
 
     /* Functions
