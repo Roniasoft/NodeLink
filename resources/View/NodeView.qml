@@ -125,10 +125,6 @@ InteractiveNodeView {
         var rightPortCount = getPortCountBySide(NLSpec.PortPositionSide.Right);
         var maxPortCount = Math.max(leftPortCount, rightPortCount);
 
-        // if (maxPortCount <= 1) {
-        //     return Math.max(minHeight, minPortSpacing * 2 + basePortHeight);
-        // }
-
         var totalPortsHeight = maxPortCount * basePortHeight;
 
         // Calculate the height needed to achieve at least minPortSpacing between ports
@@ -140,8 +136,6 @@ InteractiveNodeView {
 
     //! Calculate optimal port spacing based on current node height and port count
     function calculatePortSpacing(portCount) {
-        // if (portCount <= 1) return maxPortSpacing;
-
         var availableHeight = node.guiConfig.height - (cornerHandleSpace  * 2);
         var totalPortsHeight = portCount * basePortHeight;
         var remainingSpace = availableHeight - totalPortsHeight;
