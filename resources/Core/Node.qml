@@ -78,8 +78,12 @@ I_Node  {
     function deletePort(port : Port) {
         var portId = port._qsUuid
         var portObj = ports[portId]
-        portObj.destroy()
-        delete port[portId]
+
+        if (portObj) {
+            portObj.destroy();
+            delete ports[portId];
+            portsChanged(); // This will trigger the onPortsChanged handler
+        }
     }
 
     //! find port with portUuid
