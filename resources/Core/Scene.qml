@@ -244,10 +244,4 @@ I_Scene {
 
         return true;
     }
-
-    //! Snapped Position for when snap is enabled
-    function snappedPosition (position) {
-        return Qt.vector2d(Math.round(position.x / NLStyle.backgroundGrid.spacing) * NLStyle.backgroundGrid.spacing,
-                           Math.round(position.y / NLStyle.backgroundGrid.spacing) * NLStyle.backgroundGrid.spacing);
-    }
 }
