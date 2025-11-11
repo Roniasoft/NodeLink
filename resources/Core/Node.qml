@@ -76,9 +76,6 @@ I_Node  {
     }
 
     function deletePort(port : Port) {
-        if (autoSize) {
-            port.titleChanged.disconnect(calculateOptimalSize);
-        }
         var portId = port._qsUuid
         var portObj = ports[portId]
         portObj.destroy()

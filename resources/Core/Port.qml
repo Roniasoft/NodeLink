@@ -28,7 +28,7 @@ QSObject {
     property vector2d _position: Qt.vector2d(-1, -1)
 
     //Port title to be Always Visible
-    property string title: "title"
+    property string title: ""
 
     //! Measured title width for auto-sizing (set by the view)
     property real _measuredTitleWidth: -1
