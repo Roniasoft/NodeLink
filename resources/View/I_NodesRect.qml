@@ -42,7 +42,16 @@ Item {
     //! Container view component
     property Component containerViewComponent: Qt.createComponent(containerViewUrl);
 
-    ObjectCreator { id: objectCreator }
+    //! ObjectCreator singleton instance (for backward compatibility)
+    // Note: ObjectCreator is now a singleton, so we can use it directly as ObjectCreator.createItem(...)
+    // This property is kept for backward compatibility with existing code
+    property QtObject objectCreator: null
+
+    Component.onCompleted: {
+        // Initialize objectCreator with singleton instance
+        // In QML, singleton classes can be accessed directly
+        objectCreator = ObjectCreator;
+    }
 
     /*  Object Properties
     * ****************************************************************************************/

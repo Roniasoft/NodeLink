@@ -4,6 +4,7 @@
 #include <QCoreApplication>
 #include <QQmlContext>
 #include <QQmlProperty>
+#include <QJSEngine>
 
 /* ************************************************************************************************
  * Public Constructors & Destructor
@@ -22,6 +23,34 @@ ObjectCreator::ObjectCreator(QObject *parent)
 ObjectCreator::~ObjectCreator()
 {
     qDeleteAll(m_components);
+}
+
+/* ************************************************************************************************
+ * Singleton Instance
+ * ************************************************************************************************/
+
+/*! Get the singleton instance of ObjectCreator
+ *
+ * This function is called by Qt QML engine to get the singleton instance.
+ * The engine parameter can be used to initialize the instance if needed.
+ *
+ * \param engine The QQmlEngine instance (can be used to get engine-specific settings).
+ * \param scriptEngine The QJSEngine instance (unused, but required by QML_SINGLETON).
+ * \return Pointer to the singleton ObjectCreator instance.
+ * ************************************************************************************************/
+ObjectCreator *ObjectCreator::instance(QQmlEngine *engine, QJSEngine *scriptEngine)
+{
+    Q_UNUSED(scriptEngine)
+    
+    static ObjectCreator *singletonInstance = nullptr;
+    
+    if (!singletonInstance) {
+        singletonInstance = new ObjectCreator();
+        // If engine is provided, we can store it for later use
+        // But we'll get it from parentItem when needed
+    }
+    
+    return singletonInstance;
 }
 
 /* ************************************************************************************************

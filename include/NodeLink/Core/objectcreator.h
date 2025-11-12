@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QQmlEngine>
+#include <QJSEngine>
 #include <QQmlComponent>
 #include <QQuickItem>
 #include <QVector>
@@ -17,13 +18,20 @@
 class ObjectCreator : public QObject
 {
     Q_OBJECT
-    QML_ELEMENT
+    QML_NAMED_ELEMENT(ObjectCreator)
+    QML_SINGLETON
 
 public:
     /* Public Constructors & Destructor
      * ****************************************************************************************/
     explicit ObjectCreator(QObject *parent = nullptr);
     ~ObjectCreator();
+
+    /* Singleton Instance
+     * ****************************************************************************************/
+    //! Get the singleton instance of ObjectCreator
+    // This is called automatically by Qt QML engine for QML_SINGLETON
+    static ObjectCreator *instance(QQmlEngine *engine = nullptr, QJSEngine *scriptEngine = nullptr);
 
 public:
     /* Public Functions
