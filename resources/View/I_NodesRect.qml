@@ -99,7 +99,7 @@ Item {
                 "node",
                 jsArray,
                 root,
-                nodeViewUrl,
+                nodeViewComponent.url,
                 {
                     "scene": root.scene,
                     "sceneSession": root.sceneSession,
@@ -122,7 +122,7 @@ Item {
             //! scaling, url:"qrc:/NodeLink/resources/View/NodeView.qml"
             let nodeView = objectCreator.createItem(
                     root,
-                    nodeViewUrl,
+                    nodeViewComponent.url,
                     {
                         "scene": root.scene,
                         "sceneSession": root.sceneSession,
@@ -174,7 +174,7 @@ Item {
 
             const objView = objectCreator.createItem(
                               root,
-                              linkViewUrl,
+                              linkViewComponent.url,
                               {
                                   "link": linkObj,
                                   "scene": root.scene,
@@ -195,7 +195,7 @@ Item {
                               "link",
                               jsArray,
                               root,
-                              linkViewUrl,
+                              linkViewComponent.url,
                               {
                                   "scene": root.scene,
                                   "sceneSession": root.sceneSession,
