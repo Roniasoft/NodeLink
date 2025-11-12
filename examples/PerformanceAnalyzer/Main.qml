@@ -50,7 +50,7 @@ ApplicationWindow {
                         Object.keys(scene.links).length + ") Links and (" +
                         Object.keys(scene.containers).length + ") Containers to select")
 
-            scene.selectionModel.selectAll(scene.nodes, scene.links, scene.containers)
+            scene.selectionModel.selectAll(scene.nodes, [], scene.containers)
 
             const elapsed = Date.now() - startTime
             console.log("Selected items:", Object.keys(scene.selectionModel.selectedModel).length)
