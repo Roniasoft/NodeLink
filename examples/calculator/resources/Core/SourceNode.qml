@@ -15,6 +15,8 @@ Node {
 
     nodeData: I_NodeData {}
 
+    guiConfig.autoSize: true
+
     guiConfig.width: 150
     guiConfig.height: 100
 
@@ -29,6 +31,7 @@ Node {
 
         _port1.portType = NLSpec.PortType.Output
         _port1.portSide = NLSpec.PortPositionSide.Right
+        _port1.title    = "value";
 
         addPort(_port1);
     }

@@ -37,4 +37,13 @@ QSObject {
     //! Lock
     property bool       locked:     false
 
+    //! Auto size node based on content and port titles
+    property bool autoSize: true
+
+    //! Minimum node dimensions
+    property int minWidth: 120
+    property int minHeight: 80
+
+    //! Base content width (space for operation/image in the middle)
+    property int baseContentWidth: 100
 }

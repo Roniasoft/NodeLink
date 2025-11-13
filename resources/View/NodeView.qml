@@ -25,9 +25,20 @@ InteractiveNodeView {
     //! Node Context menu, required in image MouseArea
     property alias        nodeContextMenu: nodeContextMenu
 
+    //! Dynamic port spacing properties
+    property int minPortSpacing: 2  // Minimum space between ports
+    property int maxPortSpacing: 200 // Maximum space between ports
+    property int basePortHeight: 24 // Height per port including some margin
+    property int cornerHandleSpace: 50;// Reserve space for corner resize handles (20px top and bottom)
+
     /* Object Properties
      * ****************************************************************************************/
     opacity: isSelected ? 1 : isNodeMinimal ? 0.6 : 0.8
+
+    // Set initial size when node is created
+    Component.onCompleted: {
+        Qt.callLater(calculateOptimalSize);
+    }
 
     /* Slots
      * ****************************************************************************************/
@@ -53,7 +64,7 @@ InteractiveNodeView {
         if(nodeView.edit && nodeView.isNodeMinimal)
             sceneSession.zoomManager.zoomToNodeSignal(node, sceneSession.zoomManager.nodeEditZoom);
 
-        if (!nodeView.edit) 
+        if (!nodeView.edit)
              nodeView.forceActiveFocus();
     }
 
@@ -63,6 +74,91 @@ InteractiveNodeView {
         if (!nodeView.isSelected)
             nodeView.edit = false;
 
+    }
+
+    /* Functions
+     * ****************************************************************************************/
+
+    // Called by PortView after it measured label widths.
+    function requestRecalculateFromPort() {
+        // debounce to next tick
+        Qt.callLater(calculateOptimalSize)
+    }
+
+    //! Calculate optimal node size based on content and port titles - SYMMETRIC VERSION
+    function calculateOptimalSize() {
+
+        // Find the longest port title from BOTH left and right sides
+        var maxTitleWidth = 0;
+
+        // Check all ports (both left and right)
+        Object.values(node.ports).forEach(function(port) {
+            if (port.title) {
+                var estimatedWidth = (typeof port._measuredTitleWidth === "number" && port._measuredTitleWidth > 0)
+                                     ? port._measuredTitleWidth
+                                     : estimateTextWidth(port.title)
+
+                if (estimatedWidth > maxTitleWidth) {
+                    maxTitleWidth = estimatedWidth;
+                }
+            }
+        });
+
+        // Symmetric formula: longest title + base content + longest title
+        // This ensures both sides have equal space for titles
+        var requiredWidth = Math.max(minWidth, (maxTitleWidth * 2) + baseContentWidth);
+
+        // Calculate height based on number of ports - use the new function
+        var requiredHeight = calculateRequiredHeight();
+
+        // Update calculated minimum dimensions
+        calculatedMinWidth = requiredWidth;
+        calculatedMinHeight = requiredHeight;
+
+        node.guiConfig.width = requiredWidth;
+        node.guiConfig.height = requiredHeight;
+    }
+
+    //! Calculate required height based on number of ports with proper spacing
+    function calculateRequiredHeight() {
+        var leftPortCount = getPortCountBySide(NLSpec.PortPositionSide.Left);
+        var rightPortCount = getPortCountBySide(NLSpec.PortPositionSide.Right);
+        var maxPortCount = Math.max(leftPortCount, rightPortCount);
+
+        var totalPortsHeight = maxPortCount * basePortHeight;
+
+        // Calculate the height needed to achieve at least minPortSpacing between ports
+        var requiredSpacingHeight = (maxPortCount - 1) * minPortSpacing;
+        var requiredHeight = totalPortsHeight + requiredSpacingHeight + (cornerHandleSpace * 2);
+
+        return Math.max(minHeight, requiredHeight);
+    }
+
+    //! Calculate optimal port spacing based on current node height and port count
+    function calculatePortSpacing(portCount) {
+        var availableHeight = node.guiConfig.height - (cornerHandleSpace  * 2);
+        var totalPortsHeight = portCount * basePortHeight;
+        var remainingSpace = availableHeight - totalPortsHeight;
+
+        if (remainingSpace <= 0) return minPortSpacing;
+
+        var calculatedSpacing = remainingSpace / (portCount - 1);
+        return Math.max(minPortSpacing, Math.min(maxPortSpacing, calculatedSpacing));
+    }
+
+    //! Get port count by side
+    function getPortCountBySide(side) {
+        return Object.values(node.ports).filter(function(port) {
+            return port.portSide === side;
+        }).length;
+    }
+
+    //! Estimate text width (simplified calculation)
+    function estimateTextWidth(text) {
+        if (!text) return 0;
+        // Rough estimation: ~7 pixels per character for the font size used in ports
+        // This accounts for the actual rendered width better
+        return text.length * 7 + 15; // +15 for padding/margins
     }
 
     /* Children
@@ -357,6 +453,7 @@ InteractiveNodeView {
 
     }
 
+
     //! Reset some properties when selection model changed.
     Connections {
         target: scene.selectionModel
@@ -385,4 +482,34 @@ InteractiveNodeView {
         }
     }
 
+    /* Connections for Auto-sizing
+    * ****************************************************************************************/
+
+    //! Handle title changes for auto-sizing
+    Connections {
+        target: node
+        function onTitleChanged() {
+            if(autoSize)
+                calculateOptimalSize();
+        }
+    }
+
+    //! Handle port changes for auto-sizing
+    Connections {
+        target: node
+        function onPortsChanged() {
+            if(autoSize)
+                calculateOptimalSize();
+        }
+    }
+
+    //! Handle port additions for auto-sizing
+    Connections {
+        target: node
+        function onPortAdded(portId) {
+            // Small delay to ensure port is properly initialized
+            if(autoSize)
+                calculateOptimalSize();
+        }
+    }
 }

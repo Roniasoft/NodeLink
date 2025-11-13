@@ -131,7 +131,12 @@ Item {
             Layout.preferredHeight: 34
             Layout.preferredWidth: 34
             checkable: true
-            onCheckedChanged: NLStyle.snapEnabled = snapGrid.checked
+            onCheckedChanged: {
+                NLStyle.snapEnabled = snapGrid.checked
+                if (snapGrid.checked) {
+                   scene?.snapAllNodesToGrid();
+               }
+            }
             NLToolTip {
                 visible: parent.hovered
                 text: "Snap to grid"

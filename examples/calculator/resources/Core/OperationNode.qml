@@ -7,29 +7,30 @@ import NodeLink
  * ************************************************************************************************/
 
 Node {
-
     /* Property Declarations
      * ****************************************************************************************/
-
     property int operationType: CSpecs.OperationType.Additive
 
     /* Object Properties
     * ****************************************************************************************/
-
     type: CSpecs.NodeType.Operation
-
     nodeData: OperationNodeData {}
 
+    // Enable auto-sizing (enabled by default, but explicit is good)
+    guiConfig.autoSize: false
 
-    guiConfig.width: 100
-    guiConfig.height: 70
+    // You can still set minimum sizes if needed
+    guiConfig.minWidth: 150
+    guiConfig.minHeight: 80
+
+    guiConfig.baseContentWidth: 120
 
     Component.onCompleted: addPorts();
 
     /* Functions
      * ****************************************************************************************/
 
-    //! Create ports for oeration nodes
+    //! Create ports for operation nodes
     function addPorts () {
         let _port1 = NLCore.createPort();
         let _port2 = NLCore.createPort();
@@ -38,13 +39,16 @@ Node {
         _port1.portType = NLSpec.PortType.Input
         _port1.portSide = NLSpec.PortPositionSide.Left
         _port1.enable   = false;
+        _port1.title    = "input 1";
 
         _port2.portType = NLSpec.PortType.Input
         _port2.portSide = NLSpec.PortPositionSide.Left
         _port2.enable   = false;
+        _port2.title    = "input 2";
 
         _port3.portType = NLSpec.PortType.Output
         _port3.portSide = NLSpec.PortPositionSide.Right
+        _port3.title    = "value";
 
         addPort(_port1);
         addPort(_port2);

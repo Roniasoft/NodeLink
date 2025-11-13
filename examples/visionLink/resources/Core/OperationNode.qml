@@ -3,43 +3,42 @@ import QtQuick
 import NodeLink
 
 /*! ***********************************************************************************************
- * ResultNode in calculator example.
+ * OperationNode is a base model that manages operation nodes in VisionLink.
  * ************************************************************************************************/
-
 Node {
+
+    /* Property Declarations
+     * ****************************************************************************************/
+    property int operationType: CSpecs.OperationType.Blur
 
     /* Object Properties
     * ****************************************************************************************/
+    type: CSpecs.NodeType.Operation
+    nodeData: OperationNodeData {}
 
-    type: CSpecs.NodeType.Result
-    nodeData: I_NodeData {}
+    guiConfig.width: 250
+    guiConfig.height: 70
 
-    guiConfig.autoSize: true
-
-    guiConfig.width: 150
-    guiConfig.height: 100
-
+    /* Children
+    * ****************************************************************************************/
     Component.onCompleted: addPorts();
-
-    //! Override function
-    //! Handle clone node operation
-    //! Empty the nodeData.data
-    onCloneFrom: function (baseNode)  {
-        nodeData.data = null;
-    }
 
     /* Functions
      * ****************************************************************************************/
-
-    //! Create ports for oeration nodes
+    //! Create ports for operation nodes
     function addPorts () {
         let _port1 = NLCore.createPort();
+        let _port2 = NLCore.createPort();
 
         _port1.portType = NLSpec.PortType.Input
         _port1.portSide = NLSpec.PortPositionSide.Left
         _port1.enable   = false;
-        _port1.title    = "value";
+
+        _port2.portType = NLSpec.PortType.Output
+        _port2.portSide = NLSpec.PortPositionSide.Right
 
         addPort(_port1);
+        addPort(_port2);
     }
 }
+

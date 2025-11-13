@@ -1,24 +1,25 @@
 import QtQuick
+import QtQuickStream
+import QtQuick.Dialogs
+import QtQuick.Controls
 
 import NodeLink
 
 /*! ***********************************************************************************************
- * ResultNode in calculator example.
+ * ImageResultNode displays the final processed image result
  * ************************************************************************************************/
-
 Node {
 
     /* Object Properties
-    * ****************************************************************************************/
-
-    type: CSpecs.NodeType.Result
+     * ****************************************************************************************/
+    type: CSpecs.NodeType.ImageResult
     nodeData: I_NodeData {}
 
-    guiConfig.autoSize: true
+    guiConfig.width: 250
+    guiConfig.height: 220
 
-    guiConfig.width: 150
-    guiConfig.height: 100
-
+    /* Children
+    * ****************************************************************************************/
     Component.onCompleted: addPorts();
 
     //! Override function
@@ -30,15 +31,12 @@ Node {
 
     /* Functions
      * ****************************************************************************************/
-
-    //! Create ports for oeration nodes
+    //! Create ports for operation nodes
     function addPorts () {
         let _port1 = NLCore.createPort();
 
         _port1.portType = NLSpec.PortType.Input
         _port1.portSide = NLSpec.PortPositionSide.Left
-        _port1.enable   = false;
-        _port1.title    = "value";
 
         addPort(_port1);
     }

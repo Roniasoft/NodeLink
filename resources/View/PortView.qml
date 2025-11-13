@@ -27,6 +27,32 @@ Rectangle {
     //! GlobalY is set after positioning the port in the scene
     property real           globalY
 
+    // This gets set from parent
+    property real nodeWidth: 0
+
+    /* Object Properties
+     * ****************************************************************************************/
+
+    width: NLStyle.portView.size
+    height: NLStyle.portView.size
+
+    radius: width / 2
+    color: "#8b6cef"
+
+    border.color: "#363636"
+
+    opacity: 1    // always visible
+
+    border.width: NLStyle.portView.borderSize
+
+
+    // TextMetrics to measure actual text width
+    TextMetrics {
+        id: textMetrics
+        font: portTitle.font
+        text: port.title
+    }
+
     //! GlobalPos is a 2d vector filled by globalX and globalY
     readonly property vector2d globalPos:      Qt.vector2d(globalX, globalY)
 
@@ -41,21 +67,31 @@ Rectangle {
         }
     }
 
-    /* Object Properties
-     * ****************************************************************************************/
-    width: NLStyle.portView.size
-    border.width: NLStyle.portView.borderSize
-    height: width
-    radius: width
-    color: "#8b6cef"
-    border.color: "#363636"
-    scale: mouseArea.containsMouse ? 1.1 : 1
-    opacity: (sceneSession && (sceneSession?.portsVisibility[port?._qsUuid] ?? false)) ? 1 : 0
+    // Calculate available space based on node width and port side
+    function calculateAvailableSpace() {
+        if (nodeWidth <= 0) return 100;
 
-    // Behavior on opacity {NumberAnimation{duration: 100}}
-    Behavior on scale {NumberAnimation{}}
+        var availableSpace = 0;
+        switch (port.portSide) {
+        case NLSpec.PortPositionSide.Left:
+        case NLSpec.PortPositionSide.Right:
+            // Each side gets half the node width minus port circle and margins
+            availableSpace = (nodeWidth / 2) - (width + 25);
+            break;
+        case NLSpec.PortPositionSide.Top:
+        case NLSpec.PortPositionSide.Bottom:
+            availableSpace = 80; // Fixed reasonable amount
+            break;
+        }
+        return Math.max(availableSpace, 20); // Minimum 20px
+    }
 
-    //! Mouse Area
+    // Determine if we need to elide based on text width vs available space
+    function needsElide() {
+        var availableSpace = calculateAvailableSpace();
+        return textMetrics.width > availableSpace;
+    }
+
     MouseArea {
         id: mouseArea
         anchors.fill: parent
@@ -65,18 +101,14 @@ Rectangle {
         propagateComposedEvents: true
 
         onPressed: mouse => {
-            if (!port.enable)
-                return;
-
+            if (!port.enable) return;
             selectionFunction(port._qsUuid);
             sceneSession.connectingMode = true;
-            //Set mouse.accepeted to false to pass mouse events to last active parent
             mouse.accepted = false
         }
 
         onReleased: mouse => {
             sceneSession.connectingMode = false;
-            //Set mouse.accepeted to false to pass mouse events to last active parent
             mouse.accepted = false
         }
     }
@@ -96,5 +128,75 @@ Rectangle {
             scene.selectionModel.remove(inputPortNodeId);
         else
             scene.selectionModel.selectNode(inputPortNode);
+    }
+
+    // DYNAMIC TEXT WITH PROPER ELIDE LOGIC
+    Text {
+        id: portTitle
+        text: port.title
+        color: "white"
+        font.pixelSize: NLStyle.portView.fontSize * (sceneSession ? (1 / sceneSession.zoomManager.zoomFactor) : 1)
+        wrapMode: Text.NoWrap
+        verticalAlignment: Text.AlignVCenter
+
+        // Dynamic width: constrained only if text is too long
+        width: root.needsElide() ? root.calculateAvailableSpace() : implicitWidth
+
+        // Smart elide: only when needed, different modes per side
+        elide: root.needsElide() ? (
+            port.portSide === NLSpec.PortPositionSide.Left ? Text.ElideRight :
+            port.portSide === NLSpec.PortPositionSide.Right ? Text.ElideLeft :
+            Text.ElideMiddle
+        ) : Text.ElideNone
+
+        anchors.verticalCenter: parent.verticalCenter
+
+        Component.onCompleted: {
+            positionLabel()
+            reportSize()
+
+            // Update text metrics when text changes
+            port.titleChanged.connect(function() {
+                textMetrics.text = port.title;
+            });
+        }
+        onTextChanged: reportSize()
+        onFontChanged: reportSize()
+        onImplicitWidthChanged: reportSize()
+
+        function positionLabel() {
+            anchors.left = undefined
+            anchors.right = undefined
+            anchors.top = undefined
+            anchors.bottom = undefined
+
+            if (port.portSide === NLSpec.PortPositionSide.Left) {
+                anchors.left = parent.right
+                anchors.leftMargin = 8
+                horizontalAlignment = Text.AlignLeft
+            } else if (port.portSide === NLSpec.PortPositionSide.Right) {
+                anchors.right = parent.left
+                anchors.rightMargin = 8
+                horizontalAlignment = Text.AlignRight
+            } else if (port.portSide === NLSpec.PortPositionSide.Top) {
+                anchors.top = parent.bottom
+                anchors.topMargin = 2
+                horizontalAlignment = Text.AlignHCenter
+            } else if (port.portSide === NLSpec.PortPositionSide.Bottom) {
+                anchors.bottom = parent.top
+                anchors.bottomMargin = 2
+                horizontalAlignment = Text.AlignHCenter
+            }
+        }
+
+        function reportSize() {
+            port._measuredTitleWidth = implicitWidth
+            if (port.node) port.node.requestRecalculateFromPort()
+        }
+    }
+
+    // Update text width when node resizes
+    onNodeWidthChanged: {
+        portTitle.width = root.needsElide() ? root.calculateAvailableSpace() : portTitle.implicitWidth;
     }
 }

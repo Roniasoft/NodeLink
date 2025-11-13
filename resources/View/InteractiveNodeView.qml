@@ -20,6 +20,16 @@ I_NodeView {
     property bool         isNodeEditable: !node.guiConfig.locked && (sceneSession?.isSceneEditable ?? true)
 
 
+    // Provide defaults that bind to model with fallbacks
+    property bool autoSize: node?.guiConfig?.autoSize ?? true
+    property int minWidth: node?.guiConfig?.minWidth ?? 100
+    property int minHeight: node?.guiConfig?.minHeight ?? 70
+    property int baseContentWidth: node?.guiConfig?.baseContentWidth ?? 100
+
+    // Calculated properties - these are view-only
+    property int calculatedMinWidth: minWidth
+    property int calculatedMinHeight: minHeight
+
     //! Does the top/ bottom/ right / left borders have mouse?
     //! Note: Other MouseArea properties are not allowed.
     property bool         topBorderContainsMouse:    topMouseArea.containsMouse
@@ -108,7 +118,7 @@ I_NodeView {
     //! Resize by sides
     //! *****************
 
-    //! Top Side Mouse Area
+    //! Top Side Mouse Area - Updated with minimum size enforcement
     MouseArea {
         id: topMouseArea
         width: parent.width
@@ -120,19 +130,6 @@ I_NodeView {
         anchors.topMargin: -10
         anchors.horizontalCenter: parent.horizontalCenter
         preventStealing: true
-
-        //! Change visibility of top ports when contain mouse changed.
-        onContainsMouseChanged: {
-            if(!isContainer) {
-                var topPorts = Object.values(node.ports).filter(port => port.portSide === NLSpec.PortPositionSide.Top).map(port => port._qsUuid);
-
-                topPorts.forEach(qsUuid => {
-                                      sceneSession.portsVisibility[qsUuid] = containsMouse;
-                                  });
-
-                sceneSession.portsVisibilityChanged();
-            }
-        }
 
         //! Resize properties
         property bool   isDraging:  false
@@ -152,20 +149,23 @@ I_NodeView {
                 var deltaY = mouse.y - prevY;
                 var correctedDeltaY = Math.floor(deltaY);
 
-                node.guiConfig.position.y += correctedDeltaY;
-                node.guiConfig.height -= correctedDeltaY;
-                prevY = mouse.y - deltaY;
-                if(node.guiConfig.height < 70){
-                    node.guiConfig.height = 70;
-                    if(deltaY>0){
-                        isDraging = false
-                    }
+                var newHeight = root.node.guiConfig.height - correctedDeltaY;
+
+                var minHeight = root.calculatedMinHeight;
+
+                if (newHeight < minHeight) {
+                    newHeight = minHeight;
+                    correctedDeltaY = node.guiConfig.height - minHeight;
                 }
+
+                node.guiConfig.position.y += correctedDeltaY;
+                node.guiConfig.height = newHeight;
+                prevY = mouse.y - deltaY;
             }
         }
     }
 
-    //! Bottom Side Mouse Area
+    //! Bottom Side Mouse Area - Updated with minimum size enforcement
     MouseArea {
         id: bottomMouseArea
         width: parent.width
@@ -177,19 +177,6 @@ I_NodeView {
         anchors.bottomMargin: -10
         anchors.horizontalCenter: parent.horizontalCenter
         preventStealing: true
-
-        //! Change visibility of bottom ports when contain mouse changed.
-        onContainsMouseChanged: {
-            if(!isContainer) {
-                var bottomPorts = Object.values(node.ports).filter(port => port.portSide === NLSpec.PortPositionSide.Bottom).map(port => port._qsUuid);
-
-                bottomPorts.forEach(qsUuid => {
-                                      sceneSession.portsVisibility[qsUuid] = containsMouse;
-                                  });
-
-                sceneSession.portsVisibilityChanged();
-            }
-        }
 
         //! Resize properties
         property bool   isDraging:  false
@@ -207,11 +194,17 @@ I_NodeView {
         onPositionChanged: (mouse)=> {
             if (isDraging) {
                 var deltaY = mouse.y - prevY;
-                node.guiConfig.height += deltaY;
-                prevY = mouse.y - deltaY;
-                if(node.guiConfig.height <= 70){
-                    node.guiConfig.height = 70
+
+                var newHeight = root.node.guiConfig.height + deltaY;
+
+                var minHeight = root.calculatedMinHeight ;
+
+                if (newHeight < minHeight) {
+                    newHeight = minHeight;
                 }
+
+                root.node.guiConfig.height = newHeight;
+                prevY = mouse.y - deltaY;
             }
         }
     }
@@ -228,19 +221,6 @@ I_NodeView {
         anchors.leftMargin: -10
         anchors.verticalCenter: parent.verticalCenter
         preventStealing: true
-
-        //! Change visibility of left ports when contain mouse changed.
-        onContainsMouseChanged: {
-            if(!isContainer) {
-                var leftPorts = Object.values(node.ports).filter(port => port.portSide === NLSpec.PortPositionSide.Left).map(port => port._qsUuid);
-
-                leftPorts.forEach(qsUuid => {
-                                      sceneSession.portsVisibility[qsUuid] = containsMouse;
-                                  });
-
-                sceneSession.portsVisibilityChanged();
-            }
-        }
 
         //! Resize properties
         property bool   isDraging:  false
@@ -260,21 +240,23 @@ I_NodeView {
                 var deltaX = mouse.x - prevX;
                 var correctedDeltaX = Math.floor(deltaX);
 
-                node.guiConfig.position.x += correctedDeltaX;
-                node.guiConfig.width -= correctedDeltaX;
-                prevX = mouse.x - deltaX;
+                var newWidth = root.node.guiConfig.width - correctedDeltaX;
 
-                if(node.guiConfig.width < 100){
-                    node.guiConfig.width = 100
-                    if(deltaX>0){
-                        isDraging = false
-                    }
+                var minWidth = root.autoSize ? root.calculatedMinWidth : root.node.guiConfig.minWidth;
+
+                if (newWidth < minWidth) {
+                    newWidth = minWidth;
+                    correctedDeltaX = root.node.guiConfig.width - minWidth;
                 }
+
+                node.guiConfig.position.x += correctedDeltaX;
+                node.guiConfig.width = newWidth;
+                prevX = mouse.x - deltaX;
             }
         }
     }
 
-    //! Right Side Mouse Area
+    //! Right Side Mouse Area - Updated to allow smaller sizes when autoSize is false
     MouseArea {
         id: rightMouseArea
         width: 12
@@ -286,19 +268,6 @@ I_NodeView {
         anchors.rightMargin: -10
         anchors.verticalCenter: parent.verticalCenter
         preventStealing: true
-
-        //! Change visibility of right ports when contain mouse changed.
-        onContainsMouseChanged: {
-            if(!isContainer) {
-                var rightPorts = Object.values(node.ports).filter(port => port.portSide === NLSpec.PortPositionSide.Right).map(port => port._qsUuid);
-
-                rightPorts.forEach(qsUuid => {
-                                      sceneSession.portsVisibility[qsUuid] = containsMouse;
-                                  });
-
-                sceneSession.portsVisibilityChanged();
-            }
-        }
 
         //! Resize properties
         property bool   isDraging:  false
@@ -316,11 +285,17 @@ I_NodeView {
         onPositionChanged: (mouse)=> {
             if (isDraging) {
                 var deltaX = mouse.x - prevX;
-                node.guiConfig.width += deltaX
-                prevX = mouse.x - deltaX;
-                if(node.guiConfig.width < 100){
-                    node.guiConfig.width = 100
+
+                var newWidth = root.node.guiConfig.width + deltaX;
+
+                var minWidth = root.autoSize ? root.calculatedMinWidth : root.node.guiConfig.minWidth;
+
+                if (newWidth < minWidth) {
+                    newWidth = minWidth;
                 }
+
+                node.guiConfig.width = newWidth;
+                prevX = mouse.x - deltaX;
             }
         }
     }
@@ -359,21 +334,30 @@ I_NodeView {
         onPositionChanged: (mouse)=> {
             if (isDraging) {
                 var deltaX = mouse.x - prevX;
-                node.guiConfig.width += deltaX
-                prevX = mouse.x - deltaX;
-                if(node.guiConfig.width < 100){
-                    node.guiConfig.width = 100
+                var deltaY = mouse.y - prevY;
+
+                var newWidth = root.node.guiConfig.width + deltaX;
+                var newHeight = root.node.guiConfig.height - deltaY;
+
+                // Enforce minimum dimensions
+                var minWidth = root.autoSize ? root.calculatedMinWidth : root.node.guiConfig.minWidth;
+                var minHeight = root.calculatedMinHeight;
+
+                if (newWidth < minWidth) {
+                    newWidth = minWidth;
+                    deltaX = newWidth - root.node.guiConfig.width;
                 }
-                var deltaY = mouse.y - prevY
+                if (newHeight < minHeight) {
+                    newHeight = minHeight;
+                    deltaY = root.node.guiConfig.height - newHeight;
+                }
+
+                node.guiConfig.width = newWidth;
                 node.guiConfig.position.y += deltaY;
-                node.guiConfig.height -= deltaY;
+                node.guiConfig.height = newHeight;
+
+                prevX = mouse.x - deltaX;
                 prevY = mouse.y - deltaY;
-                if(node.guiConfig.height <= 70){
-                    node.guiConfig.height = 70
-                    if(deltaY>0){
-                        isDraging = false
-                    }
-                }
             }
         }
     }
@@ -409,17 +393,29 @@ I_NodeView {
         onPositionChanged: (mouse)=> {
             if (isDraging) {
                 var deltaX = mouse.x - prevX;
-                node.guiConfig.width += deltaX
+                var deltaY = mouse.y - prevY;
+
+                var newWidth = root.node.guiConfig.width + deltaX;
+                var newHeight = node.guiConfig.height + deltaY;
+
+                // Enforce minimum dimensions
+                var minWidth = root.autoSize ? root.calculatedMinWidth : root.node.guiConfig.minWidth;
+                var minHeight = root.calculatedMinHeight;
+
+                if (newWidth < minWidth) {
+                    newWidth = minWidth;
+                    deltaX = newWidth - root.node.guiConfig.width;
+                }
+                if (newHeight < minHeight) {
+                    newHeight = minHeight;
+                    deltaY = newHeight - root.node.guiConfig.height;
+                }
+
+                root.node.guiConfig.width = newWidth;
+                root.node.guiConfig.height = newHeight;
+
                 prevX = mouse.x - deltaX;
-                if(node.guiConfig.width < 100){
-                    node.guiConfig.width = 100
-                }
-                var deltaY = mouse.y - prevY
-                node.guiConfig.height += deltaY;
                 prevY = mouse.y - deltaY;
-                if(node.guiConfig.height <= 70){
-                    node.guiConfig.height = 70
-                }
             }
         }
     }
@@ -455,28 +451,35 @@ I_NodeView {
         onPositionChanged: (mouse)=> {
             if (isDraging) {
                 var deltaX = mouse.x - prevX;
-                node.guiConfig.width -= deltaX
-                node.guiConfig.position.x += deltaX;
+                var deltaY = mouse.y - prevY;
+
+                var newWidth = root.node.guiConfig.width - deltaX;
+                var newHeight = root.node.guiConfig.height - deltaY;
+
+                // Enforce minimum dimensions
+                var minWidth = root.autoSize ? root.calculatedMinWidth : root.node.guiConfig.minWidth;
+                var minHeight = root.calculatedMinHeight;
+
+                if (newWidth < minWidth) {
+                    newWidth = minWidth;
+                    deltaX = root.node.guiConfig.width - minWidth;
+                }
+                if (newHeight < minHeight) {
+                    newHeight = minHeight;
+                    deltaY = root.node.guiConfig.height - minHeight;
+                }
+
+                root.node.guiConfig.position.x += deltaX;
+                root.node.guiConfig.width = newWidth;
+                root.node.guiConfig.position.y += deltaY;
+                root.node.guiConfig.height = newHeight;
+
                 prevX = mouse.x - deltaX;
-                if(node.guiConfig.width < 100){
-                    node.guiConfig.width = 100
-                    if(deltaX>0){
-                        isDraging = false
-                    }
-                }
-                var deltaY = mouse.y - prevY
-                node.guiConfig.position.y += deltaY;
-                node.guiConfig.height -= deltaY;
                 prevY = mouse.y - deltaY;
-                if(node.guiConfig.height <= 70){
-                    node.guiConfig.height = 70
-                    if(deltaY>0){
-                        isDraging = false
-                    }
-                }
             }
         }
     }
+
 
     //! Lower left sizing area
     MouseArea {
@@ -510,21 +513,30 @@ I_NodeView {
         onPositionChanged: (mouse)=> {
             if (isDraging) {
                 var deltaX = mouse.x - prevX;
-                node.guiConfig.width -= deltaX
-                node.guiConfig.position.x += deltaX;
+                var deltaY = mouse.y - prevY;
+
+                var newWidth = root.node.guiConfig.width - deltaX;
+                var newHeight = root.node.guiConfig.height + deltaY;
+
+                // Enforce minimum dimensions
+                var minWidth = root.autoSize ? root.calculatedMinWidth : root.node.guiConfig.minWidth;
+                var minHeight = root.calculatedMinHeight;
+
+                if (newWidth < minWidth) {
+                    newWidth = minWidth;
+                    deltaX = root.node.guiConfig.width - minWidth;
+                }
+                if (newHeight < minHeight) {
+                    newHeight = minHeight;
+                    deltaY = newHeight - root.node.guiConfig.height;
+                }
+
+                root.node.guiConfig.position.x += deltaX;
+                root.node.guiConfig.width = newWidth;
+                root.node.guiConfig.height = newHeight;
+
                 prevX = mouse.x - deltaX;
-                if(node.guiConfig.width < 100){
-                    node.guiConfig.width = 100
-                    if(deltaX>0){
-                        isDraging = false
-                    }
-                }
-                var deltaY = mouse.y - prevY
-                node.guiConfig.height += deltaY;
                 prevY = mouse.y - deltaY;
-                if(node.guiConfig.height <= 70){
-                    node.guiConfig.height = 70
-                }
             }
         }
     }
@@ -537,8 +549,8 @@ I_NodeView {
         id: topRowPort
         anchors.top: parent.top
         anchors.horizontalCenter: parent.horizontalCenter
-        anchors.margins: -(NLStyle.portView.size + NLStyle.portView.borderSize - root.border.width) / 2 // we should use the size/2 of port from global style file
-        spacing: 5         // this can also be defined in the style file
+        anchors.margins: -(NLStyle.portView.size + NLStyle.portView.borderSize - root.border.width) / 2
+        spacing: 5
 
         Repeater {
             model: (!isContainer) ? Object.values(node.ports).filter(port => port.portSide === NLSpec.PortPositionSide.Top) : [];
@@ -546,8 +558,9 @@ I_NodeView {
                 port: modelData
                 scene: root.scene
                 sceneSession: root.sceneSession
+                // Pass the actual node width
+                nodeWidth: root.width
 
-                //! Mapped position based on PortView, container and zoom factor
                 property vector2d positionMapped: Qt.vector2d(topRowPort.x + x + NLStyle.portView.size / 2,
                                                               topRowPort.y + y + NLStyle.portView.size / 2)
 
@@ -562,8 +575,19 @@ I_NodeView {
         id: leftColumnPort
         anchors.left: parent.left
         anchors.verticalCenter: parent.verticalCenter
-        anchors.margins: -(NLStyle.portView.size + NLStyle.portView.borderSize - root.border.width) / 2 // we should use the size/2 of port from global style file
-        spacing: 5         // this can also be defined in the style file
+        anchors.margins: -(NLStyle.portView.size + NLStyle.portView.borderSize - root.border.width) / 2
+        
+
+        // Reserve space for corner handles
+        anchors.topMargin: 20
+        anchors.bottomMargin: 20
+
+        spacing: calculateLeftPortSpacing()
+
+        function calculateLeftPortSpacing() {
+            var leftPortCount = Object.values(node.ports).filter(port => port.portSide === NLSpec.PortPositionSide.Left).length;
+            return root.calculatePortSpacing(leftPortCount);
+        }
 
         Repeater {
             model: (!isContainer) ? Object.values(node.ports).filter(port => port.portSide === NLSpec.PortPositionSide.Left) : [];
@@ -571,8 +595,9 @@ I_NodeView {
                 port: modelData
                 scene: root.scene
                 sceneSession: root.sceneSession
+                // Pass the actual node width
+                nodeWidth: root.width
 
-                //! Mapped position based on PortView, container and zoom factor
                 property vector2d positionMapped: Qt.vector2d(leftColumnPort.x + x + NLStyle.portView.size / 2,
                                                      leftColumnPort.y + y + NLStyle.portView.size / 2)
 
@@ -587,8 +612,18 @@ I_NodeView {
         id: rightColumnPort
         anchors.right: parent.right
         anchors.verticalCenter: parent.verticalCenter
-        anchors.margins: -(NLStyle.portView.size + NLStyle.portView.borderSize - root.border.width) / 2 // we should use the size/2 of port from global style file
-        spacing: 5         // this can also be defined in the style file
+        anchors.margins: -(NLStyle.portView.size + NLStyle.portView.borderSize - root.border.width) / 2
+
+        // Reserve space for corner handles
+        anchors.topMargin: 20
+        anchors.bottomMargin: 20
+
+        spacing: calculateRightPortSpacing()
+
+        function calculateRightPortSpacing() {
+            var rightPortCount = Object.values(node.ports).filter(port => port.portSide === NLSpec.PortPositionSide.Right).length;
+            return root.calculatePortSpacing(rightPortCount);
+        }
 
         Repeater {
             model: (!isContainer) ? Object.values(node.ports).filter(port => port.portSide === NLSpec.PortPositionSide.Right) : [];
@@ -596,8 +631,9 @@ I_NodeView {
                 port: modelData
                 scene: root.scene
                 sceneSession: root.sceneSession
+                // Pass the actual node width
+                nodeWidth: root.width
 
-                //! Mapped position based on PortView, container and zoom factor
                 property vector2d positionMapped: Qt.vector2d(rightColumnPort.x + x + NLStyle.portView.size / 2,
                                                               rightColumnPort.y + y + NLStyle.portView.size / 2)
 
@@ -612,8 +648,8 @@ I_NodeView {
         id: bottomRowPort
         anchors.bottom: parent.bottom
         anchors.horizontalCenter: parent.horizontalCenter
-        anchors.margins: -(NLStyle.portView.size + NLStyle.portView.borderSize - root.border.width) / 2 // we should use the size/2 of port from global style file
-        spacing: 5          // this can also be defined in the style file
+        anchors.margins: -(NLStyle.portView.size + NLStyle.portView.borderSize - root.border.width) / 2
+        spacing: 5
 
         Repeater {
             model: (!isContainer) ? Object.values(node.ports).filter(port => port.portSide === NLSpec.PortPositionSide.Bottom) : [];
@@ -621,8 +657,9 @@ I_NodeView {
                 port: modelData
                 scene: root.scene
                 sceneSession: root.sceneSession
+                // Pass the actual node width
+                nodeWidth: root.width
 
-                //! Mapped position based on PortView, container and zoom factor
                 property vector2d positionMapped: Qt.vector2d(bottomRowPort.x + x + NLStyle.portView.size / 2,
                                                               bottomRowPort.y + y + NLStyle.portView.size / 2)
 
@@ -630,6 +667,30 @@ I_NodeView {
                 globalY: root.y + positionMapped.y
             }
         }
+    }
+    /* Connections for dynamic spacing
+    * ****************************************************************************************/
+
+    // Update port spacing when node height changes
+    Connections {
+        target: node.guiConfig
+        function onHeightChanged() {
+            // Trigger recalculation of port spacing
+            leftColumnPort.spacing = leftColumnPort.calculateLeftPortSpacing();
+            rightColumnPort.spacing = rightColumnPort.calculateRightPortSpacing();
+        }
+    }
+
+    // Update port spacing when ports change
+    Connections {
+        target: node
+        function onPortsChanged() {
+            // Trigger recalculation of port spacing
+            leftColumnPort.spacing = leftColumnPort.calculateLeftPortSpacing();
+            rightColumnPort.spacing = rightColumnPort.calculateRightPortSpacing();
+
+        }
+
     }
 
     /* Functions

@@ -73,9 +73,13 @@ QQuickItem* ObjectCreator::createItem(
     const QString &componentUrl,
     const QVariantMap &properties)
 {
+    QVariantMap result;
+    result["item"] = QVariant::fromValue<QQuickItem*>(nullptr);
+    result["needsPropertySet"] = false;
+
     if (!parentItem) {
         qWarning() << "Parent item is null!";
-        return nullptr;
+        return result;
     }
 
     if (!m_engine) {
@@ -84,14 +88,13 @@ QQuickItem* ObjectCreator::createItem(
 
     if (!m_engine) {
         qWarning() << "Could not get QML engine!";
-        return nullptr;
+        return result;
     }
 
     QQmlComponent *component = getOrCreateComponent(componentUrl);
     if (!component) {
-        return nullptr;
+        return result;
     }
-
     // Ensure component is ready before creating (required for Qt 6.2.4 compatibility)
     if (!ensureComponentReady(component)) {
         qWarning() << "Component not ready:" << componentUrl;
@@ -189,7 +192,8 @@ QQuickItem* ObjectCreator::createItem(
             // This allows QML to manage the object lifecycle
             QQmlEngine::setObjectOwnership(obj, QQmlEngine::JavaScriptOwnership);
             item->setParentItem(parentItem);
-            return item;
+            result["item"] = QVariant::fromValue(item);
+            return result;
         }
         // If not a QQuickItem, clean up
         obj->setParent(nullptr);  // Remove from context
@@ -199,7 +203,7 @@ QQuickItem* ObjectCreator::createItem(
         delete creationContext;
     }
 
-    return nullptr;
+    return result;
 }
 
 /*! Create multiple QML items from a component URL with properties from an array.
@@ -223,13 +227,17 @@ QVariantList ObjectCreator::createItems(
     const QString &componentUrl,
     const QVariantMap &baseProperties)
 {
+    QVariantMap result;
     QVariantList createdItems;
+    result["items"] = createdItems;
+    result["needsPropertySet"] = false;
+
     QElapsedTimer timer;
     timer.start();
     int count = itemArray.count();
 
     if (!parentItem || count <= 0) {
-        return createdItems;
+        return result;
     }
 
     // Create each item using createItem() to avoid code duplication

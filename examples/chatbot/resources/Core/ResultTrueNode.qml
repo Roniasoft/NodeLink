@@ -1,21 +1,9 @@
 import QtQuick
-
 import NodeLink
 
-/*! ***********************************************************************************************
- * ResultNode in calculator example.
- * ************************************************************************************************/
-
 Node {
-
-    /* Object Properties
-    * ****************************************************************************************/
-
-    type: CSpecs.NodeType.Result
+    type: CSpecs.NodeType.ResultTrue
     nodeData: I_NodeData {}
-
-    guiConfig.autoSize: true
-
     guiConfig.width: 150
     guiConfig.height: 100
 
@@ -28,9 +16,6 @@ Node {
         nodeData.data = null;
     }
 
-    /* Functions
-     * ****************************************************************************************/
-
     //! Create ports for oeration nodes
     function addPorts () {
         let _port1 = NLCore.createPort();
@@ -38,7 +23,6 @@ Node {
         _port1.portType = NLSpec.PortType.Input
         _port1.portSide = NLSpec.PortPositionSide.Left
         _port1.enable   = false;
-        _port1.title    = "value";
 
         addPort(_port1);
     }

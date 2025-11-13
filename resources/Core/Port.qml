@@ -26,4 +26,10 @@ QSObject {
 
     //! _position is a vector2d to calculated with global position of port in UI and just cache it.
     property vector2d _position: Qt.vector2d(-1, -1)
+
+    //Port title to be Always Visible
+    property string title: ""
+
+    //! Measured title width for auto-sizing (set by the view)
+    property real _measuredTitleWidth: -1
 }

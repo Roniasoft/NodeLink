@@ -45,6 +45,7 @@ public:
     
     //! Create multiple QML items from a component URL with properties from an array.
     Q_INVOKABLE QVariantList createItems(
+
         const QString &name,
         QVariantList itemArray,
         QQuickItem *parentItem,
