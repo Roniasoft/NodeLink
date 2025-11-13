@@ -69,10 +69,12 @@ InteractiveNodeView {
     * ****************************************************************************************/
 
     //! contentItem, All things that are shown in a nodeView.
+    //! Only show this Loader if contentItem is not set (i.e., use default contentItemComponent)
+    //! If contentItem is set, I_NodeView's Loader will handle it
     Loader {
         id: contentLoader
         anchors.fill: parent
-        active: nodeView.edit || nodeView.isSelected || !nodeView.isNodeMinimal
+        active: (contentItem === null) && (nodeView.edit || nodeView.isSelected || !nodeView.isNodeMinimal)
         sourceComponent: contentItemComponent
     }
 
