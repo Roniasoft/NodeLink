@@ -73,6 +73,19 @@ Item {
             _containerViewMap[containerObj._qsUuid] = objView;
         }
 
+        //! nodeRepeater updated when containers Removed
+        function onContainersRemoved(containerArray: list<Container>) {
+            for (var i = 0; i < containerArray.length; i++) {
+                var containerObj = containerArray[i];
+                var containerObjId = containerObj._qsUuid;
+                containerObj.destroy()
+                if (_containerViewMap[containerObjId]) {
+                    _containerViewMap[containerObjId].destroy()
+                    delete _containerViewMap[containerObjId];
+                }
+            }
+        }
+
         //! nodeRepeater updated when a container Removed
         function onContainerRemoved(containerObj: Container) {
             if (!Object.keys(_containerViewMap).includes(containerObj._qsUuid))

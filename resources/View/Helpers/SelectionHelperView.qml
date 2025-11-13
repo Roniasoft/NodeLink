@@ -25,6 +25,9 @@ Item {
     //! lastPressPoint to handle temp rubber band dimentions
     property          var            lastPressPoint: Qt.point(0,0)
 
+    //! busySelecting to skip operations if busy with selection
+    property          bool           busySelecting: false
+
     /* Children
     * ****************************************************************************************/
 
@@ -33,7 +36,7 @@ Item {
         target: sceneSession
 
         function onMarqueeSelectionModeChanged() {
-            if (!sceneSession.marqueeSelectionMode && !selectionTimer.running) {
+            if (!sceneSession.marqueeSelectionMode && !selectionTimer.running && !busySelecting) {
                 resetMarqueeDimensions();
             }
         }
@@ -53,7 +56,8 @@ Item {
             selectionRubberBandItem.width = Math.abs(lastPressPoint.x - mouse.x);
             selectionRubberBandItem.height = Math.abs(lastPressPoint.y - mouse.y);
 
-            selectionTimer.start();
+            if (!selectionTimer.running && !busySelecting)
+                Qt.callLater(selectionTimer.start)
         }
     }
 
@@ -91,6 +95,7 @@ Item {
         running: false
 
         onTriggered: {
+            busySelecting = true
             // Disable sending signals temporarily for performance improvement
             scene.selectionModel.notifySelectedObject = false;
 
@@ -116,8 +121,7 @@ Item {
             // todo: should we check actual change?
             scene.selectionModel.selectedModelChanged();
 
-            if (!sceneSession.marqueeSelectionMode)
-                resetMarqueeDimensions();
+            busySelecting = false
         }
     }
 

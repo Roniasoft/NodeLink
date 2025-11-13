@@ -115,36 +115,45 @@ Item {
                 var deltaY = (mouse.y - prevY);
                 prevY = mouse.y - deltaY;
 
-                // Start movement process
-                Object.values(scene.selectionModel.selectedModel).forEach(obj => {
-                    // Ignore Link objects
-                    if (obj?.objectType === NLSpec.ObjectType.Node || obj?.objectType === NLSpec.ObjectType.Container) {
-                        obj.guiConfig.position.x += deltaX;
-                        obj.guiConfig.position.y += deltaY;
+                var s = scene.selectionModel.selectedModel;
+                var keys = Object.keys(s);
 
-                    if(NLStyle.snapEnabled)
-                        obj.guiConfig.position = scene.snappedPosition(obj.guiConfig.position)
+                var minX = Number.POSITIVE_INFINITY;
+                var minY = Number.POSITIVE_INFINITY;
+                var maxX = Number.NEGATIVE_INFINITY;
+                var maxY = Number.NEGATIVE_INFINITY;
 
-                    obj.guiConfig.positionChanged();
+                for (var i = 0; i < keys.length; ++i) {
+                   var item = s[keys[i]];
+                   if (!item || (item.objectType !== NLSpec.ObjectType.Node &&
+                                 item.objectType !== NLSpec.ObjectType.Container))
+                   continue;
 
-                    if ((obj.guiConfig.position.x < 0  && deltaX < 0) ||
-                       (obj.guiConfig.position.y < 0 && deltaY < 0))
-                        sceneSession.isRubberBandMoving = false;
+                   item.guiConfig.position.x += deltaX;
+                   item.guiConfig.position.y += deltaY;
 
-                    /*
-                     * Should use signal in I_Scene to request resizing contents since directly
-                     * changing scene.sceneGuiConfig.contentWidth/Height won't effect on Flickable
-                     */
-                    /*
-                    //! Extend contentWidth and contentWidth when is necessary
-                    if (obj.guiConfig.position.x + obj.guiConfig.width > scene.sceneGuiConfig.contentWidth && deltaX > 0)
-                        scene.sceneGuiConfig.contentWidth += deltaX;
+                   if (NLStyle.snapEnabled)
+                   item.guiConfig.position = scene.snappedPosition(item.guiConfig.position);
 
-                    if(obj.guiConfig.position.y + obj.guiConfig.height > scene.sceneGuiConfig.contentHeight && deltaY > 0)
-                        scene.sceneGuiConfig.contentHeight += deltaY;
-                    */
-                    }
-                });
+                   if ((item.guiConfig.position.x < 0 && deltaX < 0) ||
+                       (item.guiConfig.position.y < 0 && deltaY < 0))
+                   sceneSession.isRubberBandMoving = false;
+
+                   // if (Math.abs(deltaX) > 10 || Math.abs(deltaY) > 10)
+                   item.guiConfig.positionChanged();
+
+                   minX = Math.min(minX, item.guiConfig.position.x);
+                   minY = Math.min(minY, item.guiConfig.position.y);
+                   maxX = Math.max(maxX, item.guiConfig.position.x + item.guiConfig.width);
+                   maxY = Math.max(maxY, item.guiConfig.position.y + item.guiConfig.height);
+                }
+
+                if (keys.length > 1) {
+                   root.x = minX
+                   root.y = minY
+                   root.width = maxX - minX
+                   root.height = maxY - minY
+                }
             }
         }
     }
@@ -167,9 +176,9 @@ Item {
             calculateDimensions();
         }
 
-        function onSelectedObjectChanged() {
-           calculateDimensions();
-        }
+        // function onSelectedObjectChanged() {
+           // calculateDimensions();
+        // }
     }
 
     //! Connection to calculate rubber band Dimensions when zoomFactorChanged.
@@ -196,7 +205,7 @@ Item {
     * ****************************************************************************************/
 
     //! calculate X, Y, width and height of rubber band
-    function calculateDimensions() {
+    function calculateDimensions() { //FIXME: really expensive function
             var firstObj = Object.values(scene.selectionModel.selectedModel)[0];
             if (firstObj === undefined)
                 return;
