@@ -42,6 +42,17 @@ Item {
     //! Container view component
     property Component containerViewComponent: Qt.createComponent(containerViewUrl);
 
+    //! ObjectCreator singleton instance (for backward compatibility)
+    // Note: ObjectCreator is now a singleton, so we can use it directly as ObjectCreator.createItem(...)
+    // This property is kept for backward compatibility with existing code
+    property QtObject objectCreator: null
+
+    Component.onCompleted: {
+        // Initialize objectCreator with singleton instance
+        // In QML, singleton classes can be accessed directly
+        objectCreator = ObjectCreator;
+    }
+
     /*  Object Properties
     * ****************************************************************************************/
     anchors.fill: parent
@@ -112,9 +123,16 @@ Item {
                     result.items[i].node = nodeArray[i];
                     result.items[i].viewProperties = root.viewProperties;
                 }
-            } else {
-                for (var i = 0; i < result.items.length; i++) {
-                    _nodeViewMap[nodeArray[i]._qsUuid] = result.items[i];
+            let createdViews = objectCreator.createItems(
+                "node",
+                jsArray,
+                root,
+                nodeViewComponent.url,
+                {
+                    "scene": root.scene,
+                    "sceneSession": root.sceneSession,
+                    "viewProperties": root.viewProperties
+                    // "node": will be added inside cpp class
                 }
             }
         }
@@ -235,6 +253,19 @@ Item {
                 for (var i = 0; i < result.items.length; i++) {
                     _linkViewMap[linkArray[i]._qsUuid] = result.items[i];
                 }
+            const createdLinks = objectCreator.createItems(
+                              "link",
+                              jsArray,
+                              root,
+                              linkViewComponent.url,
+                              {
+                                  "scene": root.scene,
+                                  "sceneSession": root.sceneSession,
+                                  "viewProperties": root.viewProperties
+                              }
+                              );
+            for (var i = 0; i < createdLinks.length; i++) {
+                _linkViewMap[linkArray[i]._qsUuid] = createdLinks[i];
             }
         }
 
