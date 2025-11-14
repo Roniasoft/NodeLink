@@ -301,39 +301,78 @@ NodeView {
 
             // AND GATE: Official AND symbol only
             Canvas {
-                anchors.centerIn: parent
-                visible: node.type === LSpecs.NodeType.AND
-                width: 60
-                height: 40
+                id: canvas
+                anchors.fill: parent  // fill the entire node area
 
                 onPaint: {
                     var ctx = getContext("2d");
                     ctx.reset();
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                    var w = canvas.width;
+                    var h = canvas.height;
+
+                    // Minimum size for the gate to maintain its shape
+                    var minSize = 40;
+                    var scale = Math.max(Math.min(w, h), minSize) / 60; // 60 = reference size
+                    var centerX = w / 2;
+                    var centerY = h / 2;
+
+                    // Adjusted width & height for the drawing
+                    var drawW = 36 * scale;
+                    var drawH = 40 * scale;
+                    var leftX = centerX - drawW * 0.5;
+                    var rightX = centerX + drawW * 0.5;
+                    var topY = centerY - drawH * 0.5;
+                    var bottomY = centerY + drawH * 0.5;
+                    var arcRadius = drawH * 0.5;
+
+                    ctx.beginPath();
+                    ctx.moveTo(leftX, topY);
+                    ctx.lineTo(rightX - arcRadius, topY);
+                    ctx.arc(rightX - arcRadius, centerY, arcRadius, -Math.PI / 2, Math.PI / 2, false);
+                    ctx.lineTo(leftX, bottomY);
+                    ctx.closePath();
                     ctx.strokeStyle = node.guiConfig.color;
                     ctx.lineWidth = 2;
-
-                    // Draw AND gate shape (D-shape)
-                    ctx.beginPath();
-                    ctx.moveTo(5, 5);
-                    ctx.lineTo(35, 5);
-                    ctx.arc(35, 20, 15, -Math.PI/2, Math.PI/2, false);
-                    ctx.lineTo(5, 35);
-                    ctx.closePath();
                     ctx.stroke();
-
-                    // Draw AND symbol
-                    ctx.fillStyle = node.guiConfig.color;
-                    ctx.font = "bold 14px Arial";
-                    ctx.fillText("&", 25, 25);
                 }
             }
+
+            // Canvas {
+            //     id: canvas
+            //     width: node.guiConfig.width
+            //     height: node.guiConfig.height
+            //     anchors.centerIn: parent
+
+            //     onPaint: {
+            //         var ctx = getContext("2d");
+            //         ctx.reset();
+            //         ctx.strokeStyle = node.guiConfig.color;
+            //         ctx.lineWidth = 2;
+
+            //         var w = canvas.width;
+            //         var h = canvas.height;
+            //         var s = Math.min(w, h);
+
+            //         ctx.beginPath();
+            //         ctx.moveTo(w*0.1, h*0.1);
+            //         ctx.lineTo(w*0.6, h*0.1);
+            //         ctx.arc(w*0.6, h*0.5, s*0.4, -Math.PI/2, Math.PI/2, false);
+            //         ctx.lineTo(w*0.1, h*0.9);
+            //         ctx.closePath();
+            //         ctx.stroke();
+            //     }
+            // }
 
             // OR GATE: Official OR symbol only
             Canvas {
                 anchors.centerIn: parent
                 visible: node.type === LSpecs.NodeType.OR
-                width: 60
-                height: 40
+                // width: 60
+                // height: 40
+                width: parent.width
+                height: parent.height
 
                 onPaint: {
                     var ctx = getContext("2d");
