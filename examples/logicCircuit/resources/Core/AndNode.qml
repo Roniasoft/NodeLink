@@ -12,10 +12,14 @@ Node {
     type: LSpecs.NodeType.AND
     nodeData: LogicNodeData {}
 
-    guiConfig.autoSize: true
-    guiConfig.minWidth: 80
-    guiConfig.minHeight: 60
+    // guiConfig.autoSize: true
+    // guiConfig.minWidth: 80
+    // guiConfig.minHeight: 60
+    guiConfig.autoSize: false
+    guiConfig.width: 100
+    guiConfig.height: 80
     guiConfig.color: "#1976d2"  // Blue color for AND gates
+
 
     Component.onCompleted: addPorts();
 

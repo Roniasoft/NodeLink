@@ -12,9 +12,12 @@ Node {
         displayValue: "OFF"  // Start with OFF
     }
 
-    guiConfig.autoSize: true
-    guiConfig.width: 120
-    guiConfig.height: 80
+    // guiConfig.autoSize: true
+    // guiConfig.width: 120
+    // guiConfig.height: 80
+    guiConfig.autoSize: false
+    guiConfig.width: 50
+    guiConfig.height: 50
     guiConfig.color: "#f57c00"  // Orange color for outputs
 
     Component.onCompleted: addPorts();
@@ -24,7 +27,7 @@ Node {
         let inputPort = NLCore.createPort();
         inputPort.portType = NLSpec.PortType.Input
         inputPort.portSide = NLSpec.PortPositionSide.Left
-        inputPort.title = "input__"
+        inputPort.title = ""
         addPort(inputPort);
     }
 
