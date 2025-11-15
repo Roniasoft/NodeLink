@@ -203,6 +203,236 @@
 //     }
 // }
 
+// import QtQuick
+// import QtQuick.Controls
+
+// import NodeLink
+// import LogicCircuit
+
+// /*! ***********************************************************************************************
+//  * LogicCircuitNodeView - Shows only official gate symbols without rectangles
+//  * ************************************************************************************************/
+// NodeView {
+//     id: nodeView
+
+//      // Remove rectangle background from I_NodeView
+//     color: "transparent"
+//     border.width: 0
+//     radius: 0
+
+
+//     // Remove the header by making it invisible and setting height to 0
+//     contentItem: Item {
+//         // Make header invisible but keep structure for ports
+//         Item {
+//             id: titleItem
+//             anchors.left: parent.left
+//             anchors.right: parent.right
+//             anchors.top: parent.top
+//             anchors.margins: 0  // Remove margins
+//             height: 0  // Make header height 0
+//             visible: false  // Hide header completely
+
+//             Text {
+//                 id: iconText
+//                 visible: false
+//             }
+
+//             Text {
+//                 visible: false
+//             }
+//         }
+
+//         // Content Area - Fill entire node with symbols
+//         Item {
+//             anchors.fill: parent  // Fill entire node space
+//             anchors.margins: 0    // Remove all margins
+
+//             // INPUT NODE: Only the toggle switch
+//             Rectangle {
+//                 anchors.centerIn: parent
+//                 visible: node.type === LSpecs.NodeType.Input
+//                 width: 44
+//                 height: 22
+//                 radius: 11
+//                 color: node.nodeData.currentState ? "#A6E3A1" : "#585B70"
+//                 border.color: Qt.darker(color, 1.2)
+//                 border.width: 1
+
+//                 Text {
+//                     anchors.centerIn: parent
+//                     text: node.nodeData.currentState ? "ON" : "OFF"
+//                     color: "#1E1E2E"
+//                     font.bold: true
+//                     font.pixelSize: 10
+//                 }
+
+//                 MouseArea {
+//                     anchors.fill: parent
+//                     cursorShape: Qt.PointingHandCursor
+//                     onClicked: {
+//                         if (node.toggleState) {
+//                             node.toggleState();
+//                         }
+//                     }
+//                 }
+//             }
+
+//             // OUTPUT NODE: Only the fixed switch
+//             Rectangle {
+//                 anchors.centerIn: parent
+//                 visible: node.type === LSpecs.NodeType.Output
+//                 width: 44
+//                 height: 22
+//                 radius: 11
+//                 color: node.nodeData.displayValue === "ON" ? "#A6E3A1" :
+//                        node.nodeData.displayValue === "OFF" ? "#585B70" : "#757575"
+//                 border.color: Qt.darker(color, 1.2)
+//                 border.width: 1
+
+//                 Text {
+//                     anchors.centerIn: parent
+//                     text: node.nodeData.displayValue === "UNDEFINED" ? "?" : node.nodeData.displayValue
+//                     color: "#1E1E2E"
+//                     font.bold: true
+//                     font.pixelSize: 10
+//                 }
+//             }
+
+//             // AND GATE: Official AND symbol only
+//             Canvas {
+//                 id: canvas
+//                 anchors.fill: parent  // fill the entire node area
+//                 visible: node.type === LSpecs.NodeType.AND
+
+//                 onPaint: {
+//                     var ctx = getContext("2d");
+//                     ctx.reset();
+//                     ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+//                     var w = canvas.width;
+//                     var h = canvas.height;
+
+//                     // Minimum size for the gate to maintain its shape
+//                     var minSize = 40;
+//                     var scale = Math.max(Math.min(w, h), minSize) / 60; // 60 = reference size
+//                     var centerX = w / 2;
+//                     var centerY = h / 2;
+
+//                     // Adjusted width & height for the drawing
+//                     var drawW = 36 * scale;
+//                     var drawH = 40 * scale;
+//                     var leftX = centerX - drawW * 0.5;
+//                     var rightX = centerX + drawW * 0.5;
+//                     var topY = centerY - drawH * 0.5;
+//                     var bottomY = centerY + drawH * 0.5;
+//                     var arcRadius = drawH * 0.5;
+
+//                     ctx.beginPath();
+//                     ctx.moveTo(leftX, topY);
+//                     ctx.lineTo(rightX - arcRadius, topY);
+//                     ctx.arc(rightX - arcRadius, centerY, arcRadius, -Math.PI / 2, Math.PI / 2, false);
+//                     ctx.lineTo(leftX, bottomY);
+//                     ctx.closePath();
+//                     ctx.strokeStyle = node.guiConfig.color;
+//                     ctx.lineWidth = 2;
+//                     ctx.stroke();
+//                 }
+//             }
+
+//             // Canvas {
+//             //     id: canvas
+//             //     width: node.guiConfig.width
+//             //     height: node.guiConfig.height
+//             //     anchors.centerIn: parent
+
+//             //     onPaint: {
+//             //         var ctx = getContext("2d");
+//             //         ctx.reset();
+//             //         ctx.strokeStyle = node.guiConfig.color;
+//             //         ctx.lineWidth = 2;
+
+//             //         var w = canvas.width;
+//             //         var h = canvas.height;
+//             //         var s = Math.min(w, h);
+
+//             //         ctx.beginPath();
+//             //         ctx.moveTo(w*0.1, h*0.1);
+//             //         ctx.lineTo(w*0.6, h*0.1);
+//             //         ctx.arc(w*0.6, h*0.5, s*0.4, -Math.PI/2, Math.PI/2, false);
+//             //         ctx.lineTo(w*0.1, h*0.9);
+//             //         ctx.closePath();
+//             //         ctx.stroke();
+//             //     }
+//             // }
+
+//             // OR GATE: Official OR symbol only
+//             Canvas {
+//                 anchors.centerIn: parent
+//                 visible: node.type === LSpecs.NodeType.OR
+//                 // width: 60
+//                 // height: 40
+//                 width: parent.width
+//                 height: parent.height
+
+//                 onPaint: {
+//                     var ctx = getContext("2d");
+//                     ctx.reset();
+//                     ctx.strokeStyle = node.guiConfig.color;
+//                     ctx.lineWidth = 2;
+
+//                     // Draw OR gate shape (curved shape)
+//                     ctx.beginPath();
+//                     ctx.moveTo(10, 5);
+//                     ctx.quadraticCurveTo(30, 20, 10, 35);
+//                     ctx.quadraticCurveTo(50, 20, 10, 5);
+//                     ctx.closePath();
+//                     ctx.stroke();
+
+//                     // Draw OR symbol (≥1)
+//                     ctx.fillStyle = node.guiConfig.color;
+//                     ctx.font = "bold 12px Arial";
+//                     ctx.fillText("≥1", 25, 23);
+//                 }
+//             }
+
+//             // NOT GATE: Official NOT symbol only
+//             Canvas {
+//                 anchors.centerIn: parent
+//                 visible: node.type === LSpecs.NodeType.NOT
+//                 width: 50
+//                 height: 40
+
+//                 onPaint: {
+//                     var ctx = getContext("2d");
+//                     ctx.reset();
+//                     ctx.strokeStyle = node.guiConfig.color;
+//                     ctx.lineWidth = 2;
+
+//                     // Draw NOT gate triangle
+//                     ctx.beginPath();
+//                     ctx.moveTo(5, 5);
+//                     ctx.lineTo(35, 20);
+//                     ctx.lineTo(5, 35);
+//                     ctx.closePath();
+//                     ctx.stroke();
+
+//                     // Draw inversion circle at output
+//                     ctx.beginPath();
+//                     ctx.arc(40, 20, 4, 0, Math.PI * 2);
+//                     ctx.stroke();
+
+//                     // Draw NOT symbol (1 at input side)
+//                     ctx.fillStyle = node.guiConfig.color;
+//                     ctx.font = "bold 12px Arial";
+//                     ctx.fillText("1", 15, 25);
+//                 }
+//             }
+//         }
+//     }
+// }
+
+
 import QtQuick
 import QtQuick.Controls
 
@@ -219,6 +449,7 @@ NodeView {
     color: "transparent"
     border.width: 0
     radius: 0
+    isResizable: false;
 
 
     // Remove the header by making it invisible and setting height to 0
@@ -279,71 +510,141 @@ NodeView {
             }
 
             // OUTPUT NODE: Only the fixed switch
+            // Rectangle {
+            //     anchors.centerIn: parent
+            //     visible: node.type === LSpecs.NodeType.Output
+            //     width: 44
+            //     height: 22
+            //     radius: 11
+            //     color: node.nodeData.displayValue === "ON" ? "#A6E3A1" :
+            //            node.nodeData.displayValue === "OFF" ? "#585B70" : "#757575"
+            //     border.color: Qt.darker(color, 1.2)
+            //     border.width: 1
+
+            //     Text {
+            //         anchors.centerIn: parent
+            //         text: node.nodeData.displayValue === "UNDEFINED" ? "?" : node.nodeData.displayValue
+            //         color: "#1E1E2E"
+            //         font.bold: true
+            //         font.pixelSize: 10
+            //     }
+            // }
+
+            // OUTPUT NODE: Lamp indicator (green/red/gray)
             Rectangle {
                 anchors.centerIn: parent
                 visible: node.type === LSpecs.NodeType.Output
-                width: 44
-                height: 22
-                radius: 11
-                color: node.nodeData.displayValue === "ON" ? "#A6E3A1" :
-                       node.nodeData.displayValue === "OFF" ? "#585B70" : "#757575"
-                border.color: Qt.darker(color, 1.2)
-                border.width: 1
 
-                Text {
+                width: 34
+                height: 34
+                radius: 17
+
+                // Color logic for lamp state
+                color:
+                    node.nodeData.displayValue === "ON"  ? "#4CAF50" :   // green
+                    node.nodeData.displayValue === "OFF" ? "#E53935" :   // red
+                                                           "#757575"     // undefined gray
+
+                border.color: Qt.darker(color, 1.3)
+                border.width: 2
+
+                // slight glow effect when ON
+                Rectangle {
                     anchors.centerIn: parent
-                    text: node.nodeData.displayValue === "UNDEFINED" ? "?" : node.nodeData.displayValue
-                    color: "#1E1E2E"
-                    font.bold: true
-                    font.pixelSize: 10
+                    width: parent.width
+                    height: parent.height
+                    radius: parent.radius
+                    visible: node.nodeData.displayValue === "ON"
+                    color: "#4CAF50"
+                    opacity: 0.25
+                    layer.enabled: true
+                    layer.smooth: true
+                    scale: 1.4
                 }
             }
 
+
             // AND GATE: Official AND symbol only
+            // Canvas {
+            //     id: canvas
+            //     anchors.fill: parent  // fill the entire node area
+            //     visible: node.type === LSpecs.NodeType.AND
+
+            //     onPaint: {
+            //         var ctx = getContext("2d");
+            //         ctx.reset();
+            //         ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            //         var w = canvas.width;
+            //         var h = canvas.height;
+
+            //         // Minimum size for the gate to maintain its shape
+            //         var minSize = 40;
+            //         var scale = Math.max(Math.min(w, h), minSize) / 60; // 60 = reference size
+            //         var centerX = w / 2;
+            //         var centerY = h / 2;
+
+            //         // Adjusted width & height for the drawing
+            //         var drawW = 36 * scale;
+            //         var drawH = 40 * scale;
+            //         var leftX = centerX - drawW * 0.5;
+            //         var rightX = centerX + drawW * 0.5;
+            //         var topY = centerY - drawH * 0.5;
+            //         var bottomY = centerY + drawH * 0.5;
+            //         var arcRadius = drawH * 0.5;
+
+            //         ctx.beginPath();
+            //         ctx.moveTo(leftX, topY);
+            //         ctx.lineTo(rightX - arcRadius, topY);
+            //         ctx.arc(rightX - arcRadius, centerY, arcRadius, -Math.PI / 2, Math.PI / 2, false);
+            //         ctx.lineTo(leftX, bottomY);
+            //         ctx.closePath();
+            //         ctx.strokeStyle = node.guiConfig.color;
+            //         ctx.lineWidth = 2;
+            //         ctx.stroke();
+            //     }
+            // }
+
             Canvas {
-                id: canvas
-                anchors.fill: parent  // fill the entire node area
+                visible: node.type === LSpecs.NodeType.AND
+                width: 90
+                height: 60
+                anchors.centerIn: parent
 
                 onPaint: {
                     var ctx = getContext("2d");
                     ctx.reset();
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.clearRect(0, 0, width, height);
+                    ctx.strokeStyle = node.guiConfig.color;
+                    ctx.lineWidth = 2;
 
-                    var w = canvas.width;
-                    var h = canvas.height;
-
-                    // Minimum size for the gate to maintain its shape
-                    var minSize = 40;
-                    var scale = Math.max(Math.min(w, h), minSize) / 60; // 60 = reference size
-                    var centerX = w / 2;
-                    var centerY = h / 2;
-
-                    // Adjusted width & height for the drawing
-                    var drawW = 36 * scale;
-                    var drawH = 40 * scale;
-                    var leftX = centerX - drawW * 0.5;
-                    var rightX = centerX + drawW * 0.5;
-                    var topY = centerY - drawH * 0.5;
-                    var bottomY = centerY + drawH * 0.5;
-                    var arcRadius = drawH * 0.5;
+                    var leftX = 10;
+                    var rightX = 55;      // flat part before arc
+                    var topY = 10;
+                    var bottomY = 50;
+                    var centerY = height / 2;
+                    var radius = 20;
 
                     ctx.beginPath();
                     ctx.moveTo(leftX, topY);
-                    ctx.lineTo(rightX - arcRadius, topY);
-                    ctx.arc(rightX - arcRadius, centerY, arcRadius, -Math.PI / 2, Math.PI / 2, false);
+                    ctx.lineTo(rightX, topY);
+                    ctx.arc(rightX, centerY, radius, -Math.PI/2, Math.PI/2, false);
                     ctx.lineTo(leftX, bottomY);
                     ctx.closePath();
-                    ctx.strokeStyle = node.guiConfig.color;
-                    ctx.lineWidth = 2;
                     ctx.stroke();
                 }
             }
 
+
+
+            // OR GATE: Official OR symbol only
             // Canvas {
-            //     id: canvas
-            //     width: node.guiConfig.width
-            //     height: node.guiConfig.height
             //     anchors.centerIn: parent
+            //     visible: node.type === LSpecs.NodeType.OR
+            //     // width: 60
+            //     // height: 40
+            //     width: parent.width
+            //     height: parent.height
 
             //     onPaint: {
             //         var ctx = getContext("2d");
@@ -351,82 +652,118 @@ NodeView {
             //         ctx.strokeStyle = node.guiConfig.color;
             //         ctx.lineWidth = 2;
 
-            //         var w = canvas.width;
-            //         var h = canvas.height;
-            //         var s = Math.min(w, h);
-
+            //         // Draw OR gate shape (curved shape)
             //         ctx.beginPath();
-            //         ctx.moveTo(w*0.1, h*0.1);
-            //         ctx.lineTo(w*0.6, h*0.1);
-            //         ctx.arc(w*0.6, h*0.5, s*0.4, -Math.PI/2, Math.PI/2, false);
-            //         ctx.lineTo(w*0.1, h*0.9);
+            //         ctx.moveTo(10, 5);
+            //         ctx.quadraticCurveTo(30, 20, 10, 35);
+            //         ctx.quadraticCurveTo(50, 20, 10, 5);
             //         ctx.closePath();
             //         ctx.stroke();
+
+            //         // Draw OR symbol (≥1)
+            //         ctx.fillStyle = node.guiConfig.color;
+            //         ctx.font = "bold 12px Arial";
+            //         ctx.fillText("≥1", 25, 23);
             //     }
             // }
 
-            // OR GATE: Official OR symbol only
+
             Canvas {
-                anchors.centerIn: parent
                 visible: node.type === LSpecs.NodeType.OR
-                // width: 60
-                // height: 40
-                width: parent.width
-                height: parent.height
+                width: 100
+                height: 65
+                anchors.centerIn: parent
 
                 onPaint: {
                     var ctx = getContext("2d");
                     ctx.reset();
+                    ctx.clearRect(0, 0, width, height);
                     ctx.strokeStyle = node.guiConfig.color;
                     ctx.lineWidth = 2;
 
-                    // Draw OR gate shape (curved shape)
-                    ctx.beginPath();
-                    ctx.moveTo(10, 5);
-                    ctx.quadraticCurveTo(30, 20, 10, 35);
-                    ctx.quadraticCurveTo(50, 20, 10, 5);
-                    ctx.closePath();
-                    ctx.stroke();
+                    var leftX = 12;
+                    var midX  = 35;
+                    var rightX = 90;
+                    var topY = 10;
+                    var midY = height / 2;
+                    var bottomY = 55;
 
-                    // Draw OR symbol (≥1)
-                    ctx.fillStyle = node.guiConfig.color;
-                    ctx.font = "bold 12px Arial";
-                    ctx.fillText("≥1", 25, 23);
+                    ctx.beginPath();
+
+                    // LEFT CURVE
+                    ctx.moveTo(leftX, topY);
+                    ctx.quadraticCurveTo(midX - 15, midY, leftX, bottomY);
+
+                    // RIGHT OR CURVE (main shape)
+                    ctx.quadraticCurveTo(rightX, midY, leftX, topY);
+
+                    ctx.stroke();
                 }
             }
+
 
             // NOT GATE: Official NOT symbol only
+            // Canvas {
+            //     anchors.centerIn: parent
+            //     visible: node.type === LSpecs.NodeType.NOT
+            //     width: 50
+            //     height: 40
+
+            //     onPaint: {
+            //         var ctx = getContext("2d");
+            //         ctx.reset();
+            //         ctx.strokeStyle = node.guiConfig.color;
+            //         ctx.lineWidth = 2;
+
+            //         // Draw NOT gate triangle
+            //         ctx.beginPath();
+            //         ctx.moveTo(5, 5);
+            //         ctx.lineTo(35, 20);
+            //         ctx.lineTo(5, 35);
+            //         ctx.closePath();
+            //         ctx.stroke();
+
+            //         // Draw inversion circle at output
+            //         ctx.beginPath();
+            //         ctx.arc(40, 20, 4, 0, Math.PI * 2);
+            //         ctx.stroke();
+
+            //         // Draw NOT symbol (1 at input side)
+            //         ctx.fillStyle = node.guiConfig.color;
+            //         ctx.font = "bold 12px Arial";
+            //         ctx.fillText("1", 15, 25);
+            //     }
+            // }
+
             Canvas {
-                anchors.centerIn: parent
                 visible: node.type === LSpecs.NodeType.NOT
-                width: 50
-                height: 40
+                width: 80
+                height: 60
+                anchors.centerIn: parent
 
                 onPaint: {
                     var ctx = getContext("2d");
                     ctx.reset();
+                    ctx.clearRect(0, 0, width, height);
                     ctx.strokeStyle = node.guiConfig.color;
                     ctx.lineWidth = 2;
 
-                    // Draw NOT gate triangle
+                    // Triangle
                     ctx.beginPath();
-                    ctx.moveTo(5, 5);
-                    ctx.lineTo(35, 20);
-                    ctx.lineTo(5, 35);
+                    ctx.moveTo(10, 10);
+                    ctx.lineTo(60, 30);
+                    ctx.lineTo(10, 50);
                     ctx.closePath();
                     ctx.stroke();
 
-                    // Draw inversion circle at output
+                    // Bubble
                     ctx.beginPath();
-                    ctx.arc(40, 20, 4, 0, Math.PI * 2);
+                    ctx.arc(65, 30, 5, 0, Math.PI * 2);
                     ctx.stroke();
-
-                    // Draw NOT symbol (1 at input side)
-                    ctx.fillStyle = node.guiConfig.color;
-                    ctx.font = "bold 12px Arial";
-                    ctx.fillText("1", 15, 25);
                 }
             }
+
         }
     }
 }
+

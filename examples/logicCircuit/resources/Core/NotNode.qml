@@ -11,9 +11,13 @@ Node {
     type: LSpecs.NodeType.NOT
     nodeData: LogicNodeData {}
 
-    guiConfig.autoSize: true
-    guiConfig.minWidth: 70
-    guiConfig.minHeight: 60
+    // guiConfig.autoSize: true
+    // guiConfig.minWidth: 70
+    // guiConfig.minHeight: 60
+
+    guiConfig.autoSize: false
+    guiConfig.width: 100
+    guiConfig.height: 80
     guiConfig.color: "#d32f2f"  // Red color for NOT gates
 
     Component.onCompleted: addPorts();
@@ -23,13 +27,13 @@ Node {
         let inputPort = NLCore.createPort();
         inputPort.portType = NLSpec.PortType.Input
         inputPort.portSide = NLSpec.PortPositionSide.Left
-        inputPort.title = "A"
+        inputPort.title = ""
         addPort(inputPort);
 
         let outputPort = NLCore.createPort();
         outputPort.portType = NLSpec.PortType.Output
         outputPort.portSide = NLSpec.PortPositionSide.Right
-        outputPort.title = "¬A"
+        outputPort.title = ""
         addPort(outputPort);
     }
 
