@@ -50,6 +50,7 @@ qt_add_qml_module(${MODULE_NAME}
         resources/fonts/Font\ Awesome\ 6\ Pro-Solid-900.otf
         resources/fonts/Font\ Awesome\ 6\ Pro-Regular-400.otf
         resources/fonts/Font\ Awesome\ 6\ Pro-Light-300.otf
+        QML_FILES resources/Core/LogicNode.qml
 
 )
 

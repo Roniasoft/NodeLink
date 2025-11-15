@@ -9,6 +9,9 @@ QtObject {
         OR      = 2,
         NOT     = 3,
         Output  = 4,
+
+        Logic   = 5,
+
         Unknown = 99
     }
 
