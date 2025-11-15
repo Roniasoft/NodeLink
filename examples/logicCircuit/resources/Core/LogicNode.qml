@@ -45,7 +45,7 @@ Node {
             addPortsInput();
         }
 
-        else if(nodeType == LSpecs.NodeType.NOR){
+        else if(nodeType == LSpecs.NodeType.NOT){
             addPortsInput();
             addPortsOutput();
         }
