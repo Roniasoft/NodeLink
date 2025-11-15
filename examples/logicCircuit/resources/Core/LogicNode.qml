@@ -31,25 +31,39 @@ Node {
 
     //! Create ports for operation nodes
     function addPorts() {
-        let inputPort1 = NLCore.createPort();
-        inputPort1.portType = NLSpec.PortType.Input
-        inputPort1.portSide = NLSpec.PortPositionSide.Left
-        inputPort1.title = ""
-        addPort(inputPort1);
+        if(nodeType == LSpecs.NodeType.OR || nodeType == LSpecs.NodeType.AND){
+            addPortsInput();
+            addPortsInput();
+            addPortsOutput();
+        }
 
+        else if(nodeType == LSpecs.NodeType.Input){
+            addPortsOutput();
+        }
+
+        else if(nodeType == LSpecs.NodeType.Output){
+            addPortsInput();
+        }
+
+        else if(nodeType == LSpecs.NodeType.NOR){
+            addPortsInput();
+            addPortsOutput();
+        }
+    }
+
+    function addPortsInput(){
+        let inputPort = NLCore.createPort();
+        inputPort.portType = NLSpec.PortType.Input
+        inputPort.portSide = NLSpec.PortPositionSide.Left
+        inputPort.title = ""
+        addPort(inputPort);
+    }
+
+    function addPortsOutput(){
         let outputPort = NLCore.createPort();
         outputPort.portType = NLSpec.PortType.Output
         outputPort.portSide = NLSpec.PortPositionSide.Right
         outputPort.title = ""
         addPort(outputPort);
-
-        if(nodeType == LSpecs.NodeType.OR)
-            return;
-
-        let inputPort2 = NLCore.createPort();
-        inputPort2.portType = NLSpec.PortType.Input
-        inputPort2.portSide = NLSpec.PortPositionSide.Left
-        inputPort2.title = ""
-        addPort(inputPort2);
     }
 }
