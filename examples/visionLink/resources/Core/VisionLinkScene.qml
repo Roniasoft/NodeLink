@@ -78,6 +78,7 @@ I_Scene {
     onLinkRemoved: _upateDataTimer.start();
     onNodeRemoved: _upateDataTimer.start();
     onLinkAdded:   updateData();
+    onLinksAdded:  updateData(); // Handle batch link restoration (undo/redo)
 
     /* Functions
      * ****************************************************************************************/

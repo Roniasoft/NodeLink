@@ -13,7 +13,7 @@ QtObject {
     property var scene // I_Scene
     property string inputPortUuid
     property string outputPortUuid
-    property var createdLink // Link, set after redo
+    property var createdLink // Link object (saved for undo/redo)
 
     /* Functions
     * ****************************************************************************************/
@@ -21,13 +21,24 @@ QtObject {
         if (!scene || !inputPortUuid || !outputPortUuid)
             return
 
-        createdLink = scene.createLink(inputPortUuid, outputPortUuid)
+        if (createdLink) {
+            // Restore the existing link object (preserves all properties)
+            scene.restoreLinks([createdLink])
+        } else {
+            // First time: create new link
+            createdLink = scene.createLink(inputPortUuid, outputPortUuid)
+        }
     }
 
     function undo() {
-        if (!scene || !inputPortUuid || !outputPortUuid)
+        if (!scene || !createdLink)
             return
-
-        scene.unlinkNodes(inputPortUuid, outputPortUuid)
+        
+        // Remove link from scene but DON'T destroy it (we need it for redo)
+        if (scene.links[createdLink._qsUuid]) {
+            scene.linkRemoved(createdLink)
+            delete scene.links[createdLink._qsUuid]
+            scene.linksChanged()
+        }
     }
 }

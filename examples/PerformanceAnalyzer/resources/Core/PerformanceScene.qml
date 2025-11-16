@@ -42,6 +42,9 @@ Scene {
     //! Undo Core
     property UndoCore       _undoCore:       UndoCore {
         scene: scene
+        // Customize max undo/redo stack size for better performance
+        // For large batch operations, you may want to reduce this
+        undoStack.maxStackSize: 30 // Default is 50
     }
 
     //! Adds multiple links at once
@@ -71,21 +74,14 @@ Scene {
             nodeY.parents[nodeX._qsUuid] = nodeX;
             nodeY.parentsChanged();
 
-            // Create the link object
-            var obj = NLCore.createLink();
-            obj.inputPort = findPort(linkData.portA);
-            obj.outputPort = findPort(linkData.portB);
-            obj._qsRepo = sceneActiveRepo;
-
-            // Add to local administration
-            links[obj._qsUuid] = obj;
-            addedLinks.push(obj);
+            // Use createLink to get undo/redo support
+            var obj = createLink(linkData.portA, linkData.portB);
+            if (obj) {
+                addedLinks.push(obj);
+            }
         }
 
-        if (addedLinks.length > 0) {
-            linksChanged();
-            linksAdded(addedLinks);
-        }
+        return addedLinks;
     }
 
     //! function to create multiple pairs at once

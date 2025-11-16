@@ -12,27 +12,23 @@ QtObject {
     * ****************************************************************************************/
     property var scene // I_Scene
     property var node  // Node
-    // List of { inputPortUuid, outputPortUuid }
+    // List of Link objects (not just port UUIDs, to preserve all properties)
     property var links: []
 
     /* Functions
     * ****************************************************************************************/
     function redo() {
-        if (scene && node)
+        if (scene && node) {
             scene.deleteNode(node._qsUuid)
+        }
     }
 
     function undo() {
         if (scene && node) {
             scene.addNode(node)
-            // Restore links connected to this node
+            // Restore link objects (preserves all properties like color, etc.)
             if (links && links.length) {
-                for (var i = 0; i < links.length; ++i) {
-                    var p = links[i]
-                    if (p && p.inputPortUuid && p.outputPortUuid) {
-                        scene.createLink(p.inputPortUuid, p.outputPortUuid)
-                    }
-                }
+                scene.restoreLinks(links)
             }
         }
     }
