@@ -20,6 +20,7 @@ Node {
         _port1.portType = NLSpec.PortType.Input
         _port1.portSide = NLSpec.PortPositionSide.Left
         _port1.enable   = false;
+        _port1.title    = "value";
 
         addPort(_port1);
     }

@@ -14,6 +14,7 @@ Node {
 
         _port1.portType = NLSpec.PortType.Output
         _port1.portSide = NLSpec.PortPositionSide.Right
+        _port1.title    = "value";
 
         addPort(_port1);
     }
