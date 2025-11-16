@@ -42,6 +42,17 @@ Item {
     //! Container view component
     property Component containerViewComponent: Qt.createComponent(containerViewUrl);
 
+    //! ObjectCreator singleton instance (for backward compatibility)
+    // Note: ObjectCreator is now a singleton, so we can use it directly as ObjectCreator.createItem(...)
+    // This property is kept for backward compatibility with existing code
+    property QtObject objectCreator: null
+
+    Component.onCompleted: {
+        // Initialize objectCreator with singleton instance
+        // In QML, singleton classes can be accessed directly
+        objectCreator = ObjectCreator;
+    }
+
     /*  Object Properties
     * ****************************************************************************************/
     anchors.fill: parent
@@ -90,32 +101,23 @@ Item {
 
         function onNodesAdded(nodeArray: list<Node>) {
             var jsArray = [];
-            for (var i = 0; i < nodeArray.length; i++) {
-                jsArray.push(nodeArray[i]);
-            }
-            var result = ObjectCreator.createItems(
-                        "node",
-                        jsArray,
-                        root,
-                        nodeViewComponent.url,
-                        {
-                            "scene": root.scene,
-                            "sceneSession": root.sceneSession,
-                            "viewProperties": root.viewProperties
-                            // "node": will be added inside cpp class
-                        }
-                        );
-            if (result.needsPropertySet) {
-                for (var i = 0; i < result.items.length; i++) {
-                    result.items[i].scene = root.scene;
-                    result.items[i].sceneSession = root.sceneSession;
-                    result.items[i].node = nodeArray[i];
-                    result.items[i].viewProperties = root.viewProperties;
+                for (var i = 0; i < nodeArray.length; i++) {
+                    jsArray.push(nodeArray[i]);
                 }
-            } else {
-                for (var i = 0; i < result.items.length; i++) {
-                    _nodeViewMap[nodeArray[i]._qsUuid] = result.items[i];
+            let createdViews = objectCreator.createItems(
+                "node",
+                jsArray,
+                root,
+                nodeViewComponent.url,
+                {
+                    "scene": root.scene,
+                    "sceneSession": root.sceneSession,
+                    "viewProperties": root.viewProperties
+                    // "node": will be added inside cpp class
                 }
+            );
+            for (var i = 0; i < createdViews.length; i++) {
+                _nodeViewMap[nodeArray[i]._qsUuid] = createdViews[i];
             }
         }
 
@@ -126,9 +128,8 @@ Item {
                 return;
 
             //! NodeViews should be child of NodesRect so they also get the zoom factor through
-            //! scaling
-
-            var result = ObjectCreator.createItem(
+            //! scaling, url:"qrc:/NodeLink/resources/View/NodeView.qml"
+            let nodeView = objectCreator.createItem(
                     root,
                     nodeViewComponent.url,
                     {
@@ -139,14 +140,7 @@ Item {
                     }
                     );
 
-            if (result.needsPropertySet) {
-                result.item.scene = root.scene;
-                result.item.sceneSession = root.sceneSession;
-                result.item.node = nodeObj;
-                result.item.viewProperties = root.viewProperties;
-            }
-
-            _nodeViewMap[nodeObj._qsUuid] = result.item;
+            _nodeViewMap[nodeObj._qsUuid] = nodeView;
         }
 
         // ! nodeRepeater updated when several nodes Removed
@@ -154,12 +148,9 @@ Item {
             for (var i = 0; i < nodeArray.length; i++) {
                 var nodeObj = nodeArray[i];
                 var nodeObjId = nodeObj._qsUuid;
-                let nodePorts = nodeObj.ports
-                Object.entries(nodePorts).forEach(
-                            ([portId, port]) => {
-                                nodeObj.deletePort(port)
-                            });
-                nodeObj.destroy()
+                
+                // Only destroy the view, not the node itself
+                // The node needs to be kept alive for undo/redo functionality
                 if (_nodeViewMap[nodeObjId]) {
                     _nodeViewMap[nodeObjId].destroy()
                     delete _nodeViewMap[nodeObjId];
@@ -186,7 +177,8 @@ Item {
         function onLinkAdded(linkObj: Link) {
             if (Object.keys(_linkViewMap).includes(linkObj._qsUuid))
                 return;
-            var result = ObjectCreator.createItem(
+
+            const objView = objectCreator.createItem(
                               root,
                               linkViewComponent.url,
                               {
@@ -196,45 +188,28 @@ Item {
                                   "viewProperties": root.viewProperties
                               }
                               );
-
-            if (result.needsPropertySet) {
-                result.item.scene = root.scene;
-                result.item.sceneSession = root.sceneSession;
-                result.item.link = linkObj;
-                result.item.viewProperties = root.viewProperties;
-            }
-            _linkViewMap[linkObj._qsUuid] = result.item;
+            _linkViewMap[linkObj._qsUuid] = objView;
         }
 
         //! linkRepeater updated when a link added
         function onLinksAdded(linkArray: list<Link>) {
             var jsArray = [];
-            for (var i = 0; i < linkArray.length; i++) {
-                jsArray.push(linkArray[i]);
-            }
-            var result = ObjectCreator.createItems(
-                        "link",
-                        jsArray,
-                        root,
-                        linkViewComponent.url,
-                        {
-                            "scene": root.scene,
-                            "sceneSession": root.sceneSession,
-                            "viewProperties": root.viewProperties
-                        }
-                        );
-            if (result.needsPropertySet) {
-                for (var i = 0; i < result.items.length; i++) {
-                    result.items[i].scene = root.scene;
-                    result.items[i].sceneSession = root.sceneSession;
-                    result.items[i].link = linkArray[i];
-                    result.items[i].viewProperties = root.viewProperties;
-                    _linkViewMap[linkArray[i]._qsUuid] = result.items[i];
+                for (var i = 0; i < linkArray.length; i++) {
+                    jsArray.push(linkArray[i]);
                 }
-            } else {
-                for (var i = 0; i < result.items.length; i++) {
-                    _linkViewMap[linkArray[i]._qsUuid] = result.items[i];
-                }
+            const createdLinks = objectCreator.createItems(
+                              "link",
+                              jsArray,
+                              root,
+                              linkViewComponent.url,
+                              {
+                                  "scene": root.scene,
+                                  "sceneSession": root.sceneSession,
+                                  "viewProperties": root.viewProperties
+                              }
+                              );
+            for (var i = 0; i < createdLinks.length; i++) {
+                _linkViewMap[linkArray[i]._qsUuid] = createdLinks[i];
             }
         }
 

@@ -16,12 +16,21 @@ QtObject {
     /* Functions
     * ****************************************************************************************/
     function redo() {
-        if (scene && node)
+        if (scene && node) {
             scene.addNode(node)
+        }
     }
 
     function undo() {
-        if (scene && node)
-            scene.deleteNode(node._qsUuid)
+        if (scene && node) {
+            // Simply remove the node from scene (don't delete from memory)
+            // Links will be handled by their own CreateLinkCommand
+            if (scene.nodes[node._qsUuid]) {
+                scene.selectionModel.remove(node._qsUuid)
+                scene.nodeRemoved(node)
+                delete scene.nodes[node._qsUuid]
+                scene.nodesChanged()
+            }
+        }
     }
 }

@@ -132,8 +132,29 @@ Window {
         fileMode: FileDialog.OpenFile
         nameFilters: [ "QtQuickStream Files (*.QQS.json)" ]
         onAccepted: {
-            NLCore.defaultRepo.clearObjects();
-            NLCore.defaultRepo.loadFromFile(loadDialog.currentFile);
+            if (window.scene && window.scene._undoCore) {
+                // Create and push the load file command using Component with full qrc path
+                var component = Qt.createComponent("qrc:/NodeLink/resources/Core/Undo/Commands/LoadFileCommand.qml");
+                if (component.status === Component.Ready) {
+                    var cmdLoadFile = component.createObject(window.scene._undoCore.undoStack);
+                    cmdLoadFile.scene = window.scene
+                    cmdLoadFile.repo = NLCore.defaultRepo
+                    cmdLoadFile.filePath = loadDialog.currentFile
+                    
+                    // Push command with appliedAlready=false so it executes the load
+                    // The command will save the current state internally before loading
+                    window.scene._undoCore.undoStack.push(cmdLoadFile, false)
+                } else {
+                    console.error("Failed to load LoadFileCommand component:", component.errorString());
+                    // Fallback: load without undo/redo support
+                    NLCore.defaultRepo.clearObjects();
+                    NLCore.defaultRepo.loadFromFile(loadDialog.currentFile);
+                }
+            } else {
+                // Fallback: load without undo/redo support
+                NLCore.defaultRepo.clearObjects();
+                NLCore.defaultRepo.loadFromFile(loadDialog.currentFile);
+            }
 //            window.scene = Qt.binding(function() { return NLCore.defaultRepo.qsRootObject;});
         }
     }
