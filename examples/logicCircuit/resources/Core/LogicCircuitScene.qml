@@ -79,6 +79,7 @@ I_Scene {
                                  nodeRegistry.nodeTypes[nodeType],
                                  nodeRegistry.nodeColors[nodeType],
                                  title, xPos, yPos);
+
     }
 
     //! Update all logic in the circuit
