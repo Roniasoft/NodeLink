@@ -8,8 +8,11 @@ import LogicCircuit
  * ************************************************************************************************/
 
 Node {
+    id: root
+
     /* Property Declarations
      * ****************************************************************************************/
+
     property int nodeType: LSpecs.NodeType.AND
 
     /* Object Properties

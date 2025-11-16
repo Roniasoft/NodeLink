@@ -75,14 +75,26 @@ LogicNode {
      * ****************************************************************************************/
 
     //! Toggle between ON and OFF states
+    // function toggleState() {
+    //     nodeData.currentState = !nodeData.currentState;
+    //     nodeData.output = nodeData.currentState;
+    //     nodeData.displayValue = nodeData.currentState ? "ON" : "OFF";
+
+    //     // Update the entire circuit
+    //     /*if (scene && scene.updateLogic)*/ {
+    //         logicScene.updateLogic();
+    //     }
+    // }
+
     function toggleState() {
         nodeData.currentState = !nodeData.currentState;
         nodeData.output = nodeData.currentState;
         nodeData.displayValue = nodeData.currentState ? "ON" : "OFF";
 
-        // Update the entire circuit
-        if (scene && scene.updateLogic) {
-            scene.updateLogic();
+        // Try to find scene through repo
+        var mainScene = _qsRepo ? _qsRepo.qsRootObject : null;
+        if (mainScene && mainScene.updateLogic) {
+            mainScene.updateLogic();
         }
     }
 }
