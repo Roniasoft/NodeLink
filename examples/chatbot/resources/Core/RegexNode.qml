@@ -21,12 +21,15 @@ Node {
         _port1.portType = NLSpec.PortType.Input
         _port1.portSide = NLSpec.PortPositionSide.Left
         _port1.enable   = false;
+        _port1.title    = "input";
 
         _port2.portType = NLSpec.PortType.Output
         _port2.portSide = NLSpec.PortPositionSide.Right
+        _port2.title    = "output 1";
 
         _port3.portType = NLSpec.PortType.Output
         _port3.portSide = NLSpec.PortPositionSide.Right
+        _port3.title    = "output 2";
 
         addPort(_port1);
         addPort(_port2);
