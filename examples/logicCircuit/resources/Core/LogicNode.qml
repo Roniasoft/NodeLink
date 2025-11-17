@@ -24,8 +24,10 @@ Node {
     guiConfig.autoSize: false
 
     // You can still set minimum sizes if needed
-    guiConfig.width: 100
-    guiConfig.height: 80
+
+    guiConfig.minWidth: 50
+    guiConfig.minHeight: 50
+
 
     Component.onCompleted: addPorts();
 

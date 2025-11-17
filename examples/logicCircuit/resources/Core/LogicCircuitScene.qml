@@ -7,6 +7,8 @@ import LogicCircuit
 I_Scene {
     id: scene
 
+    property color borderColor: "#000000"
+
     //! Node Registry
     nodeRegistry: NLNodeRegistry {
         _qsRepo: scene._qsRepo
@@ -38,11 +40,16 @@ I_Scene {
         ]
 
         nodeColors: [
-            LSpecs.NodeType.Input   = "#2e7d32",
-            LSpecs.NodeType.AND     = "#1976d2",
-            LSpecs.NodeType.OR      = "#7b1fa2",
-            LSpecs.NodeType.NOT     = "#d32f2f",
-            LSpecs.NodeType.Output  = "#f57c00"
+            // LSpecs.NodeType.Input   = "#2e7d32",
+            // LSpecs.NodeType.AND     = "#1976d2",
+            // LSpecs.NodeType.OR      = "#7b1fa2",
+            // LSpecs.NodeType.NOT     = "#d32f2f",
+            // LSpecs.NodeType.Output  = "#f57c00"
+            LSpecs.NodeType.Input   = borderColor,
+            LSpecs.NodeType.AND     = borderColor,
+            LSpecs.NodeType.OR      = borderColor,
+            LSpecs.NodeType.NOT     = borderColor,
+            LSpecs.NodeType.Output  = borderColor
         ]
     }
 
