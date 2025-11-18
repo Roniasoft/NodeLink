@@ -65,13 +65,28 @@ NodeView {
             Rectangle {
                 anchors.centerIn: parent
                 visible: node.type === LSpecs.NodeType.Output
-                width: Math.min(34, parent.width * 0.6)
-                height: Math.min(34, parent.height * 0.6)
+                width: Math.min(30, parent.width * 0.6)
+                height: Math.min(30, parent.height * 0.6)
                 radius: width / 2
-                color: node.nodeData.displayValue === "ON" ? "#4CAF50" :
-                       node.nodeData.displayValue === "OFF" ? "#E53935" : "#757575"
-                border.color: Qt.darker(color, 1.3)
+                color: "white"  // Always white background
+                border.color: "#2A2A2A"  // Always dark gray border
                 border.width: 2
+
+                // Inner state indicator - this changes color based on status
+                Rectangle {
+                    anchors.centerIn: parent
+                    width: parent.width * 0.6
+                    height: parent.height * 0.6
+                    radius: width / 2
+
+                    // Use the statusColor from nodeData
+                    color: node.nodeData ? node.nodeData.statusColor : "#9E9E9E"
+
+                    // Smooth color transitions
+                    Behavior on color {
+                        ColorAnimation { duration: 200 }
+                    }
+                }
             }
 
             // AND GATE: Official D-shaped symbol - SCALED
