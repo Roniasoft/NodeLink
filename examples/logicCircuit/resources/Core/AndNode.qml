@@ -76,11 +76,21 @@ LogicNode {
      * ****************************************************************************************/
 
     //! Update node data with AND operation
+    // function updateData() {
+    //     if (nodeData.inputA === null && nodeData.inputB === null) {
+    //         nodeData.output = null;
+    //         return;
+    //     }
+    //     nodeData.output = nodeData.inputA && nodeData.inputB;
+    // }
+
     function updateData() {
-        if (nodeData.inputA === null || nodeData.inputB === null) {
-            nodeData.output = null;
-            return;
+        // AND gate: output is true ONLY if both inputs are true
+        // If either input is null, output should be null (undefined)
+        if (nodeData.inputA !== null && nodeData.inputB !== null) {
+            nodeData.output = nodeData.inputA && nodeData.inputB;
+        } else {
+            nodeData.output = null; // Output undefined if inputs incomplete
         }
-        nodeData.output = nodeData.inputA && nodeData.inputB;
     }
 }

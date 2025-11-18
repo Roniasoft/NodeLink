@@ -195,6 +195,7 @@ qt_add_qml_module(NodeLink
         resources/fonts/Font\ Awesome\ 6\ Pro-Regular-400.otf
         resources/fonts/Font\ Awesome\ 6\ Pro-Solid-900.otf
         resources/Images/GridPoint.svg
+        QML_FILES
 )
 	
 include_directories(include/NodeLink/Core)

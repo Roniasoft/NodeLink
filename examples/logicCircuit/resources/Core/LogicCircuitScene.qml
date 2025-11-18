@@ -90,6 +90,54 @@ I_Scene {
     }
 
     //! Update all logic in the circuit
+    // function updateLogic() {
+    //     // Reset all operation nodes
+    //     Object.values(nodes).forEach(node => {
+    //         if (node.type === LSpecs.NodeType.AND ||
+    //             node.type === LSpecs.NodeType.OR ||
+    //             node.type === LSpecs.NodeType.NOT) {
+    //             node.nodeData.inputA = null;
+    //             node.nodeData.inputB = null;
+    //             node.nodeData.output = null;
+    //         }
+    //     });
+
+    //     // Propagate values through the circuit
+    //     var maxIterations = 10; // Prevent infinite loops
+    //     var changed = true;
+
+    //     for (var i = 0; i < maxIterations && changed; i++) {
+    //         changed = false;
+    //         Object.values(links).forEach(link => {
+    //             var upstreamNode = findNode(link.inputPort._qsUuid);
+    //             var downstreamNode = findNode(link.outputPort._qsUuid);
+
+    //             if (upstreamNode && downstreamNode && upstreamNode.nodeData.output !== null) {
+    //                 // Set input for downstream node based on port title
+    //                 if (downstreamNode.nodeData.inputA === null) {
+    //                     downstreamNode.nodeData.inputA = upstreamNode.nodeData.output;
+    //                     changed = true;
+    //                 } else if (downstreamNode.nodeData.inputB === null &&
+    //                           downstreamNode.type !== LSpecs.NodeType.NOT) {
+    //                     downstreamNode.nodeData.inputB = upstreamNode.nodeData.output;
+    //                     changed = true;
+    //                 }
+
+    //                 // Update downstream node
+    //                 if (downstreamNode.updateData) {
+    //                     downstreamNode.updateData();
+    //                 }
+
+    //                 // Update output display
+    //                 if (downstreamNode.type === LSpecs.NodeType.Output) {
+    //                     downstreamNode.updateDisplay(upstreamNode.nodeData.output);
+    //                 }
+    //             }
+    //         });
+    //     }
+    // }
+
+    //! Update all logic in the circuit
     function updateLogic() {
         // Reset all operation nodes
         Object.values(nodes).forEach(node => {
@@ -123,14 +171,38 @@ I_Scene {
                         changed = true;
                     }
 
-                    // Update downstream node
+                    // Update downstream node - BUT ONLY IF IT HAS ALL REQUIRED INPUTS
                     if (downstreamNode.updateData) {
-                        downstreamNode.updateData();
+                        // Check if the gate has all required inputs before updating
+                        var canUpdate = false;
+
+                        switch(downstreamNode.type) {
+                            case LSpecs.NodeType.AND:
+                            case LSpecs.NodeType.OR:
+                                // AND and OR gates require BOTH inputs
+                                canUpdate = (downstreamNode.nodeData.inputA !== null &&
+                                           downstreamNode.nodeData.inputB !== null);
+                                break;
+                            case LSpecs.NodeType.NOT:
+                                // NOT gate only requires ONE input
+                                canUpdate = (downstreamNode.nodeData.inputA !== null);
+                                break;
+                            case LSpecs.NodeType.Output:
+                                // Output node always updates when input changes
+                                canUpdate = true;
+                                break;
+                            default:
+                                canUpdate = true;
+                        }
+
+                        if (canUpdate) {
+                            downstreamNode.updateData();
+                        }
                     }
 
-                    // Update output display
+                    // Update output display for output nodes
                     if (downstreamNode.type === LSpecs.NodeType.Output) {
-                        downstreamNode.updateDisplay(upstreamNode.nodeData.output);
+                        downstreamNode.updateDisplay(downstreamNode.nodeData.inputA);
                     }
                 }
             });
