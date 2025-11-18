@@ -17,4 +17,7 @@ I_NodeData {
 
     //! For display purposes
     property string displayValue: "OFF"
+
+    //! Status color for visualization (used by OutputNode)
+    property color statusColor: "#9E9E9E"
 }
