@@ -778,4 +778,513 @@ QSObject {
            }
        });
    }
+
+    //! Build connection graph based on links
+    function buildConnectionGraph(nodes) {
+        var connections = [];
+        
+        // Check all links to build the graph
+        // Note: In Link, inputPort is actually the output port (source) and outputPort is the input port (target)
+        Object.values(scene.links).forEach(function(link) {
+            if (!link || !link.inputPort || !link.outputPort) {
+                return;
+            }
+            
+            var sourceNodeId = scene.findNodeId(link.inputPort._qsUuid);
+            var targetNodeId = scene.findNodeId(link.outputPort._qsUuid);
+            
+            // Only consider selected nodes
+            if (!nodes[sourceNodeId] || !nodes[targetNodeId]) {
+                return;
+            }
+            
+            connections.push({
+                sourceNode: nodes[sourceNodeId],
+                targetNode: nodes[targetNodeId],
+                outputPort: link.inputPort,  // Output port (source)
+                inputPort: link.outputPort   // Input port (target)
+            });
+        });
+        
+        return connections;
+    }
+
+    //! Calculate port position based on node position
+    function getPortPosition(node, port) {
+        var nodePos = node.guiConfig.position;
+        var nodeWidth = node.guiConfig.width;
+        var nodeHeight = node.guiConfig.height;
+        var portSide = port.portSide;
+        
+        switch(portSide) {
+            case NLSpec.PortPositionSide.Top:
+                return Qt.vector2d(nodePos.x + nodeWidth / 2, nodePos.y);
+            case NLSpec.PortPositionSide.Bottom:
+                return Qt.vector2d(nodePos.x + nodeWidth / 2, nodePos.y + nodeHeight);
+            case NLSpec.PortPositionSide.Left:
+                return Qt.vector2d(nodePos.x, nodePos.y + nodeHeight / 2);
+            case NLSpec.PortPositionSide.Right:
+                return Qt.vector2d(nodePos.x + nodeWidth, nodePos.y + nodeHeight / 2);
+            default:
+                return Qt.vector2d(nodePos.x + nodeWidth / 2, nodePos.y + nodeHeight / 2);
+        }
+    }
+
+    //! Determine if connection is left-to-right
+    function isLeftToRightConnection(sourceNode, targetNode) {
+        // If target node is to the right of source node, connection is left-to-right
+        var sourceCenterX = sourceNode.guiConfig.position.x + sourceNode.guiConfig.width / 2;
+        var targetCenterX = targetNode.guiConfig.position.x + targetNode.guiConfig.width / 2;
+        return targetCenterX > sourceCenterX;
+    }
+
+    //! Find root node
+    function findRootNode(nodes, rootId) {
+        var rootNode = nodes[rootId];
+        if (!rootNode) {
+            rootNode = Object.values(nodes).reduce(function(minNode, currentNode) {
+                return currentNode.guiConfig.position.x < minNode.guiConfig.position.x ? 
+                       currentNode : minNode;
+            });
+        }
+        return rootNode;
+    }
+
+    //! Build connected groups from nodes
+    function buildConnectedGroups(nodes, connections, nodeIds) {
+        var visited = {};
+        var groups = [];
+        
+        function buildGroup(nodeId, group) {
+            if (visited[nodeId] || !nodes[nodeId]) {
+                return;
+            }
+            
+            visited[nodeId] = true;
+            group.push(nodeId);
+            
+            // Add connected nodes
+            connections.forEach(function(conn) {
+                if (conn.sourceNode._qsUuid === nodeId && !visited[conn.targetNode._qsUuid]) {
+                    buildGroup(conn.targetNode._qsUuid, group);
+                }
+                if (conn.targetNode._qsUuid === nodeId && !visited[conn.sourceNode._qsUuid]) {
+                    buildGroup(conn.sourceNode._qsUuid, group);
+                }
+            });
+        }
+
+        // Build groups
+        nodeIds.forEach(function(nodeId) {
+            if (!visited[nodeId]) {
+                var group = [];
+                buildGroup(nodeId, group);
+                if (group.length > 0) {
+                    groups.push(group);
+                }
+            }
+        });
+        
+        return groups;
+    }
+
+    //! Calculate target position based on connection rules
+    function calculatePositionByRules(currentNode, targetNode, outputPortSide, inputPortSide, leftToRight, NODE_SPACING) {
+        var currentPos = currentNode.guiConfig.position;
+        var currentWidth = currentNode.guiConfig.width;
+        var currentHeight = currentNode.guiConfig.height;
+        var targetWidth = targetNode.guiConfig.width;
+        var targetHeight = targetNode.guiConfig.height;
+        var targetPos = Qt.vector2d(0, 0);
+        
+        if (leftToRight) {
+            // Left-to-right connection rules
+            if (outputPortSide === NLSpec.PortPositionSide.Top && inputPortSide === NLSpec.PortPositionSide.Top) {
+                targetPos = Qt.vector2d(currentPos.x + currentWidth + NODE_SPACING, currentPos.y);
+            } else if (outputPortSide === NLSpec.PortPositionSide.Right && inputPortSide === NLSpec.PortPositionSide.Top) {
+                targetPos = Qt.vector2d(currentPos.x + currentWidth + NODE_SPACING, currentPos.y + currentHeight + NODE_SPACING);
+            } else if (outputPortSide === NLSpec.PortPositionSide.Bottom && inputPortSide === NLSpec.PortPositionSide.Top) {
+                targetPos = Qt.vector2d(currentPos.x, currentPos.y + currentHeight + NODE_SPACING);
+            } else if (outputPortSide === NLSpec.PortPositionSide.Left && inputPortSide === NLSpec.PortPositionSide.Top) {
+                targetPos = Qt.vector2d(currentPos.x - targetWidth - NODE_SPACING, currentPos.y + currentHeight + NODE_SPACING);
+            } else if (outputPortSide === NLSpec.PortPositionSide.Top && inputPortSide === NLSpec.PortPositionSide.Left) {
+                targetPos = Qt.vector2d(currentPos.x + currentWidth + NODE_SPACING, currentPos.y - targetHeight - NODE_SPACING);
+            } else if (outputPortSide === NLSpec.PortPositionSide.Right && inputPortSide === NLSpec.PortPositionSide.Left) {
+                targetPos = Qt.vector2d(currentPos.x + currentWidth + NODE_SPACING, currentPos.y);
+            } else if (outputPortSide === NLSpec.PortPositionSide.Bottom && inputPortSide === NLSpec.PortPositionSide.Left) {
+                targetPos = Qt.vector2d(currentPos.x + currentWidth + NODE_SPACING, currentPos.y + currentHeight + NODE_SPACING);
+            } else if (outputPortSide === NLSpec.PortPositionSide.Left && inputPortSide === NLSpec.PortPositionSide.Left) {
+                targetPos = Qt.vector2d(currentPos.x, currentPos.y + currentHeight + NODE_SPACING);
+            } else if (outputPortSide === NLSpec.PortPositionSide.Top && inputPortSide === NLSpec.PortPositionSide.Bottom) {
+                targetPos = Qt.vector2d(currentPos.x, currentPos.y - targetHeight - NODE_SPACING);
+            } else if (outputPortSide === NLSpec.PortPositionSide.Right && inputPortSide === NLSpec.PortPositionSide.Bottom) {
+                targetPos = Qt.vector2d(currentPos.x + currentWidth + NODE_SPACING, currentPos.y - targetHeight - NODE_SPACING);
+            } else if (outputPortSide === NLSpec.PortPositionSide.Bottom && inputPortSide === NLSpec.PortPositionSide.Bottom) {
+                targetPos = Qt.vector2d(currentPos.x + currentWidth + NODE_SPACING, currentPos.y);
+            } else if (outputPortSide === NLSpec.PortPositionSide.Left && inputPortSide === NLSpec.PortPositionSide.Bottom) {
+                targetPos = Qt.vector2d(currentPos.x - targetWidth - NODE_SPACING, currentPos.y - targetHeight - NODE_SPACING);
+            } else if (outputPortSide === NLSpec.PortPositionSide.Top && inputPortSide === NLSpec.PortPositionSide.Right) {
+                targetPos = Qt.vector2d(currentPos.x - targetWidth - NODE_SPACING, currentPos.y - targetHeight - NODE_SPACING);
+            } else if (outputPortSide === NLSpec.PortPositionSide.Right && inputPortSide === NLSpec.PortPositionSide.Right) {
+                targetPos = Qt.vector2d(currentPos.x, currentPos.y + currentHeight + NODE_SPACING);
+            } else if (outputPortSide === NLSpec.PortPositionSide.Bottom && inputPortSide === NLSpec.PortPositionSide.Right) {
+                targetPos = Qt.vector2d(currentPos.x - targetWidth - NODE_SPACING, currentPos.y + currentHeight + NODE_SPACING);
+            } else if (outputPortSide === NLSpec.PortPositionSide.Left && inputPortSide === NLSpec.PortPositionSide.Right) {
+                targetPos = Qt.vector2d(currentPos.x - targetWidth - NODE_SPACING, currentPos.y);
+            } else {
+                // Default
+                targetPos = Qt.vector2d(currentPos.x + currentWidth + NODE_SPACING, currentPos.y);
+            }
+        } else {
+            // Right-to-left connection rules
+            if (outputPortSide === NLSpec.PortPositionSide.Top && inputPortSide === NLSpec.PortPositionSide.Top) {
+                targetPos = Qt.vector2d(currentPos.x - targetWidth - NODE_SPACING, currentPos.y);
+            } else if (outputPortSide === NLSpec.PortPositionSide.Right && inputPortSide === NLSpec.PortPositionSide.Top) {
+                targetPos = Qt.vector2d(currentPos.x + targetWidth + NODE_SPACING, currentPos.y + currentHeight + NODE_SPACING);
+            } else if (outputPortSide === NLSpec.PortPositionSide.Bottom && inputPortSide === NLSpec.PortPositionSide.Top) {
+                targetPos = Qt.vector2d(currentPos.x, currentPos.y + currentHeight + NODE_SPACING);
+            } else if (outputPortSide === NLSpec.PortPositionSide.Left && inputPortSide === NLSpec.PortPositionSide.Top) {
+                targetPos = Qt.vector2d(currentPos.x - currentWidth - NODE_SPACING, currentPos.y + currentHeight + NODE_SPACING);
+            } else if (outputPortSide === NLSpec.PortPositionSide.Top && inputPortSide === NLSpec.PortPositionSide.Left) {
+                targetPos = Qt.vector2d(currentPos.x + targetWidth + NODE_SPACING, currentPos.y - targetHeight - NODE_SPACING);
+            } else if (outputPortSide === NLSpec.PortPositionSide.Right && inputPortSide === NLSpec.PortPositionSide.Left) {
+                targetPos = Qt.vector2d(currentPos.x + targetWidth + NODE_SPACING, currentPos.y);
+            } else if (outputPortSide === NLSpec.PortPositionSide.Bottom && inputPortSide === NLSpec.PortPositionSide.Left) {
+                targetPos = Qt.vector2d(currentPos.x + targetWidth + NODE_SPACING, currentPos.y + currentHeight + NODE_SPACING);
+            } else if (outputPortSide === NLSpec.PortPositionSide.Left && inputPortSide === NLSpec.PortPositionSide.Left) {
+                targetPos = Qt.vector2d(currentPos.x, currentPos.y + currentHeight + NODE_SPACING);
+            } else if (outputPortSide === NLSpec.PortPositionSide.Top && inputPortSide === NLSpec.PortPositionSide.Bottom) {
+                targetPos = Qt.vector2d(currentPos.x, currentPos.y - targetHeight - NODE_SPACING);
+            } else if (outputPortSide === NLSpec.PortPositionSide.Right && inputPortSide === NLSpec.PortPositionSide.Bottom) {
+                targetPos = Qt.vector2d(currentPos.x + targetWidth + NODE_SPACING, currentPos.y - targetHeight - NODE_SPACING);
+            } else if (outputPortSide === NLSpec.PortPositionSide.Bottom && inputPortSide === NLSpec.PortPositionSide.Bottom) {
+                targetPos = Qt.vector2d(currentPos.x - targetWidth - NODE_SPACING, currentPos.y);
+            } else if (outputPortSide === NLSpec.PortPositionSide.Left && inputPortSide === NLSpec.PortPositionSide.Bottom) {
+                targetPos = Qt.vector2d(currentPos.x - currentWidth - NODE_SPACING, currentPos.y - targetHeight - NODE_SPACING);
+            } else if (outputPortSide === NLSpec.PortPositionSide.Top && inputPortSide === NLSpec.PortPositionSide.Right) {
+                targetPos = Qt.vector2d(currentPos.x - currentWidth - NODE_SPACING, currentPos.y - targetHeight - NODE_SPACING);
+            } else if (outputPortSide === NLSpec.PortPositionSide.Right && inputPortSide === NLSpec.PortPositionSide.Right) {
+                targetPos = Qt.vector2d(currentPos.x, currentPos.y + currentHeight + NODE_SPACING);
+            } else if (outputPortSide === NLSpec.PortPositionSide.Bottom && inputPortSide === NLSpec.PortPositionSide.Right) {
+                targetPos = Qt.vector2d(currentPos.x - currentWidth - NODE_SPACING, currentPos.y + currentHeight + NODE_SPACING);
+            } else if (outputPortSide === NLSpec.PortPositionSide.Left && inputPortSide === NLSpec.PortPositionSide.Right) {
+                targetPos = Qt.vector2d(currentPos.x - currentWidth - NODE_SPACING, currentPos.y);
+            } else {
+                // Default
+                targetPos = Qt.vector2d(currentPos.x - targetWidth - NODE_SPACING, currentPos.y);
+            }
+        }
+        
+        return targetPos;
+    }
+
+    //! Check and resolve overlaps with other nodes
+    function resolveOverlaps(pos, nodeWidth, nodeHeight, nodeId, leftToRight, MIN_SPACING) {
+        var resolvedPos = Qt.vector2d(pos.x, pos.y);
+        var maxIterations = 100;
+        var iteration = 0;
+        
+        while (iteration < maxIterations) {
+            var hasOverlap = false;
+            var maxRightX = resolvedPos.x;
+            var maxDownY = resolvedPos.y;
+            var minLeftX = resolvedPos.x;
+            var maxUpY = resolvedPos.y;
+            
+            // Check overlap with all nodes in the scene
+            Object.keys(scene.nodes).forEach(function(otherNodeId) {
+                // Skip if this is the target node itself
+                if (otherNodeId === nodeId) return;
+                
+                var otherNode = scene.nodes[otherNodeId];
+                if (!otherNode) return;
+                
+                var otherNodePos = otherNode.guiConfig.position;
+                var otherNodeWidth = otherNode.guiConfig.width;
+                var otherNodeHeight = otherNode.guiConfig.height;
+                
+                // Precise overlap check (using <= and >= to ensure no overlap)
+                var noOverlapX = (resolvedPos.x + nodeWidth <= otherNodePos.x || 
+                                 resolvedPos.x >= otherNodePos.x + otherNodeWidth);
+                var noOverlapY = (resolvedPos.y + nodeHeight <= otherNodePos.y || 
+                                 resolvedPos.y >= otherNodePos.y + otherNodeHeight);
+                
+                if (!noOverlapX && !noOverlapY) {
+                    hasOverlap = true;
+                    
+                    // Calculate required positions for movement
+                    var rightX = otherNodePos.x + otherNodeWidth + MIN_SPACING;
+                    var leftX = otherNodePos.x - nodeWidth - MIN_SPACING;
+                    var downY = otherNodePos.y + otherNodeHeight + MIN_SPACING;
+                    var upY = otherNodePos.y - nodeHeight - MIN_SPACING;
+                    
+                    // Find maximum/minimum required position for movement
+                    if (leftToRight) {
+                        // Prefer movement to the right
+                        if (rightX > maxRightX) {
+                            maxRightX = rightX;
+                        }
+                    } else {
+                        // Prefer movement to the left
+                        if (leftX < minLeftX) {
+                            minLeftX = leftX;
+                        }
+                    }
+                    
+                    // Always move down if necessary
+                    if (downY > maxDownY) {
+                        maxDownY = downY;
+                    }
+                    
+                    // If movement up is better
+                    if (upY < maxUpY) {
+                        maxUpY = upY;
+                    }
+                }
+            });
+            
+            if (!hasOverlap) {
+                break;
+            }
+            
+            // Apply movement - use maximum/minimum values to resolve all overlaps
+            var newX = resolvedPos.x;
+            var newY = resolvedPos.y;
+            
+            if (leftToRight) {
+                newX = maxRightX;
+            } else {
+                newX = minLeftX;
+            }
+            
+            // Choose between down and up (prefer down)
+            if (maxDownY > resolvedPos.y) {
+                newY = maxDownY;
+            } else if (maxUpY < resolvedPos.y) {
+                newY = maxUpY;
+            }
+            
+            // Apply changes
+            resolvedPos = Qt.vector2d(newX, newY);
+            
+            iteration++;
+        }
+        
+        return resolvedPos;
+    }
+
+    //! Calculate position for node with multiple inputs
+    function calculatePositionForMultiInputNode(targetNode, targetId, targetPos, connections, positioned, NODE_SPACING) {
+        var inputConnections = [];
+        connections.forEach(function(inputConn) {
+            if (inputConn.targetNode._qsUuid === targetId && positioned[inputConn.sourceNode._qsUuid]) {
+                inputConnections.push(inputConn);
+            }
+        });
+        
+        // If it has multiple inputs, calculate position based on average of all connections
+        if (inputConnections.length > 1) {
+            var positions = [targetPos];
+            
+            inputConnections.forEach(function(inputConn) {
+                var sourceNode = inputConn.sourceNode;
+                var sourcePos = sourceNode.guiConfig.position;
+                var sourceWidth = sourceNode.guiConfig.width;
+                var targetWidth = targetNode.guiConfig.width;
+                
+                var inputLeftToRight = isLeftToRightConnection(sourceNode, targetNode);
+                var calculatedPos = Qt.vector2d(0, 0);
+                
+                // Calculate position based on this input connection (using the same rules)
+                // Here we only do a simple calculation
+                if (inputLeftToRight) {
+                    calculatedPos = Qt.vector2d(sourcePos.x + sourceWidth + NODE_SPACING, sourcePos.y);
+                } else {
+                    calculatedPos = Qt.vector2d(sourcePos.x - targetWidth - NODE_SPACING, sourcePos.y);
+                }
+                
+                positions.push(calculatedPos);
+            });
+            
+            // Calculate average of positions
+            var avgX = 0;
+            var avgY = 0;
+            positions.forEach(function(pos) {
+                avgX += pos.x;
+                avgY += pos.y;
+            });
+            avgX = avgX / positions.length;
+            avgY = avgY / positions.length;
+            
+            // Use position calculated from current connection with higher weight
+            targetPos = Qt.vector2d(targetPos.x * 0.6 + avgX * 0.4, targetPos.y * 0.6 + avgY * 0.4);
+        }
+        
+        return targetPos;
+    }
+
+    //! Automatic node reordering based on connections
+    function automaticNodeReorder(nodes, rootId, keepRootPosition) {
+        if (!nodes || Object.keys(nodes).length === 0) {
+            return;
+        }
+
+        var NODE_SPACING = 60;  // Spacing between nodes
+        var MIN_SPACING = 40;   // Minimum spacing
+
+        // Build connection graph
+        var connections = buildConnectionGraph(nodes);
+        var nodeIds = Object.keys(nodes);
+
+        // Find root node
+        var rootNode = findRootNode(nodes, rootId);
+        var rootPosition = rootNode.guiConfig.position;
+
+        // Build connected groups
+        var groups = buildConnectedGroups(nodes, connections, nodeIds);
+
+        // Position each group
+        var currentX = rootPosition.x;
+        var currentY = rootPosition.y;
+        
+        groups.forEach(function(group) {
+            if (group.length === 0) return;
+            
+            // Find root node in this group
+            var groupRootId = group[0];
+            var hasRoot = group.indexOf(rootId) >= 0;
+            if (hasRoot) {
+                groupRootId = rootId;
+            }
+            
+            var groupRoot = nodes[groupRootId];
+            if (!groupRoot) return;
+            
+            // Position group root node
+            if (hasRoot && keepRootPosition) {
+                currentX = rootPosition.x;
+                currentY = rootPosition.y;
+            } else {
+                groupRoot.guiConfig.position = Qt.vector2d(currentX, currentY);
+            }
+            
+            // Position nodes in this group
+            positionGroupNodes(group, groupRootId, rootId, hasRoot && keepRootPosition, rootPosition, nodes, connections, NODE_SPACING, MIN_SPACING);
+            
+            // Update position for next group
+            var nextPos = updatePositionForNextGroup(group, nodes, currentX, currentY, NODE_SPACING);
+            currentX = nextPos.x;
+        });
+    }
+
+    //! Process outgoing connections and position target nodes
+    //! Returns array of newly positioned node IDs
+    function processOutgoingConnections(currentNode, currentNodeId, connections, positioned, inQueue, nodes, NODE_SPACING, MIN_SPACING) {
+        var outgoingConnections = [];
+        connections.forEach(function(conn) {
+            if (conn.sourceNode._qsUuid === currentNodeId) {
+                outgoingConnections.push(conn);
+            }
+        });
+        
+        var newlyPositioned = [];
+        
+        outgoingConnections.forEach(function(conn) {
+            var targetNode = conn.targetNode;
+            var targetId = targetNode._qsUuid;
+            
+            // Prevent cycles: if node is already positioned or in queue, skip it
+            if (positioned[targetId] || inQueue[targetId]) {
+                return;
+            }
+            
+            var outputPort = conn.outputPort;
+            var inputPort = conn.inputPort;
+            var outputPortSide = outputPort.portSide;
+            var inputPortSide = inputPort.portSide;
+            
+            // Determine if connection is left-to-right
+            var leftToRight = isLeftToRightConnection(currentNode, targetNode);
+            
+            // If target node is not yet positioned, assume left-to-right connection
+            if (!positioned[targetId] && targetNode.guiConfig.position.x === 0 && targetNode.guiConfig.position.y === 0) {
+                leftToRight = true;
+            }
+            
+            var targetWidth = targetNode.guiConfig.width;
+            var targetHeight = targetNode.guiConfig.height;
+            
+            // Calculate position based on rules
+            var targetPos = calculatePositionByRules(
+                currentNode, targetNode, outputPortSide, inputPortSide, leftToRight, NODE_SPACING
+            );
+            
+            // Check and resolve overlaps
+            targetPos = resolveOverlaps(targetPos, targetWidth, targetHeight, targetId, leftToRight, MIN_SPACING);
+            
+            // If this node has multiple inputs, calculate position based on all connections
+            targetPos = calculatePositionForMultiInputNode(
+                targetNode, targetId, targetPos, connections, positioned, NODE_SPACING
+            );
+            
+            // After calculating position for nodes with multiple inputs, check overlaps again
+            targetPos = resolveOverlaps(targetPos, targetWidth, targetHeight, targetId, leftToRight, MIN_SPACING);
+            
+            targetNode.guiConfig.position = targetPos;
+            positioned[targetId] = true;
+            newlyPositioned.push(targetId);
+        });
+        
+        return newlyPositioned;
+    }
+
+    //! Position nodes in a group using BFS
+    function positionGroupNodes(group, groupRootId, rootId, keepRootPosition, rootPosition, nodes, connections, NODE_SPACING, MIN_SPACING) {
+        var groupRoot = nodes[groupRootId];
+        if (!groupRoot) return;
+        
+        // Position group root node
+        if (group.indexOf(rootId) >= 0 && keepRootPosition) {
+            groupRoot.guiConfig.position = rootPosition;
+        }
+        
+        // Position remaining nodes based on connections
+        var positioned = {};
+        positioned[groupRootId] = true;
+        var queue = [groupRootId];
+        var inQueue = {};
+        inQueue[groupRootId] = true;
+        
+        while (queue.length > 0) {
+            var currentNodeId = queue.shift();
+            inQueue[currentNodeId] = false;
+            var currentNode = nodes[currentNodeId];
+            if (!currentNode) continue;
+            
+            // Process outgoing connections and get newly positioned nodes
+            var newlyPositioned = processOutgoingConnections(currentNode, currentNodeId, connections, positioned, inQueue, nodes, NODE_SPACING, MIN_SPACING);
+            
+            // Add newly positioned nodes to queue
+            newlyPositioned.forEach(function(nodeId) {
+                if (!inQueue[nodeId]) {
+                    inQueue[nodeId] = true;
+                    queue.push(nodeId);
+                }
+            });
+        }
+    }
+
+    //! Update position for next group
+    function updatePositionForNextGroup(group, nodes, currentX, currentY, NODE_SPACING) {
+        var maxX = currentX;
+        var maxY = currentY;
+        group.forEach(function(nodeId) {
+            var node = nodes[nodeId];
+            if (node) {
+                maxX = Math.max(maxX, node.guiConfig.position.x + node.guiConfig.width);
+                maxY = Math.max(maxY, node.guiConfig.position.y + node.guiConfig.height);
+            }
+        });
+        return { x: maxX + NODE_SPACING, y: maxY };
+    }
 }
