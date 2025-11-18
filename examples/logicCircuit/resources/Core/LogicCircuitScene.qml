@@ -4,6 +4,10 @@ import QtQuick.Controls
 import NodeLink
 import LogicCircuit
 
+/*! ***********************************************************************************************
+ * The scene which manages all nodes & links and contains the propagation algorithm.
+ * ************************************************************************************************/
+
 I_Scene {
     id: scene
 
@@ -84,16 +88,13 @@ I_Scene {
     }
 
     //! Update all logic in the circuit
-    //! Update all logic in the circuit
     function updateLogic() {
-        console.log("=== UPDATE LOGIC STARTED ===");
 
         // Reset all operation nodes
         Object.values(nodes).forEach(node => {
             if (node.type === LSpecs.NodeType.AND ||
                 node.type === LSpecs.NodeType.OR ||
                 node.type === LSpecs.NodeType.NOT) {
-                console.log("Resetting node:", node.type, "ID:", node._qsUuid);
                 node.nodeData.inputA = null;
                 node.nodeData.inputB = null;
                 node.nodeData.output = null;
@@ -113,7 +114,6 @@ I_Scene {
         var changed = true;
 
         for (var i = 0; i < maxIterations && changed; i++) {
-            console.log("Iteration:", i);
             changed = false;
 
             Object.values(links).forEach(link => {
@@ -121,9 +121,7 @@ I_Scene {
                 var downstreamNode = findNode(link.outputPort._qsUuid);
 
                 if (upstreamNode && downstreamNode && upstreamNode.nodeData.output !== null) {
-                    console.log("Link found - From:", upstreamNode.type, "To:", downstreamNode.type, "Value:", upstreamNode.nodeData.output);
-
-                    // FIX: Prevent the same upstream node from connecting to multiple inputs of the same gate
+                    // Prevent the same upstream node from connecting to multiple inputs of the same gate
                     var connectionKey = downstreamNode._qsUuid + "_" + upstreamNode._qsUuid;
 
                     if (downstreamNode.type === LSpecs.NodeType.AND ||
@@ -131,7 +129,6 @@ I_Scene {
 
                         // For 2-input gates, ensure DIFFERENT upstream nodes for inputA and inputB
                         if (downstreamNode.nodeData.inputA === null && !connectionMap[connectionKey + "_A"]) {
-                            console.log("Setting inputA of", downstreamNode.type, "to", upstreamNode.nodeData.output);
                             downstreamNode.nodeData.inputA = upstreamNode.nodeData.output;
                             connectionMap[connectionKey + "_A"] = true;
                             changed = true;
@@ -146,12 +143,9 @@ I_Scene {
                             });
 
                             if (inputAUpstream !== upstreamNode._qsUuid) {
-                                console.log("Setting inputB of", downstreamNode.type, "to", upstreamNode.nodeData.output);
                                 downstreamNode.nodeData.inputB = upstreamNode.nodeData.output;
                                 connectionMap[connectionKey + "_B"] = true;
                                 changed = true;
-                            } else {
-                                console.log("Skipping inputB - same upstream node as inputA");
                             }
                         }
 
@@ -160,13 +154,12 @@ I_Scene {
 
                         // For single-input gates, only set inputA
                         if (downstreamNode.nodeData.inputA === null) {
-                            console.log("Setting inputA of", downstreamNode.type, "to", upstreamNode.nodeData.output);
                             downstreamNode.nodeData.inputA = upstreamNode.nodeData.output;
                             changed = true;
                         }
                     }
 
-                    // Update downstream node - BUT ONLY IF IT HAS ALL REQUIRED INPUTS
+                    // Update downstream node if it has all required inputs
                     if (downstreamNode.updateData) {
                         var canUpdate = false;
 
@@ -175,30 +168,22 @@ I_Scene {
                             case LSpecs.NodeType.OR:
                                 canUpdate = (downstreamNode.nodeData.inputA !== null &&
                                            downstreamNode.nodeData.inputB !== null);
-                                console.log("AND/OR Gate - Can update:", canUpdate, "InputA:", downstreamNode.nodeData.inputA, "InputB:", downstreamNode.nodeData.inputB);
                                 break;
                             case LSpecs.NodeType.NOT:
-                                canUpdate = (downstreamNode.nodeData.inputA !== null);
-                                console.log("NOT Gate - Can update:", canUpdate, "InputA:", downstreamNode.nodeData.inputA);
-                                break;
                             case LSpecs.NodeType.Output:
                                 canUpdate = (downstreamNode.nodeData.inputA !== null);
-                                console.log("Output Gate - Can update:", canUpdate, "InputA:", downstreamNode.nodeData.inputA);
                                 break;
                             default:
                                 canUpdate = true;
                         }
 
                         if (canUpdate) {
-                            console.log("Calling updateData on:", downstreamNode.type);
                             downstreamNode.updateData();
-                            console.log("Result - Output:", downstreamNode.nodeData.output);
                         }
                     }
                 }
             });
         }
-        console.log("=== UPDATE LOGIC COMPLETED ===");
     }
 
     //! Link two nodes with validation

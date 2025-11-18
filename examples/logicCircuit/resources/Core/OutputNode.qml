@@ -1,31 +1,3 @@
-// import QtQuick
-// import NodeLink
-// import LogicCircuit
-
-// /*! ***********************************************************************************************
-//  * OutputNode displays the final result of the logic circuit
-//  * ************************************************************************************************/
-// LogicNode {
-//     nodeType: LSpecs.NodeType.Output
-
-//     /* Functions
-//      * ****************************************************************************************/
-
-//     function updateDisplay(value) {
-//         if (value === null) {
-//             nodeData.displayValue = "UNDEFINED";
-//         } else {
-//             nodeData.displayValue = value ? "ON" : "OFF";
-//         }
-//     }
-
-//     function updateData() {
-//         // Output node just displays the input value
-//         updateDisplay(nodeData.inputA);
-//     }
-// }
-
-
 import QtQuick
 import NodeLink
 import LogicCircuit

@@ -27,8 +27,6 @@ Node {
 
     Component.onCompleted: {
         addPorts();
-        // Get scene reference for updates
-        logicScene = _qsRepo ? _qsRepo.qsRootObject : null;
     }
 
     /* Functions
@@ -64,17 +62,5 @@ Node {
         outputPort.portSide = NLSpec.PortPositionSide.Right;
         outputPort.title = "";
         addPort(outputPort);
-    }
-
-    //! Default updateData function - should be overridden by child nodes
-    function updateData() {
-        // Base implementation - child nodes should override this
-    }
-
-    //! Helper function to trigger circuit update
-    function triggerCircuitUpdate() {
-        if (logicScene && logicScene.updateLogic) {
-            logicScene.updateLogic();
-        }
     }
 }
