@@ -69,7 +69,29 @@ Calculator Example
 ==================
 ![calculator_example](https://github.com/Roniasoft/NodeLink/assets/53909162/db16c995-082a-46d7-a1f0-4e5d16ebdf7d)
 
+Chatbot Example
+==================
+![calculator_example](https://github.com/user-attachments/assets/119e17ac-3e84-418b-994b-0868ebe72d26)
 
+LogicCircuit Example
+==================
+![calculator_example](https://github.com/user-attachments/assets/9fd9923c-5448-43f8-afe4-a66078219886)
+
+PerformanceAnalyzer Example
+==================
+![calculator_example](https://github.com/user-attachments/assets/f76434ee-5c7c-406f-94c7-9b17440d743a)
+
+SimpleNodeLink Example
+==================
+![image](https://user-images.githubusercontent.com/50166193/233803383-537335a5-d35d-4cfe-945b-6d048ff5950f.png)
+
+![IMG_20230429_081006](https://user-images.githubusercontent.com/50166193/235283815-135c48e6-74d8-4c8e-97a3-71ce90bac8b0.jpg)
+
+![image](https://user-images.githubusercontent.com/50166193/233803535-45abd705-0ada-4283-ac87-715060bdcd2f.png)
+
+VisonLink Example
+==================
+![calculator_example](https://github.com/user-attachments/assets/e8f9b3b1-0ed2-4559-95d3-5a800fcee469)
 
 
 Building
@@ -158,17 +180,6 @@ BibTeX::
       howpublished = {\url{https://github.com/Roniasoft/NodeLink}},
       commit = {6ba9c66cdbc8e6d00fd4a8c6b3bde05c616cfa6a}
     }
- 
- 
- Showcase
-========
-
-NodeLink Simple Example:
-![image](https://user-images.githubusercontent.com/50166193/233803383-537335a5-d35d-4cfe-945b-6d048ff5950f.png)
-
-![IMG_20230429_081006](https://user-images.githubusercontent.com/50166193/235283815-135c48e6-74d8-4c8e-97a3-71ce90bac8b0.jpg)
-
-![image](https://user-images.githubusercontent.com/50166193/233803535-45abd705-0ada-4283-ac87-715060bdcd2f.png)
 
 
 
