@@ -31,8 +31,13 @@ NodeView {
 
         // Content Area - Fill entire node with symbols
         Item {
+            id: contentArea
             anchors.fill: parent
             anchors.margins: 0
+
+            /* ------------------------------------------------------------------------------
+               INPUT & OUTPUT nodes do not need Loader
+               ------------------------------------------------------------------------------*/
 
             // INPUT NODE: Toggle switch
             Rectangle {
@@ -88,204 +93,199 @@ NodeView {
                 }
             }
 
-            // AND GATE: Official D-shaped symbol - SCALED
-            Canvas {
+            /* ------------------------------------------------------------------------------
+               LOADER — ONLY ONE GATE CANVAS IS EVER CREATED
+               ------------------------------------------------------------------------------*/
+            Loader {
+                id: gateLoader
                 anchors.fill: parent
-                visible: node.type === LSpecs.NodeType.AND
 
-                onPaint: {
-                    var ctx = getContext("2d");
-                    ctx.reset();
-                    ctx.clearRect(0, 0, width, height);
-
-                    ctx.fillStyle = "white";
-                    ctx.strokeStyle = "black";
-                    ctx.lineWidth = 2;
-
-                    var margin = width * 0.05; // 5% margin
-                    var leftX = margin;
-                    var topY = margin;
-                    var bottomY = height - margin;
-                    var centerY = height / 2;
-                    var radius = (height - 2 * margin) / 2;
-                    var flatRightX = width - margin - radius;
-
-                    ctx.beginPath();
-                    ctx.moveTo(leftX, topY);
-                    ctx.lineTo(flatRightX, topY);
-                    ctx.arc(flatRightX, centerY, radius, -Math.PI/2, Math.PI/2, false);
-                    ctx.lineTo(leftX, bottomY);
-                    ctx.closePath();
-                    ctx.fill();
-                    ctx.stroke();
+                sourceComponent: {
+                    switch (node.type) {
+                    case LSpecs.NodeType.AND:  return andGate
+                    case LSpecs.NodeType.OR:   return orGate
+                    case LSpecs.NodeType.NOT:  return notGate
+                    case LSpecs.NodeType.NOR:  return norGate
+                    case LSpecs.NodeType.NAND: return nandGate
+                    default: return null
+                    }
                 }
-
-                onWidthChanged: requestPaint()
-                onHeightChanged: requestPaint()
             }
 
-            // OR GATE: Perfect curved shape - SCALED
-            Canvas {
-                anchors.fill: parent
-                visible: node.type === LSpecs.NodeType.OR
+            /****************************************************************************************
+             * INDIVIDUAL GATE COMPONENT DEFINITIONS
+             ****************************************************************************************/
 
-                onPaint: {
-                    var ctx = getContext("2d");
-                    ctx.reset();
-                    ctx.clearRect(0, 0, width, height);
+            /* --------------------------------------------------------------------
+               AND GATE Component
+               --------------------------------------------------------------------*/
+            Component {
+                id: andGate
+                Canvas {
+                    anchors.fill: parent
 
-                    ctx.fillStyle = "white";
-                    ctx.strokeStyle = "black";
-                    ctx.lineWidth = 2;
+                    onPaint: {
+                        var ctx = getContext("2d");
+                        ctx.reset();
+                        ctx.clearRect(0, 0, width, height);
 
-                    var margin = width * 0.05;
-                    var leftX = margin;
-                    var rightX = width - margin;
-                    var topY = margin;
-                    var bottomY = height - margin;
-                    var midY = height / 2;
+                        ctx.fillStyle = "white";
+                        ctx.strokeStyle = "black";
+                        ctx.lineWidth = 2;
 
-                    ctx.beginPath();
-                    ctx.moveTo(leftX, topY);
-                    ctx.quadraticCurveTo(rightX, topY, rightX, midY);
-                    ctx.quadraticCurveTo(rightX, bottomY, leftX, bottomY);
-                    ctx.quadraticCurveTo(leftX + (width * 0.3), midY, leftX, topY);
-                    ctx.closePath();
-                    ctx.fill();
-                    ctx.stroke();
+                        var margin = width * 0.05;
+                        var leftX = margin;
+                        var topY = margin;
+                        var bottomY = height - margin;
+                        var centerY = height / 2;
+                        var radius = (height - 2 * margin) / 2;
+                        var flatRightX = width - margin - radius;
+
+                        ctx.beginPath();
+                        ctx.moveTo(leftX, topY);
+                        ctx.lineTo(flatRightX, topY);
+                        ctx.arc(flatRightX, centerY, radius, -Math.PI/2, Math.PI/2, false);
+                        ctx.lineTo(leftX, bottomY);
+                        ctx.closePath();
+                        ctx.fill();
+                        ctx.stroke();
+                    }
+
+                    onWidthChanged: requestPaint()
+                    onHeightChanged: requestPaint()
                 }
-
-                onWidthChanged: requestPaint()
-                onHeightChanged: requestPaint()
             }
 
-            // NOT GATE: Triangle with bubble - SCALED
-            Canvas {
-                anchors.fill: parent
-                visible: node.type === LSpecs.NodeType.NOT
+            /* --------------------------------------------------------------------
+               OR GATE Component
+               --------------------------------------------------------------------*/
+            Component {
+                id: orGate
+                Canvas {
+                    anchors.fill: parent
 
-                onPaint: {
-                    var ctx = getContext("2d");
-                    ctx.reset();
-                    ctx.clearRect(0, 0, width, height);
+                    onPaint: {
+                        var ctx = getContext("2d");
+                        ctx.reset();
+                        ctx.clearRect(0, 0, width, height);
 
-                    ctx.fillStyle = "white";
-                    ctx.strokeStyle = "black";
-                    ctx.lineWidth = 2;
+                        ctx.fillStyle = "white";
+                        ctx.strokeStyle = "black";
+                        ctx.lineWidth = 2;
 
-                    var margin = width * 0.05;
-                    var leftX = margin;
-                    var topY = margin;
-                    var bottomY = height - margin;
-                    var midY = height / 2;
-                    var triangleRight = width - margin - (width * 0.2); // Leave 20% for bubble
-                    var bubbleRadius = Math.min(6, height * 0.1);
+                        var margin = width * 0.05;
+                        var leftX = margin;
+                        var rightX = width - margin;
+                        var topY = margin;
+                        var bottomY = height - margin;
+                        var midY = height / 2;
 
-                    // Triangle
-                    ctx.beginPath();
-                    ctx.moveTo(leftX, topY);
-                    ctx.lineTo(triangleRight, midY);
-                    ctx.lineTo(leftX, bottomY);
-                    ctx.closePath();
-                    ctx.fill();
-                    ctx.stroke();
+                        ctx.beginPath();
+                        ctx.moveTo(leftX, topY);
+                        ctx.quadraticCurveTo(rightX, topY, rightX, midY);
+                        ctx.quadraticCurveTo(rightX, bottomY, leftX, bottomY);
+                        ctx.quadraticCurveTo(leftX + (width * 0.3), midY, leftX, topY);
+                        ctx.closePath();
+                        ctx.fill();
+                        ctx.stroke();
+                    }
 
-                    // Bubble
-                    ctx.beginPath();
-                    ctx.arc(triangleRight + bubbleRadius * 1.5, midY, bubbleRadius, 0, Math.PI * 2);
-                    ctx.fill();
-                    ctx.stroke();
+                    onWidthChanged: requestPaint()
+                    onHeightChanged: requestPaint()
                 }
-
-                onWidthChanged: requestPaint()
-                onHeightChanged: requestPaint()
             }
 
-            // NOR GATE: OR shape with bubble - SCALED
-            Canvas {
-                anchors.fill: parent
-                visible: node.type === LSpecs.NodeType.NOR
+            /* --------------------------------------------------------------------
+               NOT GATE Component
+               --------------------------------------------------------------------*/
+            Component {
+                id: notGate
+                Canvas {
+                    anchors.fill: parent
 
-                onPaint: {
-                    var ctx = getContext("2d");
-                    ctx.reset();
-                    ctx.clearRect(0, 0, width, height);
+                    onPaint: {
+                        var ctx = getContext("2d");
+                        ctx.reset();
+                        ctx.clearRect(0, 0, width, height);
 
-                    ctx.fillStyle = "white";
-                    ctx.strokeStyle = "black";
-                    ctx.lineWidth = 2;
+                        ctx.fillStyle = "white";
+                        ctx.strokeStyle = "black";
+                        ctx.lineWidth = 2;
 
-                    var margin = width * 0.05;
-                    var leftX = margin;
-                    var rightX = width - margin - (width * 0.15); // Leave space for bubble
-                    var topY = margin;
-                    var bottomY = height - margin;
-                    var midY = height / 2;
-                    var bubbleRadius = Math.min(6, height * 0.1);
+                        var margin = width * 0.05;
+                        var leftX = margin;
+                        var topY = margin;
+                        var bottomY = height - margin;
+                        var midY = height / 2;
+                        var triangleRight = width - margin - (width * 0.2);
+                        var bubbleRadius = Math.min(6, height * 0.1);
 
-                    // OR shape
-                    ctx.beginPath();
-                    ctx.moveTo(leftX, topY);
-                    ctx.quadraticCurveTo(rightX, topY, rightX, midY);
-                    ctx.quadraticCurveTo(rightX, bottomY, leftX, bottomY);
-                    ctx.quadraticCurveTo(leftX + (width * 0.3), midY, leftX, topY);
-                    ctx.closePath();
-                    ctx.fill();
-                    ctx.stroke();
+                        // Triangle
+                        ctx.beginPath();
+                        ctx.moveTo(leftX, topY);
+                        ctx.lineTo(triangleRight, midY);
+                        ctx.lineTo(leftX, bottomY);
+                        ctx.closePath();
+                        ctx.fill();
+                        ctx.stroke();
 
-                    // Bubble
-                    ctx.beginPath();
-                    ctx.arc(rightX + bubbleRadius * 1.5, midY, bubbleRadius, 0, Math.PI * 2);
-                    ctx.fill();
-                    ctx.stroke();
+                        // Bubble
+                        ctx.beginPath();
+                        ctx.arc(triangleRight + bubbleRadius * 1.5, midY, bubbleRadius, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.stroke();
+                    }
+
+                    onWidthChanged: requestPaint()
+                    onHeightChanged: requestPaint()
                 }
-
-                onWidthChanged: requestPaint()
-                onHeightChanged: requestPaint()
             }
 
-            // NAND GATE: AND shape with bubble - SCALED
-            Canvas {
-                anchors.fill: parent
-                visible: node.type === LSpecs.NodeType.NAND
+            /* --------------------------------------------------------------------
+               NOR GATE Component
+               --------------------------------------------------------------------*/
+            Component {
+                id: norGate
+                Canvas {
+                    anchors.fill: parent
 
-                onPaint: {
-                    var ctx = getContext("2d");
-                    ctx.reset();
-                    ctx.clearRect(0, 0, width, height);
+                    onPaint: {
+                        var ctx = getContext("2d");
+                        ctx.reset();
+                        ctx.clearRect(0, 0, width, height);
 
-                    ctx.fillStyle = "white";
-                    ctx.strokeStyle = "black";
-                    ctx.lineWidth = 2;
+                        ctx.fillStyle = "white";
+                        ctx.strokeStyle = "black";
+                        ctx.lineWidth = 2;
 
-                    var margin = width * 0.05;
-                    var leftX = margin;
-                    var topY = margin;
-                    var bottomY = height - margin;
-                    var centerY = height / 2;
-                    var radius = (height - 2 * margin) / 2;
-                    var flatRightX = width - margin - radius - (width * 0.15); // Leave space for bubble
-                    var bubbleRadius = Math.min(6, height * 0.1);
+                        var margin = width * 0.05;
+                        var leftX = margin;
+                        var rightX = width - margin - (width * 0.15);
+                        var topY = margin;
+                        var bottomY = height - margin;
+                        var midY = height / 2;
+                        var bubbleRadius = Math.min(6, height * 0.1);
 
-                    // AND shape
-                    ctx.beginPath();
-                    ctx.moveTo(leftX, topY);
-                    ctx.lineTo(flatRightX, topY);
-                    ctx.arc(flatRightX, centerY, radius, -Math.PI/2, Math.PI/2, false);
-                    ctx.lineTo(leftX, bottomY);
-                    ctx.closePath();
-                    ctx.fill();
-                    ctx.stroke();
+                        // OR shape
+                        ctx.beginPath();
+                        ctx.moveTo(leftX, topY);
+                        ctx.quadraticCurveTo(rightX, topY, rightX, midY);
+                        ctx.quadraticCurveTo(rightX, bottomY, leftX, bottomY);
+                        ctx.quadraticCurveTo(leftX + (width * 0.3), midY, leftX, topY);
+                        ctx.closePath();
+                        ctx.fill();
+                        ctx.stroke();
 
-                    // Bubble
-                    ctx.beginPath();
-                    ctx.arc(flatRightX + radius + bubbleRadius * 1.5, centerY, bubbleRadius, 0, Math.PI * 2);
-                    ctx.fill();
-                    ctx.stroke();
+                        // Bubble
+                        ctx.beginPath();
+                        ctx.arc(rightX + bubbleRadius * 1.5, midY, bubbleRadius, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.stroke();
+                    }
+
+                    onWidthChanged: requestPaint()
+                    onHeightChanged: requestPaint()
                 }
-
-                onWidthChanged: requestPaint()
-                onHeightChanged: requestPaint()
             }
         }
     }
