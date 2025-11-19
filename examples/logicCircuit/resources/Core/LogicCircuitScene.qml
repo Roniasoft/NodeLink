@@ -39,7 +39,7 @@ I_Scene {
             LSpecs.NodeType.Input   = "⚡",
             LSpecs.NodeType.AND     = "∧",
             LSpecs.NodeType.OR      = "∨",
-            LSpecs.NodeType.NOT     = "¬",
+            LSpecs.NodeType.NOT     = "~",
             LSpecs.NodeType.Output  = "○"
         ]
 
@@ -110,7 +110,7 @@ I_Scene {
         var connectionMap = {};
 
         // Propagate values through the circuit
-        var maxIterations = 10;
+        var maxIterations = 999;
         var changed = true;
 
         for (var i = 0; i < maxIterations && changed; i++) {
