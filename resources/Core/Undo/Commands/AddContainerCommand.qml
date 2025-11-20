@@ -5,23 +5,30 @@ import NodeLink
  * AddContainerCommand
  * ************************************************************************************************/
 
-QtObject {
+I_Command {
     id: root
 
     /* Property Declarations
-    * ****************************************************************************************/
-    property var scene // I_Scene
+     * ****************************************************************************************/
     property var container // Container
 
     /* Functions
-    * ****************************************************************************************/
+     * ****************************************************************************************/
     function redo() {
-        if (scene && container)
+        if (isValidScene() && isValidContainer(container))
             scene.addContainer(container)
     }
 
     function undo() {
-        if (scene && container)
-            scene.deleteContainer(container._qsUuid)
+        if (isValidScene() && isValidContainer(container)) {
+            // Simply remove the container from scene (don't delete from memory)
+            // This allows redo to restore it
+            if (scene.containers[container._qsUuid]) {
+                scene.selectionModel.remove(container._qsUuid)
+                scene.containerRemoved(container)
+                delete scene.containers[container._qsUuid]
+                scene.containersChanged()
+            }
+        }
     }
 }

@@ -33,7 +33,9 @@ QtObject {
         notifySelectedObject = false;
         var changed = false;
         Object.keys(selectedModel).forEach(uuid => {
-                                if (!existObjects.includes(uuid)) {
+                                var obj = selectedModel[uuid];
+                                // Check if object is null or invalid, or if it doesn't exist in existObjects
+                                if (!obj || !obj._qsUuid || !existObjects.includes(uuid)) {
                                     remove(uuid);
                                     changed = true;
                                 }
@@ -79,6 +81,10 @@ QtObject {
 
     //! Select object nodes (Add Node object to SelectionModel)
     function selectNode(node: Node) {
+        // Sanity check - skip null or invalid nodes
+        if (!node || !node._qsUuid) {
+            return;
+        }
         //! clear selection model when selection changed.
         selectedModel[node._qsUuid] = node;
 
@@ -88,6 +94,10 @@ QtObject {
 
     //! Select container
     function selectContainer(container: Container) {
+        // Sanity check - skip null or invalid containers
+        if (!container || !container._qsUuid) {
+            return;
+        }
         //! clear selection model when selection changed.
         selectedModel[container._qsUuid] = container;
 
@@ -97,8 +107,10 @@ QtObject {
 
     //! Select Link objects  (Add link object to SelectionModel)
     function selectLink(link: Link) {
-        if (link === null)
+        // Sanity check - skip null or invalid links
+        if (!link || !link._qsUuid) {
             return;
+        }
 
         // Add Link object into selected model.
         selectedModel[link._qsUuid] = link;
