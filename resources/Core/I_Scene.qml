@@ -203,15 +203,25 @@ QSObject {
 
     //! Adds a container to container map
     function addContainer(container: Container) {
-        if (containers[container._qsUuid] === container) { return; }
+        //Sanity check - skip null or invalid containers
+        if (!container || !container._qsUuid) {
+            return null;
+        }
+
+        if (containers[container._qsUuid] === container) {
+            return container;
+        }
 
         // Add to local administration
         containers[container._qsUuid] = container;
         containersChanged();
         containerAdded(container);
 
-        scene.selectionModel.clear();
-        scene.selectionModel.selectContainer(container);
+        // Only clear and select if not replaying (to avoid clearing selection during undo/redo)
+        if (!scene._undoCore.undoStack.isReplaying) {
+            scene.selectionModel.clear();
+            scene.selectionModel.selectContainer(container);
+        }
 
         // Push command (skip during replay)
         if (!scene._undoCore.undoStack.isReplaying) {
@@ -229,19 +239,27 @@ QSObject {
         // Remove the deleted object from selected model
         selectionModel.remove(containerUUId);
         var containerRef = containers[containerUUId];
+        if (!containerRef) {
+            return;
+        }
+        
         containerRemoved(containerRef);
         delete containers[containerUUId];
         containersChanged();
 
+        // Push undo command BEFORE destroying container (skip during replay)
+        // This allows undo to restore the container
         if (!scene._undoCore.undoStack.isReplaying && containerRef) {
             var cmdRemoveContainer = Qt.createQmlObject('import QtQuick; import NodeLink; import "Undo/Commands"; RemoveContainerCommand { }', scene._undoCore.undoStack)
             cmdRemoveContainer.scene = scene
             cmdRemoveContainer.container = containerRef
             scene._undoCore.undoStack.push(cmdRemoveContainer)
         }
+        // Don't destroy container during replay - it needs to be preserved for undo
+        // Container will be destroyed when command is cleaned up from stack
     }
     //! Deletes containers from scene
-    function deleteContainers(containerUUIds: string) {
+    function deleteContainers(containerUUIds: list<string>) {
         if (!containerUUIds || containerUUIds.length === 0) {
             return;
         }
@@ -262,11 +280,23 @@ QSObject {
         }
         if (removedContainers.length > 0) {
             containersRemoved(removedContainers);
-            removedContainers.forEach(container => container.destroy());
+            
+            // Push undo command BEFORE destroying containers (skip during replay)
+            // This allows undo to restore the containers
+            if (!scene._undoCore.undoStack.isReplaying) {
+                // Create individual RemoveContainerCommand for each container
+                for (var j = 0; j < removedContainers.length; j++) {
+                    var cmdRemoveContainer = Qt.createQmlObject('import QtQuick; import NodeLink; import "Undo/Commands"; RemoveContainerCommand { }', scene._undoCore.undoStack)
+                    cmdRemoveContainer.scene = scene
+                    cmdRemoveContainer.container = removedContainers[j]
+                    scene._undoCore.undoStack.push(cmdRemoveContainer)
+                }
+            }
+            // Don't destroy containers during replay - they need to be preserved for undo
+            // Containers will be destroyed when command is cleaned up from stack
+            
             containersChanged();
         }
-
-        //TODO: Add undo replaying scenario here
     }
 
     //! Checks if scene is empty or not
@@ -278,8 +308,15 @@ QSObject {
 
     //! Adds a node the to nodes map
     function addNode(node: Node, autoSelect: bool) {
-        //Sanity check
-        if (nodes[node._qsUuid] === node) { return; }
+        //Sanity check - skip null or invalid nodes
+        if (!node || !node._qsUuid) {
+            return null;
+        }
+
+        if (nodes[node._qsUuid] === node) {
+            return node;
+        }
+
 
         // Add to local administration
         nodes[node._qsUuid] = node;
@@ -312,6 +349,11 @@ QSObject {
 
         for (var i = 0; i < nodeArray.length; i++) {
             var node = nodeArray[i]
+            
+            // Skip null or invalid nodes
+            if (!node || !node._qsUuid) {
+                continue;
+            }
 
             if (nodes[node._qsUuid] === node) {
                 continue;
@@ -330,6 +372,14 @@ QSObject {
             if (autoSelect && addedNodes.length > 0) {
                 scene.selectionModel.clear();
                 scene.selectionModel.selectNode(addedNodes[addedNodes.length - 1]);
+            }
+
+            // Push undo command (skip during replay)
+            if (!scene._undoCore.undoStack.isReplaying) {
+                var cmdAddNodes = Qt.createQmlObject('import QtQuick; import NodeLink; import "Undo/Commands"; AddNodesCommand { }', scene._undoCore.undoStack)
+                cmdAddNodes.scene = scene
+                cmdAddNodes.nodes = addedNodes
+                scene._undoCore.undoStack.push(cmdAddNodes)
             }
         }
 
@@ -363,7 +413,7 @@ QSObject {
         }
 
         var removedNodes = [];
-        var affectedLinks = new Set();
+        var affectedLinks = [];
 
         for (var i = 0; i < nodeUUIds.length; i++) {
             var nodeUUId = nodeUUIds[i];
@@ -374,11 +424,19 @@ QSObject {
 
             selectionModel.remove(nodeUUId);
 
+            // Capture link objects before deletion (for undo/redo)
             Object.keys(nodes[nodeUUId].ports).forEach(portId => {
                Object.entries(links).forEach(([key, value]) => {
-                                                     if ((value.inputPort && value.inputPort._qsUuid === portId) ||
-                                                         (value.outputPort && value.outputPort._qsUuid === portId)) {
-                                                         affectedLinks.add(key);
+                                                     // Skip null or invalid links
+                                                     if (!value || !value.inputPort || !value.outputPort) {
+                                                         return;
+                                                     }
+                                                     if ((value.inputPort._qsUuid === portId) ||
+                                                         (value.outputPort._qsUuid === portId)) {
+                                                         // Store the actual link object (not just key) to preserve all properties
+                                                         if (affectedLinks.indexOf(value) === -1) {
+                                                             affectedLinks.push(value);
+                                                         }
                                                      }
                                              });
            });
@@ -387,21 +445,32 @@ QSObject {
             delete nodes[nodeUUId];
         }
 
-        affectedLinks.forEach(linkKey => {
-                                  linkRemoved(links[linkKey]);
-                                  links[linkKey].destroy();
-                                  delete links[linkKey];
+        // Remove links from scene but don't destroy them (for undo/redo)
+        affectedLinks.forEach(link => {
+                                  if (links[link._qsUuid]) {
+                                      linkRemoved(link);
+                                      delete links[link._qsUuid];
+                                  }
                               });
 
         if (removedNodes.length > 0) {
             nodesRemoved(removedNodes);
-            // Destroy removed nodes
-            removedNodes.forEach(node => node.destroy());
+            
+            // Push undo command BEFORE destroying nodes (skip during replay)
+            // This allows undo to restore the nodes
+            if (!scene._undoCore.undoStack.isReplaying) {
+                var cmdRemoveNodes = Qt.createQmlObject('import QtQuick; import NodeLink; import "Undo/Commands"; RemoveNodesCommand { }', scene._undoCore.undoStack)
+                cmdRemoveNodes.scene = scene
+                cmdRemoveNodes.nodes = removedNodes.slice() // Create a copy of the array
+                cmdRemoveNodes.links = affectedLinks.slice() // Create a copy of the array
+                scene._undoCore.undoStack.push(cmdRemoveNodes)
+            }
+            // Don't destroy nodes during replay - they need to be preserved for undo
+            // Nodes will be destroyed when command is cleaned up from stack
+            
             linksChanged();
             nodesChanged();
         }
-
-        //TODO: Add undo replaying code here
     }
 
     //! Deletes a node from the scene
@@ -414,14 +483,21 @@ QSObject {
             return;
         }
 
-        // Capture connected links (pairs of input/output port UUIDs) before deletion
-        var connectedPairs = []
+        // Capture connected link objects before deletion (for undo/redo)
+        var connectedLinks = []
         Object.keys(nodeRef.ports).forEach(portId => {
             Object.entries(links).forEach(([key, value]) => {
+                // Skip null or invalid links
+                if (!value || !value.inputPort || !value.outputPort) {
+                    return;
+                }
                 const inputPortUuid  = value.inputPort._qsUuid;
                 const outputPortUuid = value.outputPort._qsUuid;
                 if (inputPortUuid === portId || outputPortUuid === portId) {
-                    connectedPairs.push({ inputPortUuid: inputPortUuid, outputPortUuid: outputPortUuid })
+                    // Store the actual link object (not just UUIDs) to preserve all properties
+                    if (connectedLinks.indexOf(value) === -1) {
+                        connectedLinks.push(value)
+                    }
                 }
             });
         });
@@ -431,6 +507,10 @@ QSObject {
 
             // delete related links
             Object.entries(links).forEach(([key, value]) => {
+                // Skip null or invalid links
+                if (!value || !value.inputPort || !value.outputPort) {
+                    return;
+                }
                 if (value.inputPort._qsUuid === portId ||
                         value.outputPort._qsUuid === portId) {
                     linkRemoved(value);
@@ -445,13 +525,17 @@ QSObject {
         linksChanged();
         nodesChanged();
 
+        // Push undo command BEFORE destroying node (skip during replay)
+        // This allows undo to restore the node
         if (!scene._undoCore.undoStack.isReplaying && nodeRef) {
             var cmdRemoveNode = Qt.createQmlObject('import QtQuick; import NodeLink; import "Undo/Commands"; RemoveNodeCommand { }', scene._undoCore.undoStack)
             cmdRemoveNode.scene = scene
             cmdRemoveNode.node = nodeRef
-            cmdRemoveNode.links = connectedPairs
+            cmdRemoveNode.links = connectedLinks.slice() // Create a copy of the array
             scene._undoCore.undoStack.push(cmdRemoveNode)
         }
+        // Don't destroy node during replay - it needs to be preserved for undo
+        // Node will be destroyed when command is cleaned up from stack
     }
 
     //! duplicator (third button)
@@ -589,14 +673,96 @@ QSObject {
         return addedLinks;
     }
 
+    //! Restores existing link objects to the scene (used for undo/redo)
+    //! Unlike createLink, this doesn't create new links but restores existing ones with all their properties
+    function restoreLinks(linkArray: list<Link>) {
+        if (!linkArray || linkArray.length === 0) {
+            return;
+        }
+
+        var restoredLinks = [];
+
+        for (var i = 0; i < linkArray.length; i++) {
+            var link = linkArray[i];
+            
+            // Skip null or invalid links
+            if (!link || !link._qsUuid) {
+                continue;
+            }
+
+            // Check if link already exists
+            if (links[link._qsUuid] === link) {
+                continue;
+            }
+
+            // Verify ports still exist
+            if (!link.inputPort || !link.outputPort) {
+                continue;
+            }
+
+            var inputPort = findPort(link.inputPort._qsUuid)
+            var outputPort = findPort(link.outputPort._qsUuid)
+            
+            if (!inputPort || !outputPort) {
+                continue;
+            }
+
+            // Update port references to current scene ports
+            link.inputPort = inputPort;
+            link.outputPort = outputPort;
+
+            // Restore parent/children relationships
+            var inputNode = findNode(inputPort._qsUuid);
+            var outputNode = findNode(outputPort._qsUuid);
+            
+            if (inputNode && outputNode) {
+                // Update children relationship
+                if (!inputNode.children[outputNode._qsUuid]) {
+                    inputNode.children[outputNode._qsUuid] = outputNode;
+                    inputNode.childrenChanged();
+                }
+                
+                // Update parents relationship
+                if (!outputNode.parents[inputNode._qsUuid]) {
+                    outputNode.parents[inputNode._qsUuid] = inputNode;
+                    outputNode.parentsChanged();
+                }
+            }
+
+            // Add to local administration
+            links[link._qsUuid] = link;
+            restoredLinks.push(link);
+        }
+
+        if (restoredLinks.length > 0) {
+            linksChanged();
+            linksAdded(restoredLinks);
+        }
+
+        return restoredLinks;
+    }
+
     //! Link two nodes (via their ports) - portA is the upstream and portB the downstream one
     function createLink(portA : string, portB : string) {
-
             let obj = NLCore.createLink();
             obj.guiConfig.colorIndex = 0;
             obj.inputPort  = findPort(portA);
             obj.outputPort = findPort(portB);
             obj._qsRepo = sceneActiveRepo;
+            
+            // Find the nodes to which portA and portB belong
+            let nodeX = findNode(portA);
+            let nodeY = findNode(portB);
+            
+            if (nodeX && nodeY) {
+                // Update children and parents relationships
+                nodeX.children[nodeY._qsUuid] = nodeY;
+                nodeX.childrenChanged();
+                
+                nodeY.parents[nodeX._qsUuid] = nodeX;
+                nodeY.parentsChanged();
+            }
+            
             links[obj._qsUuid] = obj;
             linksChanged();
 
@@ -607,6 +773,7 @@ QSObject {
                 cmdCreateLink.scene = scene
                 cmdCreateLink.inputPortUuid = portA
                 cmdCreateLink.outputPortUuid = portB
+                cmdCreateLink.createdLink = obj // Set the created link object
                 scene._undoCore.undoStack.push(cmdCreateLink)
             }
             return obj;
@@ -614,21 +781,30 @@ QSObject {
 
     //! Unlink two ports
     function unlinkNodes(portA : string, portB : string) {
+        var removedLinkRef = null;
+        
         // delete related links
         Object.entries(links).forEach(([key, value]) => {
+            // Skip null or invalid links
+            if (!value || !value.inputPort || !value.outputPort) {
+                return;
+            }
             const inputPortUuid  = value.inputPort._qsUuid;
             const outputPortUuid = value.outputPort._qsUuid;
             if (inputPortUuid === portA && outputPortUuid === portB) {
+                // Save link reference before removing (for undo/redo)
+                removedLinkRef = value;
+                
                 // Find the nodes to which portA and portB belong
                 let nodeX = findNode(portA);
                 let nodeY = findNode(portB);
 
-                if (Object.keys(nodeX.children).includes(nodeY._qsUuid)) {
+                if (nodeX && Object.keys(nodeX.children).includes(nodeY._qsUuid)) {
                     delete nodeX.children[nodeY._qsUuid];
                     nodeX.childrenChanged()
                 }
 
-                if (Object.keys(nodeX.parents).includes(nodeX._qsUuid)) {
+                if (nodeY && Object.keys(nodeY.parents).includes(nodeX._qsUuid)) {
                     delete nodeY.parents[nodeX._qsUuid];
                     nodeY.parentsChanged()
                 }
@@ -640,11 +816,12 @@ QSObject {
         });
         linksChanged();
 
-        if (!scene._undoCore.undoStack.isReplaying) {
+        if (!scene._undoCore.undoStack.isReplaying && removedLinkRef) {
             var cmdUnlink = Qt.createQmlObject('import QtQuick; import NodeLink; import "Undo/Commands"; UnlinkCommand { }', scene._undoCore.undoStack)
             cmdUnlink.scene = scene
             cmdUnlink.inputPortUuid = portA
             cmdUnlink.outputPortUuid = portB
+            cmdUnlink.removedLink = removedLinkRef
             scene._undoCore.undoStack.push(cmdUnlink)
         }
     }
@@ -678,24 +855,36 @@ QSObject {
         return portObj;
     }
 
-    //! Delete all selected objects (Node + Link)
+    //! Delete all selected objects (Node + Link + Container)
     function  deleteSelectedObjects() {
         scene.selectionModel.notifySelectedObject = false;
         var nodesToBeDeleted = []
+        var linksToBeDeleted = []
         var containersToBeDeleted = []
         for (var i = 0; i < Object.keys(scene.selectionModel.selectedModel).length; ++i) {
             var key = Object.keys(scene.selectionModel.selectedModel)[i]
             var item = Object.values(scene.selectionModel.selectedModel)[i]
             if (!item)
                 continue
-            if (item.objectType === NLSpec.ObjectType.Node ||
-                    item.objectType === NLSpec.ObjectType.Link) //CHECKME: Can we select a link without a connected node? (the node will delete the link too)
+            if (item.objectType === NLSpec.ObjectType.Node)
                 nodesToBeDeleted.push(key)
+            else if (item.objectType === NLSpec.ObjectType.Link)
+                linksToBeDeleted.push(key)
             else if (item.objectType === NLSpec.ObjectType.Container)
                 containersToBeDeleted.push(key)
         }
         if (nodesToBeDeleted.length)
             deleteNodes(nodesToBeDeleted)
+        if (linksToBeDeleted.length) {
+            // Delete links separately
+            for (var j = 0; j < linksToBeDeleted.length; j++) {
+                var linkKey = linksToBeDeleted[j]
+                var linkObj = links[linkKey]
+                if (linkObj && linkObj.inputPort && linkObj.outputPort) {
+                    scene.unlinkNodes(linkObj.inputPort._qsUuid, linkObj.outputPort._qsUuid)
+                }
+            }
+        }
         if (containersToBeDeleted.length)
             deleteContainers(containersToBeDeleted)
 
