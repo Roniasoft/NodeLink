@@ -5,28 +5,30 @@ import NodeLink
  * UnlinkCommand
  * ************************************************************************************************/
 
-QtObject {
+I_Command {
     id: root
 
     /* Property Declarations
-    * ****************************************************************************************/
-    property var scene // I_Scene
+     * ****************************************************************************************/
     property string inputPortUuid
     property string outputPortUuid
+    property var removedLink // Link object that was removed
 
     /* Functions
-    * ****************************************************************************************/
+     * ****************************************************************************************/
     function redo() {
-        if (!scene || !inputPortUuid || !outputPortUuid)
+        if (!isValidScene() || !isValidUuid(inputPortUuid) || !isValidUuid(outputPortUuid))
             return
 
+        // Use unlinkNodes to properly handle parent/children relationships
+        // removedLink should already be set, but use the UUIDs from command
         scene.unlinkNodes(inputPortUuid, outputPortUuid)
     }
 
     function undo() {
-        if (!scene || !inputPortUuid || !outputPortUuid)
+        if (!isValidScene() || !isValidLink(removedLink))
             return
 
-        scene.createLink(inputPortUuid, outputPortUuid)
+        scene.restoreLinks([removedLink])
     }
 }
