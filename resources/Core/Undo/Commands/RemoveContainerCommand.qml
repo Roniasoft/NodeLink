@@ -5,23 +5,22 @@ import NodeLink
  * RemoveContainerCommand
  * ************************************************************************************************/
 
-QtObject {
+I_Command {
     id: root
 
     /* Property Declarations
-    * ****************************************************************************************/
-    property var scene // I_Scene
+     * ****************************************************************************************/
     property var container // Container
 
     /* Functions
-    * ****************************************************************************************/
+     * ****************************************************************************************/
     function redo() {
-        if (scene && container)
+        if (isValidScene() && isValidContainer(container))
             scene.deleteContainer(container._qsUuid)
     }
 
     function undo() {
-        if (scene && container)
+        if (isValidScene() && isValidContainer(container))
             scene.addContainer(container)
     }
 }
