@@ -50,8 +50,6 @@ Scene {
             return;
         }
 
-        var addedLinks = [];
-
         for (var i = 0; i < linkDataArray.length; i++) {
             var linkData = linkDataArray[i];
 
@@ -62,10 +60,7 @@ Scene {
             }
 
             // createLink already handles parent/children relationships and signals
-            var obj = createLink(linkData.portA, linkData.portB);
-            if (obj) {
-                addedLinks.push(obj);
-            }
+            createLink(linkData.portA, linkData.portB);
         }
     }
 
