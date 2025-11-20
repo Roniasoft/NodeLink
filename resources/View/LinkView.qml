@@ -23,7 +23,8 @@ I_LinkView {
 
             //! To hide color picker if selected node is changed and
             //! remove focus on description TextArea
-            descriptionText.focus = false;
+            if (descriptionLoader.item)
+                descriptionLoader.item.descriptionText.focus = false;
         }
     }
 
@@ -77,70 +78,91 @@ I_LinkView {
         keyButtons: [MessageDialog.Ok]
     }
 
-    //! Bubble icon to appear when there is desciption but editMode is not enabled
-    Text {
-        id: descriptionIcon
-        text: '\ue32e'
-        font.pixelSize: 25
+    //! Description content loader
+    Loader {
+        id: descriptionLoader
+
         x: linkMidPoint.x
         y: linkMidPoint.y
-        color: NLStyle.primaryTextColor
-        font.family: NLStyle.fontType.font6Pro
-        visible: link.guiConfig.description.length > 0 && !link.guiConfig._isEditableDescription
 
-        MouseArea {
-            anchors.fill: parent
-            onClicked: {
-                link.guiConfig._isEditableDescription = true
-            }
-        }
+        active: (link.guiConfig.description.length > 0 || link.guiConfig._isEditableDescription)
+
+        sourceComponent: descriptionComponent
     }
 
-    // Description view
-    NLTextArea {
-        id: descriptionText
+    Component {
+        id: descriptionComponent
 
-        x: linkMidPoint.x
-        y: linkMidPoint.y
+        Item {
+            id: descriptionItem
 
-        text: link.guiConfig.description
-        visible: (link.guiConfig.description.length > 0 || link.guiConfig._isEditableDescription) && !descriptionIcon.visible
+            property alias descriptionText: descriptionTextArea
+            property alias descriptionIcon: descriptionIconText
 
-        color: NLStyle.primaryTextColor
-        font.family: NLStyle.fontType.roboto
-        font.pointSize: 14
-        focus: link.guiConfig._isEditableDescription
+            //! Bubble icon to appear when there is desciption but editMode is not enabled
+            Text {
+                id: descriptionIconText
+                text: '\ue32e'
+                font.pixelSize: 25
+                anchors.centerIn: parent
+                color: NLStyle.primaryTextColor
+                font.family: NLStyle.fontType.font6Pro
+                visible: link.guiConfig.description.length > 0 && !link.guiConfig._isEditableDescription
 
-        onTextChanged: {
-            if (link && link.description !== text)
-                link.guiConfig.description = text;
-        }
-
-        leftPadding: 10
-        rightPadding: 10
-
-        background: Rectangle {
-            radius: NLStyle.radiusAmount.linkView
-            border.width: 3
-            border.color: isSelected ? link.guiConfig.color : "transparent"
-            color: "#1e1e1e"
-        }
-
-        onFocusChanged: {
-            // select Link only when shiftModifier was pressed.
-            if (sceneSession.isShiftModifierPressed) {
-                linkView.forceActiveFocus();
-                scene.selectionModel.selectLink(link);
-                return;
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+                        link.guiConfig._isEditableDescription = true
+                    }
+                }
             }
 
-            if (focus && !isSelected) {
-                scene.selectionModel.clear(link?._qsUuid);
-                scene.selectionModel.selectLink(link);
-                if (!sceneSession.isShiftModifierPressed)
-                    link.guiConfig._isEditableDescription = true;
-            } else if (focus) {
-               link.guiConfig._isEditableDescription = true;
+            // Description view
+            NLTextArea {
+                id: descriptionTextArea
+
+                anchors.centerIn: parent
+
+                text: link.guiConfig.description
+                visible: (link.guiConfig.description.length > 0 || link.guiConfig._isEditableDescription) && !descriptionIconText.visible
+
+                color: NLStyle.primaryTextColor
+                font.family: NLStyle.fontType.roboto
+                font.pointSize: 14
+                focus: link.guiConfig._isEditableDescription
+
+                onTextChanged: {
+                    if (link && link.description !== text)
+                        link.guiConfig.description = text;
+                }
+
+                leftPadding: 10
+                rightPadding: 10
+
+                background: Rectangle {
+                    radius: NLStyle.radiusAmount.linkView
+                    border.width: 3
+                    border.color: isSelected ? link.guiConfig.color : "transparent"
+                    color: "#1e1e1e"
+                }
+
+                onFocusChanged: {
+                    // select Link only when shiftModifier was pressed.
+                    if (sceneSession.isShiftModifierPressed) {
+                        linkView.forceActiveFocus();
+                        scene.selectionModel.selectLink(link);
+                        return;
+                    }
+
+                    if (focus && !isSelected) {
+                        scene.selectionModel.clear(link?._qsUuid);
+                        scene.selectionModel.selectLink(link);
+                        if (!sceneSession.isShiftModifierPressed)
+                            link.guiConfig._isEditableDescription = true;
+                    } else if (focus) {
+                       link.guiConfig._isEditableDescription = true;
+                    }
+                }
             }
         }
     }
@@ -151,8 +173,8 @@ I_LinkView {
         //! Get the IsEditableDescriptionChanged signal and change
         //! focus to corresponding Item view
         function on_IsEditableDescriptionChanged () {
-            if(link.guiConfig._isEditableDescription)
-                descriptionText.forceActiveFocus();
+            if(link.guiConfig._isEditableDescription && descriptionLoader.item)
+                descriptionLoader.item.descriptionText.forceActiveFocus();
         }
     }
 }
