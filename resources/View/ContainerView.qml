@@ -15,7 +15,7 @@ InteractiveNodeView {
     //! Container
     property Container container;
 
-    property bool      isNodeMinimal:  sceneSession.zoomManager.zoomFactor < sceneSession.zoomManager.minimalZoomNode
+    property bool      isNodeMinimal:  sceneSession?.zoomManager?.zoomFactor < sceneSession?.zoomManager?.minimalZoomNode
 
     /* Object properties
     * ****************************************************************************************/
@@ -48,33 +48,50 @@ InteractiveNodeView {
         }
     }
 
-    //! container title
-    Rectangle {
-        id: containerRect
+    //! Container title loader
+    Loader {
+        id: containerTitleLoader
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.top
         anchors.bottomMargin: 5
-        border.color: containerTitle.activeFocus ? container.guiConfig.color : NLStyle.primaryBorderColor
-        color: Qt.darker(container?.guiConfig?.color ?? "transparent", 10)
-        height: container.guiConfig.containerTextHeight
-        width: Math.min(containerTitle.width, parent.width)
-        visible: !containerView.isNodeMinimal
-        border.width: 2
-        radius: 5
-        clip: true
 
-        NLTextArea {
-            id: containerTitle
+        active: !containerView.isNodeMinimal
+
+        sourceComponent: containerTitleComponent
+    }
+
+    Component {
+        id: containerTitleComponent
+
+        Rectangle {
+            id: containerRect
+
             anchors.horizontalCenter: parent.horizontalCenter
-            anchors.verticalCenter: parent.verticalCenter
-            text: container.title
-            onTextChanged: container.title = text
-            color: NLStyle.primaryTextColor
-            font.family: NLStyle.fontType.roboto
-            height: parent.height
-            font.pixelSize: 15
-            readOnly: container.guiConfig.locked
-            enabled: isSelected
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 5
+
+            border.color: containerTitle.activeFocus ? container.guiConfig.color : NLStyle.primaryBorderColor
+            color: Qt.darker(container?.guiConfig?.color ?? "transparent", 10)
+            height: container.guiConfig.containerTextHeight
+            width: Math.min(containerTitle.width, containerView.width)
+            border.width: 2
+            radius: 5
+            clip: true
+
+            NLTextArea {
+                id: containerTitle
+
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.verticalCenter: parent.verticalCenter
+                text: container.title
+                onTextChanged: container.title = text
+                color: NLStyle.primaryTextColor
+                font.family: NLStyle.fontType.roboto
+                height: parent.height
+                font.pixelSize: 15
+                readOnly: container.guiConfig.locked
+                enabled: isSelected
+            }
         }
     }
 
@@ -90,15 +107,15 @@ InteractiveNodeView {
         anchors.margins: 10
         hoverEnabled: true
         preventStealing: true
-        enabled: !sceneSession.connectingMode &&
-                 !sceneSession.isCtrlPressed
+        enabled: !sceneSession?.connectingMode &&
+                 !sceneSession?.isCtrlPressed
         // To hide cursor when is disable
         visible: enabled
 
         //! Manage zoom in containerView and pass it to zoomManager
         onWheel: (wheel) => {
             //! active zoom with no modifier.
-            if(wheel.modifiers === sceneSession.zoomModifier) {
+            if(wheel.modifiers === sceneSession?.zoomModifier) {
                 sceneSession.zoomManager.zoomcontainerSignal(
                     Qt.point(wheel.x, wheel.y),
                     this,
@@ -174,7 +191,7 @@ InteractiveNodeView {
 
             onTriggered: {
                 // Clear selection model when Shift key not pressed.
-                const isModifiedOn = sceneSession.isShiftModifierPressed;
+                const isModifiedOn = sceneSession?.isShiftModifierPressed;
 
                 if(!isModifiedOn)
                      scene.selectionModel.clearAllExcept(container._qsUuid);
