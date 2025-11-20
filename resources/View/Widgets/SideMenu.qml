@@ -304,38 +304,91 @@ Item {
         anchors.top: buttonGroup1.bottom
         anchors.topMargin: 8
         SideMenuButton {
+            id: undoButton
             text: "\ue455"
             position: "top"
             Layout.preferredHeight: 34
             Layout.preferredWidth: 34
+            // Base opacity based on whether undo is available
+            opacity: (scene?._undoCore?.undoStack.isValidUndo ?? false) ? 1.0 : 0.4
             // enabled: scene?._undoCore?.undoStack.isValidUndo ?? false
             NLToolTip {
                 visible: parent.hovered
                 text: "Undo"
             }
 
+            Behavior on opacity {
+                NumberAnimation {
+                    duration: 150
+                    easing.type: Easing.OutQuad
+                }
+            }
+
             onClicked: {
                 if(scene?._undoCore?.undoStack.isValidUndo){
+                    lastAction = "undo"
                     scene._undoCore.undoStack.undo()
                 }
             }
         }
         SideMenuButton {
+            id: redoButton
             text: "\ue331"
             position: "bottom"
             Layout.preferredHeight: 34
             Layout.preferredWidth: 34
+            // Base opacity based on whether redo is available
+            opacity: (scene?._undoCore?.undoStack.isValidRedo ?? false) ? 1.0 : 0.4
             // enabled: scene?._undoCore?.undoStack.isValidRedo ?? false
             NLToolTip {
                 visible: parent.hovered
                 text: "Redo"
             }
 
+            Behavior on opacity {
+                NumberAnimation {
+                    duration: 150
+                    easing.type: Easing.OutQuad
+                }
+            }
+
             onClicked: {
                 if(scene?._undoCore?.undoStack.isValidRedo){
+                    lastAction = "redo"
                     scene._undoCore.undoStack.redo()
                 }
             }
+        }
+    }
+
+    //! Track which action was last performed
+    property string lastAction: ""
+
+    //! Connection to handle undo/redo completion feedback
+    Connections {
+        target: scene?._undoCore?.undoStack ?? null
+        function onUndoRedoDone() {
+            // Fade out the button that was clicked to indicate completion
+            if (lastAction === "undo") {
+                undoButton.opacity = 0.4
+            } else if (lastAction === "redo") {
+                redoButton.opacity = 0.4
+            }
+
+            // Restore opacity after a short delay
+            restoreOpacityTimer.restart()
+        }
+    }
+
+    //! Timer to restore button opacity after undo/redo completion
+    Timer {
+        id: restoreOpacityTimer
+        interval: 150 // 150ms delay before restoring opacity
+        onTriggered: {
+            // Restore opacity based on whether undo/redo is available
+            undoButton.opacity = (scene?._undoCore?.undoStack.isValidUndo ?? false) ? 1.0 : 0.4
+            redoButton.opacity = (scene?._undoCore?.undoStack.isValidRedo ?? false) ? 1.0 : 0.4
+            lastAction = ""
         }
     }
 
