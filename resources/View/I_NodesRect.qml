@@ -59,8 +59,11 @@ Item {
 
         //! containerRepeater updated when a container added
         function onContainerAdded(containerObj: Container) {
-            if (Object.keys(_containerViewMap).includes(containerObj._qsUuid))
+            // Check if view already exists and is valid
+            var existingView = _containerViewMap[containerObj._qsUuid];
+            if (existingView) {
                 return;
+            }
 
             //! NodeViews should be child of NodesRect so they also get the zoom factor through
             //! scaling
@@ -78,7 +81,8 @@ Item {
             for (var i = 0; i < containerArray.length; i++) {
                 var containerObj = containerArray[i];
                 var containerObjId = containerObj._qsUuid;
-                containerObj.destroy()
+                // Don't destroy container object here - it's managed by undo/redo commands
+                // Only destroy the view
                 if (_containerViewMap[containerObjId]) {
                     _containerViewMap[containerObjId].destroy()
                     delete _containerViewMap[containerObjId];
@@ -88,17 +92,14 @@ Item {
 
         //! nodeRepeater updated when a container Removed
         function onContainerRemoved(containerObj: Container) {
-            if (!Object.keys(_containerViewMap).includes(containerObj._qsUuid))
-                return;
-
             let containerObjId = containerObj._qsUuid;
-
             let containerViewObj = _containerViewMap[containerObjId];
+            
+            // Only destroy and remove if view exists
             if (containerViewObj) {
                 containerViewObj.destroy();
+                delete _containerViewMap[containerObjId];
             }
-
-            delete _containerViewMap[containerObjId];
         }
 
         function onNodesAdded(nodeArray: list<Node>) {
@@ -135,8 +136,11 @@ Item {
 
         //! nodeRepeater updated when a node added
         function onNodeAdded(nodeObj: Node) {
-            if (Object.keys(_nodeViewMap).includes(nodeObj._qsUuid))
+            // Check if view already exists and is valid
+            var existingView = _nodeViewMap[nodeObj._qsUuid];
+            if (existingView) {
                 return;
+            }
 
             //! NodeViews should be child of NodesRect so they also get the zoom factor through
             //! scaling
@@ -167,12 +171,8 @@ Item {
             for (var i = 0; i < nodeArray.length; i++) {
                 var nodeObj = nodeArray[i];
                 var nodeObjId = nodeObj._qsUuid;
-                let nodePorts = nodeObj.ports
-                Object.entries(nodePorts).forEach(
-                            ([portId, port]) => {
-                                nodeObj.deletePort(port)
-                            });
-                nodeObj.destroy()
+                // Don't destroy node object here - it's managed by undo/redo commands
+                // Only destroy the view
                 if (_nodeViewMap[nodeObjId]) {
                     _nodeViewMap[nodeObjId].destroy()
                     delete _nodeViewMap[nodeObjId];
@@ -197,8 +197,11 @@ Item {
 
         //! linkRepeater updated when a link added
         function onLinkAdded(linkObj: Link) {
-            if (Object.keys(_linkViewMap).includes(linkObj._qsUuid))
+            // Check if view already exists and is valid
+            var existingView = _linkViewMap[linkObj._qsUuid];
+            if (existingView) {
                 return;
+            }
             var result = ObjectCreator.createItem(
                               root,
                               linkViewComponent.url,
@@ -254,18 +257,13 @@ Item {
         //! linkRepeater updated when a link Removed
         function onLinkRemoved(linkObj: Link) {
             let linkObjId = linkObj._qsUuid;
-
-            if (!Object.keys(_linkViewMap).includes(linkObjId))
-                return;
-
-            // Destroy view object
             let linkViewObj = _linkViewMap[linkObjId];
+            
+            // Only destroy and remove if view exists
             if (linkViewObj) {
                 linkViewObj.destroy();
+                delete _linkViewMap[linkObjId];
             }
-
-            // Delete from map
-            delete _linkViewMap[linkObjId];
         }
     }
 }
