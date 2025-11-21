@@ -50,7 +50,7 @@ Rectangle {
     TextMetrics {
         id: textMetrics
         font: portTitle.font
-        text: port.title
+        text: port?.title ?? ""
     }
 
     //! GlobalPos is a 2d vector filled by globalX and globalY
@@ -72,6 +72,9 @@ Rectangle {
         if (nodeWidth <= 0) return 100;
 
         var availableSpace = 0;
+        if (!port)
+            return
+
         switch (port.portSide) {
         case NLSpec.PortPositionSide.Left:
         case NLSpec.PortPositionSide.Right:
@@ -133,9 +136,9 @@ Rectangle {
     // DYNAMIC TEXT WITH PROPER ELIDE LOGIC
     Text {
         id: portTitle
-        text: port.title
+        text: port?.title ?? ""
         color: "white"
-        font.pixelSize: NLStyle.portView.fontSize * (sceneSession ? (1 / sceneSession.zoomManager.zoomFactor) : 1)
+        font.pixelSize: NLStyle.portView.fontSize * (sceneSession ? (1 / sceneSession?.zoomManager?.zoomFactor) ?? 1 : 1)
         wrapMode: Text.NoWrap
         verticalAlignment: Text.AlignVCenter
 

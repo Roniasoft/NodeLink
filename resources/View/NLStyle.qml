@@ -26,8 +26,9 @@ QtObject {
     readonly property string primaryRed:             "#8b0000"
 
     readonly property QtObject portView: QtObject {
-        property int size:          18
-        property int borderSize:    2
+        property int    size:          18
+        property int    borderSize:    2
+        property double fontSize:      10
     }
 
     readonly property QtObject overview: QtObject {
