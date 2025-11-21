@@ -37,10 +37,10 @@ Canvas {
     property bool       isSelected: scene?.selectionModel?.isSelected(link?._qsUuid) ?? false
 
     //! Link input position
-    property vector2d   inputPos: inputPort?._position ?? Qt.vector2d(-1, -1)
+    property vector2d   inputPos: inputPort?._position ?? ({ x: -1, y: -1 })
 
     //! Link output position
-    property vector2d   outputPos: outputPort?._position ?? Qt.vector2d(-1, -1)
+    property vector2d   outputPos: outputPort?._position ?? ({ x: -1, y: -1 })
 
     //! linkMidPoint is the position of link description.
     property vector2d   linkMidPoint: Qt.vector2d(0, 0)

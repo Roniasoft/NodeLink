@@ -26,6 +26,12 @@ I_NodeView {
     property int minHeight: node?.guiConfig?.minHeight ?? 70
     property int baseContentWidth: node?.guiConfig?.baseContentWidth ?? 100
 
+    //! Dynamic port spacing properties
+    property int minPortSpacing: 2  // Minimum space between ports
+    property int maxPortSpacing: 200 // Maximum space between ports
+    property int basePortHeight: 24 // Height per port including some margin
+    property int cornerHandleSpace: 50;// Reserve space for corner resize handles (20px top and bottom)
+
     // Calculated properties - these are view-only
     property int calculatedMinWidth: minWidth
     property int calculatedMinHeight: minHeight
@@ -99,7 +105,7 @@ I_NodeView {
     ConfirmPopUp {
         id: deletePopup
         confirmText: "Are you sure you want to delete " +
-                                     (Object.keys(scene.selectionModel.selectedModel).length > 1 ?
+                                     (Object.keys(scene?.selectionModel?.selectedModel ?? {}).length > 1 ?
                                          "these items?" : "this item?");
         sceneSession: root.sceneSession
         onAccepted: delTimer.start();
@@ -704,4 +710,17 @@ I_NodeView {
             scene?.selectionModel?.selectNode(node)
         }
     }
+
+    //! Calculate optimal port spacing based on current node height and port count
+    function calculatePortSpacing(portCount) {
+        var availableHeight = node.guiConfig.height - (cornerHandleSpace  * 2);
+        var totalPortsHeight = portCount * basePortHeight;
+        var remainingSpace = availableHeight - totalPortsHeight;
+
+        if (remainingSpace <= 0) return minPortSpacing;
+
+        var calculatedSpacing = remainingSpace / (portCount - 1);
+        return Math.max(minPortSpacing, Math.min(maxPortSpacing, calculatedSpacing));
+    }
+
 }

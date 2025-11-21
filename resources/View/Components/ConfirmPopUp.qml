@@ -26,8 +26,8 @@ Popup {
     closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
     parent: Overlay.overlay
 
-    x: Math.round((parent.width - width) / 2)
-    y: Math.round((parent.height - height) / 2)
+    x: Math.round((parent?.width - width) / 2) ?? 0
+    y: Math.round((parent?.height - height) / 2) ?? 0
     width: 350
     height: 150
     padding: 30
