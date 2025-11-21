@@ -36,7 +36,7 @@ Scene {
 
     //! Scene Selection Model
     selectionModel: SelectionModel {
-            existObjects: [...Object.keys(nodes), ...Object.keys(links)]
+            existObjects: [...Object.keys(nodes), ...Object.keys(links), ...Object.keys(containers)]
         }
 
     //! Undo Core
@@ -50,8 +50,6 @@ Scene {
             return;
         }
 
-        var addedLinks = [];
-
         for (var i = 0; i < linkDataArray.length; i++) {
             var linkData = linkDataArray[i];
 
@@ -61,30 +59,8 @@ Scene {
                 continue;
             }
 
-            var nodeX = linkData.nodeA
-            var nodeY = linkData.nodeB
-
-            // Updates children and parents
-            nodeX.children[nodeY._qsUuid] = nodeY;
-            nodeX.childrenChanged();
-
-            nodeY.parents[nodeX._qsUuid] = nodeX;
-            nodeY.parentsChanged();
-
-            // Create the link object
-            var obj = NLCore.createLink();
-            obj.inputPort = findPort(linkData.portA);
-            obj.outputPort = findPort(linkData.portB);
-            obj._qsRepo = sceneActiveRepo;
-
-            // Add to local administration
-            links[obj._qsUuid] = obj;
-            addedLinks.push(obj);
-        }
-
-        if (addedLinks.length > 0) {
-            linksChanged();
-            linksAdded(addedLinks);
+            // createLink already handles parent/children relationships and signals
+            createLink(linkData.portA, linkData.portB);
         }
     }
 

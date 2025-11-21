@@ -5,23 +5,30 @@ import NodeLink
  * AddNodeCommand
  * ************************************************************************************************/
 
-QtObject {
+I_Command {
     id: root
 
     /* Property Declarations
-    * ****************************************************************************************/
-    property var scene // I_Scene
+     * ****************************************************************************************/
     property var node  // Node
 
     /* Functions
-    * ****************************************************************************************/
+     * ****************************************************************************************/
     function redo() {
-        if (scene && node)
+        if (isValidScene() && isValidNode(node))
             scene.addNode(node)
     }
 
     function undo() {
-        if (scene && node)
-            scene.deleteNode(node._qsUuid)
+        if (isValidScene() && isValidNode(node)) {
+            // Simply remove the node from scene (don't delete from memory)
+            // Links will be handled by their own CreateLinkCommand
+            if (scene.nodes[node._qsUuid]) {
+                scene.selectionModel.remove(node._qsUuid)
+                scene.nodeRemoved(node)
+                delete scene.nodes[node._qsUuid]
+                scene.nodesChanged()
+            }
+        }
     }
 }

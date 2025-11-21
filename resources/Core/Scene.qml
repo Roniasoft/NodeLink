@@ -14,7 +14,7 @@ I_Scene {
      * ****************************************************************************************/
     //! Scene Selection Model
     selectionModel: SelectionModel {
-        existObjects: [...Object.keys(nodes), ...Object.keys(links)]
+        existObjects: [...Object.keys(nodes), ...Object.keys(links), ...Object.keys(containers)]
     }
 
     //! Undo Core

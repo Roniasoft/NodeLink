@@ -112,9 +112,13 @@ qt_add_qml_module(NodeLink
         resources/Core/Undo/UndoLinkGuiObserver.qml
         resources/Core/Undo/UndoContainerObserver.qml
         resources/Core/Undo/UndoContainerGuiObserver.qml
+        resources/Core/Undo/Commands/I_Command.qml
         resources/Core/Undo/Commands/PropertyCommand.qml
         resources/Core/Undo/Commands/AddNodeCommand.qml
+        resources/Core/Undo/Commands/AddNodesCommand.qml
+        resources/Core/Undo/Commands/LoadFileCommand.qml
         resources/Core/Undo/Commands/RemoveNodeCommand.qml
+        resources/Core/Undo/Commands/RemoveNodesCommand.qml
         resources/Core/Undo/Commands/AddContainerCommand.qml
         resources/Core/Undo/Commands/RemoveContainerCommand.qml
         resources/Core/Undo/Commands/CreateLinkCommand.qml
