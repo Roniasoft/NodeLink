@@ -74,7 +74,7 @@ InteractiveNodeView {
         id: contentLoader
 
         anchors.fill: parent
-        active: nodeView.edit || nodeView.isSelected || !nodeView.isNodeMinimal
+        active:  (contentItem === null) && (nodeView.edit || nodeView.isSelected || !nodeView.isNodeMinimal)
 
         sourceComponent: contentItemComponent
 
