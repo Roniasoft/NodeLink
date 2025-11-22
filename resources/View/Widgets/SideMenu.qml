@@ -500,4 +500,26 @@ Item {
             }
         }
     }
+
+    //! Lasso Selection
+    SideMenuButtonGroup {
+        id: buttonGroup5
+        anchors.top: buttonGroup4.bottom
+        anchors.topMargin: 8
+        SideMenuButton {
+            text: "\uf0c8"
+            position: "only"
+            Layout.preferredHeight: 34
+            Layout.preferredWidth: 34
+            checkable: true
+            NLToolTip {
+                visible: parent.hovered
+                text: "Lasso Selection"
+            }
+
+            onClicked: {
+                scene.toggleLassoSelectionMode()
+            }
+        }
+    }
 }
