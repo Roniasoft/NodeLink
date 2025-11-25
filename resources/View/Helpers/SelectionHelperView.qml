@@ -226,6 +226,27 @@ Item {
                         Qt.callLater(selectionTimerLasso.start);
                 }
             }
+
+            function onMarqueeSelectionEnd(mouse) {
+                if (lassoSelection.pathPoints.length < 3) {
+                    lassoSelection.resetFreehand()
+                    return
+                }
+
+                var first = lassoSelection.pathPoints[0]
+                var last = lassoSelection.pathPoints[lassoSelection.pathPoints.length - 1]
+
+                var dx = first.x - last.x
+                var dy = first.y - last.y
+                var dist = Math.sqrt(dx*dx + dy*dy)
+                var threshold = 25
+
+                if (dist >= threshold) {
+                    lassoSelection.resetFreehand()
+                } else {
+                    lassoSelection.isShapeClosed = true
+                }
+            }
         }
 
         Timer {

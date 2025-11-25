@@ -273,6 +273,7 @@ I_NodesScene {
 
                         wasDragged = false
                         sceneSession.marqueeSelectionMode = false
+                        sceneSession.marqueeSelectionEnd(mouse)
                     }
 
         //! We should toggle line selection with mouse press event

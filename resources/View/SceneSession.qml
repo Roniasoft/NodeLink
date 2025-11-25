@@ -79,6 +79,9 @@ QtObject {
     //! Update marquee(rubber band) selection.
     signal updateMarqueeSelection(var mouse)
 
+    //! End marquee selection.
+    signal marqueeSelectionEnd(var mouse)
+
     //! Sets port visibility
     function setPortVisibility(portId: string, visible: Boolean) {
         portsVisibility[portId] = visible
