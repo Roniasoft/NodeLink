@@ -23,10 +23,30 @@ The Nodelink library is a tool that can be used to connect different components 
 
 We provide several example projects to demonstrate the capabilities of NodeLink:
 
-* **Calculator**: A basic calculator built using NodeLink, showcasing its ability to create complex node networks. [(more details)](Examples/Calculator/Calculator.md)
-* **Logic Circuits**: A digital logic circuit simulator, highlighting NodeLink's support for custom node behaviors.
-* **Chatbot**: A simple chatbot example, demonstrating NodeLink's integration with Qt/QML for UI development.
-* **Image Processing**: An image processing pipeline built using NodeLink, showcasing its ability to handle complex data flows.
+### 🔢 Calculator  
+A basic calculator built using NodeLink, showcasing its ability to create complex node networks.  
+➡️ [More details](Examples/Calculator/Calculator.md)
+
+### ⚡ Logic Circuits  
+A digital logic circuit simulator, highlighting NodeLink's support for custom node behaviors.  
+➡️ [More details](Examples/LogicCircuit/LogicCircuit.md)
+
+### 💬 Chatbot  
+A simple chatbot example, demonstrating NodeLink's integration with Qt/QML for UI development.  
+➡️ [More details](Examples/Chatbot/Chatbot.md)
+
+### 🖼️ Image Processing  
+An image processing pipeline built using NodeLink, showcasing its ability to handle complex data flows.  
+➡️ [More details](Examples/VisionLink/VisionLink.md)
+
+### 📊 Performance Analyzer  
+A benchmarking and stress-testing tool that measures NodeLink’s performance under heavy load, helping developers analyze scalability and system behavior.  
+➡️ [More details](Examples/PerformanceAnalyzer/PerformanceAnalyzer.md)
+
+### 🌱 Simple NodeLink  
+A minimal starter example demonstrating the basics of creating and connecting nodes in NodeLink.  
+➡️ [More details](Examples/SimpleNodeLink/SimpleNodeLink.md)
+
 
 ## What is NodeLink?
 
