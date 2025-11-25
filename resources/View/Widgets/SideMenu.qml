@@ -525,10 +525,18 @@ Item {
 
             onCheckedChanged: {
                 scene.enableLassoMode = checked
+                if (checked)
+                    sceneSession.selectionType = "rectangle"
+                else
+                    sceneSession.selectionType = "lasso"
             }
 
             Component.onCompleted: {
                 scene.enableLassoMode = checked
+                if (checked)
+                    sceneSession.selectionType = "rectangle"
+                else
+                    sceneSession.selectionType = "lasso"
             }
         }
     }
