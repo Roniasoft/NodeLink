@@ -1,52 +1,14 @@
-# Project Overview
+# NodeLink
 
-## Quick Start
-Get started with NodeLink Qt/QML by exploring our core library and example projects.
+## Introduction
+NodeLink is a qml node editor library that can be used for a wide range of applications. This library allows for the visualization and manipulation of complex graphs while also providing the flexibility for customization and integration with other software.
 
 [![Made by ROMINA](https://img.shields.io/badge/Made%20by-ROMINA-blue)](https://github.com/Roniasoft/NodeLink)
-![Version](https://img.shields.io/badge/Version-0.0.9-blue)
+![Version](https://img.shields.io/badge/Version-0.9.0-blue)
 
-### Core Library
-
-The NodeLink core library provides a robust framework for building node-based applications. It includes:
-
-* A modular, MVC (Model-View-Controller) architecture
-* A customizable node system with support for various data types
-* A powerful signal-slot system for node interactions
-* Extensive Qt/QML integration for seamless UI development
-
-### Usage
+## Usage
 
 The Nodelink library is a tool that can be used to connect different components within a system or application. To use this library, one can refer to the examples provided within the library and follow the instructions accordingly. The examples provided serve as a guide and demonstrate how to connect different nodes and manipulate data between them.
-
-### Examples
-
-We provide several example projects to demonstrate the capabilities of NodeLink:
-
-### 🔢 Calculator  
-A basic calculator built using NodeLink, showcasing its ability to create complex node networks.  
-➡️ [More details](Examples/Calculator/Calculator.md)
-
-### ⚡ Logic Circuits  
-A digital logic circuit simulator, highlighting NodeLink's support for custom node behaviors.  
-➡️ [More details](Examples/LogicCircuit/LogicCircuit.md)
-
-### 💬 Chatbot  
-A simple chatbot example, demonstrating NodeLink's integration with Qt/QML for UI development.  
-➡️ [More details](Examples/Chatbot/Chatbot.md)
-
-### 🖼️ Image Processing  
-An image processing pipeline built using NodeLink, showcasing its ability to handle complex data flows.  
-➡️ [More details](Examples/VisionLink/VisionLink.md)
-
-### 📊 Performance Analyzer  
-A benchmarking and stress-testing tool that measures NodeLink’s performance under heavy load, helping developers analyze scalability and system behavior.  
-➡️ [More details](Examples/PerformanceAnalyzer/PerformanceAnalyzer.md)
-
-### 🌱 Simple NodeLink  
-A minimal starter example demonstrating the basics of creating and connecting nodes in NodeLink.  
-➡️ [More details](Examples/SimpleNodeLink/SimpleNodeLink.md)
-
 
 ## What is NodeLink?
 
@@ -58,6 +20,15 @@ NodeLink is a Qt/QML-based framework for building node-based applications. It fo
 
 This architecture allows for a high degree of customization and flexibility, making NodeLink suitable for a wide range of applications.
 
+## Core Library
+
+The NodeLink core library provides a robust framework for building node-based applications. It includes:
+
+* A modular, MVC (Model-View-Controller) architecture
+* A customizable node system with support for various data types
+* A powerful signal-slot system for node interactions
+* Extensive Qt/QML integration for seamless UI development
+
 ## Key Features
 
 Here are some of the key features that make NodeLink a powerful tool for building node-based applications:
@@ -68,10 +39,44 @@ Here are some of the key features that make NodeLink a powerful tool for buildin
 * **Customizable**: Highly customizable architecture and node system.
 * **Extensive Documentation**: Comprehensive documentation and example projects.
 
+---
+
+## 🧩 3. Examples Showcase
+Learn NodeLink through real examples.
+
+- **🔢 Calculator** — A simple math node graph. [➡️ More details](Examples/Calculator.md)
+
+  ![Calculator Example Overview](images/Calculator_Main.png)
+
+- **⚡ Logic Circuits** — Visual logic gates and real-time signals. [➡️ More details](Examples/LogicCircuit.md)
+
+    ![LogicCircuit Example Overview](images/LogicCircuit_Main.png)
+
+- **💬 Chatbot** — Rule-based chatbot built visually using regex nodes. [➡️ More details](Examples/Chatbot.md)
+
+![Chatbot Example Overview](images/Chatbot_Main.png)
+
+- **🖼️ Vison Link** — Build visual pipelines for image operations. [➡️ More details][(More details)](Examples/VisionLink.md)
+
+![VisonLink Example Overview](images/VisionLink_Main.png)
+
+- **📊 PerformanceAnalyzer** — Stress-test NodeLink with large graphs. [➡️ More details](Examples/PerformanceAnalyzer.md)
+
+![Performance Analyzer Example Overview](images/PerformanceAnalyzer_Main.png)
+
+- **🌱 Simple NodeLink** — The most basic example for new users. [➡️ More details](Examples/SimpleNodeLink.md)
+
+![SimpleNodeLink Example Overview](images/SimpleNodeLink_Main.png)
+---
+
+
+
+
 ## Installation Guide - Create Your First Custom Node in 10 Minutes
 ### Overview
 
 This guide will walk you through installing NodeLink and creating your first custom node in just 10 minutes. By the end of this tutorial, you'll have a working NodeLink application with a custom "HelloWorld" node that you can create, connect, and interact with.
+[➡️ More details](InstallationGuide/InstallationGuide.md)
 
 ---
 
