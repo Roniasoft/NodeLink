@@ -35,6 +35,9 @@ QtObject {
     //! SelectionHelperView
     property bool marqueeSelectionMode: false
 
+    //! Set it "rectangle" when we want marquee selection else, lasso selection
+    property string selectionType: "rectangle"
+
     //! Zoom manager
     property ZoomManager zoomManager: ZoomManager {}
 
