@@ -516,7 +516,7 @@ Item {
 
             NLToolTip {
                 visible: parent.hovered
-                text: "Lasso Selection"
+                text: "Marquee Selection"
             }
 
             onClicked: {
