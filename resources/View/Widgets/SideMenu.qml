@@ -512,6 +512,8 @@ Item {
             Layout.preferredHeight: 34
             Layout.preferredWidth: 34
             checkable: true
+            checked: true
+
             NLToolTip {
                 visible: parent.hovered
                 text: "Lasso Selection"
@@ -519,6 +521,14 @@ Item {
 
             onClicked: {
                 scene.toggleLassoSelectionMode()
+            }
+
+            onCheckedChanged: {
+                scene.enableLassoMode = checked
+            }
+
+            Component.onCompleted: {
+                scene.enableLassoMode = checked
             }
         }
     }
