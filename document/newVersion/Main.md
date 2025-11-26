@@ -48,25 +48,37 @@ Learn NodeLink through real examples.
 
   ![Calculator Example Overview](images/Calculator_Main.png)
 
+  ![Calculator Example](Gifs/Calculator_Main.gif)
+
 - **⚡ Logic Circuits** — Visual logic gates and real-time signals. [➡️ More details](Examples/LogicCircuit/LogicCircuit.md)
 
-    ![LogicCircuit Example Overview](images/LogicCircuit_Main.png)
+  ![LogicCircuit Example Overview](images/LogicCircuit_Main.png)
+
+  ![Calculator Example](Gifs/LogicCircuit_Main.gif)
 
 - **💬 Chatbot** — Rule-based chatbot built visually using regex nodes. [➡️ More details](Examples/Chatbot/Chatbot.md)
 
-![Chatbot Example Overview](images/Chatbot_Main.png)
+  ![Chatbot Example Overview](images/Chatbot_Main.png)
+
+  ![Calculator Example](Gifs/CatBot_Main.gif)
 
 - **🖼️ Vison Link** — Build visual pipelines for image operations. [➡️ More details][(More details)](Examples/VisionLink/VisionLink.md)
 
-![VisonLink Example Overview](images/VisionLink_Main.png)
+  ![VisonLink Example Overview](images/VisionLink_Main.png)
+
+  ![Calculator Example](Gifs/VisionLink_Main.gif)
 
 - **📊 PerformanceAnalyzer** — Stress-test NodeLink with large graphs. [➡️ More details](Examples/PerformanceAnalyzer/PerformanceAnalyzer.md)
 
-![Performance Analyzer Example Overview](images/PerformanceAnalyzer_Main.png)
+  ![Performance Analyzer Example Overview](images/PerformanceAnalyzer_Main.png)
+
+  ![Calculator Example](Gifs/PerformanceAnalyzer_Main.gif)
 
 - **🌱 Simple NodeLink** — The most basic example for new users. [➡️ More details](Examples/SimpleNodeLink/SimpleNodeLink.md)
 
-![SimpleNodeLink Example Overview](images/SimpleNodeLink_Main.png)
+  ![SimpleNodeLink Example Overview](images/SimpleNodeLink_Main.png)
+
+  ![Calculator Example](Gifs/SimpleNodeLink_Main.gif)
 ---
 
 
