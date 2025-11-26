@@ -44,27 +44,27 @@ Here are some of the key features that make NodeLink a powerful tool for buildin
 ## Examples Showcase
 Learn NodeLink through real examples.
 
-- **🔢 Calculator** — A simple math node graph. [➡️ More details](Examples/Calculator.md)
+- **🔢 Calculator** — A simple math node graph. [➡️ More details](Examples/Calculator/Calculator.md)
 
   ![Calculator Example Overview](images/Calculator_Main.png)
 
-- **⚡ Logic Circuits** — Visual logic gates and real-time signals. [➡️ More details](Examples/LogicCircuit.md)
+- **⚡ Logic Circuits** — Visual logic gates and real-time signals. [➡️ More details](Examples/LogicCircuit/LogicCircuit.md)
 
     ![LogicCircuit Example Overview](images/LogicCircuit_Main.png)
 
-- **💬 Chatbot** — Rule-based chatbot built visually using regex nodes. [➡️ More details](Examples/Chatbot.md)
+- **💬 Chatbot** — Rule-based chatbot built visually using regex nodes. [➡️ More details](Examples/Chatbot/Chatbot.md)
 
 ![Chatbot Example Overview](images/Chatbot_Main.png)
 
-- **🖼️ Vison Link** — Build visual pipelines for image operations. [➡️ More details][(More details)](Examples/VisionLink.md)
+- **🖼️ Vison Link** — Build visual pipelines for image operations. [➡️ More details][(More details)](Examples/VisionLink/VisionLink.md)
 
 ![VisonLink Example Overview](images/VisionLink_Main.png)
 
-- **📊 PerformanceAnalyzer** — Stress-test NodeLink with large graphs. [➡️ More details](Examples/PerformanceAnalyzer.md)
+- **📊 PerformanceAnalyzer** — Stress-test NodeLink with large graphs. [➡️ More details](Examples/PerformanceAnalyzer/PerformanceAnalyzer.md)
 
 ![Performance Analyzer Example Overview](images/PerformanceAnalyzer_Main.png)
 
-- **🌱 Simple NodeLink** — The most basic example for new users. [➡️ More details](Examples/SimpleNodeLink.md)
+- **🌱 Simple NodeLink** — The most basic example for new users. [➡️ More details](Examples/SimpleNodeLink/SimpleNodeLink.md)
 
 ![SimpleNodeLink Example Overview](images/SimpleNodeLink_Main.png)
 ---
