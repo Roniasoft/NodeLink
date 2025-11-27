@@ -217,7 +217,8 @@ Item {
                     if (lassoSelection.pathPoints.length === 0)
                         return;
                     var last = lassoSelection.pathPoints[lassoSelection.pathPoints.length - 1];
-                    if (Math.abs(last.x - current.x) > 2 || Math.abs(last.y - current.y) > 2)
+                    var thresholdPixel = 4;
+                    if (Math.abs(last.x - current.x) > thresholdPixel || Math.abs(last.y - current.y) > thresholdPixel)
                         lassoSelection.pathPoints.push(current);
 
                     freehandCanvas.requestPaint();
