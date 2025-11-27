@@ -228,7 +228,6 @@ Item {
             }
 
             onCheckedChanged: {
-                scene.enableLassoMode = checked
                 if (checked)
                     sceneSession.selectionType = "rectangle"
                 else
@@ -236,7 +235,6 @@ Item {
             }
 
             Component.onCompleted: {
-                scene.enableLassoMode = checked
                 if (checked)
                     sceneSession.selectionType = "rectangle"
                 else
