@@ -935,6 +935,127 @@ QSObject {
     }
 
 
+    function findNodesInLasso(points) {
+        if (!points || points.length < 3) return [];
+
+        var polyMinX = Infinity, polyMinY = Infinity, polyMaxX = -Infinity, polyMaxY = -Infinity;
+        for (var pi = 0; pi < points.length; ++pi) {
+            polyMinX = Math.min(polyMinX, points[pi].x);
+            polyMinY = Math.min(polyMinY, points[pi].y);
+            polyMaxX = Math.max(polyMaxX, points[pi].x);
+            polyMaxY = Math.max(polyMaxY, points[pi].y);
+        }
+
+        function pointInPolygon(px, py, poly) {
+            var inside = false;
+            for (var i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+                var xi = poly[i].x, yi = poly[i].y;
+                var xj = poly[j].x, yj = poly[j].y;
+                var intersect = ((yi > py) !== (yj > py)) &&
+                                (px < (xj - xi) * (py - yi) / ((yj - yi) || 0.000001) + xi);
+                if (intersect) inside = !inside;
+            }
+            return inside;
+        }
+
+        function onSegment(p, q, r) {
+            return Math.min(p.x, r.x) <= q.x && q.x <= Math.max(p.x, r.x) &&
+                   Math.min(p.y, r.y) <= q.y && q.y <= Math.max(p.y, r.y);
+        }
+
+        function orientation(a, b, c) {
+            // >0: clockwise, <0: counterclockwise, =0 collinear
+            return (b.y - a.y) * (c.x - b.x) - (b.x - a.x) * (c.y - b.y);
+        }
+
+        function segmentsIntersect(a, b, c, d) {
+            var o1 = orientation(a, b, c);
+            var o2 = orientation(a, b, d);
+            var o3 = orientation(c, d, a);
+            var o4 = orientation(c, d, b);
+
+            if (o1 === 0 && onSegment(a, c, b)) return true;
+            if (o2 === 0 && onSegment(a, d, b)) return true;
+            if (o3 === 0 && onSegment(c, a, d)) return true;
+            if (o4 === 0 && onSegment(c, b, d)) return true;
+
+            return (o1 > 0) !== (o2 > 0) && (o3 > 0) !== (o4 > 0);
+        }
+
+        function rectIntersectsPolygon(rect, poly) {
+            if (rect.x > polyMaxX || rect.x + rect.w < polyMinX ||
+                rect.y > polyMaxY || rect.y + rect.h < polyMinY) {
+                return false;
+            }
+
+            var corners = [
+                { x: rect.x,         y: rect.y },
+                { x: rect.x + rect.w, y: rect.y },
+                { x: rect.x + rect.w, y: rect.y + rect.h },
+                { x: rect.x,         y: rect.y + rect.h }
+            ];
+
+            for (var ci = 0; ci < corners.length; ++ci)
+                if (pointInPolygon(corners[ci].x, corners[ci].y, poly)) return true;
+
+            for (var pi = 0; pi < poly.length; ++pi) {
+                var p = poly[pi];
+                if (p.x >= rect.x && p.x <= rect.x + rect.w && p.y >= rect.y && p.y <= rect.y + rect.h)
+                    return true;
+            }
+
+            var rectEdges = [
+                [corners[0], corners[1]],
+                [corners[1], corners[2]],
+                [corners[2], corners[3]],
+                [corners[3], corners[0]]
+            ];
+
+            for (var i = 0; i < poly.length; ++i) {
+                var a = poly[i];
+                var b = poly[(i + 1) % poly.length];
+                for (var ei = 0; ei < rectEdges.length; ++ei) {
+                    var e0 = rectEdges[ei][0], e1 = rectEdges[ei][1];
+                    if (segmentsIntersect(a, b, e0, e1)) return true;
+                }
+            }
+
+            return false;
+        }
+
+        var matches = [];
+
+        function scanMap(mapObj) {
+            if (!mapObj) return;
+            for (var k in mapObj) {
+                if (!mapObj.hasOwnProperty(k)) continue;
+                var item = mapObj[k];
+                if (!item || !item.guiConfig) continue;
+
+                var cfg = item.guiConfig;
+                var rect = { x: cfg.position.x, y: cfg.position.y, w: cfg.width, h: cfg.height };
+
+                if (rect.x > polyMaxX || rect.x + rect.w < polyMinX ||
+                    rect.y > polyMaxY || rect.y + rect.h < polyMinY) {
+                    continue;
+                }
+
+                var centerX = rect.x + rect.w / 2;
+                var centerY = rect.y + rect.h / 2;
+
+                if ( pointInPolygon(centerX, centerY, points) || rectIntersectsPolygon(rect, points) ) {
+                    matches.push(item);
+                }
+            }
+        }
+
+        scanMap(scene.nodes);
+        scanMap(scene.containers);
+
+        return matches;
+    }
+
+
     function copyNodes() {
         copyCalled();
     }
