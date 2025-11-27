@@ -295,19 +295,7 @@ Item {
                 scene.selectionModel.notifySelectedObject = false;
                 scene.selectionModel.clear();
 
-                // simple bounding rect for selection
-                var minX = 999999, minY = 999999;
-                var maxX = -999999, maxY = -999999;
-
-                for (var i = 0; i < lassoSelection.pathPoints.length; i++) {
-                    minX = Math.min(minX, lassoSelection.pathPoints[i].x);
-                    minY = Math.min(minY, lassoSelection.pathPoints[i].y);
-                    maxX = Math.max(maxX, lassoSelection.pathPoints[i].x);
-                    maxY = Math.max(maxY, lassoSelection.pathPoints[i].y);
-                }
-
-                var selectionRect = Qt.rect(minX, minY, maxX - minX, maxY - minY);
-                var selectedObj = scene.findNodesInContainerItem(selectionRect);
+                var selectedObj = scene.findNodesInLasso(lassoSelection.pathPoints);
 
                 selectedObj.forEach(node => {
                     if (node.objectType === NLSpec.ObjectType.Node)
