@@ -292,6 +292,11 @@ Item {
 
                 lassoSelection.closeShapeIfNeeded()
 
+                if (!lassoSelection.isShapeClosed) {
+                    lassoSelection.busySelecting = false;
+                    return;
+                }
+
                 scene.selectionModel.notifySelectedObject = false;
                 scene.selectionModel.clear();
 
