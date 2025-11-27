@@ -169,11 +169,30 @@ Item {
 
                 if (lassoSelection.isShapeClosed && lassoSelection.pathPoints.length > 2) {
                     ctx.beginPath();
-                    ctx.moveTo(lassoSelection.pathPoints[0].x, lassoSelection.pathPoints[0].y);
-                    for (var i = 1; i < lassoSelection.pathPoints.length; i++)
-                        ctx.lineTo(lassoSelection.pathPoints[i].x, lassoSelection.pathPoints[i].y);
-                    ctx.closePath();
 
+                    ctx.moveTo(
+                        lassoSelection.pathPoints[0].x,
+                        lassoSelection.pathPoints[0].y
+                    );
+
+                    for (var i = 1; i < lassoSelection.pathPoints.length - 1; i++) {
+                        var midX1 = (lassoSelection.pathPoints[i].x +
+                                    lassoSelection.pathPoints[i + 1].x) / 2;
+                        var midY1 = (lassoSelection.pathPoints[i].y +
+                                    lassoSelection.pathPoints[i + 1].y) / 2;
+
+                        ctx.quadraticCurveTo(
+                            lassoSelection.pathPoints[i].x,
+                            lassoSelection.pathPoints[i].y,
+                            midX1,
+                            midY1
+                        );
+                    }
+
+                    var last1 = lassoSelection.pathPoints[lassoSelection.pathPoints.length - 1];
+                    ctx.lineTo(last1.x, last1.y);
+
+                    ctx.closePath();
                     ctx.fillStyle = "rgba(143, 48, 250, 0.2)";
                     ctx.fill();
                 }
@@ -185,8 +204,20 @@ Item {
                 ctx.beginPath();
                 if (lassoSelection.pathPoints.length > 1) {
                     ctx.moveTo(lassoSelection.pathPoints[0].x, lassoSelection.pathPoints[0].y);
-                    for (var j = 1; j < lassoSelection.pathPoints.length; j++)
-                        ctx.lineTo(lassoSelection.pathPoints[j].x, lassoSelection.pathPoints[j].y);
+
+                    for (var j = 1; j < lassoSelection.pathPoints.length - 1; j++) {
+                        var midX2 = (lassoSelection.pathPoints[j].x + lassoSelection.pathPoints[j + 1].x) / 2;
+                        var midY2 = (lassoSelection.pathPoints[j].y + lassoSelection.pathPoints[j + 1].y) / 2;
+
+                        ctx.quadraticCurveTo(
+                            lassoSelection.pathPoints[j].x,
+                            lassoSelection.pathPoints[j].y,
+                            midX2,
+                            midY2
+                        );
+                    }
+                    var last2 = lassoSelection.pathPoints[lassoSelection.pathPoints.length - 1];
+                    ctx.lineTo(last2.x, last2.y);
                 }
                 ctx.stroke();
             }
