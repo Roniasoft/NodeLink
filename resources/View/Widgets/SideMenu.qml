@@ -484,27 +484,10 @@ Item {
         }
     }
 
-    //! Help
+    //! Lasso Selection
     SideMenuButtonGroup {
         id: buttonGroup4
         anchors.top: buttonGroup3.bottom
-        anchors.topMargin: 8
-        SideMenuButton {
-            text: "\uf60b"
-            position: "only"
-            Layout.preferredHeight: 34
-            Layout.preferredWidth: 34
-            NLToolTip {
-                visible: parent.hovered
-                text: "Help"
-            }
-        }
-    }
-
-    //! Lasso Selection
-    SideMenuButtonGroup {
-        id: buttonGroup5
-        anchors.top: buttonGroup4.bottom
         anchors.topMargin: 8
         SideMenuButton {
             text: "\uf0c8"
@@ -535,6 +518,23 @@ Item {
                     sceneSession.selectionType = "rectangle"
                 else
                     sceneSession.selectionType = "lasso"
+            }
+        }
+    }
+
+    //! Help
+    SideMenuButtonGroup {
+        id: buttonGroup5
+        anchors.top: buttonGroup4.bottom
+        anchors.topMargin: 8
+        SideMenuButton {
+            text: "\uf60b"
+            position: "only"
+            Layout.preferredHeight: 34
+            Layout.preferredWidth: 34
+            NLToolTip {
+                visible: parent.hovered
+                text: "Help"
             }
         }
     }
