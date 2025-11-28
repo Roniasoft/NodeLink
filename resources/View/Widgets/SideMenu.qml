@@ -490,16 +490,23 @@ Item {
         anchors.top: buttonGroup3.bottom
         anchors.topMargin: 8
         SideMenuButton {
-            text: "\uf0c8"
+            id: selectionButton
             position: "only"
             Layout.preferredHeight: 34
             Layout.preferredWidth: 34
             checkable: true
             checked: true
 
+            property string rectangleIcon: "\uf0c8"
+            property string lassoIcon: "\uf8c8"
+            property string rectangleText: "Marquee Selection"
+            property string lassoText: "Lasso Selection"
+
+            text: checked ? rectangleIcon : lassoIcon
+
             NLToolTip {
                 visible: parent.hovered
-                text: "Marquee Selection"
+                text: selectionButton.checked ? selectionButton.rectangleText : selectionButton.lassoText
             }
 
             onClicked: {
