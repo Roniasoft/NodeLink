@@ -6,11 +6,11 @@ NodeLink is a qml node editor library that can be used for a wide range of appli
 [![Made by ROMINA](https://img.shields.io/badge/Made%20by-ROMINA-blue)](https://github.com/Roniasoft/NodeLink)
 ![Version](https://img.shields.io/badge/Version-0.9.0-blue)
 
-## Usage
+### Usage
 
 The Nodelink library is a tool that can be used to connect different components within a system or application. To use this library, one can refer to the examples provided within the library and follow the instructions accordingly. The examples provided serve as a guide and demonstrate how to connect different nodes and manipulate data between them.
 
-## What is NodeLink?
+### What is NodeLink?
 
 NodeLink is a Qt/QML-based framework for building node-based applications. It follows the Model-View-Controller (MVC) architecture, providing a clear separation of concerns and a modular design.
 
@@ -20,7 +20,7 @@ NodeLink is a Qt/QML-based framework for building node-based applications. It fo
 
 This architecture allows for a high degree of customization and flexibility, making NodeLink suitable for a wide range of applications.
 
-## Core Library
+### Core Library
 
 The NodeLink core library provides a robust framework for building node-based applications. It includes:
 
@@ -29,7 +29,7 @@ The NodeLink core library provides a robust framework for building node-based ap
 * A powerful signal-slot system for node interactions
 * Extensive Qt/QML integration for seamless UI development
 
-## Key Features
+### Key Features
 
 Here are some of the key features that make NodeLink a powerful tool for building node-based applications:
 

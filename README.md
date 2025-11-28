@@ -4,6 +4,8 @@ Introduction
 ============
 NodeLink is a qml node editor library that can be used for a wide range of applications. This library allows for the visualization and manipulation of complex graphs while also providing the flexibility for customization and integration with other software. 
 
+Read the full documentation for NodeLink→ [NodeLink Docs](Docs/Main.md)
+
 Usage
 =============
 
