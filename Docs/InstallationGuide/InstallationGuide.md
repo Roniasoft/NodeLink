@@ -718,7 +718,7 @@ In this 10-minute tutorial, you've:
 
 ### What's Next?
 
-- Explore more advanced features in the [Custom Node Creation Guide](CustomNodeCreation.md)
+- Explore more advanced features in the [Custom Node Creation Guide](../AdvancedTopics/CustomNodeCreation.md)
 - Build more complex nodes with data processing
 - Create custom node views and UI components
 - Integrate with C++ backends for performance-critical operations
