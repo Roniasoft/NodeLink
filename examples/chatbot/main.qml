@@ -75,7 +75,7 @@ Window {
             id: chatBox
             Layout.preferredWidth: 400
             Layout.fillHeight: true
-            onUserMessageSent: {
+            onUserMessageSent: (message) => {
                 let sourceNode = Object.values(window.scene.nodes).find(n => n.type === 0)
                 if (sourceNode) {
                     sourceNode.nodeData.data = message
