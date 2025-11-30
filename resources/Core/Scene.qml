@@ -76,7 +76,7 @@ I_Scene {
     //! Override this function in your scene
     //! Check some condition and
     //! Link two nodes (via their ports) - portA is the upstream and portB the downstream one
-    function linkNodes(portA : string, portB : string) {
+    function linkNodes(portA : string, portB : string) : void {
         if (!canLinkNodes(portA, portB)) {
             console.error("[Scene] Cannot link Nodes ");
             return;

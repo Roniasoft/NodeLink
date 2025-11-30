@@ -117,23 +117,22 @@ Window {
     //Save
     FileDialog {
         id: saveDialog
-        currentFile: "QtQuickStream.QQS.json"
         fileMode: FileDialog.SaveFile
         nameFilters: [ "QtQuickStream Files (*.QQS.json)" ]
+        defaultSuffix: "QQS.json"
         onAccepted: {
-            NLCore.defaultRepo.saveToFile(saveDialog.currentFile);
+            NLCore.defaultRepo.saveToFile(saveDialog.selectedFile);
         }
     }
 
     //! Load
     FileDialog {
         id: loadDialog
-        currentFile: "QtQuickStream.QQS.json"
         fileMode: FileDialog.OpenFile
         nameFilters: [ "QtQuickStream Files (*.QQS.json)" ]
         onAccepted: {
             NLCore.defaultRepo.clearObjects();
-            NLCore.defaultRepo.loadFromFile(loadDialog.currentFile);
+            NLCore.defaultRepo.loadFromFile(loadDialog.selectedFile);
 //            window.scene = Qt.binding(function() { return NLCore.defaultRepo.qsRootObject;});
         }
     }

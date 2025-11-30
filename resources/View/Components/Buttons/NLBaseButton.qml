@@ -1,13 +1,13 @@
 import QtQuick
 import QtQuick.Controls
-import QtQuick.NativeStyle as NativeStyle
+import QtQuick.Controls.Basic
 import NodeLink
 
 /*! ************************************************************************************************
  * The BaseButton class is used to add some additional functionality to all the buttons. To do this
  * all the buttons that are used in the UiCore project should inherit from this class.
  * ************************************************************************************************/
-NativeStyle.DefaultButton {
+Button {
     id: baseButton
 
     /* Property Declarations

@@ -18,10 +18,10 @@ I_LinkView {
     * ****************************************************************************************/
 
     //! Top Left position of node rect (pos of the node in the top left corner)
-    property vector2d     nodeRectTopLeft:     viewProperties.nodeRectTopLeft
+    property vector2d     nodeRectTopLeft:     viewProperties?.nodeRectTopLeft ?? Qt.vector2d(0, 0)
 
     //! Scale used for mapping scene -> overview. Min is used to avoid complication in link drawings
-    property real         overviewScaleFactor: viewProperties.overviewScaleFactor
+    property real         overviewScaleFactor: viewProperties?.overviewScaleFactor ?? 1.0
 
     /*  Object Properties
     * ****************************************************************************************/

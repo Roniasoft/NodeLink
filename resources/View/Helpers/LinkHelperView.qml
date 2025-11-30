@@ -50,7 +50,7 @@ Item {
                 linkview.outputPos = Qt.vector2d(gMouse.x, gMouse.y);
                 inputPortId = linkview.inputPort._qsUuid;
                 link.inputPort.portSide = linkview.inputPort.portSide;
-                sceneSession.setPortVisibility(inputPortId, true)
+                sceneSession.setPortVisibility(inputPortId, true);
             }
 
         }
@@ -66,8 +66,9 @@ Item {
             linkview.opacity = 1.0
 
             // Hide input port
-            if (sceneSession.portsVisibility[inputPortId])
+            if (sceneSession.portsVisibility[inputPortId]) {
                 sceneSession.setPortVisibility(inputPortId, false);
+            }
 
             // Find the closest port based on specified margin
             var closestPortId = findClosestPort(inputPortId, Qt.point(mouse.x, mouse.y), 10)
@@ -138,7 +139,7 @@ Item {
         }
 
         //! clear temp connection.
-        function clearTempConnection() {
+        function clearTempConnection() : void {
             linkview.inputPort = null;
             sceneSession.connectingMode = false;
             sceneSession.setPortVisibility(inputPortId, false);
@@ -221,47 +222,39 @@ Item {
                 }
             });
 
-            if (foundNodeIds)
-                finalPortId = findClosestPortInNodes(inputPortId, foundNodeIds, gMouse)
+            if (foundNodeIds){
+                //! Finds closes port Id
+                var ports = []
+                var closestPortId = "";
+                var minDistance = Number.MAX_VALUE;
+
+                // Find ports that can be linked in Nodes
+                foundNodeIds.forEach(nodeId => {
+                        Object.values(scene.nodes[nodeId].ports).forEach(port => {
+                            if (scene.canLinkNodes(inputPortId, port._qsUuid))
+                                ports.push(port)
+                        });
+
+                    });
+
+                // Find closest port
+                ports.forEach(port => {
+                        var portPosition = port._position;
+                        var distance = calculateManhattanDistance(gMouse, portPosition);
+
+                        if (distance < minDistance) {
+                            minDistance = distance;
+                            closestPortId = port._qsUuid;
+                        }
+                });
+
+                finalPortId = closestPortId;
+            }
             return finalPortId;
         }
 
-        //! Finds closes port Id amongst given node Ids,
-        //!     inputPortId: input node id to check the ability to establish a link
-        //!     foundNodesId: Nodes id as an array
-        //!     gMouse: To calculate distance.
-        function findClosestPortInNodes (inputPortId: string, foundNodesId: array, gMouse: point) : string {
-
-            // Port Uuid array
-            var ports = []
-            var closestPortId = "";
-            var minDistance = Number.MAX_VALUE;
-
-            // Find ports that can be linked in Nodes
-            foundNodesId.forEach(nodeId => {
-                    Object.values(scene.nodes[nodeId].ports).forEach(port => {
-                        if (scene.canLinkNodes(inputPortId, port._qsUuid))
-                            ports.push(port)
-                    });
-
-                });
-
-            // Find closest port
-            ports.forEach(port => {
-                    var portPosition = port._position;
-                    var distance = calculateManhattanDistance(gMouse, portPosition);
-
-                    if (distance < minDistance) {
-                        minDistance = distance;
-                        closestPortId = port._qsUuid;
-                    }
-            });
-
-            return closestPortId;
-        }
-
         //! Calculates the ManhattenDisance between two points
-        function calculateManhattanDistance(point1 : vector2d, point2 : vector2d) {
+        function calculateManhattanDistance(point1 : vector2d, point2 : vector2d) : real {
             return Math.abs(point1.x - point2.x) + Math.abs(point1.y - point2.y);
         }
 

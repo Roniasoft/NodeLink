@@ -202,7 +202,7 @@ QSObject {
     }
 
     //! Adds a container to container map
-    function addContainer(container: Container) {
+    function addContainer(container: Container) : Container {
         //Sanity check - skip null or invalid containers
         if (!container || !container._qsUuid) {
             return null;
@@ -307,7 +307,7 @@ QSObject {
     }
 
     //! Adds a node the to nodes map
-    function addNode(node: Node, autoSelect: bool) {
+    function addNode(node: Node, autoSelect: bool) : Node {
         //Sanity check - skip null or invalid nodes
         if (!node || !node._qsUuid) {
             return null;
@@ -340,7 +340,7 @@ QSObject {
     }
 
     //! Adds multiple nodes at once
-    function addNodes(nodeArray: list<Node>, autoSelect: bool) {
+    function addNodes(nodeArray: list<Node>, autoSelect: bool) : void {
         if (!nodeArray || nodeArray.length === 0) {
             return;
         }
@@ -675,7 +675,7 @@ QSObject {
 
     //! Restores existing link objects to the scene (used for undo/redo)
     //! Unlike createLink, this doesn't create new links but restores existing ones with all their properties
-    function restoreLinks(linkArray: list<Link>) {
+    function restoreLinks(linkArray: list<Link>) : list<Link> {
         if (!linkArray || linkArray.length === 0) {
             return;
         }
@@ -743,7 +743,7 @@ QSObject {
     }
 
     //! Link two nodes (via their ports) - portA is the upstream and portB the downstream one
-    function createLink(portA : string, portB : string) {
+    function createLink(portA : string, portB : string) : Link {
             let obj = NLCore.createLink();
             obj.guiConfig.colorIndex = 0;
             obj.inputPort  = findPort(portA);
