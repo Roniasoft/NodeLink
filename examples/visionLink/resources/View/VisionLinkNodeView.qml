@@ -79,8 +79,8 @@ NodeView {
                     font.pixelSize: 20
                     anchors.left: parent.left
                     anchors.verticalCenter: parent.verticalCenter
-                    text: scene.nodeRegistry.nodeIcons[node.type]
-                    color: node.guiConfig.color
+                    text: (nodeView?.scene?.nodeRegistry?.nodeIcons ?? {})[node?.type ?? ""] ?? ""
+                    color: node?.guiConfig?.color ?? "#ffffff"
                     font.weight: 400
                 }
 
@@ -99,7 +99,7 @@ NodeView {
                     readOnly: !nodeView.edit
                     placeholderText: qsTr("Image Result")
                     color: NLStyle.primaryTextColor
-                    text: node.title
+                    text: node?.title ?? ""
                     onTextChanged: if (node && node.title !== text) node.title = text
                     font.pointSize: 10
                     font.bold: true
@@ -147,7 +147,8 @@ NodeView {
 
                 // Update image data URL when node data changes
                 Connections {
-                    target: imageNodeItem.node?.nodeData
+                    target: imageNodeItem?.node?.nodeData ?? null
+                    enabled: imageNodeItem?.node?.nodeData !== null && imageNodeItem?.node?.nodeData !== undefined
                     function onDataChanged() {
                         imageContainer.updateImageDisplay();
                     }
@@ -238,8 +239,8 @@ NodeView {
                     font.family: NLStyle.fontType.font6Pro
                     font.pixelSize: 60
                     anchors.centerIn: parent
-                    text: scene.nodeRegistry.nodeIcons[node.type]
-                    color: node.guiConfig.color
+                    text: (nodeView?.scene?.nodeRegistry?.nodeIcons ?? {})[node?.type ?? ""] ?? ""
+                    color: node?.guiConfig?.color ?? "#ffffff"
                     font.weight: 400
                     visible: nodeView.isNodeMinimal && !imageContainer.hasValidImage
                 }
@@ -275,8 +276,8 @@ NodeView {
                     font.pixelSize: 20
                     anchors.left: parent.left
                     anchors.verticalCenter: parent.verticalCenter
-                    text: scene.nodeRegistry.nodeIcons[node.type]
-                    color: node.guiConfig.color
+                    text: (nodeView?.scene?.nodeRegistry?.nodeIcons ?? {})[node?.type ?? ""] ?? ""
+                    color: node?.guiConfig?.color ?? "#ffffff"
                     font.weight: 400
                 }
 
@@ -295,7 +296,7 @@ NodeView {
                     readOnly: !nodeView.edit
                     placeholderText: qsTr("Image Input")
                     color: NLStyle.primaryTextColor
-                    text: node.title
+                    text: node?.title ?? ""
                     onTextChanged: if (node && node.title !== text) node.title = text
                     font.pointSize: 10
                     font.bold: true
@@ -365,7 +366,7 @@ NodeView {
                 onAccepted: {                   
                     // Load image using node's loadImage function
                     if (node && node.loadImage) {
-                        node.loadImage(fileDialog.currentFile);
+                        node.loadImage(fileDialog.selectedFile);
                         
                         // Update preview
                         imagePreviewContainer.updatePreview();
@@ -422,8 +423,8 @@ NodeView {
                     font.family: NLStyle.fontType.font6Pro
                     font.pixelSize: 60
                     anchors.centerIn: parent
-                    text: scene.nodeRegistry.nodeIcons[node.type]
-                    color: node.guiConfig.color
+                    text: (nodeView?.scene?.nodeRegistry?.nodeIcons ?? {})[node?.type ?? ""] ?? ""
+                    color: node?.guiConfig?.color ?? "#ffffff"
                     font.weight: 400
                     visible: nodeView.isNodeMinimal && imagePreviewContainer.imageDataUrl === ""
                 }
@@ -475,8 +476,8 @@ NodeView {
                     font.pixelSize: 20
                     anchors.left: parent.left
                     anchors.verticalCenter: parent.verticalCenter
-                    text: scene.nodeRegistry.nodeIcons[node.type]
-                    color: node.guiConfig.color
+                    text: (nodeView?.scene?.nodeRegistry?.nodeIcons ?? {})[node?.type ?? ""] ?? ""
+                    color: node?.guiConfig?.color ?? "#ffffff"
                     font.weight: 400
                 }
 
@@ -493,7 +494,7 @@ NodeView {
                     placeholderText: qsTr("Blur")
                     color: NLStyle.primaryTextColor
                     selectByMouse: true
-                    text: node.title
+                    text: node?.title ?? ""
                     verticalAlignment: Text.AlignVCenter
                     onTextChanged: {
                         if (node && node.title !== text)
@@ -577,8 +578,8 @@ NodeView {
                     font.family: NLStyle.fontType.font6Pro
                     font.pixelSize: 40
                     anchors.centerIn: parent
-                    text: scene.nodeRegistry.nodeIcons[node.type]
-                    color: node.guiConfig.color
+                    text: (nodeView?.scene?.nodeRegistry?.nodeIcons ?? {})[node?.type ?? ""] ?? ""
+                    color: node?.guiConfig?.color ?? "#ffffff"
                     font.weight: 400
                     visible: blurItem.iconOnly
                 }
@@ -629,8 +630,8 @@ NodeView {
                     font.pixelSize: 20
                     anchors.left: parent.left
                     anchors.verticalCenter: parent.verticalCenter
-                    text: scene.nodeRegistry.nodeIcons[node.type]
-                    color: node.guiConfig.color
+                    text: (nodeView?.scene?.nodeRegistry?.nodeIcons ?? {})[node?.type ?? ""] ?? ""
+                    color: node?.guiConfig?.color ?? "#ffffff"
                     font.weight: 400
                 }
 
@@ -647,7 +648,7 @@ NodeView {
                     placeholderText: qsTr("Brightness")
                     color: NLStyle.primaryTextColor
                     selectByMouse: true
-                    text: node.title
+                    text: node?.title ?? ""
                     verticalAlignment: Text.AlignVCenter
                     onTextChanged: {
                         if (node && node.title !== text)
@@ -731,8 +732,8 @@ NodeView {
                     font.family: NLStyle.fontType.font6Pro
                     font.pixelSize: 40
                     anchors.centerIn: parent
-                    text: scene.nodeRegistry.nodeIcons[node.type]
-                    color: node.guiConfig.color
+                    text: (nodeView?.scene?.nodeRegistry?.nodeIcons ?? {})[node?.type ?? ""] ?? ""
+                    color: node?.guiConfig?.color ?? "#ffffff"
                     font.weight: 400
                     visible: brightnessItem.iconOnly
                 }
@@ -783,8 +784,8 @@ NodeView {
                     font.pixelSize: 20
                     anchors.left: parent.left
                     anchors.verticalCenter: parent.verticalCenter
-                    text: scene.nodeRegistry.nodeIcons[node.type]
-                    color: node.guiConfig.color
+                    text: (nodeView?.scene?.nodeRegistry?.nodeIcons ?? {})[node?.type ?? ""] ?? ""
+                    color: node?.guiConfig?.color ?? "#ffffff"
                     font.weight: 400
                 }
 
@@ -801,7 +802,7 @@ NodeView {
                     placeholderText: qsTr("Contrast")
                     color: NLStyle.primaryTextColor
                     selectByMouse: true
-                    text: node.title
+                    text: node?.title ?? ""
                     verticalAlignment: Text.AlignVCenter
                     onTextChanged: {
                         if (node && node.title !== text)
@@ -885,8 +886,8 @@ NodeView {
                     font.family: NLStyle.fontType.font6Pro
                     font.pixelSize: 40
                     anchors.centerIn: parent
-                    text: scene.nodeRegistry.nodeIcons[node.type]
-                    color: node.guiConfig.color
+                    text: (nodeView?.scene?.nodeRegistry?.nodeIcons ?? {})[node?.type ?? ""] ?? ""
+                    color: node?.guiConfig?.color ?? "#ffffff"
                     font.weight: 400
                     visible: contrastItem.iconOnly
                 }
