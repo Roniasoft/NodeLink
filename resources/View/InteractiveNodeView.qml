@@ -17,8 +17,10 @@ I_NodeView {
     property bool isResizable: true
 
     //! A node is editable or not
-    property bool         isNodeEditable: !node.guiConfig.locked && (sceneSession?.isSceneEditable ?? true)
+    property bool         isNodeEditable: !(node?.guiConfig?.locked ?? false) && (sceneSession?.isSceneEditable ?? true)
 
+    //! Node is in minimal state or not (based in zoom factor)
+    property bool         isNodeMinimal:  sceneSession?.zoomManager?.zoomFactor < sceneSession?.zoomManager?.minimalZoomNode
 
     // Provide defaults that bind to model with fallbacks
     property bool autoSize: node?.guiConfig?.autoSize ?? true
@@ -46,13 +48,13 @@ I_NodeView {
     /* Object Properties
     * ****************************************************************************************/
 
-    color: Qt.darker(node.guiConfig.color, 10)
-    border.color: node.guiConfig.locked ? NLStyle.node.borderLockColor : Qt.lighter(node.guiConfig.color, isSelected ? 1.2 : 1)
+    color: Qt.darker(node?.guiConfig?.color ?? "#ffffff", 10)
+    border.color: (node?.guiConfig?.locked ?? false) ? NLStyle.node.borderLockColor : Qt.lighter(node?.guiConfig?.color ?? "#ffffff", isSelected ? 1.2 : 1)
     border.width: (isSelected ? (NLStyle.node.borderWidth + 1) : NLStyle.node.borderWidth)
     opacity: isSelected ? NLStyle.node.selectedOpacity : NLStyle.node.defaultOpacity
 
     // Z factor to manage node view order, maximum is 3
-    z: node.guiConfig.locked ? 1 : (isSelected ? 3 : 2)
+    z: (node?.guiConfig?.locked ?? false) ? 1 : (isSelected ? 3 : 2)
     radius: NLStyle.radiusAmount.nodeView
 
     /* Keys
@@ -566,6 +568,7 @@ I_NodeView {
                 sceneSession: root.sceneSession
                 // Pass the actual node width
                 nodeWidth: root.width
+                hidePortTitle: root.isNodeMinimal
 
                 property vector2d positionMapped: Qt.vector2d(topRowPort.x + x + NLStyle.portView.size / 2,
                                                               topRowPort.y + y + NLStyle.portView.size / 2)
@@ -591,6 +594,7 @@ I_NodeView {
         spacing: calculateLeftPortSpacing()
 
         function calculateLeftPortSpacing() {
+            if (!node?.ports) return root.calculatePortSpacing(0);
             var leftPortCount = Object.values(node.ports).filter(port => port.portSide === NLSpec.PortPositionSide.Left).length;
             return root.calculatePortSpacing(leftPortCount);
         }
@@ -603,6 +607,7 @@ I_NodeView {
                 sceneSession: root.sceneSession
                 // Pass the actual node width
                 nodeWidth: root.width
+                hidePortTitle: root.isNodeMinimal
 
                 property vector2d positionMapped: Qt.vector2d(leftColumnPort.x + x + NLStyle.portView.size / 2,
                                                      leftColumnPort.y + y + NLStyle.portView.size / 2)
@@ -627,6 +632,7 @@ I_NodeView {
         spacing: calculateRightPortSpacing()
 
         function calculateRightPortSpacing() {
+            if (!node?.ports) return root.calculatePortSpacing(0);
             var rightPortCount = Object.values(node.ports).filter(port => port.portSide === NLSpec.PortPositionSide.Right).length;
             return root.calculatePortSpacing(rightPortCount);
         }
@@ -639,6 +645,7 @@ I_NodeView {
                 sceneSession: root.sceneSession
                 // Pass the actual node width
                 nodeWidth: root.width
+                hidePortTitle: root.isNodeMinimal
 
                 property vector2d positionMapped: Qt.vector2d(rightColumnPort.x + x + NLStyle.portView.size / 2,
                                                               rightColumnPort.y + y + NLStyle.portView.size / 2)
@@ -665,6 +672,7 @@ I_NodeView {
                 sceneSession: root.sceneSession
                 // Pass the actual node width
                 nodeWidth: root.width
+                hidePortTitle: root.isNodeMinimal
 
                 property vector2d positionMapped: Qt.vector2d(bottomRowPort.x + x + NLStyle.portView.size / 2,
                                                               bottomRowPort.y + y + NLStyle.portView.size / 2)
@@ -679,7 +687,7 @@ I_NodeView {
 
     // Update port spacing when node height changes
     Connections {
-        target: node.guiConfig
+        target: node?.guiConfig ?? null
         function onHeightChanged() {
             // Trigger recalculation of port spacing
             leftColumnPort.spacing = leftColumnPort.calculateLeftPortSpacing();
@@ -689,14 +697,22 @@ I_NodeView {
 
     // Update port spacing when ports change
     Connections {
+        id: nodeConnections
         target: node
-        function onPortsChanged() {
+        enabled: node !== null && typeof node !== 'undefined'
+        ignoreUnknownSignals: true
+        function onPortAdded(portId) {
             // Trigger recalculation of port spacing
             leftColumnPort.spacing = leftColumnPort.calculateLeftPortSpacing();
             rightColumnPort.spacing = rightColumnPort.calculateRightPortSpacing();
 
         }
 
+        function onPortsChanged() {
+            // Trigger recalculation of port spacing when ports are modified
+            leftColumnPort.spacing = leftColumnPort.calculateLeftPortSpacing();
+            rightColumnPort.spacing = rightColumnPort.calculateRightPortSpacing();
+        }
     }
 
     /* Functions
@@ -713,6 +729,7 @@ I_NodeView {
 
     //! Calculate optimal port spacing based on current node height and port count
     function calculatePortSpacing(portCount) {
+        if (!node || !node.guiConfig) return minPortSpacing;
         var availableHeight = node.guiConfig.height - (cornerHandleSpace  * 2);
         var totalPortsHeight = portCount * basePortHeight;
         var remainingSpace = availableHeight - totalPortsHeight;
