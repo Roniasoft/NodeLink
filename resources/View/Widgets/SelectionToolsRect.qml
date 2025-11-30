@@ -127,10 +127,12 @@ Rectangle {
                 anchors.topMargin: 5
                 visible: false
                 onColorChanged: (colorName, index) => {
-                                    Object.values(selectionModel.selectedModel).forEach(obj => {
-                                                             obj.guiConfig.color = colorName;
-                                                             obj.guiConfig.colorIndex = index;
-                                                         });
+                                    if (selectionModel && selectionModel.selectedModel) {
+                                        Object.values(selectionModel.selectedModel).forEach(obj => {
+                                                                 obj.guiConfig.color = colorName;
+                                                                 obj.guiConfig.colorIndex = index;
+                                                             });
+                                    }
                                 }
            }
         }
