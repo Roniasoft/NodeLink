@@ -30,6 +30,9 @@ Rectangle {
     // This gets set from parent
     property real nodeWidth: 0
 
+    //! Hide port title when node is in minimal state
+    property bool hidePortTitle: false
+
     /* Object Properties
      * ****************************************************************************************/
 
@@ -59,11 +62,13 @@ Rectangle {
     //! Whenever GlobalPos is changed, we should update the
     //!  related maps in scene/sceneSession
     onGlobalPosChanged: {
-        port._position = globalPos;
+        if (port) {
+            port._position = globalPos;
 
-        if (sceneSession && !sceneSession.isRubberBandMoving) {
-            sceneSession.portsVisibility[port._qsUuid] = false;
-            sceneSession.portsVisibilityChanged();
+            if (sceneSession && !sceneSession.isRubberBandMoving) {
+                sceneSession.portsVisibility[port._qsUuid] = false;
+                sceneSession.portsVisibilityChanged();
+            }
         }
     }
 
@@ -104,7 +109,7 @@ Rectangle {
         propagateComposedEvents: true
 
         onPressed: mouse => {
-            if (!port.enable) return;
+            if (!port || !port.enable) return;
             selectionFunction(port._qsUuid);
             sceneSession.connectingMode = true;
             mouse.accepted = false
@@ -141,12 +146,13 @@ Rectangle {
         font.pixelSize: NLStyle.portView.fontSize * (sceneSession ? (1 / sceneSession?.zoomManager?.zoomFactor) ?? 1 : 1)
         wrapMode: Text.NoWrap
         verticalAlignment: Text.AlignVCenter
+        visible: !root.hidePortTitle
 
         // Dynamic width: constrained only if text is too long
         width: root.needsElide() ? root.calculateAvailableSpace() : implicitWidth
 
         // Smart elide: only when needed, different modes per side
-        elide: root.needsElide() ? (
+        elide: root.needsElide() && port ? (
             port.portSide === NLSpec.PortPositionSide.Left ? Text.ElideRight :
             port.portSide === NLSpec.PortPositionSide.Right ? Text.ElideLeft :
             Text.ElideMiddle
@@ -159,9 +165,13 @@ Rectangle {
             reportSize()
 
             // Update text metrics when text changes
-            port.titleChanged.connect(function() {
-                textMetrics.text = port.title;
-            });
+            if (port) {
+                port.titleChanged.connect(function() {
+                    if (port) {
+                        textMetrics.text = port.title;
+                    }
+                });
+            }
         }
         onTextChanged: reportSize()
         onFontChanged: reportSize()
@@ -172,6 +182,8 @@ Rectangle {
             anchors.right = undefined
             anchors.top = undefined
             anchors.bottom = undefined
+
+            if (!port) return;
 
             if (port.portSide === NLSpec.PortPositionSide.Left) {
                 anchors.left = parent.right
@@ -193,8 +205,10 @@ Rectangle {
         }
 
         function reportSize() {
-            port._measuredTitleWidth = implicitWidth
-            if (port.node) port.node.requestRecalculateFromPort()
+            if (port) {
+                port._measuredTitleWidth = implicitWidth
+                if (port.node) port.node.requestRecalculateFromPort()
+            }
         }
     }
 
