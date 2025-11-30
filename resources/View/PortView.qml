@@ -66,8 +66,7 @@ Rectangle {
             port._position = globalPos;
 
             if (sceneSession && !sceneSession.isRubberBandMoving) {
-                sceneSession.portsVisibility[port._qsUuid] = false;
-                sceneSession.portsVisibilityChanged();
+                sceneSession.setPortVisibility(port._qsUuid, false);
             }
         }
     }
