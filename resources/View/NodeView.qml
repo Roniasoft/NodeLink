@@ -106,7 +106,7 @@ InteractiveNodeView {
                     font.pixelSize: 20
                     anchors.left: parent.left
                     anchors.verticalCenter: parent.verticalCenter
-                    text: scene?.nodeRegistry.nodeIcons[node.type] ?? ""
+                    text: (scene?.nodeRegistry?.nodeIcons ?? {})[node?.type ?? ""] ?? ""
                     color: node.guiConfig.color
                     font.weight: 400
 
