@@ -551,12 +551,12 @@ I_NodesScene {
         target: scene.sceneGuiConfig
 
         function onContentWidthChanged() {
-            worldZoomPoint = Qt.point(0, 0)
+            worldZoomPoint = Qt.vector2d(0, 0)
             updateContentSize()
         }
 
         function onContentHeightChanged() {
-            worldZoomPoint = Qt.point(0, 0)
+            worldZoomPoint = Qt.vector2d(0, 0)
             updateContentSize()
         }
     }
@@ -649,10 +649,20 @@ I_NodesScene {
         //! This method will be called mostly due to zooming, so lets check if content width/height
         //! is less than the view (flickable's width/height), we'll resize them so there are no
         //! non-functional areas
+        if (!scene || !sceneSession || !sceneSession.zoomManager) {
+            return;
+        }
+
         var newContentWidth = scene.sceneGuiConfig.contentWidth
                 * sceneSession.zoomManager.zoomFactor
         var newContentHeight = scene.sceneGuiConfig.contentHeight
                 * sceneSession.zoomManager.zoomFactor
+
+        // Check for NaN or invalid values
+        if (isNaN(newContentWidth) || isNaN(newContentHeight)) {
+            return;
+        }
+
         if (newContentWidth < flickable.width) {
             //! Increase content width
             scene.sceneGuiConfig.contentWidth += (flickable.width - newContentWidth)
@@ -677,7 +687,14 @@ I_NodesScene {
                     * sceneSession.zoomManager.zoomFactor
         }
 
-        resizeContent(newContentWidth, newContentHeight, worldZoomPoint)
+        // Check again for NaN after calculations
+        if (isNaN(newContentWidth) || isNaN(newContentHeight)) {
+            return;
+        }
+
+        // Convert vector2d to QPointF for resizeContent
+        var zoomPoint = Qt.point(worldZoomPoint.x, worldZoomPoint.y)
+        resizeContent(newContentWidth, newContentHeight, zoomPoint)
 
         contentX = Math.max(0, Math.min(contentWidth - width, contentX))
         contentY = Math.max(0, Math.min(contentHeight - height, contentY))
