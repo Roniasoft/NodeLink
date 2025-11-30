@@ -68,7 +68,7 @@ Menu {
     }
 
     //! Creates and adds a container
-    function createContainer(nodeType : int) {
+    function createContainer(nodeType : int) : string {
         var qsType = scene.nodeRegistry.nodeTypes[nodeType];
         var container = QSSerializer.createQSObject(qsType, scene.nodeRegistry.imports, scene?._qsRepo ?? NLCore.defaultRepo);
         container._qsRepo = scene?._qsRepo ?? NLCore.defaultRepo._qsRepo;
