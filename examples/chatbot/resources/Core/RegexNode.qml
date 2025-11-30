@@ -41,8 +41,20 @@ Node {
             return
         }
 
-        var re = new RegExp(nodeData.data, "i")
-        var found = re.test(inputFirst)
-        matchedPattern = found ? "FOUND" : "NOT_FOUND"
+        // Check if nodeData.data is valid
+        if (!nodeData || !nodeData.data || typeof nodeData.data !== 'string') {
+            matchedPattern = "NOT_FOUND"
+            return
+        }
+
+        try {
+            var re = new RegExp(nodeData.data, "i")
+            var found = re.test(inputFirst)
+            matchedPattern = found ? "FOUND" : "NOT_FOUND"
+        } catch (e) {
+            // Invalid regex pattern
+            console.warn("RegexNode: Invalid regular expression:", nodeData.data, e)
+            matchedPattern = "NOT_FOUND"
+        }
     }
 }
