@@ -50,8 +50,7 @@ Item {
                 linkview.outputPos = Qt.vector2d(gMouse.x, gMouse.y);
                 inputPortId = linkview.inputPort._qsUuid;
                 link.inputPort.portSide = linkview.inputPort.portSide;
-                sceneSession.portsVisibility[inputPortId] = true;
-                sceneSession.portsVisibilityChanged();
+                sceneSession.setPortVisibility(inputPortId, true);
             }
 
         }
@@ -68,8 +67,7 @@ Item {
 
             // Hide input port
             if (sceneSession.portsVisibility[inputPortId]) {
-                sceneSession.portsVisibility[inputPortId] = false;
-                sceneSession.portsVisibilityChanged();
+                sceneSession.setPortVisibility(inputPortId, false);
             }
 
             // Find the closest port based on specified margin
@@ -79,8 +77,7 @@ Item {
                  return;
 
             // Hide last detected port
-            sceneSession.portsVisibility[outputPortId] = false;
-            sceneSession.portsVisibilityChanged();
+            sceneSession.setPortVisibility(outputPortId, false);
 
             // Update outputPortId with new port found.
             outputPortId = closestPortId;
@@ -92,8 +89,7 @@ Item {
                 // Find port side based on the found output port
                 linkview.outputPortSide = scene.findPort(outputPortId)?.portSide ??
                                    findPortSide(link.inputPort.portSide)
-                sceneSession.portsVisibility[outputPortId] = true;
-                sceneSession.portsVisibilityChanged();
+                sceneSession.setPortVisibility(outputPortId, true);
             } else {
                 // Find the global mouse position and update outputPos
                 var gMouse = mapToItem(parent, mouse.x, mouse.y);
@@ -146,9 +142,8 @@ Item {
         function clearTempConnection() : void {
             linkview.inputPort = null;
             sceneSession.connectingMode = false;
-            sceneSession.portsVisibility[inputPortId] = false;
-            sceneSession.portsVisibility[outputPortId] = false;
-            sceneSession.portsVisibilityChanged();
+            sceneSession.setPortVisibility(inputPortId, false);
+            sceneSession.setPortVisibility(outputPortId, false);
 
             inputPortId  = "";
             outputPortId = "";
