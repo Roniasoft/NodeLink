@@ -53,7 +53,7 @@ Canvas {
 
     //! Canvas Dimensions
     function safePoints() {
-        if (Array.isArray(link.controlPoints)) {
+        if (Array.isArray(link.controlPoints) && link.controlPoints.length > 0) {
             return link.controlPoints;
         } else if (link.controlPoints) {
             return [link.controlPoints];
@@ -62,29 +62,93 @@ Canvas {
         }
     }
 
-    property real topLeftX: Math.min(...safePoints().map(p => p.x), inputPos.x, outputPos.x)
-    property real topLeftY: Math.min(...safePoints().map(p => p.y), inputPos.y, outputPos.y)
-    property real bottomRightX: Math.max(...safePoints().map(p => p.x), inputPos.x, outputPos.x)
-    property real bottomRightY: Math.max(...safePoints().map(p => p.y), inputPos.y, outputPos.y)
+    property real topLeftX: {
+        var points = safePoints();
+        var xValues = points.length > 0 ? points.map(p => p.x) : [];
+        if (inputPos.x >= 0) xValues.push(inputPos.x);
+        if (outputPos.x >= 0) xValues.push(outputPos.x);
+        return xValues.length > 0 ? Math.min(...xValues) : 0;
+    }
+    
+    property real topLeftY: {
+        var points = safePoints();
+        var yValues = points.length > 0 ? points.map(p => p.y) : [];
+        if (inputPos.y >= 0) yValues.push(inputPos.y);
+        if (outputPos.y >= 0) yValues.push(outputPos.y);
+        return yValues.length > 0 ? Math.min(...yValues) : 0;
+    }
+    
+    property real bottomRightX: {
+        var points = safePoints();
+        var xValues = points.length > 0 ? points.map(p => p.x) : [];
+        if (inputPos.x >= 0) xValues.push(inputPos.x);
+        if (outputPos.x >= 0) xValues.push(outputPos.x);
+        return xValues.length > 0 ? Math.max(...xValues) : 0;
+    }
+    
+    property real bottomRightY: {
+        var points = safePoints();
+        var yValues = points.length > 0 ? points.map(p => p.y) : [];
+        if (inputPos.y >= 0) yValues.push(inputPos.y);
+        if (outputPos.y >= 0) yValues.push(outputPos.y);
+        return yValues.length > 0 ? Math.max(...yValues) : 0;
+    }
 
     //! Length of arrow
     property real arrowHeadLength: 10;
 
     //! Update painted line when change position of input and output ports and some another
     //! properties changed
-    onOutputPosChanged:  preparePainter();
-    onInputPosChanged:   preparePainter();
-    onIsSelectedChanged: preparePainter();
-    onLinkColorChanged:  preparePainter();
-    onOutputPortSideChanged: preparePainter();
+    onOutputPosChanged:  {
+        // Check if positions are valid (not off-screen) before painting
+        if (canvas && canvas.available && outputPos && outputPos.x >= -1000 && outputPos.y >= -1000) {
+            preparePainter();
+        }
+    }
+    onInputPosChanged:   {
+        // Check if positions are valid (not off-screen) before painting
+        if (canvas && canvas.available && inputPos && inputPos.x >= -1000 && inputPos.y >= -1000) {
+            preparePainter();
+        }
+    }
+    onIsSelectedChanged: {
+        // Only paint if positions are valid
+        if (canvas && canvas.available && inputPos && outputPos && 
+            inputPos.x >= -1000 && inputPos.y >= -1000 && 
+            outputPos.x >= -1000 && outputPos.y >= -1000) {
+            preparePainter();
+        }
+    }
+    onLinkColorChanged:  {
+        // Only paint if positions are valid
+        if (canvas && canvas.available && inputPos && outputPos && 
+            inputPos.x >= -1000 && inputPos.y >= -1000 && 
+            outputPos.x >= -1000 && outputPos.y >= -1000) {
+            preparePainter();
+        }
+    }
+    onOutputPortSideChanged: {
+        // Only paint if positions are valid
+        if (canvas && canvas.available && inputPos && outputPos && 
+            inputPos.x >= -1000 && inputPos.y >= -1000 && 
+            outputPos.x >= -1000 && outputPos.y >= -1000) {
+            preparePainter();
+        }
+    }
 
     /*  Object Properties
     * ****************************************************************************************/
     antialiasing: true
 
     // Height and width of canvas, (arrowHeadLength * 2) is the margin
-    width:  (Math.abs(topLeftX - bottomRightX) + arrowHeadLength * 2)
-    height: (Math.abs(topLeftY - bottomRightY) + arrowHeadLength * 2)
+    width:  {
+        var w = Math.abs(topLeftX - bottomRightX) + arrowHeadLength * 2;
+        return (isNaN(w) || w <= 0) ? 1 : w;
+    }
+    height: {
+        var h = Math.abs(topLeftY - bottomRightY) + arrowHeadLength * 2;
+        return (isNaN(h) || h <= 0) ? 1 : h;
+    }
 
     // Position of canvas, arrowHeadLength is the margin
     x: (topLeftX - arrowHeadLength)
@@ -92,13 +156,70 @@ Canvas {
 
     //! paint Link
     onPaint: {
+        // Check if canvas is available and has valid dimensions
+        if (!canvas || !canvas.available || width <= 0 || height <= 0) {
+            return;
+        }
+        
+        // Check if positions are valid (not off-screen or behind camera)
+        // Positions with x < -1000 or y < -1000 are considered off-screen
+        if (!inputPos || !outputPos || 
+            inputPos.x < -1000 || inputPos.y < -1000 || 
+            outputPos.x < -1000 || outputPos.y < -1000) {
+            return;
+        }
 
         // create the context
         var context = canvas.getContext("2d");
+        
+        // Check if context is valid
+        if (!context) {
+            return;
+        }
+        
+        // Helper function to check if context is active
+        function isContextActive(ctx) {
+            if (!ctx) return false;
+            try {
+                // Try to access a property that requires active context
+                var test = ctx.canvas;
+                return true;
+            } catch (e) {
+                return false;
+            }
+        }
+        
+        // Final check before any operations
+        if (!isContextActive(context)) {
+            return;
+        }
 
         // if null ports OR not initialized (inputPos.x < 0) then return the function
-        if (!inputPort || inputPos.x < 0 ) {
-            context.reset();
+        if (!inputPort || inputPos.x < 0 || outputPos.x < 0) {
+            try {
+                if (isContextActive(context)) {
+                    context.reset();
+                }
+            } catch (e) {
+                // Context not active, ignore
+            }
+            return;
+        }
+        
+        // Check if controlPoints are valid
+        if (!link || !link.controlPoints || link.controlPoints.length === 0) {
+            try {
+                if (isContextActive(context)) {
+                    context.reset();
+                }
+            } catch (e) {
+                // Context not active, ignore
+            }
+            return;
+        }
+        
+        // Final check before painting
+        if (!isContextActive(context)) {
             return;
         }
 
@@ -114,13 +235,24 @@ Canvas {
         var minPoint1 = inputPos.plus(BasicLinkCalculator.connectionMargin(inputPort?.portSide ?? -1));
         var minPoint2 = outputPos.plus(BasicLinkCalculator.connectionMargin(outputPort?.portSide ?? -1));
         linkMidPoint = Calculation.getPositionByTolerance(0.5, [inputPos, minPoint1, minPoint2, outputPos]);
-        linkMidPoint = linkMidPoint.minus(topLeftPosition);
+        if (linkMidPoint && typeof linkMidPoint.minus === 'function') {
+            linkMidPoint = linkMidPoint.minus(topLeftPosition);
+        } else if (linkMidPoint && typeof linkMidPoint.x === 'number' && typeof linkMidPoint.y === 'number') {
+            linkMidPoint = Qt.vector2d(linkMidPoint.x - topLeftPosition.x, linkMidPoint.y - topLeftPosition.y);
+        }
 
         var lineWidth = 2;
 
         //! Correcte control points in ui state
         var controlPoints = [];
-        link.controlPoints.forEach(controlPoint => controlPoints.push(controlPoint.minus(topLeftPosition)));
+        link.controlPoints.forEach(controlPoint => {
+            if (controlPoint && typeof controlPoint.minus === 'function') {
+                controlPoints.push(controlPoint.minus(topLeftPosition));
+            } else if (controlPoint && typeof controlPoint.x === 'number' && typeof controlPoint.y === 'number') {
+                // Fallback: create vector2d from x and y if minus is not available
+                controlPoints.push(Qt.vector2d(controlPoint.x - topLeftPosition.x, controlPoint.y - topLeftPosition.y));
+            }
+        });
 
 
         // Draw the curve with LinkPainter
@@ -135,23 +267,38 @@ Canvas {
 
     // Prepare painter when direction of link changed.
     Connections {
-        target: link
+        target: link ? link : null
 
         function onDirectionChanged() {
-            preparePainter();
+            // Only paint if positions are valid
+            if (canvas && canvas.available && inputPos && outputPos && 
+                inputPos.x >= -1000 && inputPos.y >= -1000 && 
+                outputPos.x >= -1000 && outputPos.y >= -1000) {
+                preparePainter();
+            }
         }
     }
 
     // Prepare painter when style AND/OR type of link changed.
     Connections {
-        target: link.guiConfig
+        target: link && link.guiConfig ? link.guiConfig : null
 
         function onStyleChanged() {
-            preparePainter();
+            // Only paint if positions are valid
+            if (canvas && canvas.available && inputPos && outputPos && 
+                inputPos.x >= -1000 && inputPos.y >= -1000 && 
+                outputPos.x >= -1000 && outputPos.y >= -1000) {
+                preparePainter();
+            }
         }
 
         function onTypeChanged() {
-            preparePainter();
+            // Only paint if positions are valid
+            if (canvas && canvas.available && inputPos && outputPos && 
+                inputPos.x >= -1000 && inputPos.y >= -1000 && 
+                outputPos.x >= -1000 && outputPos.y >= -1000) {
+                preparePainter();
+            }
         }
     }
 
@@ -161,19 +308,55 @@ Canvas {
 
     //! Prepare painter and then call painter of canvas.
     function preparePainter() {
+        // Check if canvas is available and has valid dimensions before painting
+        if (!canvas || !canvas.available) {
+            return;
+        }
+        
+        // Check if positions are valid (not off-screen or behind camera)
+        // Positions with x < -1000 or y < -1000 are considered off-screen
+        if (!inputPos || !outputPos || 
+            inputPos.x < -1000 || inputPos.y < -1000 || 
+            outputPos.x < -1000 || outputPos.y < -1000) {
+            return;
+        }
+        
+        // Check if dimensions are valid (avoid NaN and negative values)
+        var w = width;
+        var h = height;
+        if (isNaN(w) || isNaN(h) || w <= 0 || h <= 0) {
+            return;
+        }
 
         // Update controlPoints when inputPort is known (inputPort !== null).
-        if(inputPort) {
-            // Calculate the control points with BasicLinkCalculator
-            link.controlPoints = BasicLinkCalculator.calculateControlPoints(inputPos, outputPos, link.direction,
-                                                                            link.guiConfig.type, link.inputPort.portSide,
-                                                                            outputPortSide);
+        if(inputPort && inputPos && outputPos && inputPos.x >= 0 && outputPos.x >= 0) {
+            try {
+                // Calculate the control points with BasicLinkCalculator
+                if (link && link.guiConfig && link.inputPort) {
+                    link.controlPoints = BasicLinkCalculator.calculateControlPoints(inputPos, outputPos, link.direction,
+                                                                                    link.guiConfig.type, link.inputPort.portSide,
+                                                                                    outputPortSide);
+                }
 
-            // The function controlPointsChanged is invoked once following current change.
-            // link.controlPointsChanged();
+                // The function controlPointsChanged is invoked once following current change.
+                // link.controlPointsChanged();
+            } catch (e) {
+                // Error calculating control points, skip painting
+                return;
+            }
         }
 
         // Update painter (must be reset the context when inputPort is NULL)
-        canvas.requestPaint();
+        // Only request paint if canvas is ready and valid, and positions are valid
+        if (canvas && canvas.available && !isNaN(w) && !isNaN(h) && w > 0 && h > 0 &&
+            inputPos && outputPos && 
+            inputPos.x >= -1000 && inputPos.y >= -1000 && 
+            outputPos.x >= -1000 && outputPos.y >= -1000) {
+            try {
+                canvas.requestPaint();
+            } catch (e) {
+                // Canvas not ready for painting, ignore
+            }
+        }
     }
 }
