@@ -20,6 +20,9 @@ QSObject {
     //! Position in the world
     property vector2d   position:   Qt.vector2d(0.0, 0.0);
 
+    //! 3D Position (optional, for 3D scenes)
+    property vector3d   position3D: Qt.vector3d(0.0, 0.0, 0.0);
+
     //! Width
     property int        width:      NLStyle.node.width
 
