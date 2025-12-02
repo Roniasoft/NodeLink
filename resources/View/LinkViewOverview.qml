@@ -38,12 +38,69 @@ I_LinkView {
 
     //! paint Link
     onPaint: {
+        // Check if canvas is available and has valid dimensions
+        if (!canvas || !canvas.available || width <= 0 || height <= 0) {
+            return;
+        }
+        
+        // Check if positions are valid (not off-screen or behind camera)
+        // Positions with x < -1000 or y < -1000 are considered off-screen
+        if (!inputPos || !outputPos || 
+            inputPos.x < -1000 || inputPos.y < -1000 || 
+            outputPos.x < -1000 || outputPos.y < -1000) {
+            return;
+        }
 
         // create the context
         var context = canvas.getContext("2d");
+        
+        // Check if context is valid
+        if (!context) {
+            return;
+        }
+        
+        // Helper function to check if context is active
+        function isContextActive(ctx) {
+            if (!ctx) return false;
+            try {
+                // Try to access a property that requires active context
+                var test = ctx.canvas;
+                return true;
+            } catch (e) {
+                return false;
+            }
+        }
+        
+        // Final check before any operations
+        if (!isContextActive(context)) {
+            return;
+        }
 
-        if (!inputPort) {
-            context.reset();
+        if (!inputPort || inputPos.x < 0 || outputPos.x < 0) {
+            try {
+                if (isContextActive(context)) {
+                    context.reset();
+                }
+            } catch (e) {
+                // Context not active, ignore
+            }
+            return;
+        }
+        
+        // Check if controlPoints are valid
+        if (!link || !link.controlPoints || link.controlPoints.length === 0) {
+            try {
+                if (isContextActive(context)) {
+                    context.reset();
+                }
+            } catch (e) {
+                // Context not active, ignore
+            }
+            return;
+        }
+        
+        // Final check before painting
+        if (!isContextActive(context)) {
             return;
         }
 
