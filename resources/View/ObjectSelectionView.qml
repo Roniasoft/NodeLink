@@ -64,6 +64,28 @@ Item {
         visible: hasSelectedObject
     }
 
+    Repeater {
+        id: highlightRepeater
+
+        delegate: Rectangle {
+            visible: (modelData.objectType === NLSpec.ObjectType.Node ||
+                      modelData.objectType === NLSpec.ObjectType.Container)
+
+            property int margin: 10
+
+            x: modelData.guiConfig.position.x - margin
+            y: modelData.guiConfig.position.y - margin
+            width: modelData.guiConfig.width + 2 * margin
+            height: modelData.guiConfig.height + 2 * margin
+
+            color: "transparent"
+            border.color: "#8F30FA"
+            border.width: 5
+            z: 9999
+        }
+    }
+
+
     //! MouseArea to move contain nodes.
     MouseArea {
         id: rubberBandMouseArea
@@ -206,6 +228,11 @@ Item {
 
     //! calculate X, Y, width and height of rubber band
     function calculateDimensions() { //FIXME: really expensive function
+            // if (sceneSession.selectionType === "lasso") {
+            //     calculateDimensionsLasso();
+            //     return;
+            // }
+
             var firstObj = Object.values(scene.selectionModel.selectedModel)[0];
             if (firstObj === undefined)
                 return;
@@ -273,4 +300,17 @@ Item {
             root.x = leftX - margin;
             root.y = topY - margin;
         }
+
+
+    function calculateDimensionsLasso() {
+        // Update dimensions
+        root.width = 0
+        root.height = 0
+        root.x = 0;
+        root.y = 0;
+
+        highlightRepeater.model = Object.values(scene.selectionModel.selectedModel);
+    }
+
+
     }
