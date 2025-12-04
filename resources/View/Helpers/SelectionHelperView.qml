@@ -277,6 +277,7 @@ Item {
                     lassoSelection.resetFreehand()
                 } else {
                     lassoSelection.isShapeClosed = true
+                    lassoSelection.resetFreehand()
                 }
             }
         }
