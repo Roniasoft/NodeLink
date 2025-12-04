@@ -509,10 +509,6 @@ Item {
                 text: selectionButton.checked ? selectionButton.rectangleText : selectionButton.lassoText
             }
 
-            onClicked: {
-                scene.toggleLassoSelectionMode()
-            }
-
             onCheckedChanged: {
                 if (checked)
                     sceneSession.selectionType = "rectangle"
