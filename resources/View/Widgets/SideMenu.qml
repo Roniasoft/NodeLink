@@ -499,7 +499,7 @@ Item {
 
             property string rectangleIcon: "\uf0c8"
             property string lassoIcon: "\uf8c8"
-            property string rectangleText: "Marquee Selection"
+            property string rectangleText: "Rectangle Selection"
             property string lassoText: "Lasso Selection"
 
             text: checked ? rectangleIcon : lassoIcon
