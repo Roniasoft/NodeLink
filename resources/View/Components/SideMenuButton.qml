@@ -11,6 +11,7 @@ ToolButton {
     /* Property Declarations
      * ****************************************************************************************/
     property string position
+    property alias backgroundColor: sideMenuToolButtonItem.color
 
     /* Object Properties
      * ****************************************************************************************/
@@ -24,6 +25,7 @@ ToolButton {
     /* Children
      * ****************************************************************************************/
     contentItem: Text {
+        id: sideMenuToolButtonItem
         text: sideMenuToolButtons.text
         font: sideMenuToolButtons.font
         color: !enabled ? "#7a7676" : (checked) ? "dodgerblue" : "#a6a6a6"

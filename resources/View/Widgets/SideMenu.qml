@@ -484,7 +484,7 @@ Item {
         }
     }
 
-    //! Lasso Selection
+    //! Rectangle/Lasso Selection
     SideMenuButtonGroup {
         id: buttonGroup4
         anchors.top: buttonGroup3.bottom
@@ -496,6 +496,7 @@ Item {
             Layout.preferredWidth: 34
             checkable: true
             checked: true
+            backgroundColor: "dodgerblue"
 
             property string rectangleIcon: "\uf0c8"
             property string lassoIcon: "\uf8c8"
