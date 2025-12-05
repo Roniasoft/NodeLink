@@ -65,40 +65,59 @@ Menu {
     function createNode(nodeType : int) : string {
         // Use scene.createCustomizeNode3D which handles 3D positioning
         if (scene && scene.createCustomizeNode3D) {
-            return scene.createCustomizeNode3D(nodeType, nodePosition.x, nodePosition.y, 
-                                               nodePosition3D.x, nodePosition3D.y, nodePosition3D.z);
+            try {
+                return scene.createCustomizeNode3D(nodeType, nodePosition.x, nodePosition.y, 
+                                                   nodePosition3D.x, nodePosition3D.y, nodePosition3D.z);
+            } catch (e) {
+                console.error("Error creating node with createCustomizeNode3D:", e);
+            }
         }
         // Fallback to createCustomizeNode
         if (scene && scene.createCustomizeNode) {
-            return scene.createCustomizeNode(nodeType, nodePosition.x, nodePosition.y);
+            try {
+                return scene.createCustomizeNode(nodeType, nodePosition.x, nodePosition.y);
+            } catch (e) {
+                console.error("Error creating node with createCustomizeNode:", e);
+            }
         }
         
-        // Fallback to standard node creation
-        var qsType = scene.nodeRegistry.nodeTypes[nodeType];
-        if (!qsType) {
-            console.info("The current node type (Node type: " + nodeType + ") cannot be created.");
+        // Fallback to standard node creation (should not be reached if createCustomizeNode3D works)
+        console.warn("Using fallback node creation for type:", nodeType);
+        var qsType = scene.nodeRegistry?.nodeTypes?.[nodeType];
+        if (!qsType || qsType === "") {
+            console.error("The current node type (Node type: " + nodeType + ") cannot be created. qsType is:", qsType);
             return null;
         }
 
-        var node = QSSerializer.createQSObject(qsType, scene.nodeRegistry.imports, scene?._qsRepo ?? NLCore.defaultRepo);
-        node._qsRepo = scene?._qsRepo ?? NLCore.defaultRepo;
-        node.type = nodeType;
+        try {
+            var node = QSSerializer.createQSObject(qsType, scene.nodeRegistry.imports || ["QtQuickStream", "NodeLink", "Simple3DNodeLink"], scene?._qsRepo ?? NLCore.defaultRepo);
+            if (!node) {
+                console.error("Failed to create QSObject with type:", qsType);
+                return null;
+            }
+            
+            node._qsRepo = scene?._qsRepo ?? NLCore.defaultRepo;
+            node.type = nodeType;
 
-        // Correct position with zoompoint and zoom factor into real position.
-        var positionMapped = nodePosition
+            // Correct position with zoompoint and zoom factor into real position.
+            var positionMapped = nodePosition
 
-        if (NLStyle.snapEnabled)
-            node.guiConfig.position = scene.snappedPosition(positionMapped);
-        else
-            node.guiConfig.position = positionMapped
+            if (NLStyle.snapEnabled)
+                node.guiConfig.position = scene.snappedPosition(positionMapped);
+            else
+                node.guiConfig.position = positionMapped
 
-        node.guiConfig.color = scene.nodeRegistry.nodeColors[nodeType];
-        node.guiConfig.colorIndex = 0;
-        node.title = scene.nodeRegistry.nodeNames[nodeType] + "_" + (Object.values(scene.nodes).filter(nodeObj => (nodeObj.type - nodeType) === 0).length + 1)
+            node.guiConfig.color = scene.nodeRegistry.nodeColors[nodeType];
+            node.guiConfig.colorIndex = 0;
+            node.title = scene.nodeRegistry.nodeNames[nodeType] + "_" + (Object.values(scene.nodes).filter(nodeObj => (nodeObj.type - nodeType) === 0).length + 1)
 
-        scene.addNode(node)
+            scene.addNode(node)
 
-        return node._qsUuid;
+            return node._qsUuid;
+        } catch (e) {
+            console.error("Error in fallback node creation:", e);
+            return null;
+        }
     }
 }
 
