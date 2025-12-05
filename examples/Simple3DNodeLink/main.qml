@@ -23,7 +23,7 @@ Window {
         _qsRepo: NLCore.defaultRepo
 
         imports: ["Simple3DNodeLink","NodeLink"];
-        defaultNode: 0
+        defaultNode: Specs.NodeType.Number
     }
 
     /* Object Properties
@@ -39,16 +39,92 @@ Window {
 
     Component.onCompleted: {
         // Prepare nodeRegistry
-        var nodeType = 0;
-        nodeRegistry.nodeTypes[nodeType] = "SourceNode";
-        nodeRegistry.nodeNames[nodeType] = "Source Node";
-        nodeRegistry.nodeIcons[nodeType] = "\uf1c0";
-        nodeRegistry.nodeColors[nodeType] = "#4CAF50";
-
-        nodeRegistry.nodeTypes[nodeType + 1] = "ResultNode";
-        nodeRegistry.nodeNames[nodeType + 1] = "Result Node";
-        nodeRegistry.nodeIcons[nodeType + 1] = "\uf06e";
-        nodeRegistry.nodeColors[nodeType + 1] = "#2196F3";
+        // Number node
+        nodeRegistry.nodeTypes[Specs.NodeType.Number] = "NumberNode";
+        nodeRegistry.nodeNames[Specs.NodeType.Number] = "Number";
+        nodeRegistry.nodeIcons[Specs.NodeType.Number] = "\uf1ec";
+        nodeRegistry.nodeColors[Specs.NodeType.Number] = "#FF9800";
+        
+        // Position node
+        nodeRegistry.nodeTypes[Specs.NodeType.Position] = "PositionNode";
+        nodeRegistry.nodeNames[Specs.NodeType.Position] = "Position";
+        nodeRegistry.nodeIcons[Specs.NodeType.Position] = "\uf041";
+        nodeRegistry.nodeColors[Specs.NodeType.Position] = "#9C27B0";
+        
+        // Rotation node
+        nodeRegistry.nodeTypes[Specs.NodeType.Rotation] = "RotationNode";
+        nodeRegistry.nodeNames[Specs.NodeType.Rotation] = "Rotation";
+        nodeRegistry.nodeIcons[Specs.NodeType.Rotation] = "\uf01e";
+        nodeRegistry.nodeColors[Specs.NodeType.Rotation] = "#9C27B0";
+        
+        // Scale node
+        nodeRegistry.nodeTypes[Specs.NodeType.Scale] = "ScaleNode";
+        nodeRegistry.nodeNames[Specs.NodeType.Scale] = "Scale";
+        nodeRegistry.nodeIcons[Specs.NodeType.Scale] = "\uf31e";
+        nodeRegistry.nodeColors[Specs.NodeType.Scale] = "#9C27B0";
+        
+        // Dimensions node
+        nodeRegistry.nodeTypes[Specs.NodeType.Dimensions] = "DimensionsNode";
+        nodeRegistry.nodeNames[Specs.NodeType.Dimensions] = "Dimensions";
+        nodeRegistry.nodeIcons[Specs.NodeType.Dimensions] = "\uf1b2";
+        nodeRegistry.nodeColors[Specs.NodeType.Dimensions] = "#9C27B0";
+        
+        // Material nodes
+        nodeRegistry.nodeTypes[Specs.NodeType.Metal] = "MetalMaterialNode";
+        nodeRegistry.nodeNames[Specs.NodeType.Metal] = "Metal";
+        nodeRegistry.nodeIcons[Specs.NodeType.Metal] = "\uf0e7";
+        nodeRegistry.nodeColors[Specs.NodeType.Metal] = "#607D8B";
+        
+        nodeRegistry.nodeTypes[Specs.NodeType.Plastic] = "PlasticMaterialNode";
+        nodeRegistry.nodeNames[Specs.NodeType.Plastic] = "Plastic";
+        nodeRegistry.nodeIcons[Specs.NodeType.Plastic] = "\uf0e7";
+        nodeRegistry.nodeColors[Specs.NodeType.Plastic] = "#607D8B";
+        
+        nodeRegistry.nodeTypes[Specs.NodeType.Glass] = "GlassMaterialNode";
+        nodeRegistry.nodeNames[Specs.NodeType.Glass] = "Glass";
+        nodeRegistry.nodeIcons[Specs.NodeType.Glass] = "\uf0e7";
+        nodeRegistry.nodeColors[Specs.NodeType.Glass] = "#607D8B";
+        
+        nodeRegistry.nodeTypes[Specs.NodeType.Rubber] = "RubberMaterialNode";
+        nodeRegistry.nodeNames[Specs.NodeType.Rubber] = "Rubber";
+        nodeRegistry.nodeIcons[Specs.NodeType.Rubber] = "\uf0e7";
+        nodeRegistry.nodeColors[Specs.NodeType.Rubber] = "#607D8B";
+        
+        nodeRegistry.nodeTypes[Specs.NodeType.Wood] = "WoodMaterialNode";
+        nodeRegistry.nodeNames[Specs.NodeType.Wood] = "Wood";
+        nodeRegistry.nodeIcons[Specs.NodeType.Wood] = "\uf0e7";
+        nodeRegistry.nodeColors[Specs.NodeType.Wood] = "#607D8B";
+        
+        // Shape nodes
+        nodeRegistry.nodeTypes[Specs.NodeType.Cube] = "CubeNode";
+        nodeRegistry.nodeNames[Specs.NodeType.Cube] = "Cube";
+        nodeRegistry.nodeIcons[Specs.NodeType.Cube] = "\uf1b2";
+        nodeRegistry.nodeColors[Specs.NodeType.Cube] = "#F44336";
+        
+        nodeRegistry.nodeTypes[Specs.NodeType.Sphere] = "SphereNode";
+        nodeRegistry.nodeNames[Specs.NodeType.Sphere] = "Sphere";
+        nodeRegistry.nodeIcons[Specs.NodeType.Sphere] = "\uf111";
+        nodeRegistry.nodeColors[Specs.NodeType.Sphere] = "#F44336";
+        
+        nodeRegistry.nodeTypes[Specs.NodeType.Cylinder] = "CylinderNode";
+        nodeRegistry.nodeNames[Specs.NodeType.Cylinder] = "Cylinder";
+        nodeRegistry.nodeIcons[Specs.NodeType.Cylinder] = "\uf1b2";
+        nodeRegistry.nodeColors[Specs.NodeType.Cylinder] = "#F44336";
+        
+        nodeRegistry.nodeTypes[Specs.NodeType.Cone] = "ConeNode";
+        nodeRegistry.nodeNames[Specs.NodeType.Cone] = "Cone";
+        nodeRegistry.nodeIcons[Specs.NodeType.Cone] = "\uf1b2";
+        nodeRegistry.nodeColors[Specs.NodeType.Cone] = "#F44336";
+        
+        nodeRegistry.nodeTypes[Specs.NodeType.Plane] = "PlaneNode";
+        nodeRegistry.nodeNames[Specs.NodeType.Plane] = "Plane";
+        nodeRegistry.nodeIcons[Specs.NodeType.Plane] = "\uf0c8";
+        nodeRegistry.nodeColors[Specs.NodeType.Plane] = "#F44336";
+        
+        nodeRegistry.nodeTypes[Specs.NodeType.Rectangle] = "RectangleNode";
+        nodeRegistry.nodeNames[Specs.NodeType.Rectangle] = "Rectangle";
+        nodeRegistry.nodeIcons[Specs.NodeType.Rectangle] = "\uf0c8";
+        nodeRegistry.nodeColors[Specs.NodeType.Rectangle] = "#F44336";
 
         NLCore.defaultRepo = NLCore.createDefaultRepo(["QtQuickStream", "NodeLink", "Simple3DNodeLink"])
         NLCore.defaultRepo.initRootObject("Simple3DNodeLinkScene");
@@ -83,6 +159,7 @@ Window {
         anchors.left: parent.left
         anchors.top: parent.top
         anchors.margins: 20
+        anchors.topMargin: 400  // Below node menu
         width: 300
         height: helpContent.height + 40
         color: "#2a2a2a"
@@ -115,7 +192,7 @@ Window {
             }
 
             Text {
-                text: "W / S - Move forward/backward\nQ / E - Move left/right\nShift / Space - Move up/down\nR / T - Rotate camera up/down"
+                text: "W / S - Move forward/backward\nQ / E - Move left/right\nShift / Space - Move up/down"
                 color: "#ccc"
                 font.pixelSize: 11
                 wrapMode: Text.WordWrap
@@ -123,14 +200,29 @@ Window {
             }
 
             Text {
-                text: "Mouse:"
+                text: "Camera Rotation:"
                 color: "#aaa"
                 font.pixelSize: 12
                 font.bold: true
             }
 
             Text {
-                text: "Right Click - Context menu\nCtrl + Right Click + Drag - Rotate camera\nDouble Click - Create node"
+                text: "A / D - Rotate left/right\nR / T - Rotate up/down\nCtrl + Right Click + Drag - Rotate camera"
+                color: "#ccc"
+                font.pixelSize: 11
+                wrapMode: Text.WordWrap
+                width: parent.width
+            }
+
+            Text {
+                text: "Node Creation:"
+                color: "#aaa"
+                font.pixelSize: 12
+                font.bold: true
+            }
+
+            Text {
+                text: "Double Click - Create node at click position\nRight Click - Context menu"
                 color: "#ccc"
                 font.pixelSize: 11
                 wrapMode: Text.WordWrap
