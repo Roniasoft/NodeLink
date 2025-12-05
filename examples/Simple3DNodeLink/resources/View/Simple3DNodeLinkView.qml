@@ -1,7 +1,8 @@
 import QtQuick
-import QtQuick3D
+import QtQuick3D as Qt3D
 import QtQuick3D.Helpers
 import QtQuick.Controls
+import QtQuick.Controls.Material
 
 import NodeLink
 import QtQuickStream
@@ -23,29 +24,24 @@ Item {
     }
 
     // Camera control properties
-    property real cameraX: 150
-    property real cameraY: 100
-    property real cameraZ: 600
-    property real cameraRotationX: -25
-    property real cameraRotationY: 20
+    property real cameraX: 0
+    property real cameraY: 50
+    property real cameraZ: 400
+    property real cameraRotationX: -15
+    property real cameraRotationY: 0
     
     // Movement speed
     property real moveSpeed: 5.0
     property real rotationSpeed: 2.0
     property real mouseRotationSpeed: 0.5  // Mouse rotation sensitivity
     
-    // Perspective scaling
-    property real baseDistance: 500.0  // Base distance for scale calculation
-    property real minScale: 0.3  // Minimum scale when far away
-    property real maxScale: 1.5  // Maximum scale when close
-    property real fadeStartDistance: 1800.0  // Start fading at this distance
-    property real fadeEndDistance: 1800.0  // Completely invisible at this distance
-    
     // Keyboard state
     property bool wPressed: false
     property bool sPressed: false
     property bool ePressed: false
     property bool qPressed: false
+    property bool aPressed: false
+    property bool dPressed: false
     property bool shiftPressed: false
     property bool spacePressed: false
     property bool rPressed: false
@@ -55,8 +51,18 @@ Item {
     property bool mouseRotating: false
     property point lastMousePos: Qt.point(0, 0)
     
+    // Perspective scaling
+    property real baseDistance: 500.0  // Base distance for scale calculation
+    property real minScale: 0.3  // Minimum scale when far away
+    property real maxScale: 1.5  // Maximum scale when close
+    property real fadeStartDistance: 1800.0  // Start fading at this distance
+    property real fadeEndDistance: 1800.0  // Completely invisible at this distance
+    
     // View3D alias for access from child components
     property alias view3d: view3d
+    
+    // Ensure focus is maintained
+    activeFocusOnTab: true
 
     /* Children
      * ****************************************************************************************/
@@ -64,59 +70,345 @@ Item {
     //! Background
     Rectangle {
         anchors.fill: parent
-        color: "#1a1a1a"
         gradient: Gradient {
-            GradientStop { position: 0.0; color: "#1a1a1a" }
-            GradientStop { position: 1.0; color: "#0d0d0d" }
+            GradientStop { position: 0.0; color: "#0a0a0f" }  // Very dark blue-black at top
+            GradientStop { position: 1.0; color: "#050508" }  // Even darker at bottom
         }
     }
 
     //! 3D Scene
-    View3D {
+    Qt3D.View3D {
         id: view3d
         anchors.fill: parent
         camera: camera
 
         //! Camera
-        PerspectiveCamera {
+        Qt3D.PerspectiveCamera {
             id: camera
             position: Qt.vector3d(cameraX, cameraY, cameraZ)
             eulerRotation: Qt.vector3d(cameraRotationX, cameraRotationY, 0)
+            fieldOfView: 60
         }
 
         //! Environment
-        environment: SceneEnvironment {
-            clearColor: "#1a1a1a"
-            backgroundMode: SceneEnvironment.Color
-            antialiasingMode: SceneEnvironment.MSAA
-            antialiasingQuality: SceneEnvironment.High
+        environment: Qt3D.SceneEnvironment {
+            clearColor: "#0a0a0f"  // Very dark blue-black background
+            backgroundMode: Qt3D.SceneEnvironment.Color
+            antialiasingMode: Qt3D.SceneEnvironment.MSAA
+            antialiasingQuality: Qt3D.SceneEnvironment.High
+            depthTestEnabled: true
+            depthPrePassEnabled: true
         }
 
-        //! Lighting
-        DirectionalLight {
+        //! Main directional light
+        Qt3D.DirectionalLight {
             id: mainLight
             eulerRotation: Qt.vector3d(-45, -45, 0)
             color: Qt.rgba(1.0, 1.0, 1.0, 1.0)
-            brightness: 0.8
+            brightness: 1.5
+            castsShadow: true
+        }
+        
+        //! Ground Plane - Large square surface for reference
+        Qt3D.Model {
+            id: groundPlane
+            source: "#Rectangle"
+            scale: Qt.vector3d(10000, 10000, 1)  // Very large square ground plane (10000m x 10000m)
+            position: Qt.vector3d(0, 0, 0)
+            eulerRotation: Qt.vector3d(-90, 0, 0)  // Rotate to be horizontal (flat on XZ plane)
+            objectName: "groundPlane"  // Set objectName for picking
+            
+            materials: [
+                Qt3D.PrincipledMaterial {
+                    baseColor: "#1a1a20"  // Dark blue-gray ground plane
+                    roughness: 0.95
+                    metalness: 0.0
+                    emissiveFactor: Qt.vector3d(0.02, 0.02, 0.03)  // Very subtle blue emission
+                }
+            ]
+            
+            pickable: true  // Enable picking for ground plane
+            receivesShadows: true
         }
 
-        //! Ambient lighting (using a second directional light)
-        DirectionalLight {
-            eulerRotation: Qt.vector3d(-90, 0, 0)
-            color: Qt.rgba(0.3, 0.3, 0.4, 1.0)
-            brightness: 0.3
+        //! 3D Shapes Container - Renders shapes from shape nodes
+        Qt3D.Node {
+            id: shapesContainer
+            
+            // Component for creating 3D shape models
+            Component {
+                id: shapeModelComponent
+                Qt3D.Node {
+                    id: shapeNode
+                    property var shapeData: null
+                    property string nodeName: ""
+                    property var rootView: null  // Reference to root view for camera access
+                    
+                    // Position, rotation, scale from shapeData
+                    position: {
+                        if (!shapeData || !shapeData.position) return Qt.vector3d(0, 0, 0);
+                        var _ = shapeData.position.x + shapeData.position.y + shapeData.position.z; // Force dependency
+                        return shapeData.position;
+                    }
+                    eulerRotation: {
+                        if (!shapeData || !shapeData.rotation) return Qt.vector3d(0, 0, 0);
+                        var _ = shapeData.rotation.x + shapeData.rotation.y + shapeData.rotation.z; // Force dependency
+                        return shapeData.rotation;
+                    }
+                    scale: {
+                        if (!shapeData) return Qt.vector3d(1, 1, 1);
+                        var baseScale = shapeData.scale ? shapeData.scale : Qt.vector3d(1, 1, 1);
+                        var dims = shapeData.dimensions ? shapeData.dimensions : Qt.vector3d(100, 100, 100);
+                        // Force dependency on all values
+                        var _ = baseScale.x + baseScale.y + baseScale.z + dims.x + dims.y + dims.z;
+                        // Convert dimensions from cm to meters and apply scale
+                        return Qt.vector3d(
+                            baseScale.x * dims.x * 0.01,
+                            baseScale.y * dims.y * 0.01,
+                            baseScale.z * dims.z * 0.01
+                        );
+                    }
+                    
+                    // Shape model
+                    Qt3D.Model {
+                        id: shapeModel
+                        
+                        // Shape source based on shapeType
+                        source: {
+                            if (!shapeData || !shapeData.shapeType) return "#Cube";
+                            var _ = shapeData.shapeType; // Force dependency
+                            switch(shapeData.shapeType) {
+                                case "Sphere": return "#Sphere";
+                                case "Cylinder": return "#Cylinder";
+                                case "Cone": return "#Cone";
+                                case "Plane": return "#Rectangle";
+                                case "Rectangle": return "#Rectangle";
+                                default: return "#Cube";
+                            }
+                        }
+                        
+                        // Material properties
+                        materials: [
+                            Qt3D.PrincipledMaterial {
+                                id: shapeMaterial
+                                baseColor: {
+                                    if (!shapeData || !shapeData.material) return Qt.rgba(0.5, 0.7, 1.0, 1.0);
+                                    // Default colors based on material type
+                                    switch(shapeData.material.type) {
+                                        case "Metal": return Qt.rgba(0.7, 0.7, 0.7, 1.0);
+                                        case "Plastic": return Qt.rgba(0.5, 0.5, 0.8, 1.0);
+                                        case "Glass": return Qt.rgba(0.8, 0.9, 1.0, 0.5);
+                                        case "Rubber": return Qt.rgba(0.2, 0.2, 0.2, 1.0);
+                                        case "Wood": return Qt.rgba(0.6, 0.4, 0.2, 1.0);
+                                        default: return Qt.rgba(0.5, 0.7, 1.0, 1.0);
+                                    }
+                                }
+                                metalness: shapeData && shapeData.material ? (shapeData.material.metallic || 0.0) : 0.0
+                                roughness: shapeData && shapeData.material ? (shapeData.material.roughness || 0.5) : 0.5
+                                emissiveFactor: {
+                                    if (!shapeData || !shapeData.material) return Qt.vector3d(0, 0, 0);
+                                    var power = shapeData.material.emissivePower || 0.0;
+                                    return Qt.vector3d(power, power, power);
+                                }
+                                opacity: (shapeData && shapeData.material && shapeData.material.type === "Glass") ? 0.5 : 1.0
+                            }
+                        ]
+                        
+                        receivesShadows: true
+                    }
+                    
+                }
+            }
+            
+            // Track created shape models
+            property var createdShapes: ({})
+            
+            // Function to update shapes
+            function updateShapes() {
+                if (!scene || !scene.nodes) return;
+                
+                var currentKeys = Object.keys(scene.nodes || {});
+                var createdKeys = Object.keys(createdShapes || {});
+                
+                // Remove shapes that no longer exist or are not shape nodes
+                for (var i = 0; i < createdKeys.length; i++) {
+                    var key = createdKeys[i];
+                    var node = scene.nodes[key];
+                    if (!node || node.type < Specs.NodeType.Cube || node.type > Specs.NodeType.Rectangle) {
+                        // Not a shape node or node doesn't exist
+                        if (createdShapes[key]) {
+                            createdShapes[key].destroy();
+                            delete createdShapes[key];
+                        }
+                    }
+                }
+                
+                // Create/update shapes for shape nodes (type 12-17)
+                for (var j = 0; j < currentKeys.length; j++) {
+                    var nodeId = currentKeys[j];
+                    var nodeData = scene.nodes[nodeId];
+                    
+                    if (!nodeData || nodeData.type < 12 || nodeData.type > 17) {
+                        continue; // Not a shape node
+                    }
+                    
+                    // Get node's 3D position for default position calculation
+                    var nodePos3D = nodeData.guiConfig?.position3D;
+                    var defaultPosition = Qt.vector3d(0, 0, 0);
+                    if (nodePos3D) {
+                        // Position shape 100 units to the right (in +X direction) from node
+                        defaultPosition = Qt.vector3d(nodePos3D.x + 100, nodePos3D.y, nodePos3D.z);
+                    }
+                    
+                    // Check if this is a new shape (not created yet)
+                    var isNewShape = !createdShapes[nodeId];
+                    
+                    // Get shape data from node - create a new object to ensure reactivity
+                    var shapeData = null;
+                    var needsPositionUpdate = false;
+                    
+                    if (nodeData.nodeData && nodeData.nodeData.data) {
+                        var data = nodeData.nodeData.data;
+                        
+                        // If position is not set and this is a new shape, use default position based on node position
+                        var finalPosition = data.position ? Qt.vector3d(data.position.x, data.position.y, data.position.z) : null;
+                        
+                        if (!finalPosition || (finalPosition.x === 0 && finalPosition.y === 0 && finalPosition.z === 0)) {
+                            // Position is not set or is (0,0,0), use default position based on node
+                            if (isNewShape && nodePos3D) {
+                                finalPosition = defaultPosition;
+                                needsPositionUpdate = true;
+                            } else {
+                                finalPosition = Qt.vector3d(0, 0, 0);
+                            }
+                        }
+                        
+                        // Create a new object to ensure QML detects the change
+                        shapeData = {
+                            shapeType: data.shapeType || "Cube",
+                            position: finalPosition,
+                            rotation: data.rotation ? Qt.vector3d(data.rotation.x, data.rotation.y, data.rotation.z) : Qt.vector3d(0, 0, 0),
+                            scale: data.scale ? Qt.vector3d(data.scale.x, data.scale.y, data.scale.z) : Qt.vector3d(1, 1, 1),
+                            dimensions: data.dimensions ? Qt.vector3d(data.dimensions.x, data.dimensions.y, data.dimensions.z) : Qt.vector3d(100, 100, 100),
+                            material: data.material || null
+                        };
+                        
+                        // If we need to update position, save it to nodeData
+                        if (needsPositionUpdate && nodeData.updateInputPosition) {
+                            nodeData.updateInputPosition(finalPosition);
+                        } else if (needsPositionUpdate && nodeData.nodeData) {
+                            // Fallback: directly update nodeData
+                            var currentData = nodeData.nodeData.data || {};
+                            nodeData.nodeData.data = {
+                                shapeType: currentData.shapeType || shapeData.shapeType,
+                                position: finalPosition,
+                                rotation: currentData.rotation || shapeData.rotation,
+                                scale: currentData.scale || shapeData.scale,
+                                dimensions: currentData.dimensions || shapeData.dimensions,
+                                material: currentData.material || shapeData.material
+                            };
+                        }
+                    } else {
+                        // Default shape data - use node position + offset for new shapes
+                        if (isNewShape && nodePos3D) {
+                            shapeData = {
+                                shapeType: "Cube",
+                                position: defaultPosition,
+                                rotation: Qt.vector3d(0, 0, 0),
+                                scale: Qt.vector3d(1, 1, 1),
+                                dimensions: Qt.vector3d(100, 100, 100),
+                                material: null
+                            };
+                            // Save default position to nodeData
+                            if (nodeData.nodeData) {
+                                nodeData.nodeData.data = shapeData;
+                            }
+                        } else {
+                            shapeData = {
+                                shapeType: "Cube",
+                                position: Qt.vector3d(0, 0, 0),
+                                rotation: Qt.vector3d(0, 0, 0),
+                                scale: Qt.vector3d(1, 1, 1),
+                                dimensions: Qt.vector3d(100, 100, 100),
+                                material: null
+                            };
+                        }
+                    }
+                    
+                    // Get node name/title
+                    var nodeName = nodeData.title || nodeData.guiConfig?.title || "";
+                    if (!nodeName || nodeName === "") {
+                        // Fallback to node type name
+                        if (scene && scene.nodeRegistry) {
+                            var nodeTypeName = scene.nodeRegistry.getNodeName(nodeData.type);
+                            nodeName = nodeTypeName || "";
+                        }
+                    }
+                    
+                    if (!createdShapes[nodeId]) {
+                        // Create new shape model
+                        var shapeModel = shapeModelComponent.createObject(shapesContainer, {
+                            shapeData: shapeData,
+                            nodeName: nodeName,
+                            rootView: root,  // Pass root view reference for camera access
+                            objectName: "shape_" + nodeId
+                        });
+                        createdShapes[nodeId] = shapeModel;
+                    } else {
+                        // Update existing shape model - assign new object to trigger updates
+                        // IMPORTANT: Don't update position when node moves - shape position is independent
+                        var existingShape = createdShapes[nodeId];
+                        // Update node name
+                        existingShape.nodeName = nodeName;
+                        // Only update if position is explicitly set in nodeData (not from node position)
+                        var currentData = nodeData.nodeData && nodeData.nodeData.data ? nodeData.nodeData.data : null;
+                        if (currentData && currentData.position) {
+                            // Position is explicitly set, use it
+                            existingShape.shapeData = shapeData;
+                        } else {
+                            // Position is not set, keep existing position (don't update based on node position)
+                            var existingPosition = existingShape.shapeData && existingShape.shapeData.position ? 
+                                existingShape.shapeData.position : Qt.vector3d(0, 0, 0);
+                            shapeData.position = existingPosition;
+                            existingShape.shapeData = shapeData;
+                        }
+                    }
+                }
+            }
+            
+            // Update when scene.nodes changes
+            Connections {
+                target: scene
+                function onNodesChanged() {
+                    shapesContainer.updateShapes();
+                }
+                function onLinkAdded(link) {
+                    Qt.callLater(function() {
+                        shapesContainer.updateShapes();
+                    });
+                }
+                function onLinkRemoved(link) {
+                    Qt.callLater(function() {
+                        shapesContainer.updateShapes();
+                    });
+                }
+            }
+            
+            // Timer to periodically update shapes (in case nodeData changes)
+            Timer {
+                interval: 50  // Update every 50ms for more responsive updates
+                running: true
+                repeat: true
+                onTriggered: {
+                    shapesContainer.updateShapes();
+                }
+            }
+            
+            Component.onCompleted: {
+                updateShapes();
+            }
         }
 
-
-        //! Axes Helper - Shows X (red), Y (green), Z (blue) axes
-        AxisHelper {
-            id: axesHelper
-            scale: Qt.vector3d(1, 1, 1)
-        }
-
-        //! Nodes are rendered as 2D overlay (not 3D models) for full interactivity
-
-        //! Links are rendered in the 2D overlay (see below) - no 3D cylinder needed
     }
 
     //! Overlay for nodes, links, and interaction (2D overlay for full interactivity)
@@ -149,9 +441,6 @@ Item {
                         return Qt.vector3d(0, 0, 0);
                     }
                 }
-                
-                property bool _firstXCalc: false
-                property bool _firstYCalc: false
                 
                 node: nodeData
                 scene: root.scene
@@ -315,7 +604,7 @@ Item {
                     Scale {
                         xScale: overlayNodeView.perspectiveScaleX
                         yScale: overlayNodeView.perspectiveScaleY
-                        origin.x: (nodeData?.guiConfig?.width ?? 160) / 2
+                        origin.x: (nodeData?.guiConfig?.width ?? 240) / 2
                         origin.y: (nodeData?.guiConfig?.height ?? 100) / 2
                     }
                 ]
@@ -352,7 +641,7 @@ Item {
                         // Fallback: use 2D position
                         var pos2D = nodeData.guiConfig?.position;
                         if (pos2D) {
-                            return pos2D.x - (nodeData.guiConfig?.width ?? 160) / 2;
+                            return pos2D.x - (nodeData.guiConfig?.width ?? 240) / 2;
                         }
                         return -10000;
                     }
@@ -365,25 +654,13 @@ Item {
                         return -10000;
                     }
                     
-                    // Check if node is behind camera (z < 0 in camera space)
-                    // If behind camera, don't show it (return off-screen)
-                    var cameraPos = Qt.vector3d(root.cameraX, root.cameraY, root.cameraZ);
-                    var toNode = pos3D.minus(cameraPos);
-                    var rotX = root.cameraRotationX * Math.PI / 180;
-                    var rotY = root.cameraRotationY * Math.PI / 180;
-                    var forward = Qt.vector3d(
-                        -Math.sin(rotY) * Math.cos(rotX),
-                        Math.sin(rotX),
-                        -Math.cos(rotY) * Math.cos(rotX)
-                    ).normalized();
-                    var dotProduct = toNode.x * forward.x + toNode.y * forward.y + toNode.z * forward.z;
-                    if (dotProduct < 0) {
-                        // Node is behind camera
+                    // Check if node is behind camera
+                    if (root.isBehindCamera(pos3D)) {
                         return -10000;
                     }
                     
                     // Center the node on the screen position
-                    return screenPos.x - (nodeData.guiConfig?.width ?? 160) / 2;
+                    return screenPos.x - (nodeData.guiConfig?.width ?? 240) / 2;
                 }
                 y: {
                     var v3d = root.view3d;
@@ -410,19 +687,8 @@ Item {
                         return -10000;
                     }
                     
-                    // Check if node is behind camera (same check as in x binding)
-                    var cameraPos = Qt.vector3d(root.cameraX, root.cameraY, root.cameraZ);
-                    var toNode = pos3D.minus(cameraPos);
-                    var rotX = root.cameraRotationX * Math.PI / 180;
-                    var rotY = root.cameraRotationY * Math.PI / 180;
-                    var forward = Qt.vector3d(
-                        -Math.sin(rotY) * Math.cos(rotX),
-                        Math.sin(rotX),
-                        -Math.cos(rotY) * Math.cos(rotX)
-                    ).normalized();
-                    var dotProduct = toNode.x * forward.x + toNode.y * forward.y + toNode.z * forward.z;
-                    if (dotProduct < 0) {
-                        // Node is behind camera
+                    // Check if node is behind camera
+                    if (root.isBehindCamera(pos3D)) {
                         return -10000;
                     }
                     
@@ -430,17 +696,7 @@ Item {
                     return screenPos.y - (nodeData.guiConfig?.height ?? 100) / 2;
                 }
                 
-                // PortView components inside NodeView automatically update port._position
-                // via their globalX/globalY properties based on overlayNodeView.x and overlayNodeView.y
-                // Since overlayNodeView.x and overlayNodeView.y are reactive bindings that update with camera movement,
-                // PortView will automatically update port._position when the node position changes
-                // No manual update needed - QML bindings handle the updates automatically
-                
-                Component.onCompleted: {
-                    // Node view created
-                }
-                
-                // Handle node selection - remove focus from root when node is selected
+                // Handle node selection - transfer focus to node when selected
                 Connections {
                     target: scene && scene.selectionModel ? scene.selectionModel : null
                     function onSelectedObjectChanged() {
@@ -449,10 +705,19 @@ Item {
                         try {
                             var isSelected = scene.selectionModel.isSelected(nodeData._qsUuid);
                             if (isSelected) {
+                                // Node is selected - remove focus from root and give to node
                                 if (root) root.focus = false;
+                                // Give focus to nodeView to enable keyboard input
+                                Qt.callLater(function() {
+                                    if (overlayNodeView) {
+                                        overlayNodeView.forceActiveFocus();
+                                    }
+                                });
                             } else {
+                                // Node is not selected - check if any node is selected
                                 var selectedCount = Object.keys(scene.selectionModel.selectedModel || {}).length;
                                 if (selectedCount === 0 && root) {
+                                    // No nodes selected - give focus back to root for camera control
                                     root.forceActiveFocus();
                                 }
                             }
@@ -460,6 +725,114 @@ Item {
                             // Object destroyed during operation, ignore
                         }
                     }
+                }
+            }
+        }
+        
+        //! Shape name labels - Display node names above shapes
+        Repeater {
+            model: scene ? Object.keys(scene.nodes || {}).filter(function(nodeId) {
+                var node = scene.nodes[nodeId];
+                return node && node.type >= Specs.NodeType.Cube && node.type <= Specs.NodeType.Rectangle;
+            }) : []
+            
+            delegate: Item {
+                id: shapeLabel
+                property var nodeData: scene?.nodes?.[modelData]
+                property var shapeData: nodeData?.nodeData?.data
+                property string nodeName: {
+                    if (!nodeData) return "";
+                    var name = nodeData.title || nodeData.guiConfig?.title || "";
+                    if (!name || name === "") {
+                        if (scene && scene.nodeRegistry) {
+                            name = scene.nodeRegistry.getNodeName(nodeData.type) || "";
+                        }
+                    }
+                    return name;
+                }
+                property var shapePosition3D: shapeData && shapeData.position ? shapeData.position : null
+                
+                visible: nodeName !== "" && shapePosition3D !== null
+                z: 2000  // Above nodes and links
+                
+                // Calculate label position above shape
+                property var labelWorldPos: {
+                    if (!shapePosition3D) return null;
+                    // Get shape dimensions to calculate height
+                    var dims = shapeData && shapeData.dimensions ? shapeData.dimensions : Qt.vector3d(100, 100, 100);
+                    var baseScale = shapeData && shapeData.scale ? shapeData.scale : Qt.vector3d(1, 1, 1);
+                    var height = dims.y * baseScale.y * 0.01; // Convert to meters
+                    // Position label 0.5m above the top of the shape
+                    return Qt.vector3d(
+                        shapePosition3D.x,
+                        shapePosition3D.y + height / 2 + 0.5,
+                        shapePosition3D.z
+                    );
+                }
+                
+                x: {
+                    if (!labelWorldPos) return -10000;
+                    var v3d = root.view3d;
+                    if (!v3d) return -10000;
+                    
+                    // Force dependency on camera properties
+                    var _ = root.cameraX + root.cameraY + root.cameraZ + root.cameraRotationX + root.cameraRotationY;
+                    
+                    var screenPos = v3d.mapFrom3DScene(labelWorldPos);
+                    if (isNaN(screenPos.x) || isNaN(screenPos.y)) return -10000;
+                    
+                    // Check if behind camera
+                    var cameraPos = Qt.vector3d(root.cameraX, root.cameraY, root.cameraZ);
+                    var toLabel = labelWorldPos.minus(cameraPos);
+                    var rotX = root.cameraRotationX * Math.PI / 180;
+                    var rotY = root.cameraRotationY * Math.PI / 180;
+                    var forward = Qt.vector3d(
+                        -Math.sin(rotY) * Math.cos(rotX),
+                        Math.sin(rotX),
+                        -Math.cos(rotY) * Math.cos(rotX)
+                    ).normalized();
+                    var dotProduct = toLabel.x * forward.x + toLabel.y * forward.y + toLabel.z * forward.z;
+                    if (dotProduct < 0) return -10000;
+                    
+                    return screenPos.x - shapeLabelText.width / 2;
+                }
+                
+                y: {
+                    if (!labelWorldPos) return -10000;
+                    var v3d = root.view3d;
+                    if (!v3d) return -10000;
+                    
+                    // Force dependency on camera properties
+                    var _ = root.cameraX + root.cameraY + root.cameraZ + root.cameraRotationX + root.cameraRotationY;
+                    
+                    var screenPos = v3d.mapFrom3DScene(labelWorldPos);
+                    if (isNaN(screenPos.x) || isNaN(screenPos.y)) return -10000;
+                    
+                    // Check if behind camera
+                    if (root.isBehindCamera(labelWorldPos)) return -10000;
+                    
+                    return screenPos.y - shapeLabelText.height;
+                }
+                
+                Rectangle {
+                    id: shapeLabelBackground
+                    anchors.centerIn: parent
+                    width: shapeLabelText.width + 16
+                    height: shapeLabelText.height + 8
+                    color: Qt.rgba(0.2, 0.2, 0.2, 0.9)
+                    border.color: Qt.rgba(1.0, 1.0, 1.0, 0.8)
+                    border.width: 2
+                    radius: 4
+                }
+                
+                Text {
+                    id: shapeLabelText
+                    anchors.centerIn: parent
+                    text: shapeLabel.nodeName
+                    color: Qt.rgba(1.0, 1.0, 1.0, 1.0)
+                    font.pixelSize: 14
+                    font.bold: true
+                    horizontalAlignment: Text.AlignHCenter
                 }
             }
         }
@@ -553,15 +926,43 @@ Item {
                     // Check if port positions are valid (not off-screen)
                     // LinkView uses inputPos and outputPos which come from port._position
                     // If ports are off-screen (position < -1000), hide the link
+                    // But also check if port._position exists and is valid
+                    // IMPORTANT: If port._position is not set yet (new link), don't hide the link
+                    // Instead, trigger an update and wait for port positions to be calculated
                     var inputPort = linkData?.inputPort;
                     var outputPort = linkData?.outputPort;
-                    if (inputPort && inputPort._position && 
-                        (inputPort._position.x < -1000 || inputPort._position.y < -1000)) {
-                        return false;
-                    }
-                    if (outputPort && outputPort._position && 
-                        (outputPort._position.x < -1000 || outputPort._position.y < -1000)) {
-                        return false;
+                    
+                    // If ports don't exist, hide the link
+                    if (!inputPort || !outputPort) return false;
+                    
+                    // If port._position is not set yet, trigger update and show link anyway
+                    // The portUpdateTimer will set the position soon
+                    var inputPosValid = inputPort._position && 
+                                       !isNaN(inputPort._position.x) && !isNaN(inputPort._position.y) &&
+                                       inputPort._position.x > -10000 && inputPort._position.y > -10000;
+                    var outputPosValid = outputPort._position && 
+                                        !isNaN(outputPort._position.x) && !isNaN(outputPort._position.y) &&
+                                        outputPort._position.x > -10000 && outputPort._position.y > -10000;
+                    
+                    // If positions are not valid, trigger update but don't hide the link yet
+                    // This allows new links to be visible while positions are being calculated
+                    if (!inputPosValid || !outputPosValid) {
+                        // Trigger port position update
+                        Qt.callLater(function() {
+                            if (nodesOverlay.portUpdateTimer) {
+                                nodesOverlay.portUpdateTimer.restart();
+                            }
+                        });
+                        // Show link anyway - positions will be updated soon
+                        // Only hide if positions are clearly invalid (off-screen)
+                        if (inputPort._position && (inputPort._position.x < -10000 || inputPort._position.y < -10000)) {
+                            return false;
+                        }
+                        if (outputPort._position && (outputPort._position.x < -10000 || outputPort._position.y < -10000)) {
+                            return false;
+                        }
+                        // Allow link to be visible while positions are being calculated
+                        return true;
                     }
                     
                     var distance = distanceFromCamera;
@@ -586,7 +987,6 @@ Item {
             cameraRotationY: root.cameraRotationY
             z: 2000  // Above everything
         }
-        
         //! Timer to update port positions for LinkView
         //! This ensures port._position is always accurate based on 3D positions
         //! Port positions are calculated directly from 3D node positions for precision
@@ -599,6 +999,9 @@ Item {
             onTriggered: {
                 if (!scene || !root.view3d) return;
                 
+                // Force update to ensure port positions are always current
+                // This prevents links from disappearing when nodes move
+                
                 var v3d = root.view3d;
                 // Update port positions for all nodes
                 Object.values(scene.nodes).forEach(function(node) {
@@ -608,20 +1011,14 @@ Item {
                     if (!pos3D) return;
                     
                     // Check if node is behind camera
-                    var cameraPos = Qt.vector3d(root.cameraX, root.cameraY, root.cameraZ);
-                    var toNode = pos3D.minus(cameraPos);
-                    var rotX = root.cameraRotationX * Math.PI / 180;
-                    var rotY = root.cameraRotationY * Math.PI / 180;
-                    var forward = Qt.vector3d(
-                        -Math.sin(rotY) * Math.cos(rotX),
-                        Math.sin(rotX),
-                        -Math.cos(rotY) * Math.cos(rotX)
-                    ).normalized();
-                    var dotProduct = toNode.x * forward.x + toNode.y * forward.y + toNode.z * forward.z;
-                    if (dotProduct < 0) {
-                        // Node is behind camera, skip port updates
+                    if (root.isBehindCamera(pos3D)) {
                         return;
                     }
+                    
+                    // Calculate distance from camera to node
+                    var cameraPos = Qt.vector3d(root.cameraX, root.cameraY, root.cameraZ);
+                    var toNode = pos3D.minus(cameraPos);
+                    var distance = Math.sqrt(toNode.x * toNode.x + toNode.y * toNode.y + toNode.z * toNode.z);
                     
                     // Convert 3D node position to 2D screen coordinates
                     // This gives us the center of the node on screen
@@ -637,7 +1034,7 @@ Item {
                     try {
                         if (!node || !node.guiConfig) return;
                         var node2DPos = Qt.vector2d(
-                            nodeScreenPos.x - (node.guiConfig?.width ?? 160) / 2,
+                            nodeScreenPos.x - (node.guiConfig?.width ?? 240) / 2,
                             nodeScreenPos.y - (node.guiConfig?.height ?? 100) / 2
                         );
                         // Always update to ensure it's correct
@@ -649,18 +1046,13 @@ Item {
                     }
                     
                     // Calculate node scale factors (same as overlayNodeView perspectiveScaleX/Y)
-                    var distance = Math.sqrt(toNode.x * toNode.x + toNode.y * toNode.y + toNode.z * toNode.z);
                     var baseScale = 1.0;
                     if (distance > 0) {
                         baseScale = root.baseDistance / distance;
                     }
                     
                     // Calculate view direction for perspective
-                    var viewDirection = Qt.vector3d(
-                        -Math.sin(rotY) * Math.cos(rotX),
-                        Math.sin(rotX),
-                        -Math.cos(rotY) * Math.cos(rotX)
-                    ).normalized();
+                    var viewDirection = root.calculateForwardVector(root.cameraRotationX, root.cameraRotationY);
                     
                     var nodeNormal = Qt.vector3d(0, 0, 1);
                     
@@ -706,27 +1098,99 @@ Item {
                         }
                     }
                     
-                    // Use overlayNodeView scale if available (more accurate), otherwise use calculated values
-                    var actualScaleX = overlayNodeView ? overlayNodeView.perspectiveScaleX : scaleX;
-                    var actualScaleY = overlayNodeView ? overlayNodeView.perspectiveScaleY : scaleY;
-                    // Use average scale for port offset calculation (or we could use separate X/Y for each port side)
-                    var actualScale = (actualScaleX + actualScaleY) / 2;
+                    if (!overlayNodeView) {
+                        // Node view not found, skip port updates
+                        return;
+                    }
                     
-                    // Update port positions based on node's screen position
-                    // Calculate port positions relative to node center, then add node position
-                    // IMPORTANT: Port offsets must be multiplied by scale factor because nodes are scaled
+                    // Try to get port positions from PortView components in overlayNodeView
+                    // This is more accurate than manual calculation
+                    function findPortViews(parent, portViews) {
+                        if (!parent || !parent.children) return;
+                        for (var i = 0; i < parent.children.length; i++) {
+                            var child = parent.children[i];
+                            // Check if this is a PortView (has port, globalX, and globalY properties)
+                            if (child && child.port && typeof child.globalX !== 'undefined' && typeof child.globalY !== 'undefined') {
+                                // This is a PortView
+                                // In InteractiveNodeView: globalX = root.x + positionMapped.x
+                                // where root is NodeView and positionMapped is relative to NodeView
+                                // So globalX/Y is the absolute position in scene coordinates
+                                // In Simple3DNodeLinkView, overlayNodeView is in nodesOverlay
+                                // We need to convert PortView center to nodesOverlay coordinates
+                                try {
+                                    // PortView.globalX/Y is the center of the port in scene coordinates
+                                    // But we need it in nodesOverlay coordinates
+                                    // Use mapToItem to convert PortView center (width/2, height/2) to nodesOverlay
+                                    var portViewCenter = Qt.point(child.width / 2, child.height / 2);
+                                    var mappedPos = child.mapToItem(nodesOverlay, portViewCenter.x, portViewCenter.y);
+                                    portViews[child.port._qsUuid] = {
+                                        x: mappedPos.x,
+                                        y: mappedPos.y,
+                                        portView: child
+                                    };
+                                } catch (e) {
+                                    // If mapToItem fails, try using port._position that PortView already set
+                                    // PortView sets port._position from globalPos, but it might be in wrong coordinate system
+                                    if (child.port && child.port._position) {
+                                        // Try to use the position that PortView already calculated
+                                        // But we need to verify it's correct
+                                        portViews[child.port._qsUuid] = {
+                                            x: child.port._position.x,
+                                            y: child.port._position.y,
+                                            portView: child,
+                                            usePortPosition: true
+                                        };
+                                    }
+                                }
+                            }
+                            // Recursively search children
+                            findPortViews(child, portViews);
+                        }
+                    }
+                    
+                    var portViews = {};
+                    findPortViews(overlayNodeView, portViews);
+                    
+                    // Update port positions - use PortView positions if available, otherwise fallback to manual calculation
                     Object.values(node.ports).forEach(function(port) {
                         if (!port) return;
                         
-                        // Calculate port offset from node center based on port side
+                        // First, try to use position from PortView if available (most accurate)
+                        if (portViews[port._qsUuid]) {
+                            var portViewPos = portViews[port._qsUuid];
+                            if (portViewPos.usePortPosition) {
+                                // Use port._position that PortView already set
+                                // But verify it's in the correct coordinate system
+                                // If port._position seems wrong (off-screen), recalculate
+                                if (port._position && port._position.x > -10000 && port._position.y > -10000 &&
+                                    !isNaN(port._position.x) && !isNaN(port._position.y)) {
+                                    // Position seems valid, but force update to ensure it's current
+                                    // Create new vector2d to trigger QML change detection
+                                    var currentX = port._position.x;
+                                    var currentY = port._position.y;
+                                    port._position = Qt.vector2d(currentX, currentY);
+                                } else {
+                                    // Position seems invalid, use mapped position
+                                    port._position = Qt.vector2d(portViewPos.x, portViewPos.y);
+                                }
+                            } else {
+                                // Use mapped position (already in nodesOverlay coordinates)
+                                // Always create new vector2d to ensure QML detects the change
+                                port._position = Qt.vector2d(portViewPos.x, portViewPos.y);
+                            }
+                            return; // Skip manual calculation
+                        }
+                        
+                        // Fallback to manual calculation if PortView not found
+                        // This should rarely happen, but provides a backup
+                        var nodeWidth = node.guiConfig?.width ?? 240;
+                        var nodeHeight = node.guiConfig?.height ?? 100;
+                        
+                        // Simple fallback: just use node center + basic offset
+                        // This is not ideal but better than nothing
                         var portOffsetX = 0;
                         var portOffsetY = 0;
                         
-                        var nodeWidth = node.guiConfig?.width ?? 160;
-                        var nodeHeight = node.guiConfig?.height ?? 100;
-                        
-                        // Port position relative to node center (before scaling)
-                        // This matches how ports are positioned in InteractiveNodeView
                         switch(port.portSide) {
                             case NLSpec.PortPositionSide.Left:
                                 portOffsetX = -nodeWidth / 2;
@@ -742,30 +1206,101 @@ Item {
                                 break;
                         }
                         
-                        // CRITICAL: Multiply port offset by scale factor
-                        // When node is scaled, port positions must also be scaled
-                        // This ensures links always connect precisely to ports regardless of zoom level
+                        // Use average scale for port offset calculation
+                        var actualScaleX = overlayNodeView.perspectiveScaleX;
+                        var actualScaleY = overlayNodeView.perspectiveScaleY;
+                        var actualScale = (actualScaleX + actualScaleY) / 2;
+                        
                         portOffsetX = portOffsetX * actualScale;
                         portOffsetY = portOffsetY * actualScale;
                         
-                        // Calculate port's absolute 2D screen position (center of port)
-                        // nodeScreenPos is the center of the node on screen
-                        // portOffsetX/Y is the scaled offset from node center to port center
-                        // port._position must be the center of the port circle for LinkPainter
                         var portScreenPos = Qt.vector2d(
                             nodeScreenPos.x + portOffsetX,
                             nodeScreenPos.y + portOffsetY
                         );
                         
-                        // Always update port._position to ensure it's accurate
-                        // This is critical for LinkView to draw links correctly
-                        // LinkPainter uses port._position as startPos/endPos for bezier curves
-                        // The control points are calculated from these positions
-                        // Always create a new vector2d to ensure QML detects the change
-                        // This ensures links always connect precisely to ports, regardless of camera movement or zoom
+                        // Always create new vector2d to ensure QML detects the change
                         port._position = Qt.vector2d(portScreenPos.x, portScreenPos.y);
                     });
                 });
+            }
+        }
+        
+        //! Force update port positions when camera moves or nodes change
+        //! This ensures links are always visible and correctly positioned
+        Connections {
+            target: scene
+            function onNodesChanged() {
+                // Trigger port position update when nodes change
+                if (nodesOverlay.portUpdateTimer) {
+                    nodesOverlay.portUpdateTimer.restart();
+                }
+            }
+            function onLinkAdded(link) {
+                // Immediately update port positions for the new link
+                // This ensures the link is visible right away
+                if (link && nodesOverlay.portUpdateTimer) {
+                    // Force immediate timer trigger to update port positions
+                    nodesOverlay.portUpdateTimer.restart();
+                }
+                
+                // Trigger additional updates after delays to ensure PortView components are created
+                Qt.callLater(function() {
+                    if (nodesOverlay.portUpdateTimer) {
+                        nodesOverlay.portUpdateTimer.restart();
+                    }
+                }, 0);
+                
+                Qt.callLater(function() {
+                    if (nodesOverlay.portUpdateTimer) {
+                        nodesOverlay.portUpdateTimer.restart();
+                    }
+                }, 16);  // After one frame
+                
+                Qt.callLater(function() {
+                    if (nodesOverlay.portUpdateTimer) {
+                        nodesOverlay.portUpdateTimer.restart();
+                    }
+                }, 50);  // After a short delay
+            }
+            function onLinkRemoved(link) {
+                // Trigger port position update when link is removed
+                Qt.callLater(function() {
+                    if (nodesOverlay.portUpdateTimer) {
+                        nodesOverlay.portUpdateTimer.restart();
+                    }
+                });
+            }
+        }
+        
+        //! Force update port positions when camera moves
+        //! This ensures links are always visible when camera position changes
+        Connections {
+            target: root
+            function onCameraXChanged() {
+                if (nodesOverlay.portUpdateTimer) {
+                    nodesOverlay.portUpdateTimer.restart();
+                }
+            }
+            function onCameraYChanged() {
+                if (nodesOverlay.portUpdateTimer) {
+                    nodesOverlay.portUpdateTimer.restart();
+                }
+            }
+            function onCameraZChanged() {
+                if (nodesOverlay.portUpdateTimer) {
+                    nodesOverlay.portUpdateTimer.restart();
+                }
+            }
+            function onCameraRotationXChanged() {
+                if (nodesOverlay.portUpdateTimer) {
+                    nodesOverlay.portUpdateTimer.restart();
+                }
+            }
+            function onCameraRotationYChanged() {
+                if (nodesOverlay.portUpdateTimer) {
+                    nodesOverlay.portUpdateTimer.restart();
+                }
             }
         }
         }
@@ -775,64 +1310,93 @@ Item {
         id: mouseArea
         anchors.fill: parent
         acceptedButtons: Qt.LeftButton | Qt.RightButton
-        hoverEnabled: true
+        focus: false  // Don't take focus from parent
+        propagateComposedEvents: false
+        z: -1  // Behind other elements
         enabled: !sceneSession?.connectingMode  // Disable when connecting
         
         // Handle right mouse button press for camera rotation (Ctrl+RightClick) or context menu
         onPressed: (mouse) => {
+            // Force focus back to root item
+            root.forceActiveFocus();
+            
             if (mouse.button === Qt.RightButton) {
                 // Check if Ctrl is pressed for camera rotation
                 if (mouse.modifiers & Qt.ControlModifier) {
+                    // Ctrl + Right Click - start camera rotation
                     mouseRotating = true;
                     lastMousePos = Qt.point(mouse.x, mouse.y);
                     mouse.accepted = true;
                 } else {
-                    // Right click without Ctrl - show context menu immediately
+                    // Right click without Ctrl - show context menu
+                    mouseRotating = false;
+                    
+                    // Calculate 3D position from mouse position
                     var v3d = root.view3d;
                     var result = v3d.pick(mouse.x, mouse.y);
                     var worldPos;
                     
-                    if (result.objectHit) {
-                        worldPos = result.scenePosition;
-                    } else {
-                        // Calculate 3D position from mouse position
-                        var depth = 200.0;
-                        var rotX = cameraRotationX * Math.PI / 180;
-                        var rotY = cameraRotationY * Math.PI / 180;
+                    // First try to use pick result if it hit ground plane
+                    if (result && result.objectHit) {
+                        var hitObject = result.objectHit;
+                        if (hitObject.objectName === "groundPlane" && result.scenePosition) {
+                            worldPos = result.scenePosition;
+                            worldPos.y = 0.25; // Place on ground
+                        } else if (result.scenePosition) {
+                            // Hit something else, use its position
+                            worldPos = result.scenePosition;
+                            worldPos.y = 0.25; // Place on ground
+                        }
+                    }
+                    
+                    // If we don't have a valid position from picking, use ray casting
+                    if (!worldPos || (worldPos.x === 0 && worldPos.z === 0)) {
+                        // Calculate position using ray casting to ground plane
+                        var camera = view3d.camera;
+                        var cameraPos = Qt.vector3d(cameraX, cameraY, cameraZ);
                         
-                        var forward = Qt.vector3d(
-                            -Math.sin(rotY) * Math.cos(rotX),
-                            Math.sin(rotX),
-                            -Math.cos(rotY) * Math.cos(rotX)
-                        ).normalized();
+                        // Calculate ray direction from camera through mouse position
+                        var forward = root.calculateForwardVector(cameraRotationX, cameraRotationY);
+                        var right = root.calculateRightVector(cameraRotationY);
                         
-                        var right = Qt.vector3d(
-                            Math.cos(rotY),
-                            0,
-                            Math.sin(rotY)
-                        ).normalized();
+                        // Up direction (perpendicular to forward and right)
+                        var up = forward.crossProduct(right).normalized();
                         
-                        var up = Qt.vector3d(
-                            Math.sin(rotY) * Math.sin(rotX),
-                            Math.cos(rotX),
-                            Math.cos(rotY) * Math.sin(rotX)
-                        ).normalized();
-                        
+                        // Calculate screen center
                         var centerX = v3d.width / 2;
                         var centerY = v3d.height / 2;
+                        
+                        // Calculate offset from center (normalized to -1 to 1)
                         var offsetX = (mouse.x - centerX) / v3d.width;
                         var offsetY = (mouse.y - centerY) / v3d.height;
                         
+                        // Calculate FOV-based scaling
                         var fov = camera.fieldOfView * Math.PI / 180;
                         var aspectRatio = v3d.width / v3d.height;
-                        var scaleX = Math.tan(fov / 2) * depth * 2;
-                        var scaleY = scaleX / aspectRatio;
+                        var tanHalfFov = Math.tan(fov / 2);
                         
-                        var cameraPos = Qt.vector3d(cameraX, cameraY, cameraZ);
-                        worldPos = cameraPos
-                            .plus(forward.times(depth))
-                            .plus(right.times(offsetX * scaleX))
-                            .plus(up.times(offsetY * scaleY));
+                        // Calculate ray direction in world space
+                        var rayDir = forward
+                            .plus(right.times(offsetX * tanHalfFov * aspectRatio * 2))
+                            .plus(up.times(-offsetY * tanHalfFov * 2))
+                            .normalized();
+                        
+                        // Intersect with ground plane (y = 0)
+                        if (Math.abs(rayDir.y) > 0.001) {
+                            var t = -cameraY / rayDir.y;
+                            if (t > 0) {
+                                worldPos = cameraPos.plus(rayDir.times(t));
+                                worldPos.y = 0.25; // Place on ground
+                            } else {
+                                // Ray pointing up, create in front of camera
+                                worldPos = cameraPos.plus(forward.times(200));
+                                worldPos.y = 0.25;
+                            }
+                        } else {
+                            // Ray parallel to ground, create in front of camera
+                            worldPos = cameraPos.plus(forward.times(200));
+                            worldPos.y = 0.25;
+                        }
                     }
                     
                     // Calculate 2D position for context menu
@@ -843,6 +1407,13 @@ Item {
                     contextMenu3D.popup(mouse.x, mouse.y);
                     mouse.accepted = true;
                 }
+            } else if (mouse.button === Qt.LeftButton) {
+                // Prevent camera rotation when clicking
+                mouseRotating = false;
+                
+                // Check if clicking on a node (handled by NodeView)
+                // Just ensure focus is maintained
+                root.forceActiveFocus();
             }
         }
         
@@ -853,15 +1424,13 @@ Item {
                 var deltaY = mouse.y - lastMousePos.y;
                 
                 // Rotate camera based on mouse movement
-                cameraRotationY += deltaX * mouseRotationSpeed;
+                cameraRotationY -= deltaX * mouseRotationSpeed;
                 cameraRotationX -= deltaY * mouseRotationSpeed;  // Invert Y for natural feel
                 
                 // Clamp vertical rotation to prevent flipping
-                if (cameraRotationX > 89) cameraRotationX = 89;
-                if (cameraRotationX < -89) cameraRotationX = -89;
+                cameraRotationX = Math.max(-89, Math.min(89, cameraRotationX));
                 
                 lastMousePos = Qt.point(mouse.x, mouse.y);
-                mouse.accepted = true;
             }
         }
         
@@ -876,20 +1445,42 @@ Item {
         onClicked: (mouse) => {
             if (mouse.button === Qt.LeftButton && scene && !sceneSession?.connectingMode) {
                 // Left click - handle empty space click
-                // Check if click is on a node (using pick)
-                var result = root.view3d.pick(mouse.x, mouse.y);
-                // Check if we hit a node model
-                var hitNode = false;
-                if (result.objectHit) {
-                    // Check if the hit object is a node model
-                    var hitObjectStr = result.objectHit.toString();
-                    if (hitObjectStr.includes("Model") && result.objectHit !== root.view3d.scene) {
-                        // Check if it's a node model (not ground plane or other models)
-                        hitNode = true;
+                // Check if click is on a node view in the overlay
+                var clickedOnNode = false;
+                
+                // Check if click is within any node view bounds by iterating through nodesOverlay children
+                // The node views are created by the Repeater and are children of nodesOverlay
+                if (nodesOverlay && nodesOverlay.children) {
+                    for (var i = 0; i < nodesOverlay.children.length; i++) {
+                        var child = nodesOverlay.children[i];
+                        // Check if this is a Simple3DNodeLinkNodeView (node view) - it has nodeData property
+                        if (child && child.nodeData && child.visible) {
+                            // Check if mouse position is within this node view bounds
+                            var nodePos = root.mapToItem(child, mouse.x, mouse.y);
+                            if (nodePos.x >= 0 && nodePos.x <= child.width && 
+                                nodePos.y >= 0 && nodePos.y <= child.height) {
+                                clickedOnNode = true;
+                                break;
+                            }
+                        }
                     }
                 }
                 
-                if (!hitNode) {
+                // Also check using 3D pick for node models
+                if (!clickedOnNode) {
+                    var result = root.view3d.pick(mouse.x, mouse.y);
+                    if (result && result.objectHit) {
+                        var hitObject = result.objectHit;
+                        var objectName = hitObject.objectName ? hitObject.objectName.toString() : "";
+                        // Check if it's a node model (not ground plane or other models)
+                        if (objectName.includes("NodeModel") || 
+                            (objectName.includes("Model") && objectName !== "groundPlane" && hitObject !== root.view3d.scene)) {
+                            clickedOnNode = true;
+                        }
+                    }
+                }
+                
+                if (!clickedOnNode) {
                     // Clicked on empty space - clear selection and give focus to root
                     if (scene.selectionModel) {
                         scene.selectionModel.clear();
@@ -912,37 +1503,31 @@ Item {
                     return;
                 }
                 
-                if (result.objectHit) {
-                    // Create node at hit position (e.g., ground plane)
-                    worldPos = result.scenePosition;
-                } else {
-                    // Create node at exact mouse position in 3D space
-                    // Use the same forward/right/up calculation as camera movement for consistency
-                    var depth = 200.0; // Distance from camera
+                // First try to use pick result if it hit ground plane
+                if (result && result.objectHit) {
+                    var hitObject = result.objectHit;
+                    if (hitObject.objectName === "groundPlane" && result.scenePosition) {
+                        worldPos = result.scenePosition;
+                        worldPos.y = 0.25; // Place on ground
+                    } else if (result.scenePosition) {
+                        // Hit something else, use its position
+                        worldPos = result.scenePosition;
+                        worldPos.y = 0.25; // Place on ground
+                    }
+                }
+                
+                // If we don't have a valid position from picking, use ray casting
+                if (!worldPos || (worldPos.x === 0 && worldPos.z === 0)) {
+                    // Calculate position using ray casting to ground plane
+                    var camera = view3d.camera;
+                    var cameraPos = Qt.vector3d(cameraX, cameraY, cameraZ);
                     
-                    var rotX = cameraRotationX * Math.PI / 180;
-                    var rotY = cameraRotationY * Math.PI / 180;
+                    // Calculate ray direction from camera through mouse position
+                    var forward = root.calculateForwardVector(cameraRotationX, cameraRotationY);
+                    var right = root.calculateRightVector(cameraRotationY);
                     
-                    // Forward direction: camera looks toward -Z
-                    var forward = Qt.vector3d(
-                        -Math.sin(rotY) * Math.cos(rotX),
-                        Math.sin(rotX),
-                        -Math.cos(rotY) * Math.cos(rotX)
-                    ).normalized();
-                    
-                    // Right direction: perpendicular to forward, on horizontal plane
-                    var right = Qt.vector3d(
-                        Math.cos(rotY),
-                        0,
-                        Math.sin(rotY)
-                    ).normalized();
-                    
-                    // Up direction: perpendicular to forward and right
-                    var up = Qt.vector3d(
-                        Math.sin(rotY) * Math.sin(rotX),
-                        Math.cos(rotX),
-                        Math.cos(rotY) * Math.sin(rotX)
-                    ).normalized();
+                    // Up direction (perpendicular to forward and right)
+                    var up = forward.crossProduct(right).normalized();
                     
                     // Calculate screen center
                     var centerX = v3d.width / 2;
@@ -955,15 +1540,33 @@ Item {
                     // Calculate FOV-based scaling
                     var fov = camera.fieldOfView * Math.PI / 180;
                     var aspectRatio = v3d.width / v3d.height;
-                    var scaleX = Math.tan(fov / 2) * depth * 2;
-                    var scaleY = scaleX / aspectRatio;
+                    var tanHalfFov = Math.tan(fov / 2);
                     
-                    // Calculate 3D position
-                    var cameraPos = Qt.vector3d(cameraX, cameraY, cameraZ);
-                    worldPos = cameraPos
-                        .plus(forward.times(depth))
-                        .plus(right.times(offsetX * scaleX))
-                        .plus(up.times(offsetY * scaleY));
+                    // Calculate ray direction in world space
+                    var rayDir = forward
+                        .plus(right.times(offsetX * tanHalfFov * aspectRatio * 2))
+                        .plus(up.times(-offsetY * tanHalfFov * 2))
+                        .normalized();
+                    
+                    // Intersect with ground plane (y = 0)
+                    // Ray equation: P = cameraPos + t * rayDir
+                    // Ground plane: y = 0
+                    // Solve: cameraY + t * rayDir.y = 0
+                    if (Math.abs(rayDir.y) > 0.001) {
+                        var t = -cameraY / rayDir.y;
+                        if (t > 0) {
+                            worldPos = cameraPos.plus(rayDir.times(t));
+                            worldPos.y = 0.25; // Place on ground (half height of 50cm cube)
+                        } else {
+                            // Ray pointing up, create in front of camera
+                            worldPos = cameraPos.plus(forward.times(200));
+                            worldPos.y = 0.25;
+                        }
+                    } else {
+                        // Ray parallel to ground, create in front of camera
+                        worldPos = cameraPos.plus(forward.times(200));
+                        worldPos.y = 0.25;
+                    }
                 }
                 
                 // Create node with 3D position
@@ -972,12 +1575,14 @@ Item {
                 // Calculate initial 2D position from 3D position for guiConfig.position
                 var initialScreenPos = v3d.mapFrom3DScene(Qt.vector3d(worldPos.x, worldPos.y, worldPos.z));
                 
+                // Create node with default type (Number)
+                var defaultNodeType = Specs.NodeType.Number;
                 var nodeId = scene.createSpecificNode3D(
                     scene.nodeRegistry.imports,
-                    0,
-                    scene.nodeRegistry.nodeTypes[0],
-                    scene.nodeRegistry.nodeColors[0],
-                    scene.nodeRegistry.nodeNames[0] + "_" + (Object.values(scene.nodes).filter(node => node.type === 0).length + 1),
+                    defaultNodeType,
+                    scene.nodeRegistry.nodeTypes[defaultNodeType],
+                    scene.nodeRegistry.nodeColors[defaultNodeType],
+                    scene.nodeRegistry.nodeNames[defaultNodeType] + "_" + (Object.values(scene.nodes).filter(node => node.type === defaultNodeType).length + 1),
                     initialScreenPos.x,  // Initial 2D X position (will be updated with camera)
                     initialScreenPos.y,  // Initial 2D Y position (will be updated with camera)
                     worldPos.x,  // 3D X position
@@ -996,122 +1601,195 @@ Item {
     }
 
     //! Keyboard handling for camera control
-    // Only enable keyboard control when no node is selected
-    focus: true
+    // Only handle keys when no node is selected or no node is in edit mode
     Keys.enabled: {
         if (!scene || !scene.selectionModel) return true;
         var selectedCount = Object.keys(scene.selectionModel.selectedModel || {}).length;
-        return selectedCount === 0;
+        if (selectedCount === 0) return true;
+        
+        // Check if any selected node is in edit mode
+        var hasEditingNode = false;
+        Object.keys(scene.selectionModel.selectedModel || {}).forEach(function(nodeId) {
+            var node = scene.nodes[nodeId];
+            if (node) {
+                // Try to find the nodeView for this node
+                // If node is selected and might be editing, disable camera keys
+                hasEditingNode = true;
+            }
+        });
+        
+        // Disable camera keys when node is selected (to allow text editing)
+        return false;
     }
     
     Keys.onPressed: (event) => {
-        switch(event.key) {
-            case Qt.Key_W:
-                wPressed = true;
-                break;
-            case Qt.Key_S:
-                sPressed = true;
-                break;
-            case Qt.Key_E:
-                ePressed = true;
-                break;
-            case Qt.Key_Q:
-                qPressed = true;
-                break;
-            case Qt.Key_Shift:
-                shiftPressed = true;
-                break;
-            case Qt.Key_Space:
-                spacePressed = true;
-                break;
-            case Qt.Key_R:
-                rPressed = true;
-                break;
-            case Qt.Key_T:
-                tPressed = true;
-                break;
+        if (event.key === Qt.Key_W) {
+            wPressed = true;
+            event.accepted = true;
+        } else if (event.key === Qt.Key_S) {
+            sPressed = true;
+            event.accepted = true;
+        } else if (event.key === Qt.Key_Q) {
+            qPressed = true;
+            event.accepted = true;
+        } else if (event.key === Qt.Key_E) {
+            ePressed = true;
+            event.accepted = true;
+        } else if (event.key === Qt.Key_Shift) {
+            shiftPressed = true;
+            event.accepted = true;
+        } else if (event.key === Qt.Key_Space) {
+            spacePressed = true;
+            event.accepted = true;  // Prevent default behavior (scroll)
+        } else if (event.key === Qt.Key_R) {
+            rPressed = true;
+            event.accepted = true;
+        } else if (event.key === Qt.Key_T) {
+            tPressed = true;
+            event.accepted = true;
+        } else if (event.key === Qt.Key_A) {
+            aPressed = true;
+            event.accepted = true;
+        } else if (event.key === Qt.Key_D) {
+            dPressed = true;
+            event.accepted = true;
         }
     }
-
+    
     Keys.onReleased: (event) => {
-        switch(event.key) {
-            case Qt.Key_W:
-                wPressed = false;
-                break;
-            case Qt.Key_S:
-                sPressed = false;
-                break;
-            case Qt.Key_E:
-                ePressed = false;
-                break;
-            case Qt.Key_Q:
-                qPressed = false;
-                break;
-            case Qt.Key_Shift:
-                shiftPressed = false;
-                break;
-            case Qt.Key_Space:
-                spacePressed = false;
-                break;
-            case Qt.Key_R:
-                rPressed = false;
-                break;
-            case Qt.Key_T:
-                tPressed = false;
-                break;
+        if (event.key === Qt.Key_W) {
+            wPressed = false;
+            event.accepted = true;
+        } else if (event.key === Qt.Key_S) {
+            sPressed = false;
+            event.accepted = true;
+        } else if (event.key === Qt.Key_Q) {
+            qPressed = false;
+            event.accepted = true;
+        } else if (event.key === Qt.Key_E) {
+            ePressed = false;
+            event.accepted = true;
+        } else if (event.key === Qt.Key_Shift) {
+            shiftPressed = false;
+            event.accepted = true;
+        } else if (event.key === Qt.Key_Space) {
+            spacePressed = false;
+            event.accepted = true;  // Prevent default behavior
+        } else if (event.key === Qt.Key_R) {
+            rPressed = false;
+            event.accepted = true;
+        } else if (event.key === Qt.Key_T) {
+            tPressed = false;
+            event.accepted = true;
+        } else if (event.key === Qt.Key_A) {
+            aPressed = false;
+            event.accepted = true;
+        } else if (event.key === Qt.Key_D) {
+            dPressed = false;
+            event.accepted = true;
+        }
+    }
+    
+    focus: true
+    Keys.forwardTo: []  // Don't forward keys to children
+    
+    // Shortcut for Space key to ensure it works
+    Shortcut {
+        sequence: "Space"
+        onActivated: {
+            spacePressed = true;
+        }
+    }
+    
+    Shortcut {
+        sequence: "Shift+Space"
+        onActivated: {
+            spacePressed = true;
+        }
+    }
+    
+    // Ensure focus is maintained only when no node is selected
+    onActiveFocusChanged: {
+        if (!activeFocus) {
+            // Only force focus if no node is selected
+            if (!scene || !scene.selectionModel) {
+                forceActiveFocus();
+            } else {
+                var selectedCount = Object.keys(scene.selectionModel.selectedModel || {}).length;
+                if (selectedCount === 0) {
+                    forceActiveFocus();
+                }
+            }
         }
     }
 
-    //! Timer for smooth camera movement
+    //! Update camera position based on keyboard input
     Timer {
-        id: cameraTimer
-        interval: 16 // ~60 FPS
+        interval: 16  // ~60 FPS
         running: true
         repeat: true
         onTriggered: {
-            // Rectangular (world-axis) movement instead of spherical (camera-relative) movement
-            // Movement is always in world axes, independent of camera rotation
-            // This gives a "window" feel instead of "orbital" feel
+            // Move camera (when no node is selected or always for camera control)
+            var rotX = cameraRotationX * Math.PI / 180;
+            var rotY = cameraRotationY * Math.PI / 180;
             
-            // Apply movement in world axes:
-            // W = +Z (forward in world space)
-            // S = -Z (backward in world space)
-            // Q = -X (left in world space)
-            // E = +X (right in world space)
-            // Shift = +Y (up in world space)
-            // Space = -Y (down in world space)
+            var forward = Qt.vector3d(
+                -Math.sin(rotY) * Math.cos(rotX),
+                Math.sin(rotX),
+                -Math.cos(rotY) * Math.cos(rotX)
+            ).normalized();
             
+            var right = Qt.vector3d(
+                Math.cos(rotY),
+                0,
+                -Math.sin(rotY)
+            ).normalized();
+            
+            // Movement in horizontal plane (forward/backward)
             if (wPressed) {
-                // Move forward in world Z axis
-                cameraZ += moveSpeed;
+                cameraX += forward.x * moveSpeed;
+                cameraZ += forward.z * moveSpeed;
+                // Don't change Y when moving forward/backward
             }
             if (sPressed) {
-                // Move backward in world Z axis
-                cameraZ -= moveSpeed;
+                cameraX -= forward.x * moveSpeed;
+                cameraZ -= forward.z * moveSpeed;
+                // Don't change Y when moving forward/backward
+            }
+            
+            // Movement in horizontal plane (left/right)
+            if (qPressed) {
+                cameraX -= right.x * moveSpeed;
+                cameraZ -= right.z * moveSpeed;
             }
             if (ePressed) {
-                // Move right in world X axis
-                cameraX += moveSpeed;
-            }
-            if (qPressed) {
-                // Move left in world X axis
-                cameraX -= moveSpeed;
+                cameraX += right.x * moveSpeed;
+                cameraZ += right.z * moveSpeed;
             }
             
-            // Apply vertical movement: Shift (up), Space (down)
+            // Vertical movement (up/down) - only changes Y, no rotation change
             if (shiftPressed) {
-                cameraY += moveSpeed;
-            }
-            if (spacePressed) {
                 cameraY -= moveSpeed;
             }
+            if (spacePressed) {
+                cameraY += moveSpeed;
+            }
             
-            // Apply rotation: R (rotate left), T (rotate right)
-            // Rotation only changes viewing angle, not movement direction
+            // Rotation (vertical - R/T)
             if (rPressed) {
-                cameraRotationY -= rotationSpeed;
+                cameraRotationX -= rotationSpeed;
+                cameraRotationX = Math.max(-89, Math.min(89, cameraRotationX));  // Clamp
             }
             if (tPressed) {
+                cameraRotationX += rotationSpeed;
+                cameraRotationX = Math.max(-89, Math.min(89, cameraRotationX));  // Clamp
+            }
+            
+            // Rotation (horizontal - A/D)
+            if (aPressed) {
+                cameraRotationY -= rotationSpeed;
+            }
+            if (dPressed) {
                 cameraRotationY += rotationSpeed;
             }
         }
@@ -1120,27 +1798,44 @@ Item {
     /* Functions
      * ****************************************************************************************/
     
+    //! Calculate forward direction vector from camera rotation
+    function calculateForwardVector(rotX, rotY) {
+        var rotXRad = rotX * Math.PI / 180;
+        var rotYRad = rotY * Math.PI / 180;
+        return Qt.vector3d(
+            -Math.sin(rotYRad) * Math.cos(rotXRad),
+            Math.sin(rotXRad),
+            -Math.cos(rotYRad) * Math.cos(rotXRad)
+        ).normalized();
+    }
+    
+    //! Calculate right direction vector from camera rotation
+    function calculateRightVector(rotY) {
+        var rotYRad = rotY * Math.PI / 180;
+        return Qt.vector3d(
+            Math.cos(rotYRad),
+            0,
+            -Math.sin(rotYRad)
+        ).normalized();
+    }
+    
+    //! Check if a 3D point is behind camera
+    function isBehindCamera(point3D) {
+        var cameraPos = Qt.vector3d(cameraX, cameraY, cameraZ);
+        var toPoint = point3D.minus(cameraPos);
+        var forward = calculateForwardVector(cameraRotationX, cameraRotationY);
+        var dotProduct = toPoint.x * forward.x + toPoint.y * forward.y + toPoint.z * forward.z;
+        return dotProduct < 0;
+    }
+    
     //! Reset camera to default position
     function resetCamera() {
         cameraX = 0;
-        cameraY = 0;
-        cameraZ = 500;
-        cameraRotationX = -20;
+        cameraY = 50;
+        cameraZ = 400;
+        cameraRotationX = -15;
         cameraRotationY = 0;
     }
     
-    //! Copy nodes functionality
-    function copyNodes() {
-        if (scene && scene.selectionModel) {
-            // Copy nodes functionality
-        }
-    }
-    
-    //! Paste nodes functionality  
-    function pasteNodes() {
-        if (scene && scene.selectionModel) {
-            // Paste nodes functionality
-        }
-    }
 }
 
