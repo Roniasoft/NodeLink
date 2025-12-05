@@ -37,10 +37,20 @@ Canvas {
     property bool       isSelected: scene?.selectionModel?.isSelected(link?._qsUuid) ?? false
 
     //! Link input position
-    property vector2d   inputPos: inputPort?._position ?? ({ x: -1, y: -1 })
+    property vector2d   inputPos: {
+        if (inputPort && inputPort._position) {
+            return inputPort._position;
+        }
+        return Qt.vector2d(-1, -1);
+    }
 
     //! Link output position
-    property vector2d   outputPos: outputPort?._position ?? ({ x: -1, y: -1 })
+    property vector2d   outputPos: {
+        if (outputPort && outputPort._position) {
+            return outputPort._position;
+        }
+        return Qt.vector2d(-1, -1);
+    }
 
     //! linkMidPoint is the position of link description.
     property vector2d   linkMidPoint: Qt.vector2d(0, 0)
@@ -100,14 +110,16 @@ Canvas {
     //! Update painted line when change position of input and output ports and some another
     //! properties changed
     onOutputPosChanged:  {
-        // Check if positions are valid (not off-screen) before painting
-        if (canvas && canvas.available && outputPos && outputPos.x >= -1000 && outputPos.y >= -1000) {
+        // Always call preparePainter when position changes, even if it's not valid yet
+        // This ensures links are painted as soon as positions become valid
+        if (canvas && canvas.available) {
             preparePainter();
         }
     }
     onInputPosChanged:   {
-        // Check if positions are valid (not off-screen) before painting
-        if (canvas && canvas.available && inputPos && inputPos.x >= -1000 && inputPos.y >= -1000) {
+        // Always call preparePainter when position changes, even if it's not valid yet
+        // This ensures links are painted as soon as positions become valid
+        if (canvas && canvas.available) {
             preparePainter();
         }
     }
@@ -274,6 +286,39 @@ Canvas {
             if (canvas && canvas.available && inputPos && outputPos && 
                 inputPos.x >= -1000 && inputPos.y >= -1000 && 
                 outputPos.x >= -1000 && outputPos.y >= -1000) {
+                preparePainter();
+            }
+        }
+    }
+    
+    // Force update when port._position changes
+    // This ensures links are repainted when port positions are updated
+    // Monitor port._position changes and trigger repaint
+    property vector2d _lastInputPos: Qt.vector2d(-1, -1)
+    property vector2d _lastOutputPos: Qt.vector2d(-1, -1)
+    
+    // Timer to check for port position changes
+    Timer {
+        id: portPositionCheckTimer
+        interval: 16  // ~60 FPS
+        running: true
+        repeat: true
+        onTriggered: {
+            if (!canvas || !canvas.available) return;
+            
+            // Check if input port position changed
+            var currentInputPos = inputPort?._position ?? Qt.vector2d(-1, -1);
+            if (currentInputPos.x !== _lastInputPos.x || currentInputPos.y !== _lastInputPos.y) {
+                _lastInputPos = currentInputPos;
+                inputPos = currentInputPos;
+                preparePainter();
+            }
+            
+            // Check if output port position changed
+            var currentOutputPos = outputPort?._position ?? Qt.vector2d(-1, -1);
+            if (currentOutputPos.x !== _lastOutputPos.x || currentOutputPos.y !== _lastOutputPos.y) {
+                _lastOutputPos = currentOutputPos;
+                outputPos = currentOutputPos;
                 preparePainter();
             }
         }
