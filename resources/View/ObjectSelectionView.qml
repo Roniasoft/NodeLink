@@ -42,7 +42,7 @@ Item {
         id: rubberBand
 
         anchors.fill: parent
-        color: Object.values(scene?.selectionModel?.selectedModel ?? ({})).length> 1 ? "#8F30FA" :
+        color: Object.values(scene?.selectionModel?.selectedModel ?? ({})).length> 1 ? "#C299FE" :
                                                                              "transparent"
         opacity: 0.2
 
