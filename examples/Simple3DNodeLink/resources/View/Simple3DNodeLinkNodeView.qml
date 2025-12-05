@@ -24,7 +24,123 @@ NodeView {
     property var cameraRotationY: 0
 
     /* Object Properties
-    * ****************************************************************************************/
+     * ****************************************************************************************/
+    
+    //! Handle selection changes - don't auto-enable edit mode, just reset dragging
+    Connections {
+        target: nodeView
+        function onIsSelectedChanged() {
+            // Reset dragging state when selection changes
+            if (nodeView.mainMouseArea) {
+                nodeView.mainMouseArea.isDraging = false;
+            }
+            
+            if (!nodeView.isSelected) {
+                // When node is deselected, disable edit mode
+                nodeView.edit = false;
+                // Clear focus from text fields
+                Qt.callLater(function() {
+                    if (!nodeView || !nodeView.contentItem) return;
+                    var contentItem = nodeView.contentItem;
+                    
+                    function findChildByObjectName(parent, name) {
+                        if (!parent) return null;
+                        if (parent.objectName === name) return parent;
+                        if (parent.children) {
+                            for (var i = 0; i < parent.children.length; i++) {
+                                var child = findChildByObjectName(parent.children[i], name);
+                                if (child) return child;
+                            }
+                        }
+                        return null;
+                    }
+                    
+                    var foundTextArea = findChildByObjectName(contentItem, "textArea");
+                    var foundTitleTextArea = findChildByObjectName(contentItem, "titleTextArea");
+                    
+                    if (foundTextArea && foundTextArea.activeFocus) {
+                        foundTextArea.focus = false;
+                    }
+                    if (foundTitleTextArea && foundTitleTextArea.activeFocus) {
+                        foundTitleTextArea.focus = false;
+                    }
+                });
+            }
+        }
+    }
+    
+    //! Handle edit mode changes - focus on appropriate field
+    Connections {
+        target: nodeView
+        function onEditChanged() {
+            // When edit mode is enabled, focus on appropriate field
+            if (nodeView.edit && node) {
+                // Reset dragging state to prevent accidental dragging
+                if (nodeView.mainMouseArea) {
+                    nodeView.mainMouseArea.isDraging = false;
+                }
+                Qt.callLater(function() {
+                    if (!nodeView || !nodeView.contentItem) return;
+                    // Find textArea and titleTextArea by objectName
+                    var contentItem = nodeView.contentItem;
+                    var foundTextArea = null;
+                    var foundTitleTextArea = null;
+                    
+                    function findChildByObjectName(parent, name) {
+                        if (!parent) return null;
+                        if (parent.objectName === name) return parent;
+                        if (parent.children) {
+                            for (var i = 0; i < parent.children.length; i++) {
+                                var child = findChildByObjectName(parent.children[i], name);
+                                if (child) return child;
+                            }
+                        }
+                        return null;
+                    }
+                    
+                    foundTextArea = findChildByObjectName(contentItem, "textArea");
+                    foundTitleTextArea = findChildByObjectName(contentItem, "titleTextArea");
+                    
+                    // For NumberNode, focus on textArea
+                    if (node.type === Specs.NodeType.Number && foundTextArea) {
+                        foundTextArea.forceActiveFocus();
+                        foundTextArea.cursorPosition = foundTextArea.length;
+                    } else if (foundTitleTextArea) {
+                        // For other nodes, focus on title
+                        foundTitleTextArea.forceActiveFocus();
+                    }
+                });
+            } else if (!nodeView.edit) {
+                // When edit mode is disabled, clear focus from text fields
+                Qt.callLater(function() {
+                    if (!nodeView || !nodeView.contentItem) return;
+                    var contentItem = nodeView.contentItem;
+                    
+                    function findChildByObjectName(parent, name) {
+                        if (!parent) return null;
+                        if (parent.objectName === name) return parent;
+                        if (parent.children) {
+                            for (var i = 0; i < parent.children.length; i++) {
+                                var child = findChildByObjectName(parent.children[i], name);
+                                if (child) return child;
+                            }
+                        }
+                        return null;
+                    }
+                    
+                    var foundTextArea = findChildByObjectName(contentItem, "textArea");
+                    var foundTitleTextArea = findChildByObjectName(contentItem, "titleTextArea");
+                    
+                    if (foundTextArea && foundTextArea.activeFocus) {
+                        foundTextArea.focus = false;
+                    }
+                    if (foundTitleTextArea && foundTitleTextArea.activeFocus) {
+                        foundTitleTextArea.focus = false;
+                    }
+                });
+            }
+        }
+    }
 
     //! Override mainMouseArea to handle 3D dragging
     Connections {
@@ -33,6 +149,12 @@ NodeView {
         function onPositionChanged(mouse) {
             // Check if objects are still valid
             if (!nodeView || !nodeView.mainMouseArea || !nodeView.mainMouseArea.isDraging || !node || !view3d) return;
+            
+            // Don't drag if edit mode is on
+            if (nodeView.edit) {
+                nodeView.mainMouseArea.isDraging = false;
+                return;
+            }
             
             // Get current 3D position
             var currentPos3D = node.guiConfig?.position3D;
@@ -142,6 +264,7 @@ NodeView {
             //! Title Text
             NLTextArea {
                 id: titleTextArea
+                objectName: "titleTextArea"  // Add objectName for easy access
 
                 anchors.right: parent.right
                 anchors.left: iconText.right
@@ -166,6 +289,11 @@ NodeView {
                 onPressed: (event) => {
                                if (event.button === Qt.RightButton) {
                                    nodeView.edit = false
+                               } else if (event.button === Qt.LeftButton) {
+                                   // Enable edit mode when clicking on title
+                                   if (!nodeView.edit) {
+                                       nodeView.edit = true;
+                                   }
                                }
                            }
 
@@ -182,62 +310,115 @@ NodeView {
                     function onEditChanged() {
                         // Check if objects are still valid
                         if (!nodeView || !titleTextArea) return;
-                        if(nodeView.edit)
-                            titleTextArea.forceActiveFocus();
+                        if(nodeView.edit) {
+                            // For NumberNode, focus on textArea instead of title
+                            if (node && node.type === Specs.NodeType.Number) {
+                                Qt.callLater(function() {
+                                    if (textArea) textArea.forceActiveFocus();
+                                });
+                            } else {
+                                titleTextArea.forceActiveFocus();
+                            }
+                        }
                     }
                 }
             }
         }
 
-        // Description Text - Show node data
-        NLTextField {
-            id: textArea
-
-            property bool _internalUpdate: false
-
+        // Value display area - Show node data in a clean format (only for NumberNode)
+        ScrollView {
+            id: valueScrollView
             anchors.top: titleItem.bottom
             anchors.right: parent.right
-            anchors.bottom: parent.bottom
+            anchors.bottom: footerItem.top
             anchors.left: parent.left
             anchors.margins: 12
             anchors.topMargin: 5
-
-            focus: false
+            anchors.bottomMargin: 5
+            
             visible: !mainContentItem.iconOnly
-            placeholderText: qsTr("Value")
-            color: NLStyle.primaryTextColor
-            text: {
-                if (_internalUpdate) {
-                    // Return current text to avoid binding loop
-                    var currentText = textArea.text;
-                    return currentText !== undefined ? currentText : "";
-                }
-                // Check if node and nodeData are still valid
-                if (!node || !node.nodeData || typeof node.nodeData === 'undefined') return "";
-                try {
-                    var data = node.nodeData.data;
-                    return data !== null && data !== undefined ? String(data) : "";
-                } catch (e) {
-                    // Object destroyed, return empty
-                    return "";
-                }
-            }
-            readOnly: !nodeView.edit || (node.type === 1)  // ResultNode type is 1
-            wrapMode: TextEdit.WrapAnywhere
+            clip: true
+            
+            ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+            ScrollBar.vertical.policy: ScrollBar.AsNeeded
+            
+            Column {
+                id: valueColumn
+                width: parent.width
+                spacing: 6
+                
+                // NumberNode - Single value input
+                NLTextField {
+                    id: textArea
+                    objectName: "textArea"
+                    width: parent.width
+                    visible: node && node.type === Specs.NodeType.Number
+                    
+                    property bool _internalUpdate: false
+                    
+                    placeholderText: qsTr("Value")
+                    color: NLStyle.primaryTextColor
+                    
+                    DoubleValidator {
+                        id: numberValidator
+                        bottom: -Infinity
+                        top: Infinity
+                        decimals: 10
+                        notation: DoubleValidator.StandardNotation
+                    }
+                    
+                    validator: numberValidator
+                    
+                    text: {
+                        if (!node || !node.nodeData || typeof node.nodeData === 'undefined') return "";
+                        try {
+                            var _ = node.nodeData.data;
+                            var data = node.nodeData.data;
+                            if (_internalUpdate) return textArea.text || "";
+                            if (node.type === Specs.NodeType.Number && textArea.activeFocus) {
+                                return textArea.text || "";
+                            }
+                            return data !== null && data !== undefined ? String(data) : "";
+                        } catch (e) {
+                            return "";
+                        }
+                    }
+                    
+                    readOnly: !nodeView.edit
+                    wrapMode: TextEdit.WrapAnywhere
             onTextChanged: {
                 if (_internalUpdate) return;
                 // Check if objects are still valid
                 if (!node || !node.nodeData || typeof node.nodeData === 'undefined') return;
                 try {
-                    var currentData = node.nodeData.data;
-                    var currentDataStr = (currentData !== null && currentData !== undefined) ? String(currentData) : "";
-                    if (currentDataStr !== text) {
-                        if (node.type === 0) {  // SourceNode type is 0
-                            _internalUpdate = true;
-                            node.nodeData.data = text;
-                            _internalUpdate = false;
-                            if (scene && scene.updateData) {
-                                scene.updateData();
+                    // Handle NumberNode
+                    if (node.type === Specs.NodeType.Number) {
+                        // Only update nodeData when text is acceptable (complete number)
+                        // This allows user to type decimal point without losing it
+                        if (text === "" || text === "-" || text === "." || text === "-.") {
+                            // User is still typing, don't update yet
+                            return;
+                        }
+                        
+                        var numValue = parseFloat(text);
+                        if (!isNaN(numValue)) {
+                            var currentData = node.nodeData.data;
+                            // Only update if value actually changed
+                            if (currentData !== numValue) {
+                                _internalUpdate = true;
+                                // Update node data
+                                node.nodeData.data = numValue;
+                                // Call updateOutput if available (for NumberNode)
+                                if (node.updateOutput) {
+                                    node.updateOutput(numValue);
+                                } else if (scene && scene.updateDataFromNode) {
+                                    // Use updateDataFromNode for better propagation
+                                    scene.updateDataFromNode(node);
+                                } else if (scene && scene.updateData) {
+                                    // Fallback to scene updateData
+                                    scene.updateData();
+                                }
+                                _internalUpdate = false;
                             }
                         }
                     }
@@ -246,18 +427,257 @@ NodeView {
                     _internalUpdate = false;
                 }
             }
+            
+            onEditingFinished: {
+                // When editing is finished, ensure the value is properly formatted
+                if (node && node.type === Specs.NodeType.Number && !_internalUpdate) {
+                    var numValue = parseFloat(text);
+                    if (!isNaN(numValue)) {
+                        _internalUpdate = true;
+                        // Update text to properly formatted number (preserves decimal if needed)
+                        textArea.text = String(numValue);
+                        node.nodeData.data = numValue;
+                        if (node.updateOutput) {
+                            node.updateOutput(numValue);
+                        }
+                        _internalUpdate = false;
+                    }
+                }
+            }
             smooth: true
             antialiasing: true
             font.bold: true
             font.pointSize: 9
 
-            onPressed: (event) => {
-                           if (event.button === Qt.RightButton) {
-                               nodeView.edit = false;
-                           }
-                       }
-            background: Rectangle {
-                color: "transparent";
+            // Handle focus to enable editing
+            onActiveFocusChanged: {
+                if (activeFocus) {
+                    // When text field gets focus, enable edit mode
+                    if (nodeView && !nodeView.edit) {
+                        nodeView.edit = true;
+                    }
+                }
+            }
+            
+            // Handle clicks - enable edit mode when clicking on text field
+            // Use a MouseArea that doesn't block text input
+            MouseArea {
+                anchors.fill: parent
+                acceptedButtons: Qt.LeftButton | Qt.RightButton
+                propagateComposedEvents: true
+                z: -1  // Behind text field
+                enabled: textArea.readOnly  // Only active when read-only
+                onClicked: (mouse) => {
+                    if (mouse.button === Qt.LeftButton) {
+                        // Enable edit mode when clicking
+                        if (nodeView) {
+                            nodeView.edit = true;
+                        }
+                        // Focus text field
+                        Qt.callLater(function() {
+                            if (textArea) {
+                                textArea.forceActiveFocus();
+                                textArea.cursorPosition = textArea.length;
+                            }
+                        });
+                        mouse.accepted = false; // Allow text field to handle
+                    } else if (mouse.button === Qt.RightButton) {
+                        if (nodeView) {
+                            nodeView.edit = false;
+                        }
+                        mouse.accepted = false;
+                    }
+                }
+            }
+                    background: Rectangle {
+                        color: "transparent";
+                    }
+                }
+            }
+        }
+        
+        // Footer Item - Display values at the bottom (similar to title at top)
+        Item {
+            id: footerItem
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            anchors.margins: 12
+            
+            visible: !mainContentItem.iconOnly
+            height: {
+                // Calculate height based on content
+                if (node && node.type >= Specs.NodeType.Position && node.type <= Specs.NodeType.Dimensions) {
+                    return 40; // Vector3D nodes
+                } else if (node && node.type >= Specs.NodeType.Metal && node.type <= Specs.NodeType.Wood) {
+                    return 60; // Material nodes
+                }
+                return 0; // No footer for other nodes
+            }
+            
+            // Vector3D nodes (Position, Rotation, Scale, Dimensions) - Display formatted values
+            Column {
+                id: vector3dDisplay
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.verticalCenter: parent.verticalCenter
+                visible: node && (node.type === Specs.NodeType.Position || 
+                                  node.type === Specs.NodeType.Rotation || 
+                                  node.type === Specs.NodeType.Scale || 
+                                  node.type === Specs.NodeType.Dimensions)
+                spacing: 3
+                
+                Text {
+                    width: parent.width
+                    color: NLStyle.primaryTextColor
+                    font.pointSize: 8
+                    font.bold: true
+                    horizontalAlignment: Text.AlignHCenter
+                    text: {
+                        if (!node) return "";
+                        if (node.type === Specs.NodeType.Position) return "Position";
+                        else if (node.type === Specs.NodeType.Rotation) return "Rotation";
+                        else if (node.type === Specs.NodeType.Scale) return "Scale";
+                        else if (node.type === Specs.NodeType.Dimensions) return "Dimensions";
+                        return "";
+                    }
+                }
+                
+                Text {
+                    width: parent.width
+                    color: NLStyle.primaryTextColor
+                    font.pointSize: 7
+                    opacity: 0.9
+                    horizontalAlignment: Text.AlignHCenter
+                    text: {
+                        if (!node || !node.nodeData || typeof node.nodeData === 'undefined') return "";
+                        try {
+                            var _ = node.nodeData.data;
+                            var data = node.nodeData.data;
+                            if (!data || typeof data.x === 'undefined') return "";
+                            
+                            return "X: " + data.x.toFixed(2) + "  Y: " + data.y.toFixed(2) + "  Z: " + data.z.toFixed(2);
+                        } catch (e) {
+                            return "";
+                        }
+                    }
+                }
+            }
+            
+            // Material nodes - Display formatted values
+            Column {
+                id: materialDisplay
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.verticalCenter: parent.verticalCenter
+                visible: node && node.type >= Specs.NodeType.Metal && node.type <= Specs.NodeType.Wood
+                spacing: 4
+                
+                Text {
+                    width: parent.width
+                    color: NLStyle.primaryTextColor
+                    font.pointSize: 8
+                    font.bold: true
+                    horizontalAlignment: Text.AlignHCenter
+                    text: {
+                        if (!node) return "";
+                        if (node.type === Specs.NodeType.Metal) return "Metal Material";
+                        else if (node.type === Specs.NodeType.Plastic) return "Plastic Material";
+                        else if (node.type === Specs.NodeType.Glass) return "Glass Material";
+                        else if (node.type === Specs.NodeType.Rubber) return "Rubber Material";
+                        else if (node.type === Specs.NodeType.Wood) return "Wood Material";
+                        return "";
+                    }
+                }
+                
+                Column {
+                    width: parent.width
+                    spacing: 2
+                    
+                    Text {
+                        width: parent.width
+                        color: NLStyle.primaryTextColor
+                        font.pointSize: 7
+                        opacity: 0.9
+                        horizontalAlignment: Text.AlignHCenter
+                        visible: {
+                            if (!node || !node.nodeData || typeof node.nodeData === 'undefined') return false;
+                            try {
+                                var data = node.nodeData.data;
+                                return data && typeof data.metallic !== 'undefined';
+                            } catch (e) {
+                                return false;
+                            }
+                        }
+                        text: {
+                            if (!node || !node.nodeData || typeof node.nodeData === 'undefined') return "";
+                            try {
+                                var _ = node.nodeData.data;
+                                var data = node.nodeData.data;
+                                if (!data || typeof data.metallic === 'undefined') return "";
+                                return "Metallic: " + data.metallic.toFixed(2);
+                            } catch (e) {
+                                return "";
+                            }
+                        }
+                    }
+                    
+                    Text {
+                        width: parent.width
+                        color: NLStyle.primaryTextColor
+                        font.pointSize: 7
+                        opacity: 0.9
+                        horizontalAlignment: Text.AlignHCenter
+                        visible: {
+                            if (!node || !node.nodeData || typeof node.nodeData === 'undefined') return false;
+                            try {
+                                var data = node.nodeData.data;
+                                return data && typeof data.roughness !== 'undefined';
+                            } catch (e) {
+                                return false;
+                            }
+                        }
+                        text: {
+                            if (!node || !node.nodeData || typeof node.nodeData === 'undefined') return "";
+                            try {
+                                var _ = node.nodeData.data;
+                                var data = node.nodeData.data;
+                                if (!data || typeof data.roughness === 'undefined') return "";
+                                return "Roughness: " + data.roughness.toFixed(2);
+                            } catch (e) {
+                                return "";
+                            }
+                        }
+                    }
+                    
+                    Text {
+                        width: parent.width
+                        color: NLStyle.primaryTextColor
+                        font.pointSize: 7
+                        opacity: 0.9
+                        horizontalAlignment: Text.AlignHCenter
+                        visible: {
+                            if (!node || !node.nodeData || typeof node.nodeData === 'undefined') return false;
+                            try {
+                                var data = node.nodeData.data;
+                                return data && typeof data.emissivePower !== 'undefined';
+                            } catch (e) {
+                                return false;
+                            }
+                        }
+                        text: {
+                            if (!node || !node.nodeData || typeof node.nodeData === 'undefined') return "";
+                            try {
+                                var _ = node.nodeData.data;
+                                var data = node.nodeData.data;
+                                if (!data || typeof data.emissivePower === 'undefined') return "";
+                                return "Emissive: " + data.emissivePower.toFixed(2);
+                            } catch (e) {
+                                return "";
+                            }
+                        }
+                    }
+                }
             }
         }
 
