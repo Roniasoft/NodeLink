@@ -50,7 +50,8 @@ Item {
 
         //! Find if there is any port beneath the mouse pointer
         onPressed: (mouse) => {
-            var portId = findPortInRect(Qt.point(mouse.x, mouse.y), 10);
+            // Use smaller margin for more precise port selection
+            var portId = findPortInRect(Qt.point(mouse.x, mouse.y), 8);
             linkview.inputPort = scene.findPort(portId);
             var gMouse = mapToItem(parent, mouse.x, mouse.y);
             if (linkview.inputPort) {
@@ -78,7 +79,8 @@ Item {
                 sceneSession.setPortVisibility(inputPortId, false);
 
             // Find the closest port based on specified margin
-            var closestPortId = findClosestPort(inputPortId, Qt.point(mouse.x, mouse.y), 10)
+            // Use smaller margin for more precise port selection
+            var closestPortId = findClosestPort(inputPortId, Qt.point(mouse.x, mouse.y), 8)
 
             if (outputPortId.length > 0 && closestPortId === outputPortId)
                  return;
@@ -139,12 +141,85 @@ Item {
             scene: linkview.scene
             sceneSession: linkview.sceneSession
 
-            onNodeAdded: (nodeUuid) => {
-                parent.outputPortId = parent.findCorrespondingPortSide(linkview.inputPort, nodeUuid);
+            onNodeAdded: function(nodeUuid) {
+                var inputPortId = parent.inputPortId;
+                var retryCount = 0;
+                var maxRetries = 20;
+                
+                function tryLink() {
+                    retryCount++;
+                    
+                    var outputPort = scene.findPort(inputPortId);
+                    if (!outputPort) {
+                        if (retryCount < maxRetries) {
+                            Qt.callLater(tryLink);
+                            return;
+                        }
+                        parent.clearTempConnection();
+                        return;
+                    }
+                    
+                    var outputType = scene.getOutputDataType(inputPortId);
+                    var targetNode = scene.findNodeByItsId ? scene.findNodeByItsId(nodeUuid) : (scene.nodes[nodeUuid] || null);
+                    if (!targetNode) {
+                        if (retryCount < maxRetries) {
+                            Qt.callLater(tryLink);
+                            return;
+                        }
+                        parent.clearTempConnection();
+                        return;
+                    }
+                    
+                    if (!targetNode.ports || Object.keys(targetNode.ports).length === 0) {
+                        if (retryCount < maxRetries) {
+                            Qt.callLater(tryLink);
+                            return;
+                        }
+                        parent.clearTempConnection();
+                        return;
+                    }
+                    
+                    if (outputType !== "Unknown") {
+                        var matchingPortId = "";
+                        
+                        Object.entries(targetNode.ports).forEach(([portId, port]) => {
+                            if (port && port.portType === NLSpec.PortType.Input) {
+                                var inputType = scene.getInputDataType(port._qsUuid);
+                                if (inputType === outputType && matchingPortId.length === 0) {
+                                    matchingPortId = portId;
+                                }
+                            }
+                        });
+                        
+                        if (matchingPortId.length > 0) {
+                            parent.outputPortId = matchingPortId;
+                        } else {
+                            parent.outputPortId = parent.findCorrespondingPortSide(outputPort, nodeUuid);
+                        }
+                    } else {
+                        parent.outputPortId = parent.findCorrespondingPortSide(outputPort, nodeUuid);
+                    }
 
-                if(parent.inputPortId.length > 0 && parent.outputPortId.length > 0)
-                    scene.linkNodes(parent.inputPortId, parent.outputPortId);
-                parent.clearTempConnection();
+                    if(inputPortId.length > 0 && parent.outputPortId.length > 0) {
+                        var canLink = scene.canLinkNodes(inputPortId, parent.outputPortId);
+                        if (canLink) {
+                            var linkResult = scene.linkNodes(inputPortId, parent.outputPortId);
+                            if (!linkResult && retryCount < maxRetries) {
+                                Qt.callLater(tryLink);
+                                return;
+                            }
+                        } else if (retryCount < maxRetries) {
+                            Qt.callLater(tryLink);
+                            return;
+                        }
+                    } else if (retryCount < maxRetries) {
+                        Qt.callLater(tryLink);
+                        return;
+                    }
+                    parent.clearTempConnection();
+                }
+                
+                Qt.callLater(tryLink);
             }
 
             onAboutToHide: parent.clearTempConnection();
@@ -223,9 +298,41 @@ Item {
             outputPortId = "";
         }
 
-        //! find Corresponding port
+        //! find Corresponding port based on data type (not just port side)
         function findCorrespondingPortSide (inputPort : Port, outputNodeUuid : string) : string {
-
+            if (!inputPort || !scene) return "";
+            
+            // Get the output data type from the input port's node
+            // Note: inputPort is actually the output port we're dragging from
+            var outputNode = scene.findNode(inputPort._qsUuid);
+            if (!outputNode) return "";
+            
+            // Get the output data type
+            var outputType = scene.getOutputDataType(inputPort._qsUuid);
+            if (outputType === "Unknown") return "";
+            
+            // Find the target node
+            var targetNode = scene.findNode(outputNodeUuid);
+            if (!targetNode) return "";
+            
+            // Find input port in target node that matches the output type
+            var matchingPortId = "";
+            Object.entries(targetNode.ports).forEach(([portId, port]) => {
+                if (port.portType === NLSpec.PortType.Input) {
+                    var inputType = scene.getInputDataType(port._qsUuid);
+                    if (inputType === outputType) {
+                        // Found matching port type
+                        matchingPortId = portId;
+                    }
+                }
+            });
+            
+            // If we found a matching port, return it
+            if (matchingPortId.length > 0) {
+                return matchingPortId;
+            }
+            
+            // Fallback: try to find port by port side (for backward compatibility)
             switch (inputPort?.portSide ?? NLSpec.PortPositionSide.Top)  {
                 case (NLSpec.PortPositionSide.Top): {
                     return findPortByPortSide(outputNodeUuid, NLSpec.PortPositionSide.Bottom);
@@ -258,16 +365,23 @@ Item {
         }
 
         //! Find nearest port with mouse position and port position
+        //! Uses Euclidean distance for more precise selection
         function findPortInRect (mousePoint : point, searchMargin : int) : string {
             var gMouse = mapToItem(parent, Qt.point(mousePoint.x, mousePoint.y));
             let foundKey = "";
+            let minDistance = Number.MAX_VALUE;
 
             Object.values(scene.nodes).forEach (node => {
-
                 Object.entries(node.ports).forEach(([key, value]) => {
                     var portPosition = value._position;
-                    if((portPosition.x - searchMargin) <= gMouse.x &&  gMouse.x <= (portPosition.x + searchMargin)) {
-                        if((portPosition.y - searchMargin) <= gMouse.y && gMouse.y <= (portPosition.y + searchMargin))
+                    // Calculate Euclidean distance for more precise selection
+                    var dx = portPosition.x - gMouse.x;
+                    var dy = portPosition.y - gMouse.y;
+                    var distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    // Check if within search margin and is the closest so far
+                    if (distance <= searchMargin && distance < minDistance) {
+                        minDistance = distance;
                         foundKey = key;
                     }
                 });
@@ -321,10 +435,13 @@ Item {
 
                 });
 
-            // Find closest port
+            // Find closest port using Euclidean distance for more precision
             ports.forEach(port => {
                     var portPosition = port._position;
-                    var distance = calculateManhattanDistance(gMouse, portPosition);
+                    // Use Euclidean distance instead of Manhattan for more precise selection
+                    var dx = portPosition.x - gMouse.x;
+                    var dy = portPosition.y - gMouse.y;
+                    var distance = Math.sqrt(dx * dx + dy * dy);
 
                     if (distance < minDistance) {
                         minDistance = distance;
@@ -335,7 +452,14 @@ Item {
             return closestPortId;
         }
 
-        //! Calculates the ManhattenDisance between two points
+        //! Calculates the Euclidean distance between two points (for more precise port selection)
+        function calculateEuclideanDistance(point1 : vector2d, point2 : vector2d) {
+            var dx = point1.x - point2.x;
+            var dy = point1.y - point2.y;
+            return Math.sqrt(dx * dx + dy * dy);
+        }
+        
+        //! Calculates the Manhattan distance between two points (kept for backward compatibility)
         function calculateManhattanDistance(point1 : vector2d, point2 : vector2d) {
             return Math.abs(point1.x - point2.x) + Math.abs(point1.y - point2.y);
         }
