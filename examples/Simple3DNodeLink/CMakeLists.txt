@@ -14,6 +14,13 @@ set(QT_QML_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/qml)
 # Creates and finalizes an application target of a platform-specific type
 qt_add_executable(Simple3DNodeLink main.cpp)
 
+# Set Specs as singleton
+set_source_files_properties(
+    resources/Core/Specs.qml
+    PROPERTIES
+        QT_QML_SINGLETON_TYPE True
+)
+
 # This command defines a QML module that can consist of C++ sources, .qml files, or both.
 qt_add_qml_module(Simple3DNodeLink
     URI "Simple3DNodeLink"
@@ -25,20 +32,29 @@ qt_add_qml_module(Simple3DNodeLink
    QML_FILES
     main.qml
     resources/Core/Simple3DNodeLinkScene.qml
-    resources/Core/SourceNode.qml
-    resources/Core/ResultNode.qml
     resources/Core/Specs.qml
+    resources/Core/NumberNode.qml
+    resources/Core/PositionNode.qml
+    resources/Core/RotationNode.qml
+    resources/Core/ScaleNode.qml
+    resources/Core/DimensionsNode.qml
+    resources/Core/MetalMaterialNode.qml
+    resources/Core/PlasticMaterialNode.qml
+    resources/Core/GlassMaterialNode.qml
+    resources/Core/RubberMaterialNode.qml
+    resources/Core/WoodMaterialNode.qml
+    resources/Core/CubeNode.qml
+    resources/Core/SphereNode.qml
+    resources/Core/CylinderNode.qml
+    resources/Core/ConeNode.qml
+    resources/Core/PlaneNode.qml
+    resources/Core/RectangleNode.qml
     resources/View/Simple3DNodeLinkView.qml
     resources/View/Simple3DNodeLinkNodeView.qml
-    resources/View/Simple3DNodeLinkNodeView2D.qml
     resources/View/LinkHelperView3D.qml
     resources/View/ContextMenu3D.qml
 
    RESOURCES
-    resources/fonts/Font\ Awesome\ 6\ Pro-Light-300.otf
-    resources/fonts/Font\ Awesome\ 6\ Pro-Regular-400.otf
-    resources/fonts/Font\ Awesome\ 6\ Pro-Solid-900.otf
-    resources/fonts/Font\ Awesome\ 6\ Pro-Thin-100.otf
 
    SOURCES
 
