@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 
 import NodeLink
+import Simple3DNodeLink
 import QtQuickStream
 
 /*! ***********************************************************************************************
@@ -24,10 +25,6 @@ I_Scene {
     property UndoCore _undoCore: UndoCore {
         scene: scene
     }
-    
-    //! 3D positioning properties
-    property real node3DSpacing: 200.0
-    property real layerSpacing: 100.0
     
     /* Functions
      * ****************************************************************************************/
@@ -107,28 +104,10 @@ I_Scene {
         }
     }
 
-    //! Arrange nodes in 3D grid
-    function arrangeNodes3D() {
-        var nodeList = Object.values(nodes);
-        var gridSize = Math.ceil(Math.sqrt(nodeList.length));
-        
-        for (var i = 0; i < nodeList.length; i++) {
-            var row = Math.floor(i / gridSize);
-            var col = i % gridSize;
-            
-            var x = col * node3DSpacing;
-            var y = row * node3DSpacing;
-            var z = (i % 3) * layerSpacing - layerSpacing; // Distribute in 3 layers
-            
-            updateNode3DPosition(nodeList[i]._qsUuid, x, y, z);
-        }
-    }
-
     //! Override linkNodes to work with 3D positioning
     //! Note: createLink already handles children/parents relationships, so we don't duplicate it here
     function linkNodes(portA: string, portB: string) {
         if (!canLinkNodes(portA, portB)) {
-            console.error("[3DQuickScene] Cannot link Nodes ");
             return;
         }
 
@@ -146,30 +125,182 @@ I_Scene {
     }
     
     //! Update node data with connected links
-    //! Similar to CalculatorScene.updateData() but simplified for SourceNode -> ResultNode
+    //! Handles data propagation for all node types
+    //! This function processes all links and updates downstream nodes recursively
     function updateData() {
-        // Process all links to transfer data from SourceNode to ResultNode
-        Object.values(links).forEach(link => {
-            // In I_Scene.createLink, inputPort is portA (output port from SourceNode)
-            // and outputPort is portB (input port to ResultNode)
-            var outputPortUuid = link.inputPort._qsUuid;  // Output port (from SourceNode)
-            var inputPortUuid = link.outputPort._qsUuid;  // Input port (to ResultNode)
+        // Track processed nodes to avoid infinite loops
+        var processedNodes = {};
+        var maxIterations = 100;
+        var iteration = 0;
+        
+        // Keep processing until no more updates are needed
+        while (iteration < maxIterations) {
+            iteration++;
+            var hasUpdates = false;
+            
+            // Process all links to transfer data between nodes
+            Object.values(links).forEach(link => {
+                // In I_Scene.createLink, inputPort is portA (output port from upstream node)
+                // and outputPort is portB (input port to downstream node)
+                var outputPortUuid = link.inputPort._qsUuid;  // Output port (from upstream node)
+                var inputPortUuid = link.outputPort._qsUuid;  // Input port (to downstream node)
 
-            var upstreamNode = findNode(outputPortUuid);   // SourceNode (has output port)
-            var downStreamNode = findNode(inputPortUuid);  // ResultNode (has input port)
+                var upstreamNode = findNode(outputPortUuid);   // Upstream node (has output port)
+                var downStreamNode = findNode(inputPortUuid);  // Downstream node (has input port)
 
-            if (!upstreamNode || !downStreamNode) {
-                return;
-            }
+                if (!upstreamNode || !downStreamNode) {
+                    return;
+                }
 
-            // Only process if upstream node has data (SourceNode type is 0)
-            if (upstreamNode.type === 0 && upstreamNode.nodeData && upstreamNode.nodeData.data !== null && upstreamNode.nodeData.data !== undefined) {
-                // For ResultNode (type 1), directly copy data from SourceNode
-                if (downStreamNode.type === 1) {
-                    downStreamNode.nodeData.data = upstreamNode.nodeData.data;
+                // Get data from upstream node
+                if (!upstreamNode.nodeData || upstreamNode.nodeData.data === null || upstreamNode.nodeData.data === undefined) {
+                    return;
+                }
+
+                var data = upstreamNode.nodeData.data;
+                var outputPortTitle = link.inputPort.title;
+                var inputPortTitle = link.outputPort.title;
+
+            // Try to update downstream node with the data
+            // Use inputPortTitle to identify which port the data should go to
+            if (downStreamNode.updateInput) {
+                // Node has updateInput function - call it with port title and data
+                var oldData = downStreamNode.nodeData ? downStreamNode.nodeData.data : null;
+                downStreamNode.updateInput(inputPortTitle, data);
+                
+                // Check if data changed (for recursive updates)
+                var newData = downStreamNode.nodeData ? downStreamNode.nodeData.data : null;
+                if (oldData !== newData) {
+                    hasUpdates = true;
                 }
             }
+            });
+            
+            // If no updates happened, we're done
+            if (!hasUpdates) {
+                break;
+            }
+        }
+        
+        // Trigger update for all nodes to ensure they process their inputs
+        Object.values(nodes).forEach(node => {
+            if (node && node.updateNodeData) {
+                node.updateNodeData();
+            }
         });
+    }
+    
+    //! Update data from a specific node (recursive)
+    //! This is called when a node's data changes to propagate changes downstream
+    function updateDataFromNode(startingNode) {
+        if (!startingNode) return;
+        
+        // Find all links where this node is upstream (output)
+        var downstreamLinks = Object.values(links).filter(function(link) {
+            var upstreamNodeId = findNodeId(link.inputPort._qsUuid);
+            return upstreamNodeId === startingNode._qsUuid;
+        });
+        
+        // Process each downstream link
+        downstreamLinks.forEach(function(link) {
+            var inputPortUuid = link.outputPort._qsUuid;  // Input port (to downstream node)
+            var downStreamNode = findNode(inputPortUuid);
+            
+            if (!downStreamNode || !startingNode.nodeData) {
+                return;
+            }
+            
+            var data = startingNode.nodeData.data;
+            if (data === null || data === undefined) {
+                return;
+            }
+            
+            var inputPortTitle = link.outputPort.title;
+            
+            // Update downstream node
+            if (downStreamNode.updateInput) {
+                downStreamNode.updateInput(inputPortTitle, data);
+                // Recursively update from this node
+                updateDataFromNode(downStreamNode);
+            } else if (downStreamNode.type === 1) {
+                downStreamNode.nodeData.data = data;
+            }
+        });
+    }
+
+    //! Get data type from output port
+    function getOutputDataType(portUuid: string): string {
+        var port = findPort(portUuid);
+        if (!port || port.portType !== NLSpec.PortType.Output) {
+            return "Unknown";
+        }
+        
+        var node = findNode(portUuid);
+        if (!node) {
+            return "Unknown";
+        }
+        
+        var portTitle = port.title;
+        
+        if (portTitle === "Position") {
+            return "Position";
+        } else if (portTitle === "Rotation") {
+            return "Rotation";
+        } else if (portTitle === "Scale") {
+            return "Scale";
+        } else if (portTitle === "Dimensions") {
+            return "Dimensions";
+        } else if (portTitle === "Material") {
+            return "Material";
+        } else if (portTitle === "Number") {
+            return "Number";
+        }
+        
+        if (node.type === Specs.NodeType.Number) {
+            return "Number";
+        } else if (node.type === Specs.NodeType.Position) {
+            return "Position";
+        } else if (node.type === Specs.NodeType.Rotation) {
+            return "Rotation";
+        } else if (node.type === Specs.NodeType.Scale) {
+            return "Scale";
+        } else if (node.type === Specs.NodeType.Dimensions) {
+            return "Dimensions";
+        } else if (node.type >= Specs.NodeType.Metal && node.type <= Specs.NodeType.Wood) {
+            return "Material";
+        }
+        
+        return "Unknown";
+    }
+    
+    //! Get expected data type for input port
+    function getInputDataType(portUuid: string): string {
+        var port = findPort(portUuid);
+        if (!port) {
+            return "Unknown";
+        }
+        
+        var portTitle = port.title;
+        
+        if (portTitle === "X" || portTitle === "Y" || portTitle === "Z" ||
+            portTitle === "W" || portTitle === "H" || portTitle === "D" ||
+            portTitle === "Metallic" || portTitle === "Roughness" || portTitle === "Emissive Power") {
+            return "Number";
+        } else if (portTitle === "Position") {
+            return "Position";
+        } else if (portTitle === "Rotation") {
+            return "Rotation";
+        } else if (portTitle === "Scale") {
+            return "Scale";
+        } else if (portTitle === "Dimensions") {
+            return "Dimensions";
+        } else if (portTitle === "Material") {
+            return "Material";
+        } else if (portTitle === "Input" || portTitle === "Number") {
+            return "Number";
+        }
+        
+        return "Unknown";
     }
 
     //! Check if two ports can be linked
@@ -200,7 +331,16 @@ I_Scene {
             portBObj.portType === NLSpec.PortType.Output)
             return false;
 
+        // Type checking: check if output type matches input type
+        var outputType = getOutputDataType(portA);
+        var inputType = getInputDataType(portB);
+        
+        if (outputType !== "Unknown" && inputType !== "Unknown" && outputType !== inputType) {
+            return false;
+        }
+
         // Check for existing link (most expensive operation - do last)
+        // Check if the exact same link already exists
         var sameLinks = Object.values(links).filter(link =>
             HashCompareString.compareStringModels(link.inputPort._qsUuid, portA) &&
             HashCompareString.compareStringModels(link.outputPort._qsUuid, portB));
@@ -209,11 +349,15 @@ I_Scene {
             return false;
 
         // An input port can accept only a single link
+        // Check if portB (input port) is already connected to any output port
+        // In I_Scene.createLink: link.inputPort = portA (output), link.outputPort = portB (input)
         var inputPortLinks = Object.values(links).filter(link =>
-            HashCompareString.compareStringModels(link.inputPort._qsUuid, portB));
+            HashCompareString.compareStringModels(link.outputPort._qsUuid, portB));
 
-        if (inputPortLinks.length > 0)
+        if (inputPortLinks.length > 0) {
+            // Input port already has a connection, reject new connection
             return false;
+        }
 
         return true;
     }
