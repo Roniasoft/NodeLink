@@ -43,11 +43,14 @@ I_NodeView {
     property bool         leftBorderContainsMouse:   leftMouseArea.containsMouse
     property bool         rightBorderContainsMouse:  rightMouseArea.containsMouse
 
+    //! This variable enhance UX when work with Rectangle/Lasso selection
+    property double selectionModeBorder: (Object.values(scene?.selectionModel?.selectedModel ?? ({})).length > 1) ? 3.6 : 1.2
+
     /* Object Properties
     * ****************************************************************************************/
 
     color: Qt.darker(node.guiConfig.color, 10)
-    border.color: node.guiConfig.locked ? NLStyle.node.borderLockColor : Qt.lighter(node.guiConfig.color, isSelected ? 1.2 : 1)
+    border.color: node.guiConfig.locked ? NLStyle.node.borderLockColor : Qt.lighter(node.guiConfig.color, isSelected ? selectionModeBorder : 1)
     border.width: (isSelected ? (NLStyle.node.borderWidth + 1) : NLStyle.node.borderWidth)
     opacity: isSelected ? NLStyle.node.selectedOpacity : NLStyle.node.defaultOpacity
 
