@@ -142,6 +142,48 @@ NodeView {
         }
     }
 
+    /* Keys
+    * ****************************************************************************************/
+
+    //! Handle key pressed (Del: delete selected node)
+    Keys.onDeletePressed: {
+        if (!nodeView.isSelected)
+            return;
+
+        if (!nodeView.isNodeEditable) {
+            return;
+        }
+
+        if (sceneSession && sceneSession.isDeletePromptEnable) {
+            deletePopup.open();
+        } else {
+            delTimer.start();
+        }
+    }
+
+    //! Delete handlers
+    //! *****************
+
+    //! Delete node
+    Timer {
+        id: delTimer
+        repeat: false
+        running: false
+        interval: 100
+        onTriggered: {
+            if (scene && scene.deleteSelectedObjects) {
+                scene.deleteSelectedObjects();
+            }
+        }
+    }
+
+    //! Delete popup to confirm deletion process
+    ConfirmPopUp {
+        id: deletePopup
+        sceneSession: nodeView.sceneSession
+        onAccepted: delTimer.start();
+    }
+
     //! Override mainMouseArea to handle 3D dragging
     Connections {
         target: nodeView && nodeView.mainMouseArea ? nodeView.mainMouseArea : null
@@ -312,9 +354,13 @@ NodeView {
                         if (!nodeView || !titleTextArea) return;
                         if(nodeView.edit) {
                             // For NumberNode, focus on textArea instead of title
-                            if (node && node.type === Specs.NodeType.Number) {
+                            if (node && (node.type === Specs.NodeType.Number || node.type === Specs.NodeType.Color)) {
                                 Qt.callLater(function() {
-                                    if (textArea) textArea.forceActiveFocus();
+                                    if (node.type === Specs.NodeType.Number && textArea) {
+                                        textArea.forceActiveFocus();
+                                    } else if (node.type === Specs.NodeType.Color && colorTextField) {
+                                        colorTextField.forceActiveFocus();
+                                    }
                                 });
                             } else {
                                 titleTextArea.forceActiveFocus();
@@ -346,6 +392,174 @@ NodeView {
                 id: valueColumn
                 width: parent.width
                 spacing: 6
+                
+                // ColorNode - Hex color input
+                Row {
+                    id: colorInputRow
+                    width: parent.width
+                    spacing: 8
+                    visible: node && node.type === Specs.NodeType.Color
+                    
+                    // Color preview rectangle
+                    Rectangle {
+                        id: colorPreview
+                        width: 40
+                        height: 30
+                        radius: 4
+                        border.width: 1
+                        border.color: NLStyle.borderColor || "#363636"
+                        color: {
+                            if (!node || !node.nodeData || typeof node.nodeData === 'undefined') return "#8080FF";
+                            try {
+                                var data = node.nodeData.data;
+                                if (data && typeof data === "string" && data.length > 0) {
+                                    try {
+                                        var colorObj = Qt.color(data);
+                                        if (colorObj && colorObj.a > 0) {
+                                            return data;
+                                        }
+                                    } catch (e) {
+                                        // Invalid color, use default
+                                    }
+                                }
+                                return "#8080FF";
+                            } catch (e) {
+                                return "#8080FF";
+                            }
+                        }
+                    }
+                    
+                    // Color hex input field with fixed #
+                    Row {
+                        spacing: 0
+                        width: parent.width - colorPreview.width - parent.spacing
+                        
+                        // Fixed # symbol
+                        Text {
+                            text: "#"
+                            color: NLStyle.primaryTextColor
+                            font.bold: true
+                            font.pointSize: 9
+                            anchors.verticalCenter: parent.verticalCenter
+                            width: 10
+                        }
+                        
+                        // Hex value input (without #)
+                        NLTextField {
+                            id: colorTextField
+                            objectName: "colorTextField"
+                            width: parent.width - 10
+                            
+                            property bool _internalUpdate: false
+                            
+                            placeholderText: qsTr("RRGGBB")
+                            color: NLStyle.primaryTextColor
+                            
+                            text: {
+                                if (!node || !node.nodeData || typeof node.nodeData === 'undefined') return "8080FF";
+                                try {
+                                    var _ = node.nodeData.data;
+                                    var data = node.nodeData.data;
+                                    if (_internalUpdate) return colorTextField.text || "";
+                                    if (node.type === Specs.NodeType.Color && colorTextField.activeFocus) {
+                                        return colorTextField.text || "";
+                                    }
+                                    if (data !== null && data !== undefined) {
+                                        var colorStr = String(data);
+                                        // Remove # if present
+                                        if (colorStr.startsWith("#")) {
+                                            return colorStr.substring(1);
+                                        }
+                                        return colorStr;
+                                    }
+                                    return "8080FF";
+                                } catch (e) {
+                                    return "8080FF";
+                                }
+                            }
+                            
+                            readOnly: !nodeView.edit
+                            wrapMode: TextEdit.NoWrap
+                            
+                            // Only allow hex characters (0-9, A-F, a-f)
+                            inputMethodHints: Qt.ImhNoAutoUppercase
+                            
+                            onTextChanged: {
+                                if (_internalUpdate) return;
+                                if (!node || !node.nodeData || typeof node.nodeData === 'undefined') return;
+                                try {
+                                    if (node.type === Specs.NodeType.Color) {
+                                        var hexStr = text.trim().toUpperCase();
+                                        // Remove any non-hex characters
+                                        hexStr = hexStr.replace(/[^0-9A-F]/g, '');
+                                        
+                                        // Limit to 6 characters
+                                        if (hexStr.length > 6) {
+                                            hexStr = hexStr.substring(0, 6);
+                                        }
+                                        
+                                        // Update text if it was filtered
+                                        if (hexStr !== text) {
+                                            _internalUpdate = true;
+                                            colorTextField.text = hexStr;
+                                            _internalUpdate = false;
+                                        }
+                                        
+                                        // Only update nodeData when we have 6 hex digits
+                                        if (hexStr.length === 6) {
+                                            var fullColorStr = "#" + hexStr;
+                                            _internalUpdate = true;
+                                            node.nodeData.data = fullColorStr;
+                                            if (node.updateOutput) {
+                                                node.updateOutput(fullColorStr);
+                                            } else if (scene && scene.updateDataFromNode) {
+                                                scene.updateDataFromNode(node);
+                                            }
+                                            _internalUpdate = false;
+                                        }
+                                    }
+                                } catch (e) {
+                                    _internalUpdate = false;
+                                }
+                            }
+                            
+                            onEditingFinished: {
+                                if (node && node.type === Specs.NodeType.Color && !_internalUpdate) {
+                                    var hexStr = text.trim().toUpperCase().replace(/[^0-9A-F]/g, '');
+                                    
+                                    // Pad with zeros if less than 6 characters, or truncate if more
+                                    if (hexStr.length < 6) {
+                                        hexStr = (hexStr + "000000").substring(0, 6);
+                                    } else if (hexStr.length > 6) {
+                                        hexStr = hexStr.substring(0, 6);
+                                    }
+                                    
+                                    var fullColorStr = "#" + hexStr;
+                                    _internalUpdate = true;
+                                    colorTextField.text = hexStr;
+                                    node.nodeData.data = fullColorStr;
+                                    if (node.updateOutput) {
+                                        node.updateOutput(fullColorStr);
+                                    }
+                                    _internalUpdate = false;
+                                }
+                            }
+                            
+                            smooth: true
+                            antialiasing: true
+                            font.bold: true
+                            font.pointSize: 9
+                            
+                            onActiveFocusChanged: {
+                                if (activeFocus) {
+                                    if (nodeView && !nodeView.edit) {
+                                        nodeView.edit = true;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
                 
                 // NumberNode - Single value input
                 NLTextField {

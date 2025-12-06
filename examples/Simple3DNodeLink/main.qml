@@ -45,6 +45,12 @@ Window {
         nodeRegistry.nodeIcons[Specs.NodeType.Number] = "\uf1ec";
         nodeRegistry.nodeColors[Specs.NodeType.Number] = "#FF9800";
         
+        // Color node
+        nodeRegistry.nodeTypes[Specs.NodeType.Color] = "ColorNode";
+        nodeRegistry.nodeNames[Specs.NodeType.Color] = "Color";
+        nodeRegistry.nodeIcons[Specs.NodeType.Color] = "\uf53f";
+        nodeRegistry.nodeColors[Specs.NodeType.Color] = "#E91E63";
+        
         // Position node
         nodeRegistry.nodeTypes[Specs.NodeType.Position] = "PositionNode";
         nodeRegistry.nodeNames[Specs.NodeType.Position] = "Position";

@@ -34,6 +34,7 @@ qt_add_qml_module(Simple3DNodeLink
     resources/Core/Simple3DNodeLinkScene.qml
     resources/Core/Specs.qml
     resources/Core/NumberNode.qml
+    resources/Core/ColorNode.qml
     resources/Core/PositionNode.qml
     resources/Core/RotationNode.qml
     resources/Core/ScaleNode.qml
@@ -53,6 +54,7 @@ qt_add_qml_module(Simple3DNodeLink
     resources/View/Simple3DNodeLinkNodeView.qml
     resources/View/LinkHelperView3D.qml
     resources/View/ContextMenu3D.qml
+    resources/View/ObjectSelectionView3D.qml
 
    RESOURCES
 
