@@ -565,7 +565,7 @@ function addPorts() {
 
 ### 3. Learn More
 
-- Read the [Custom Node Creation Guide](CustomNodeCreation.md) for detailed documentation
+- Read the [Custom Node Creation Guide](../AdvancedTopics/CustomNodeCreation.md) for detailed documentation
 - Check the [Undo/Redo System](UndoRedoSystem.md) documentation
 - Explore example README files in `examples/` directories
 
@@ -693,7 +693,7 @@ add_subdirectory(/path/to/NodeLink NodeLink)
 If you encounter issues not covered here:
 
 1. **Check the Examples**: Look at working examples in `examples/` directory
-2. **Read Documentation**: See [Custom Node Creation Guide](CustomNodeCreation.md)
+2. **Read Documentation**: See [Custom Node Creation Guide](../AdvancedTopics/CustomNodeCreation.md)
 3. **GitHub Issues**: Report bugs or ask questions on [GitHub Issues](https://github.com/Roniasoft/NodeLink/issues)
 4. **Community**: Check for community discussions and solutions
 
@@ -718,7 +718,7 @@ In this 10-minute tutorial, you've:
 
 ### What's Next?
 
-- Explore more advanced features in the [Custom Node Creation Guide](CustomNodeCreation.md)
+- Explore more advanced features in the [Custom Node Creation Guide](../AdvancedTopics/CustomNodeCreation.md)
 - Build more complex nodes with data processing
 - Create custom node views and UI components
 - Integrate with C++ backends for performance-critical operations
