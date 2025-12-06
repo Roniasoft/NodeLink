@@ -566,7 +566,7 @@ function addPorts() {
 ### 3. Learn More
 
 - Read the [Custom Node Creation Guide](../AdvancedTopics/CustomNodeCreation.md) for detailed documentation
-- Check the [Undo/Redo System](UndoRedoSystem.md) documentation
+- Check the [Undo/Redo System](../AdvancedTopics/UndoRedo.md) documentation
 - Explore example README files in `examples/` directories
 
 ### 4. Create More Complex Nodes
