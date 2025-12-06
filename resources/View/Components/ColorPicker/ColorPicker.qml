@@ -33,7 +33,7 @@ Rectangle {
 
     /* Signals
      * ****************************************************************************************/
-    // signal colorChanged(var colorName, var index)        //TODO: (ERROR)Duplicate signal name: invalid override of property change signal or superclass signal
+    signal colorChanged(string colorName, int index)        //TODO: (ERROR)Duplicate signal name: invalid override of property change signal or superclass signal
 
     //A row with 6 colors
     RowLayout {

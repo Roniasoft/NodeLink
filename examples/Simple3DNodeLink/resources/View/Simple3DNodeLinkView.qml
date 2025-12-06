@@ -192,6 +192,19 @@ Item {
                             Qt3D.PrincipledMaterial {
                                 id: shapeMaterial
                                 baseColor: {
+                                    // First check if color is explicitly set
+                                    if (shapeData && shapeData.color && typeof shapeData.color === "string" && shapeData.color.length > 0) {
+                                        try {
+                                            var colorObj = Qt.color(shapeData.color);
+                                            if (colorObj && colorObj.a > 0) {
+                                                return colorObj;
+                                            }
+                                        } catch (e) {
+                                            // Invalid color, fall through to material/default
+                                        }
+                                    }
+                                    
+                                    // If no color set, use material-based colors
                                     if (!shapeData || !shapeData.material) return Qt.rgba(0.5, 0.7, 1.0, 1.0);
                                     // Default colors based on material type
                                     switch(shapeData.material.type) {
@@ -290,7 +303,8 @@ Item {
                             rotation: data.rotation ? Qt.vector3d(data.rotation.x, data.rotation.y, data.rotation.z) : Qt.vector3d(0, 0, 0),
                             scale: data.scale ? Qt.vector3d(data.scale.x, data.scale.y, data.scale.z) : Qt.vector3d(1, 1, 1),
                             dimensions: data.dimensions ? Qt.vector3d(data.dimensions.x, data.dimensions.y, data.dimensions.z) : Qt.vector3d(100, 100, 100),
-                            material: data.material || null
+                            material: data.material || null,
+                            color: data.color || null
                         };
                         
                         // If we need to update position, save it to nodeData
@@ -305,7 +319,8 @@ Item {
                                 rotation: currentData.rotation || shapeData.rotation,
                                 scale: currentData.scale || shapeData.scale,
                                 dimensions: currentData.dimensions || shapeData.dimensions,
-                                material: currentData.material || shapeData.material
+                                material: currentData.material || shapeData.material,
+                                color: currentData.color || shapeData.color
                             };
                         }
                     } else {
@@ -317,7 +332,8 @@ Item {
                                 rotation: Qt.vector3d(0, 0, 0),
                                 scale: Qt.vector3d(1, 1, 1),
                                 dimensions: Qt.vector3d(100, 100, 100),
-                                material: null
+                                material: null,
+                                color: null
                             };
                             // Save default position to nodeData
                             if (nodeData.nodeData) {
@@ -330,7 +346,8 @@ Item {
                                 rotation: Qt.vector3d(0, 0, 0),
                                 scale: Qt.vector3d(1, 1, 1),
                                 dimensions: Qt.vector3d(100, 100, 100),
-                                material: null
+                                material: null,
+                                color: null
                             };
                         }
                     }
@@ -1304,6 +1321,17 @@ Item {
             }
         }
         }
+
+    //! ObjectSelectionView3D to show SelectionToolsRect menu above selected nodes
+    //! Uses custom implementation that tracks actual node view positions in 3D space
+    ObjectSelectionView3D {
+        id: objectSelectionView
+        scene: root.scene
+        sceneSession: root.sceneSession
+        view3d: root.view3d
+        nodesOverlay: nodesOverlay
+        z: 2000  // Above nodes and links
+    }
 
     //! Mouse area for double-click node creation, focus management, and camera rotation
     MouseArea {

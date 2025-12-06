@@ -252,12 +252,16 @@ I_Scene {
             return "Dimensions";
         } else if (portTitle === "Material") {
             return "Material";
+        } else if (portTitle === "Color") {
+            return "Color";
         } else if (portTitle === "Number") {
             return "Number";
         }
         
         if (node.type === Specs.NodeType.Number) {
             return "Number";
+        } else if (node.type === Specs.NodeType.Color) {
+            return "Color";
         } else if (node.type === Specs.NodeType.Position) {
             return "Position";
         } else if (node.type === Specs.NodeType.Rotation) {
@@ -296,6 +300,8 @@ I_Scene {
             return "Dimensions";
         } else if (portTitle === "Material") {
             return "Material";
+        } else if (portTitle === "Color") {
+            return "Color";
         } else if (portTitle === "Input" || portTitle === "Number") {
             return "Number";
         }
@@ -360,6 +366,172 @@ I_Scene {
         }
 
         return true;
+    }
+
+    //! Override deleteNodes to reset inputs to default values when value nodes are deleted
+    function deleteNodes(nodeUUIds: list<string>) {
+        if (!nodeUUIds || nodeUUIds.length === 0) {
+            return;
+        }
+
+        // For each node, reset connected input ports before deletion
+        // Call deleteNode for each node which will handle the reset logic
+        for (var i = 0; i < nodeUUIds.length; i++) {
+            var nodeUUId = nodeUUIds[i];
+            deleteNode(nodeUUId);
+        }
+    }
+
+    //! Override deleteNode to reset inputs to default values when value nodes are deleted
+    function deleteNode(nodeUUId: string) {
+        var nodeRef = nodes[nodeUUId];
+        if (!nodeRef) {
+            return;
+        }
+
+        // Helper function to get default value based on input port title
+        function getDefaultValueForInputPort(portTitle) {
+            if (portTitle === "X" || portTitle === "Y" || portTitle === "Z") {
+                // Position/Rotation/Scale node inputs (single number)
+                return 0.0;
+            } else if (portTitle === "W" || portTitle === "H" || portTitle === "D") {
+                // Dimensions node inputs
+                return 100.0;
+            } else if (portTitle === "Metallic") {
+                // Material node input
+                return 1.0;
+            } else if (portTitle === "Roughness") {
+                // Material node input
+                return 0.1;
+            } else if (portTitle === "Emissive Power") {
+                // Material node input
+                return 0.0;
+            } else if (portTitle === "Position") {
+                // Shape node input (vector3d)
+                return Qt.vector3d(0, 0, 0);
+            } else if (portTitle === "Rotation") {
+                // Shape node input (vector3d)
+                return Qt.vector3d(0, 0, 0);
+            } else if (portTitle === "Scale") {
+                // Shape node input (vector3d)
+                return Qt.vector3d(1, 1, 1);
+            } else if (portTitle === "Dimensions") {
+                // Shape node input (vector3d)
+                return Qt.vector3d(100, 100, 100);
+            } else if (portTitle === "Material") {
+                // Shape node input
+                return null;
+            } else if (portTitle === "Color") {
+                // Shape node input
+                return null;
+            } else if (portTitle === "Input" || portTitle === "Number") {
+                // Number node input
+                return 0.0;
+            }
+            // Default fallback
+            return 0.0;
+        }
+
+        // Before deleting, find all nodes that have input ports connected to this node's output ports
+        // and reset ONLY those specific input ports to their default values
+        // IMPORTANT: Do this BEFORE deleting links so the links still exist for reference
+        Object.keys(nodeRef.ports).forEach(portId => {
+            var port = nodeRef.ports[portId];
+            // Only process output ports (this node's outputs)
+            if (!port || port.portType !== NLSpec.PortType.Output) {
+                return;
+            }
+            
+            // Find all links connected to this output port
+            // In I_Scene.createLink: link.inputPort = portA (output port from upstream node)
+            //                       link.outputPort = portB (input port to downstream node)
+            Object.values(links).forEach(link => {
+                if (!link || !link.inputPort || !link.outputPort) {
+                    return;
+                }
+                
+                // Check if this link connects from our node's output port
+                // link.inputPort is the output port from the upstream node (the node being deleted)
+                if (link.inputPort._qsUuid === portId) {
+                    // This link connects from our node's output to another node's input
+                    // link.outputPort is the input port of the downstream node
+                    var inputPortUuid = link.outputPort._qsUuid;
+                    var downstreamNode = findNode(inputPortUuid);
+                    
+                    if (downstreamNode && typeof downstreamNode.updateInput === "function") {
+                        var inputPortTitle = link.outputPort.title;
+                        var defaultValue = getDefaultValueForInputPort(inputPortTitle);
+                        
+                        // Reset ONLY this specific input port to default value BEFORE deleting the link
+                        // This ensures the downstream node gets the default value for this specific port only
+                        downstreamNode.updateInput(inputPortTitle, defaultValue);
+                    }
+                }
+            });
+        });
+        
+        // Now delete the node using the parent implementation
+        // Remove the deleted object from selected model
+        selectionModel.remove(nodeUUId);
+
+        // Capture connected link objects before deletion (for undo/redo)
+        var connectedLinks = []
+        Object.keys(nodeRef.ports).forEach(portId => {
+            Object.entries(links).forEach(([key, value]) => {
+                // Skip null or invalid links
+                if (!value || !value.inputPort || !value.outputPort) {
+                    return;
+                }
+                const inputPortUuid  = value.inputPort._qsUuid;
+                const outputPortUuid = value.outputPort._qsUuid;
+                if (inputPortUuid === portId || outputPortUuid === portId) {
+                    // Store the actual link object (not just UUIDs) to preserve all properties
+                    if (connectedLinks.indexOf(value) === -1) {
+                        connectedLinks.push(value)
+                    }
+                }
+            });
+        });
+
+        //! delete the node ports from the portsPosition map
+        Object.keys(nodeRef.ports).forEach(portId => {
+            // delete related links
+            Object.entries(links).forEach(([key, value]) => {
+                // Skip null or invalid links
+                if (!value || !value.inputPort || !value.outputPort) {
+                    return;
+                }
+                if (value.inputPort._qsUuid === portId ||
+                        value.outputPort._qsUuid === portId) {
+                    linkRemoved(value);
+                    delete links[key];
+                }
+            });
+        });
+        nodeRemoved(nodeRef);
+
+        delete nodes[nodeUUId];
+
+        linksChanged();
+        nodesChanged();
+
+        // Push undo command BEFORE destroying node (skip during replay)
+        // This allows undo to restore the node
+        if (!scene._undoCore.undoStack.isReplaying && nodeRef) {
+            // Use qrc path to access NodeLink resources - same as in I_Scene
+            var cmdRemoveNode = Qt.createQmlObject('import QtQuick; import NodeLink; import "qrc:/NodeLink/resources/Core/Undo/Commands"; RemoveNodeCommand { }', scene._undoCore.undoStack)
+            cmdRemoveNode.scene = scene
+            cmdRemoveNode.node = nodeRef
+            cmdRemoveNode.links = connectedLinks.slice() // Create a copy of the array
+            scene._undoCore.undoStack.push(cmdRemoveNode)
+        }
+        // Don't destroy node during replay - it needs to be preserved for undo
+        // Node will be destroyed when command is cleaned up from stack
+        
+        // Update data after deletion to propagate changes
+        Qt.callLater(function() {
+            scene.updateData();
+        });
     }
 
     /* Component Setup

@@ -33,6 +33,7 @@ QtObject {
         Cone        = 15,
         Plane       = 16,
         Rectangle   = 17,
+        Color       = 18,
         
         Unknown     = 99
     }

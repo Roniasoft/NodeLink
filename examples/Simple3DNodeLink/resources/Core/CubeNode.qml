@@ -19,6 +19,7 @@ Node {
     property vector3d inputScale: Qt.vector3d(1, 1, 1)
     property vector3d inputDimensions: Qt.vector3d(100, 100, 100)
     property var inputMaterial: null
+    property string inputColor: ""  // Hex color string (e.g., "#FF0000")
     
     property string shapeType: "Cube"
 
@@ -37,7 +38,8 @@ Node {
                 rotation: root.inputRotation,
                 scale: root.inputScale,
                 dimensions: root.inputDimensions,
-                material: root.inputMaterial
+                material: root.inputMaterial,
+                color: root.inputColor
             };
         }
     }
@@ -79,6 +81,15 @@ Node {
         updateNodeData();
     }
     
+    function updateInputColor(newValue) {
+        if (typeof newValue === "string" && newValue.length > 0) {
+            inputColor = newValue;
+        } else {
+            inputColor = "";
+        }
+        updateNodeData();
+    }
+    
     function updateInput(portTitle, newValue) {
         if (portTitle === "Position") {
             updateInputPosition(newValue);
@@ -90,6 +101,8 @@ Node {
             updateInputDimensions(newValue);
         } else if (portTitle === "Material") {
             updateInputMaterial(newValue);
+        } else if (portTitle === "Color") {
+            updateInputColor(newValue);
         }
     }
     
@@ -101,7 +114,8 @@ Node {
                 rotation: root.inputRotation,
                 scale: root.inputScale,
                 dimensions: root.inputDimensions,
-                material: root.inputMaterial
+                material: root.inputMaterial,
+                color: root.inputColor
             };
         }
     }
@@ -173,6 +187,12 @@ Node {
         inputPortMaterial.portSide = NLSpec.PortPositionSide.Left;
         inputPortMaterial.title = "Material";
         addPort(inputPortMaterial);
+        
+        let inputPortColor = NLCore.createPort();
+        inputPortColor.portType = NLSpec.PortType.Input;
+        inputPortColor.portSide = NLSpec.PortPositionSide.Left;
+        inputPortColor.title = "Color";
+        addPort(inputPortColor);
         
         // No output port - shape nodes don't have outputs
     }
