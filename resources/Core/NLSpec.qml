@@ -29,6 +29,13 @@ QtObject {
         Unknown = 99
     }
 
+    enum SelectionType {
+        Rectangle = 0,
+        Lasso = 1,
+
+        Unknown = 99
+    }
+
     //! Location of port on the node sides
     enum PortPositionSide {
         Top     = 0,

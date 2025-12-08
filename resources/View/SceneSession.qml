@@ -35,8 +35,8 @@ QtObject {
     //! SelectionHelperView
     property bool marqueeSelectionMode: false
 
-    //! Set it "rectangle" when we want marquee selection else, lasso selection
-    property string selectionType: "rectangle"
+    //! Set it Rectangle when we want rectangle selection else, Lasso selection
+    property int selectionType: NLSpec.SelectionType.Rectangle
 
     //! Zoom manager
     property ZoomManager zoomManager: ZoomManager {}
