@@ -19,14 +19,14 @@ Item {
     //! Scene session contains information about scene states (UI related)
     required property SceneSession   sceneSession
 
-    property string activeSelectionMode: sceneSession.selectionType
+    property int activeSelectionMode: sceneSession.selectionType
 
     /* ****************************************************************************************
      * Rectangle Selection
      *****************************************************************************************/
     Item {
         id: rectangleSelection
-        visible: root.activeSelectionMode === "rectangle"
+        visible: root.activeSelectionMode === NLSpec.SelectionType.Rectangle
 
         //! Handle rubber band drawing.
         property          bool           isLeftClickPressedAndHold: false
@@ -46,13 +46,13 @@ Item {
 
             function onMarqueeSelectionModeChanged() {
                 if (!sceneSession.marqueeSelectionMode && !selectionTimer.running && !rectangleSelection.busySelecting
-                        && root.activeSelectionMode === "rectangle") {
+                        && root.activeSelectionMode === NLSpec.SelectionType.Rectangle) {
                     rectangleSelection.resetMarqueeDimensions();
                 }
             }
 
             function onMarqueeSelectionStart(mouse) {
-                if (root.activeSelectionMode === "rectangle") {
+                if (root.activeSelectionMode === NLSpec.SelectionType.Rectangle) {
                     // create a new rectangle at the wanted position
                     rectangleSelection.lastPressPoint.x = mouse.x;
                     rectangleSelection.lastPressPoint.y = mouse.y;
@@ -62,7 +62,7 @@ Item {
             }
 
             function onUpdateMarqueeSelection(mouse) {
-                if (root.activeSelectionMode === "rectangle") {
+                if (root.activeSelectionMode === NLSpec.SelectionType.Rectangle) {
                     // Update position and dimentions of temp rubber band
                     selectionRubberBandItem.x = Math.min(rectangleSelection.lastPressPoint.x , mouse.x)
                     selectionRubberBandItem.y = Math.min(rectangleSelection.lastPressPoint.y , mouse.y)
@@ -153,7 +153,7 @@ Item {
         id: lassoSelection
         width: root.width
         height: root.height
-        visible: root.activeSelectionMode === "lasso"
+        visible: root.activeSelectionMode === NLSpec.SelectionType.Lasso
 
         property bool isLeftClickPressedAndHold: false
         property var lastPressPoint: Qt.point(0,0)
@@ -165,7 +165,7 @@ Item {
         Canvas {
             id: freehandCanvas
             anchors.fill: parent
-            visible: root.activeSelectionMode === "lasso"
+            visible: root.activeSelectionMode === NLSpec.SelectionType.Lasso
 
             onPaint: {
                 var ctx = getContext("2d");
@@ -232,12 +232,12 @@ Item {
 
             function onMarqueeSelectionModeChanged() {
                 if (!sceneSession.marqueeSelectionMode && !selectionTimerLasso.running && !lassoSelection.busySelecting
-                        && root.activeSelectionMode === "lasso")
+                        && root.activeSelectionMode === NLSpec.SelectionType.Lasso)
                     lassoSelection.resetFreehand();
             }
 
             function onMarqueeSelectionStart(mouse) {
-                if (root.activeSelectionMode === "lasso") {
+                if (root.activeSelectionMode === NLSpec.SelectionType.Lasso) {
                     freehandCanvas.visible = true
                     lassoSelection.resetFreehand();
                     lassoSelection.lastPressPoint = Qt.point(mouse.x, mouse.y);
@@ -247,7 +247,7 @@ Item {
             }
 
             function onUpdateMarqueeSelection(mouse) {
-                if (root.activeSelectionMode === "lasso") {
+                if (root.activeSelectionMode === NLSpec.SelectionType.Lasso) {
                     var current = Qt.point(mouse.x, mouse.y);
                     if (lassoSelection.pathPoints.length === 0)
                         return;

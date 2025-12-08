@@ -512,16 +512,16 @@ Item {
 
             onCheckedChanged: {
                 if (checked)
-                    sceneSession.selectionType = "rectangle"
+                    sceneSession.selectionType = NLSpec.SelectionType.Rectangle
                 else
-                    sceneSession.selectionType = "lasso"
+                    sceneSession.selectionType = NLSpec.SelectionType.Lasso
             }
 
             Component.onCompleted: {
                 if (checked)
-                    sceneSession.selectionType = "rectangle"
+                    sceneSession.selectionType = NLSpec.SelectionType.Rectangle
                 else
-                    sceneSession.selectionType = "lasso"
+                    sceneSession.selectionType = NLSpec.SelectionType.Lasso
             }
         }
     }
