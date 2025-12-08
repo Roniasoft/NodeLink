@@ -64,28 +64,6 @@ Item {
         visible: hasSelectedObject
     }
 
-    Repeater {
-        id: highlightRepeater
-
-        delegate: Rectangle {
-            visible: (modelData.objectType === NLSpec.ObjectType.Node ||
-                      modelData.objectType === NLSpec.ObjectType.Container)
-
-            property int margin: 10
-
-            x: modelData.guiConfig.position.x - margin
-            y: modelData.guiConfig.position.y - margin
-            width: modelData.guiConfig.width + 2 * margin
-            height: modelData.guiConfig.height + 2 * margin
-
-            color: "transparent"
-            border.color: "#8F30FA"
-            border.width: 5
-            z: 9999
-        }
-    }
-
-
     //! MouseArea to move contain nodes.
     MouseArea {
         id: rubberBandMouseArea
