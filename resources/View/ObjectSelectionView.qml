@@ -176,9 +176,9 @@ Item {
             calculateDimensions();
         }
 
-        // function onSelectedObjectChanged() {
-           // calculateDimensions();
-        // }
+        function onSelectedObjectChanged() {
+            calculateDimensions();
+        }
     }
 
     //! Connection to calculate rubber band Dimensions when zoomFactorChanged.
