@@ -228,10 +228,6 @@ Item {
 
     //! calculate X, Y, width and height of rubber band
     function calculateDimensions() { //FIXME: really expensive function
-            // if (sceneSession.selectionType === "lasso") {
-            //     calculateDimensionsLasso();
-            //     return;
-            // }
 
             var firstObj = Object.values(scene.selectionModel.selectedModel)[0];
             if (firstObj === undefined)
