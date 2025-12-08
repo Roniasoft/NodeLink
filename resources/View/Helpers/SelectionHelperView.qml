@@ -3,6 +3,10 @@ import QtQuick.Controls
 
 import NodeLink
 
+/*! ***********************************************************************************************
+ * SelectionHelperView draw a rectangle and select some nodes inside it's rubberband..
+ * ************************************************************************************************/
+
 Item {
     id: root
 
