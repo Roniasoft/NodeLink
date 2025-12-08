@@ -301,16 +301,4 @@ Item {
             root.y = topY - margin;
         }
 
-
-    function calculateDimensionsLasso() {
-        // Update dimensions
-        root.width = 0
-        root.height = 0
-        root.x = 0;
-        root.y = 0;
-
-        highlightRepeater.model = Object.values(scene.selectionModel.selectedModel);
-    }
-
-
     }
