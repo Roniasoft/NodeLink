@@ -743,7 +743,7 @@ Commands encapsulate operations for undo/redo:
 - `AddContainerCommand`: Add container operation
 - `RemoveContainerCommand`: Remove container operation
 
-**See**: [Undo/Redo System Documentation](UndoRedoSystem.md)
+**See**: [Undo/Redo System Documentation](../AdvancedTopics/UndoRedo.md)
 
 ---
 
@@ -861,7 +861,7 @@ NLUtilsCPP {
 }
 ```
 
-**See**: [API Reference: C++ Classes](APIReferenceCpp.md)
+**See**: [API Reference: C++ Classes](../ApiReference/CppClasses.md)
 
 ---
 
@@ -903,7 +903,7 @@ NLCore.defaultRepo.saveToFile("scene.QQS.json");
 NLCore.defaultRepo.loadFromFile("scene.QQS.json");
 ```
 
-**See**: [Serialization Format Documentation](SerializationFormat.md)
+**See**: [Serialization Format Documentation](../AdvancedTopics/Serialization.md)
 
 ---
 
