@@ -4,7 +4,7 @@
 
 The VisionLink Example demonstrates how to build a visual image processing application using NodeLink. This example allows users to create image processing pipelines by connecting nodes that load, process, and display images. It showcases how to integrate C++ image processing code with QML nodes, handle image data flow through the node graph, and create interactive controls for real-time image manipulation. Perfect for learning how to build domain-specific node-based applications with custom data types and processing logic.
 
-![VisionLink Overview](images/Screenshot%202025-11-22%20182745.png)
+![VisionLink Overview](images/flow.png)
 
 ---
 
@@ -212,7 +212,7 @@ function updataData() {
 - Adjust brightness slider (-1.0 to 1.0)
 - Output shows brighter or darker image
 
-![Brightness Operation Node](images/brightness-operation-node.png) <!-- TODO: Insert screenshot of BrightnessOperationNode with controls -->
+![Brightness Operation Node](images/scene-architecture.png)
 
 **Code Implementation**:
 ```qml
@@ -1222,7 +1222,7 @@ Window {
 }
 ```
 
-![Main Application Layout](images/Screenshot%202025-11-22%20182745.png)
+![Main Application Layout](images/flow.png)
 
 ---
 
@@ -1301,7 +1301,7 @@ VisionLink.exe  # Windows
 - See final result in ImageResult
 - All downstream nodes update automatically
 
-![Example Workflow](images/Screenshot%202025-11-22%20182745.png)
+![Example Workflow](images/flow.png)
 
 ---
 
@@ -1470,6 +1470,6 @@ This example serves as a foundation for building:
 
 For more examples, see the other examples in the NodeLink repository.
 
-![Final Example](images/Screenshot%202025-11-22%20182745.png)
+![Final Example](images/flow.png)
 
 
