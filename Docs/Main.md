@@ -176,7 +176,6 @@ The Undo/Redo system in NodeLink is a comprehensive command-based architecture t
 
 [➡️ More details](AdvancedTopics/UndoRedo.md)
 
-![Undo/Redo System Overview](images/undo-redo-overview_23426.png) <!-- TODO: Insert overview diagram -->
 ---
 
 ### Serialization Format
