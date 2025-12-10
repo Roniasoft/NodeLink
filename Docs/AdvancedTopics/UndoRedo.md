@@ -4,8 +4,6 @@
 
 The Undo/Redo system in NodeLink is a comprehensive command-based architecture that allows users to undo and redo operations performed on the node graph. This system tracks all changes to nodes, links, containers, and their properties, providing a seamless way to revert or replay actions. The implementation uses the **Command Pattern** combined with **Observer Pattern** to automatically capture and record all modifications.
 
-![Undo/Redo System Overview](images/undo-redo-overview.png) <!-- TODO: Insert overview diagram -->
-
 ---
 
 ## Table of Contents
