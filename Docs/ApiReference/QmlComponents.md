@@ -559,6 +559,19 @@ var items = scene.findNodesInContainerItem({
 });
 ```
 
+##### `findNodesInLasso(points): var`
+Finds all nodes and containers that are inside a selected polygon (in Lasso mode).
+
+**Parameters**:
+- `points`: All selected points of user by drag.
+
+**Returns**: Array of Node and Container objects
+
+**Example**:
+```qml
+var items = scene.findNodesInLasso(lassoSelection.pathPoints);
+```
+
 ---
 
 ### Node
@@ -1279,6 +1292,7 @@ link.direction = NLSpec.LinkDirection.Unidirectional;
        container.addNode(node);
    });
    ```
+   (You can also use the findNodesInLasso function here for this.)
 
 3. **UI Organization**:
    - Visually group related functionality
