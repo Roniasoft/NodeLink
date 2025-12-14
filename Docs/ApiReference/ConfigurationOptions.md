@@ -847,6 +847,20 @@ Type of selection tool.
 selectionTool.toolType = NLSpec.SelectionSpecificToolType.Node;
 ```
 
+#### `SelectionType`
+Type of selection model.
+
+**Values**:
+- `Rectangle` (0) - Rectangle selection model
+- `Lasso` (1) - Lasso selection model
+- `Unknown` (99) - Unknown selection model
+
+**Example**:
+```qml
+selectionTool.selectionType = NLSpec.SelectionType.Rectangle;
+```
+
+
 #### `PortPositionSide`
 Position of a port on a node.
 
