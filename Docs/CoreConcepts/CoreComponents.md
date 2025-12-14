@@ -833,6 +833,16 @@ enum SelectionSpecificToolType {
 }
 ```
 
+#### Selection Type
+
+```qml
+enum SelectionType {
+    Rectangle = 0,      // Rectangle type selection 
+    Lasso = 1,          // Lasso type selection 
+    Unknown = 99
+}
+```
+
 #### Undo Configuration
 
 ```qml
