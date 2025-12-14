@@ -1756,6 +1756,7 @@ The `I_Scene` component is a `QSObject` that provides a centralized management s
 * `findPort(portId: string)`: Finds a port object
 * `deleteSelectedObjects()`: Deletes selected objects (nodes and links)
 * `findNodesInContainerItem(containerItem)`: Finds nodes in a container item
+* `findNodesInLasso(points)`: Finds nodes in a polygon (lasso model)
 * `copyNodes()`: Copies nodes
 * `pasteNodes()`: Pastes nodes
 * `snappedPosition(position)`: Calculates the snapped position for a given position
