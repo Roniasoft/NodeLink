@@ -6,6 +6,11 @@ Lasso Selection is an alternative selection mode in NodeLink that allows users t
 
 The lasso selection integrates seamlessly with the existing selection system, selection tools, and rubber band visualization.
 
+![Lasso selection Overview 1](images/Lasso_1.png)  
+![Lasso selection Overview 2](images/Lasso_2.png)  
+![Lasso selection Overview 3](images/Lasso_3.png)  
+![Lasso selection Overview 4](images/Lasso_4.png)  
+
 ---
 
 ## Motivation
