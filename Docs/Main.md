@@ -193,3 +193,11 @@ NodeLink is designed to handle large scenes with thousands of nodes efficiently.
 [➡️ More details](AdvancedTopics/PerformanceOptimization.md)
 
 ---
+
+### Lasso Selection
+
+Lasso Selection is an alternative selection mode in NodeLink that allows users to select nodes, containers, and links using a freeform (lasso-style) path instead of a rectangular marquee. This feature enables more flexible and precise selection in dense or irregular node layouts.
+
+[➡️ More details](AdvancedTopics/LassoSelection.md)
+
+---
